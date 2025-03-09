@@ -1,0 +1,949 @@
+:root {
+  --primary: #8B008B; /* Magic purple (Dark Magenta) */
+  --secondary: #1C2526; /* Dark slate (MTG card background) */
+  --light: #D4C0A1; /* Parchment beige (MTG card text area) */
+  --dark: #0D0F0F; /* Deep black (MTG card border) */
+  --accent: #FFD700; /* Gold (MTG legendary border) */
+  --mana-red: #FF4500; /* Red mana */
+  --mana-blue: #1E90FF; /* Blue mana */
+  --mana-green: #228B22; /* Green mana */
+  /* Daltonic-friendly colors for Top 8/16/32 chart */
+  --daltonic-top8: #FFD700; /* Gold (Top 8) */
+  --daltonic-top16: #00CED1; /* Dark Turquoise (Top 16) */
+  --daltonic-top32: #FF6347; /* Tomato (Top 32) */
+  --daltonic-below32: #A9A9A9; /* Dark Gray (Below Top 32) */
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Bitter', serif; /* MTG-style font */
+}
+
+body {
+  background-color: var(--dark);
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="28" height="49" viewBox="0 0 28 49"%3E%3Cg fill-rule="evenodd"%3E%3Cg id="hexagons" fill="%239C92AC" fill-opacity="0.08" fill-rule="nonzero"%3E%3Cpath d="M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E'); /* Subtle hexagonal texture */
+  color: var(--light);
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%; /* Explicitly full width */
+}
+
+header {
+  background-color: var(--secondary); /* Dark slate base */
+  background-image: radial-gradient(circle at center, rgba(139, 0, 139, 0.2) 0%, rgba(13, 15, 15, 0.9) 70%), 
+                    linear-gradient(145deg, rgba(255, 215, 0, 0.05), rgba(0, 0, 0, 0.2)); /* Subtle glow + depth */
+  padding: 15px 0; /* Slightly more padding for breathing room */
+  margin-bottom: 15px;
+  border-bottom: 3px solid var(--accent); /* Gold border */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5), inset 0 1px 2px rgba(255, 215, 0, 0.2); /* Outer shadow + inner glow */
+  position: relative;
+  overflow: hidden;
+  animation: slideInDown 0.125s ease-out;
+}
+
+header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"%3E%3Cpath fill="%23FFD700" fill-opacity="0.05" d="M20 2l5 10 10 2-8 8 2 10-9-5-9 5 2-10-8-8 10-2z"/%3E%3C/svg%3E'); /* Subtle star pattern */
+  pointer-events: none;
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 1; /* Ensure content sits above the background */
+}
+
+.logo h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--light);
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5), 1px 1px 2px rgba(0, 0, 0, 0.3); /* Soft gold glow */
+  transition: text-shadow 0.3s ease;
+}
+
+.logo h1:hover {
+  text-shadow: 0 0 10px rgba(255, 215, 0, 0.8), 1px 1px 2px rgba(0, 0, 0, 0.4); /* Enhanced glow on hover */
+}
+
+.logo span {
+  font-size: 1.0rem;
+  display: block;
+  font-weight: 300;
+  color: var(--light);
+  opacity: 0.9;
+}
+
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.top-mode-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid var(--accent); /* Gold border */
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-mode-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.top-mode-button:hover::after {
+  width: 200%;
+  height: 200%;
+}
+
+.top-mode-button.active {
+  background-color: var(--primary); /* Dark magenta */
+  border-color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(139, 0, 139, 0.5); /* Magenta glow */
+}
+
+.top-mode-button:hover {
+  background-color: var(--dark);
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4); /* Gold glow */
+  color: var(--accent); /* Gold text on hover */
+}
+
+.dashboard {
+  display: grid;
+  gap: 30px;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards; /* Reduced from 0.8s */
+  animation-delay: 0.125s; /* Reduced from 0.5s */
+  width: 100%; /* Ensure dashboard takes full width of container */
+}
+
+.event-dashboard {
+  grid-template-columns: 280px 1fr; /* Filters | Charts (Event Analytics) */
+}
+
+.player-dashboard {
+  grid-template-columns: 280px 1fr auto; /* Filters | Charts | Deck Stats Sidebar (Player Analytics) */
+}
+
+.filters {
+  background-color: var(--secondary);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.filters h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section.hidden {
+  display: none;
+}
+
+.filter-section h4 {
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+
+.bubble-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bubble-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+}
+
+.bubble-button.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  font-weight: bold;
+}
+
+.bubble-button:hover {
+  background-color: #3a3a4a;
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.bubble-menu label {
+  color: var(--light);
+  margin-right: 10px;
+}
+
+.bubble-menu select {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid #444;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bubble-menu select:hover {
+  background-color: #3a3a4a;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.stats-container {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards; /* Reduced from 0.8s */
+  animation-delay: 0.075s; /* Reduced from 0.3s */
+  justify-content: stretch;
+}
+
+#singleEventStats.stats-container,
+#multiEventStats.stats-container {
+  width: calc(110% + 10px);
+  margin-left: 0px; /* Align with .filters' left edge (container padding) */
+  margin-right: 0; /* Ensure it stretches to the right */
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); /* Justified cards */
+  gap: 15px;
+  max-width: none;
+  position: relative; 
+  --dashboard-width: calc(280px + 1fr + (30px * 1));
+  width: var(--dashboard-width);
+}
+
+#playerStats.stats-container {
+  width: calc(110% + 10px);
+  margin-left: 0px; /* Align with .filters' left edge (container padding) */
+  margin-right: 0; /* Ensure it stretches to the right */
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); /* Justified cards */
+  gap: 15px;
+  max-width: none; /* Remove max-width constraint */
+  position: relative; /* For potential vertical alignment */
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--secondary), #2c2c40);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+  min-width: 0; /* Prevent overflow */
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #2c2c40, var(--secondary));
+}
+
+.stat-card.hidden {
+  display: none;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--primary);
+}
+
+.stat-card.updated {
+  animation: pulseUpdate 0.5s ease; /* New animation for stat card updates */
+}
+
+.stat-title {
+  font-size: 0.7rem;
+  color: #aaa;
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--light);
+}
+
+.stat-change {
+  font-size: 0.8rem;
+  color: var(--mana-green);
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.stat-change.negative {
+  color: var(--mana-red);
+}
+
+.stat-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  opacity: 0.1;
+  font-size: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+  opacity: 0.3;
+}
+
+.stat-card.combined .stat-details {
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.stat-card.combined .stat-details div {
+  margin-bottom: 4px;
+}
+
+.stat-card.combined .stat-details .label {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.stat-card.combined .stat-details .value {
+  color: var(--light);
+}
+
+.stat-card#singleEventInfoCard .stat-value,
+.stat-card#singleTopPlayerCard .stat-value,
+.stat-card#singleRunnerUpCard .stat-value,
+.stat-card#singleMostCopiesCard .stat-value,
+.stat-card#multiTotalEventsCard .stat-value,
+.stat-card#multiMostPlayersCard .stat-value,
+.stat-card#multiLeastPlayersCard .stat-value,
+.stat-card#multiMostCopiesCard .stat-value,
+.stat-card#playerStats .stat-value {
+    font-size: 1.4rem;
+}
+
+.stat-card#singleEventInfoCard .stat-change,
+.stat-card#singleTopPlayerCard .stat-change,
+.stat-card#singleRunnerUpCard .stat-change,
+.stat-card#singleMostCopiesCard .stat-change,
+.stat-card#multiTotalEventsCard .stat-change,
+.stat-card#multiMostPlayersCard .stat-change,
+.stat-card#multiLeastPlayersCard .stat-change,
+.stat-card#multiMostCopiesCard .stat-change,
+.stat-card#playerStats .stat-change {
+    font-size: 1rem;
+}
+
+.deck-stats-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 300px; /* Minimum width */
+  width: auto; /* Grows with content */
+  max-width: 100%; /* Prevents overflow */
+}
+
+.deck-stats-sidebar #playerEventsCard .stat-details {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.deck-stats-sidebar #playerEventsCard .stat-details div {
+  margin-bottom: 4px;
+}
+
+.charts-and-tables {
+  flex: 1;
+}
+
+.chart-container {
+  background-color: var(--secondary);
+  max-width: 100%;
+  width: 100%;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  position: relative;
+  opacity: 0;
+  animation: fadeInUp 0.2s ease forwards; /* Reduced from 0.8s */
+  animation-delay: 0.175s; /* Reduced from 0.7s */
+  transition: transform 0.3s ease, background 0.5s ease;
+}
+
+.chart-container:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #2c2c40, var(--secondary));
+}
+
+.chart-container.updated {
+  animation: fadeUpdate 0.3s ease; /* New animation for chart updates */
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--light);
+}
+
+.chart-container div[id$="Loading"] {
+  max-width: 100%;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--light);
+  font-size: 1rem;
+  display: none;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.chart-container div[id$="Loading"]::before {
+  content: '';
+  display: inline-block;
+  max-width: 100%;
+  width: 100%;
+  height: 16px;
+  border: 2px solid var(--accent);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+#chartjs-tooltip {
+  transition: all 0.1s ease;
+  z-index: 9999;
+  border: 1px solid white;
+}
+
+canvas {
+  max-width:100%;
+  width: 100%;
+  max-height: 300px;
+  transition: opacity 0.3s ease; /* Smooth opacity transition for chart updates */
+}
+
+/* Custom Legend Styling */
+.custom-legend {
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 5px 0;
+  background-color: transparent;
+}
+
+.custom-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.custom-legend li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.custom-legend li.hidden {
+  text-decoration: line-through;
+}
+
+.custom-legend li span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border: 1px solid #444;
+}
+
+/*DATA TABLE */
+
+.data-table-container {
+  background-color: var(--secondary);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-top: 30px;
+  opacity: 0;
+  animation: fadeInUp 0.2s ease forwards; /* Reduced from 0.8s */
+  animation-delay: 0.225s; /* Reduced from 0.9s */
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+}
+
+.data-table th,
+.data-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--dark);
+  transition: background 0.3s ease;
+}
+
+.data-table th {
+  background-color: var(--primary);
+  color: var(--light);
+  position: sticky;
+  top: 0;
+}
+
+.data-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.data-table th {
+  cursor: pointer;
+  position: relative;
+  padding-right: 20px; /* Space for arrow */
+}
+
+.data-table th:hover {
+  background-color: #3a3a4a;
+}
+
+.sort-arrow {
+  position: absolute;
+  right: 5px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+}
+
+th.asc .sort-arrow {
+  color: #FFD700; /* Gold for ascending */
+}
+
+th.desc .sort-arrow {
+  color: #FF6347; /* Red for descending */
+}
+
+/*Tooltip for the Tables*/
+.event-tooltip {
+  position: relative;
+}
+
+.event-tooltip:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.event-tooltip:hover::before {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.8);
+  z-index: 10;
+  margin-bottom: -10px;
+}
+
+
+/*Table Toggle*/
+.table-toggle {
+  margin-bottom: 15px;
+}
+
+.table-toggle-btn {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.table-toggle-btn.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  font-weight: bold;
+}
+
+.table-toggle-btn:hover {
+  background-color: #3a3a4a;
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseUpdate {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+@keyframes fadeUpdate {
+  0% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .deck-stats-sidebar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #singleEventStats,
+  #multiEventStats {
+    --dashboard-width: calc(280px + 1fr + (30px * 1));
+    width: 100%;
+  }
+
+  #playerStats.stats-container {
+    
+    /*Width needs to grown dynamically, the function is in script.js but isn't working, udpate later*/
+    width: calc(100% - 280px - 30px); /* Total width minus filters and gap */
+
+    margin-left: 0; /* Align with .filters’ left edge */
+    margin-right: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); /* Justified cards */
+    gap: 0px;
+    max-width: none;
+    position: relative;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-and-tables {
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #playerStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller min width */
+  }
+}
+
+#deckEvolutionTooltip {
+  font-family: 'Bitter', serif;
+  font-size: 11px; /* Slightly reduced from 12px */
+  color: var(--light); /* Parchment beige for text */
+  background: rgba(0, 0, 0, 0.8); /* Matches your previous tooltip */
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+/* Style numbers differently */
+#deckEvolutionTooltip strong,
+#deckEvolutionTooltip div {
+  line-height: 1.4; /* Consistent spacing */
+}
+
+/* Bolded highlighted metric (Meta Share or Win Rate) */
+#deckEvolutionTooltip strong {
+  color: var(--accent); /* Gold for numbers */
+  font-weight: bold;
+}
+
+/* Numbers within regular text */
+#deckEvolutionTooltip .number {
+  color: var(--accent); /* Gold for numbers */
+}
+
+/* Custom Tooltip for Player Win Rate Chart */
+#playerWinRateTooltip {
+  font-family: 'Bitter', serif;
+  font-size: 11px;
+  color: var(--light);
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+#playerWinRateTooltip .number {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+a {
+  color: #FFFFFF;
+  text-decoration: underline; 
+}
+
+a:hover {
+  color: #FFFFFF;
+  text-decoration: underlineoverline; 
+}
+
+a:visited {
+  color: #FFFFFF;
+}
+
+
+/*TOGGLE RAW AND PERCENT FOR TOP CONVERSION*/
+/* Center-align the "Top Conversion" header */
+.top-conversion-header {
+  text-align: center;
+  position: relative; /* Allows positioning of toggle buttons */
+  vertical-align: middle; /* Ensures content aligns vertically */
+}
+
+/* Style the bubble menu container for toggle buttons */
+.bubble-menu.display-toggle {
+  display: inline-flex;
+  gap: 5px; /* Space between buttons */
+  margin-top: 5px; /* Space below "Top Conversion" text */
+  justify-content: center; /* Center buttons horizontally */
+}
+
+/* Override base bubble-button styles for display-toggle buttons */
+.bubble-button.display-toggle-btn {
+  padding: 4px 12px; /* Slightly smaller padding for compactness */
+  border-radius: 16px; /* Slightly smaller radius for a tighter look */
+  font-size: 0.9rem; /* Smaller font to fit nicely */
+  border: 1px solid var(--dark); /* Dark border for definition */
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+/* "Raw" button: Black background, white text */
+.raw-btn {
+  background-color: var(--dark); /* #0D0F0F - Deep black */
+  color: var(--light); /* #D4C0A1 - Parchment beige */
+}
+
+/* "Raw" button active state */
+.raw-btn.active {
+  background-color: #333333; /* Slightly lighter gray for active state */
+  color: var(--light);
+  border-color: var(--accent); /* #FFD700 - Gold border */
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.3); /* Subtle gold glow */
+}
+
+/* "Raw" button hover (non-active) */
+.raw-btn:hover:not(.active) {
+  background-color: #1a1a1a; /* Slightly lighter black */
+  color: var(--accent); /* #FFD700 - Gold text */
+  transform: scale(1.05);
+}
+
+/* "Percent" button: White background, dark text */
+.percent-btn {
+  background-color: var(--light); /* #D4C0A1 - Parchment beige */
+  color: var(--dark); /* #0D0F0F - Deep black */
+}
+
+/* "Percent" button active state */
+.percent-btn.active {
+  background-color: #e6d8b8; /* Slightly darker beige for active state */
+  color: var(--dark);
+  border-color: var(--accent); /* #FFD700 - Gold border */
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.3); /* Subtle gold glow */
+}
+
+/* "Percent" button hover (non-active) */
+.percent-btn:hover:not(.active) {
+  background-color: #c9b28f; /* Darker beige for hover */
+  color: var(--dark);
+  transform: scale(1.05);
+}
+
+/* Ensure table header background is applied (already in your CSS, just confirming) */
+.data-table th {
+  background-color: var(--primary); /* #8B008B - Dark magenta */
+  color: var(--light); /* #D4C0A1 - Parchment beige */
+}
+
+/* ABOUT SECTION */
+
+#aboutSection {
+  padding: 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.about-content h2 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  font-family: 'Bitter', serif;
+}
+
+.about-content p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.about-content h3 {
+  font-size: 1.4em;
+  margin: 15px 0 10px;
+  font-family: 'Bitter', serif;
+}
+
+.about-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.about-content li {
+  font-size: 1.1em;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.about-content a {
+  color: #00CED1;
+  text-decoration: none;
+}
+
+.about-content a:hover {
+  text-decoration: underline;
+}
+
+/* Ensure About button matches other mode buttons */
+#aboutButton.active {
+  background: #00CED1;
+  color: #000;
+}

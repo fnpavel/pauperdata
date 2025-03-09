@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MTG Analytics Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header>
+    <div class="container header-content">
+      <div class="logo">
+        <h1>Pauper MTG Analytics</h1>
+        <h2>Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a></h2>
+      </div>
+      <div class="mode-buttons">
+        <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
+        <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
+        <button class="bubble-button" id="aboutButton">About</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Event Analysis Section -->
+    <div id="eventAnalysisSection">
+      <div class="stats-container" id="singleEventStats">
+        <div class="stat-card" id="singleEventInfoCard">
+          <div class="stat-title">Event Information</div>
+          <div class="stat-value" id="eventInfoName">--</div>
+          <div class="stat-change" id="eventInfoDate">--</div>
+          <div class="stat-change" id="eventInfoPlayers">0 Players</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="singleTopPlayerCard">
+          <div class="stat-title">Winner</div>
+          <div class="stat-value" id="singleTopPlayer">--</div>
+          <div class="stat-change" id="singleTopPlayerDetails">-- / 0% Win Rate</div>
+          <div class="stat-icon">🏆</div>
+        </div>
+        <div class="stat-card" id="singleRunnerUpCard">
+          <div class="stat-title">Runner-up</div>
+          <div class="stat-value" id="singleRunnerUp">--</div>
+          <div class="stat-change" id="singleRunnerUpDetails">-- / 0% Win Rate</div>
+          <div class="stat-icon">🥈</div>
+        </div>
+        <div class="stat-card combined" id="singleTopDecksCard">
+          <div class="stat-title">Decks with the most Copies</div>
+          <div class="stat-details" id="singleTopDecksDetails"></div>
+          <div class="stat-icon">🃏</div>
+        </div>
+        <div class="stat-card" id="singleMostCopiesCard">
+          <div class="stat-title">Most Popular Deck</div>
+          <div class="stat-value" id="singleMostCopiesDeck">--</div>
+          <div class="stat-change" id="singleMostCopiesDetails">0 Copies</div>
+          <div class="stat-icon">👑</div>
+        </div>
+      </div>
+
+      <div class="stats-container" id="multiEventStats" style="display: none;">
+        <div class="stat-card" id="multiTotalEventsCard">
+          <div class="stat-title">Total Events</div>
+          <div class="stat-value" id="totalEvents">0</div>
+          <div class="stat-change">Select a date range</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="multiMostPlayersCard">
+          <div class="stat-title">Event with Most Players</div>
+          <div class="stat-value" id="mostPlayersEvent">--</div>
+          <div class="stat-change" id="mostPlayersCount">0 Players</div>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-card" id="multiLeastPlayersCard">
+          <div class="stat-title">Event with Least Players</div>
+          <div class="stat-value" id="leastPlayersEvent">--</div>
+          <div class="stat-change" id="leastPlayersCount">0 Players</div>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-card combined" id="multiTopDecksCard">
+          <div class="stat-title">Decks with the most Copies</div>
+          <div class="stat-details" id="multiTopDecksDetails"></div>
+          <div class="stat-icon">🃏</div>
+        </div>
+        <div class="stat-card" id="multiMostCopiesCard">
+          <div class="stat-title">Most Popular Deck</div>
+          <div class="stat-value" id="multiMostCopiesDeck">--</div>
+          <div class="stat-change" id="multiMostCopiesDetails">0 Copies</div>
+          <div class="stat-icon">👑</div>
+        </div>
+      </div>
+
+      <div class="dashboard event-dashboard" id="eventDashboard">
+        <div class="filters">
+          <h3>Filter Options</h3>
+          <div class="filter-section">
+            <h4>Analysis Mode</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button analysis-mode active" data-mode="single">Single Event</button>
+              <button class="bubble-button analysis-mode" data-mode="multi">Multiple Events</button>
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button event-type-filter active" data-type="offline">Offline</button>
+              <button class="bubble-button event-type-filter" data-type="online">Online</button>
+            </div>
+          </div>
+          <div class="filter-section" id="positionSlicerSection">
+            <h4>Position Range (Charts Only)</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button position-type active" data-type="meta">Meta</button>
+              <button class="bubble-button position-type" data-type="winrate">Win Rate</button>
+              <label>From:</label>
+              <select id="positionStartSelect"></select>
+              <label>To:</label>
+              <select id="positionEndSelect"></select>
+            </div>
+          </div>
+          <div class="filter-section" id="eventFilterSection">
+            <h4>Event</h4>
+            <div class="bubble-menu">
+              <select id="eventFilterMenu" class="event-filter-select">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-and-tables">
+          <div id="singleEventCharts">
+            <div class="chart-container">
+              <h2 class="chart-title">Event Analytics: Meta and Win Rate</h2>
+              <div id="metaWinRateEventChartLegend" class="custom-legend"></div>
+              <div id="metaWinRateEventChartLoading">Loading...</div>
+              <canvas id="metaWinRateEventChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h2 class="chart-title">Event Top 8/16/32 Conversion</h2>
+              <div id="eventFunnelChartLoading">Loading...</div>
+              <canvas id="eventFunnelChart"></canvas>
+            </div>
+            <div class="data-table-container">
+              <h2 class="chart-title" id="singleEventTableTitle">Raw Data</h2>
+              <div class="bubble-menu table-toggle">
+                <button class="bubble-button table-toggle-btn active" data-table="raw">Raw Data</button>
+                <button class="bubble-button table-toggle-btn" data-table="aggregate">Aggregate Decks</button>
+              </div>
+              <table class="data-table" id="singleEventTable">
+                <thead id="singleEventTableHead">
+                  <tr>
+                    <th>Rank</th>
+                    <th>Player</th>
+                    <th>Deck</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Win Rate</th>
+                  </tr>
+                </thead>
+                <tbody id="singleEventTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="multiEventCharts" style="display: none;">
+            <div class="chart-container">
+              <h2 class="chart-title">Multi-Event Analytics</h2>
+              <div class="bubble-menu">
+                <label>Start Date:</label>
+                <select id="startDateSelect" onchange="updateMultiEventAnalytics()"></select>
+                <label>End Date:</label>
+                <select id="endDateSelect" onchange="updateMultiEventAnalytics()"></select>
+              </div>
+              <div id="metaWinRateChartLegend" class="custom-legend"></div>
+              <div id="metaWinRateChartLoading">Loading...</div>
+              <canvas id="metaWinRateChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h2 class="chart-title">Aggregate Player Win Rates</h2>
+              <div id="multiPlayerWinRateChartLoading">Loading...</div>
+              <canvas id="multiPlayerWinRateChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h2 class="chart-title">Deck Evolution: Meta and Win Rate</h2>
+              <div class="bubble-menu">
+                <label>Deck:</label>
+                <select id="deckEvolutionSelect" onchange="updateDeckEvolutionChart()"></select>
+              </div>
+              <div id="deckEvolutionChartLoading">Loading...</div>
+              <canvas id="deckEvolutionChart"></canvas>
+              <div id="deckEvolutionEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+            </div>
+
+            <div class="data-table-container">
+              <h2 class="chart-title" id="multiEventTableTitle">Aggregate Data</h2>
+              <div class="bubble-menu table-toggle">
+                <button class="bubble-button table-toggle-btn active" data-table="aggregate">Aggregate Data</button>
+                <button class="bubble-button table-toggle-btn" data-table="deck">Deck Evolution Data</button>
+              </div>
+              <table class="data-table" id="multiEventTable">
+                <thead id="multiEventTableHead">
+                  <tr>
+                    <th data-sort="deck">Deck</th>
+                    <th data-sort="metaShare">Aggregate Meta Share</th>
+                    <th data-sort="winRate">Aggregate Win Rate</th>
+                    <th data-sort="top1">Top 1</th>
+                    <th data-sort="top8">Top 8</th>
+                    <th data-sort="top16">Top 16</th>
+                    <th data-sort="top32">Top 32</th>
+                    <th data-sort="belowTop32">Below Top 32</th>
+                  </tr>
+                </thead>
+                <tbody id="multiEventTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Player Analysis Section -->
+    <div id="playerAnalysisSection" style="display: none;">
+      <div class="stats-container" id="playerStats">
+        <div class="stat-card" id="playerEventsCard">
+          <div class="stat-title">Total Events</div>
+          <div class="stat-value">Loading...</div>
+          <div class="stat-change"></div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="playerUniqueDecksCard">
+          <div class="stat-title">Unique Decks Used</div>
+          <div class="stat-value">Loading...</div>
+          <div class="stat-icon">🃏</div>
+        </div>
+        <div class="stat-card" id="playerMostPlayedCard">
+          <div class="stat-title">Most Played Deck</div>
+          <div class="stat-value">Loading...</div>
+          <div class="stat-change"></div>
+          <div class="stat-icon">⬆️</div>
+        </div>
+        <div class="stat-card" id="playerLeastPlayedCard">
+          <div class="stat-title">Least Played Deck</div>
+          <div class="stat-value">Loading...</div>
+          <div class="stat-change"></div>
+          <div class="stat-icon">⬇️</div>
+        </div>
+        <div class="stat-card" id="playerTop1_8Card">
+          <div class="stat-title">Number of Top 1-8</div>
+          <div class="stat-value" id="playerTop1_8">0</div>
+          <div class="stat-change" id="playerTop1_8%"></div>
+          <div class="stat-icon">🏆</div>
+        </div>
+        <div class="stat-card" id="playerTop9_16Card">
+          <div class="stat-title">Number of Top 9-16</div>
+          <div class="stat-value" id="playerTop9_16">0</div>
+          <div class="stat-change" id="playerTop9_16%"></div>
+          <div class="stat-icon">🏅</div>
+        </div>
+        <div class="stat-card" id="playerTop17_32Card">
+          <div class="stat-title">Number of Top 17-32</div>
+          <div class="stat-value" id="playerTop17_32">0</div>
+          <div class="stat-change" id="playerTop17_32%"></div>
+          <div class="stat-icon">🏅</div>
+        </div>
+        <div class="stat-card" id="playerTop33PlusCard">
+          <div class="stat-title">Number of Top 33+</div>
+          <div class="stat-value" id="playerTop33Plus">0</div>
+          <div class="stat-change" id="playerTop33Plus%"></div>
+          <div class="stat-icon">🏅</div>
+        </div>
+      </div>
+
+      <div class="dashboard player-dashboard" id="playerDashboard">
+        <div class="filters">
+          <h3>Filter Options</h3>
+          <div class="filter-section">
+            <h4>Player</h4>
+            <div class="bubble-menu">
+              <select id="playerFilterMenu" class="player-filter-select">
+                <!-- Populated dynamically -->
+              </select>
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+              <button class="bubble-button event-type-filter" data-type="online">Online</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-and-tables">
+          <div id="playerCharts">
+            <div class="chart-container">
+              <h2 class="chart-title">Player Analytics</h2>
+              <div class="bubble-menu">
+                <label>Start Date:</label>
+                <select id="playerStartDateSelect" onchange="updatePlayerAnalytics()"></select>
+                <label>End Date:</label>
+                <select id="playerEndDateSelect" onchange="updatePlayerAnalytics()"></select>
+              </div>
+              <div id="playerWinRateChartLoading">Loading...</div>
+              <canvas id="playerWinRateChart"></canvas>
+              <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+            </div>
+            <div class="data-table-container">
+              <h2 class="chart-title" id="playerRawTableTitle">--</h2>
+              <table class="data-table" id="playerRawTable">
+                <thead id="playerRawTableHead">
+                  <tr>
+                    <th>Event (Players)</th>
+                    <th>Position</th>
+                    <th>Deck</th>
+                    <th>Wins</th>
+                    <th>Losses</th>
+                    <th>Win Rate</th>
+                    <th>%Meta, %WR</th>
+                    <th>Winner's Deck (%Meta, %WR)</th>
+                  </tr>
+                </thead>
+                <tbody id="playerRawTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
+          <div class="stat-card combined" id="playerBestDeckCard">
+            <div class="stat-title">Best Performing Deck</div>
+            <div class="stat-details" id="playerBestDeckDetails">
+              <div><span class="label">Deck:</span> <span class="value" id="playerBestDeckName">--</span></div>
+              <div><span class="label">Events:</span> <span class="value" id="playerBestDeckEvents">0</span></div>
+              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerBestDeckWinRate">0%</span></div>
+              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerBestDeckBestWinRate">-- (Event: --)</span></div>
+              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerBestDeckWorstWinRate">-- (Event: --)</span></div>
+            </div>
+            <div class="stat-icon">👑</div>
+          </div>
+          <div class="stat-card combined" id="playerWorstDeckCard">
+            <div class="stat-title">Worst Performing Deck</div>
+            <div class="stat-details" id="playerWorstDeckDetails">
+              <div><span class="label">Deck:</span> <span class="value" id="playerWorstDeckName">--</span></div>
+              <div><span class="label">Events:</span> <span class="value" id="playerWorstDeckEvents">0</span></div>
+              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerWorstDeckWinRate">0%</span></div>
+              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerWorstDeckBestWinRate">-- (Event: --)</span></div>
+              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerWorstDeckWorstWinRate">-- (Event: --)</span></div>
+            </div>
+            <div class="stat-icon">☠️</div>
+          </div>
+          <div class="stat-card combined" id="playerEventsHistory">
+            <div class="stat-title">Event History</div>
+            <div class="stat-details" id="playerEventsDetails">
+              <div>No events selected</div>
+            </div>
+            <div class="stat-icon">📅</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- About Section -->
+    <div id="aboutSection" style="display: none;">
+      <div class="about-content">
+        <h2>About Pauper MTG Analytics</h2>
+        <p>Version 0.8 | Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from Grok 3 (xAI)</p>
+        <p>MTGO data gathered by <a href="https://x.com/Kirblinxy" target="_blank">Kirblinxy</a>. 
+        <p>Paupergeddon data by the organizers.</p>
+        <p>Contact (for bugs or to send data): <a href="https://x.com/PyotrPavel" target="_blank">X/Twitter</a>, Discord (ppavel), or email at <a href="mailto:pyotrpavelmtg@gmail.com">pyotrpavelmtg@gmail.com</a></p>
+        <h3>Known Issues</h3>
+        <ul>
+          <li>The page is not really mobile friendly, so better check it on desktop</li>
+          <li>Dropdown menus are not defaulting to an empty list</li>
+          <li>Charts for large datasets are not user friendly, be sure to use the Position Range</li>
+          <li>The Event Top8/16/32 Conversion Chart is ugly. It becomes palatable after using Position Range</li>
+          <li>The Aggregate Player Win Rates Chart is ugly. It becomes palatable after using Position Range</li>
+          <li>Sometimes the Buttons fail to record they state and need to be clicked again</li>
+        </ul>
+
+        <h3>Future Updates</h3>
+        <ul>
+          <li>Version 0.9: Improve the Top Conversion + Aggregate Player Win Rates chart.</li>
+          <li>Version 1.0: Add typing option in the players' and events' dropdown menus</li>
+          <li>TBD: Improve the filtering for all the charts.</li>
+          <li>TBD: Establish a database connection</li>
+          <li>TBD: Rewrite pretty much everything 💀</li>
+          <li>TBD: Add Data from other formats</li>
+        </ul>
+
+        <p><a href="#" id="backToApp">Back to Dashboard</a></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+  <script src="js/data.js" type="module"></script>
+  <script src="js/utils/dom.js" type="module"></script>
+  <script src="js/utils/data.js" type="module"></script>
+  <script src="js/utils/chart.js" type="module"></script>
+  <script src="js/utils/format.js" type="module"></script>
+  <script src="js/charts/event-meta-win-rate.js" type="module"></script>
+  <script src="js/charts/event-funnel.js" type="module"></script>
+  <script src="js/charts/multi-meta-win-rate.js" type="module"></script>
+  <script src="js/charts/multi-player-win-rate.js" type="module"></script>
+  <script src="js/charts/deck-evolution.js" type="module"></script>
+  <script src="js/charts/player-win-rate.js" type="module"></script>
+  <script src="js/modules/event-analysis.js" type="module"></script>
+  <script src="js/modules/player-analysis.js" type="module"></script>
+  <script src="js/modules/filters.js" type="module"></script>
+  <script src="js/main.js" type="module"></script>
+  <!-- Cloudflare Scripts (unchanged) -->
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91bc0e60098244d5',t:'MTc0MTIwMzMyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91bd64046be7b045',t:'MTc0MTIxNzMxNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91cedadfffcf8bbc',t:'MTc0MTQwMDQ0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91d3f98e9a0e1d80',t:'MTc0MTQ1NDEyOC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+  <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91dbaf777dbcb0dc',t:'MTc0MTUzNDk3OS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
+</html>
