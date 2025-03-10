@@ -704,180 +704,6 @@ th.desc .sort-arrow {
   100% { opacity: 1; }
 }
 
-/* Media Queries for Mobile and Smaller Screens */
-@media (max-width: 1024px) {
-  .dashboard {
-    grid-template-columns: 280px 1fr; /* Filters + content */
-  }
-
-  .deck-stats-sidebar {
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    width: 100%;
-  }
-
-  .stats-container {
-    grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columns for tablets */
-    gap: 10px; /* Slightly tighter */
-  }
-
-  #singleEventStats,
-  #multiEventStats {
-    width: 100%; /* Full width */
-  }
-
-  #playerStats.stats-container {
-    width: calc(100% - 280px - 30px); /* Adjust for filters and gap */
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    gap: 10px;
-    max-width: none;
-  }
-
-  canvas {
-    max-height: 350px; /* Taller charts for tablets */
-  }
-}
-
-@media (max-width: 768px) {
-  .dashboard {
-    grid-template-columns: 1fr; /* Stack everything */
-  }
-
-  .charts-and-tables {
-    width: 100%;
-  }
-
-  .stats-container {
-    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 columns */
-    gap: 8px; /* Tighter spacing */
-  }
-
-  #playerStats.stats-container {
-    width: 100%;
-    margin-left: 0;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller cards */
-    gap: 8px;
-  }
-
-  canvas {
-    max-height: 325px; /* Slightly smaller than tablets */
-  }
-
-  .chart-container {
-    padding: 15px; /* Reduced padding */
-  }
-
-  .filters {
-    padding: 15px; /* Slightly tighter */
-  }
-}
-
-@media (max-width: 600px) {
-  .header-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .logo h1 {
-    font-size: 1.8rem; /* Smaller header */
-  }
-
-  .mode-buttons {
-    width: 100%;
-    justify-content: space-between;
-    flex-wrap: wrap;
-  }
-
-  .top-mode-button {
-    flex: 1;
-    text-align: center;
-    padding: 6px 12px; /* Smaller buttons */
-    font-size: 0.9rem;
-  }
-
-  .dashboard {
-    gap: 20px; /* Tighter spacing */
-  }
-
-  .stats-container {
-    grid-template-columns: 1fr; /* Single column */
-    gap: 8px;
-    margin-bottom: 15px;
-  }
-
-  .stat-card {
-    padding: 8px; /* Tighter padding */
-  }
-
-  .stat-title {
-    font-size: 0.65rem; /* Smaller text */
-  }
-
-  .stat-value {
-    font-size: 1.1rem;
-  }
-
-  .stat-change {
-    font-size: 0.75rem;
-  }
-
-  #singleEventStats,
-  #multiEventStats,
-  #playerStats.stats-container {
-    width: 100%; /* Full width */
-    margin-left: 0;
-    grid-template-columns: 1fr; /* Single column */
-  }
-
-  .chart-container {
-    padding: 10px; /* Minimal padding */
-  }
-
-  .chart-title {
-    font-size: 1.2rem; /* Smaller title */
-  }
-
-  canvas {
-    max-height: 300px; /* Match desktop but fits mobile */
-  }
-
-  .data-table th,
-  .data-table td {
-    font-size: 0.8rem;
-    padding: 8px; /* Tighter padding */
-  }
-
-  .filters {
-    padding: 10px; /* Tighter filters */
-  }
-
-  .bubble-menu {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .bubble-button {
-    width: 100%;
-    padding: 6px 12px; /* Smaller buttons */
-    font-size: 0.9rem;
-  }
-
-  .about-content h2 {
-    font-size: 1.5rem;
-  }
-
-  .about-content p,
-  .about-content li {
-    font-size: 1rem;
-  }
-}
-
 #deckEvolutionTooltip {
   font-family: 'Bitter', serif;
   font-size: 11px; /* Slightly reduced from 12px */
@@ -1058,3 +884,361 @@ a:visited {
   background: #00CED1;
   color: #000;
 }
+
+/* Media Queries for Mobile and Smaller Screens */
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: 280px 1fr; /* Filters + content */
+  }
+
+  .deck-stats-sidebar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columns for tablets */
+    gap: 10px; /* Slightly tighter */
+  }
+
+  #singleEventStats,
+  #multiEventStats {
+    width: 100%; /* Full width */
+  }
+
+  #playerStats.stats-container {
+    width: calc(100% - 280px - 30px); /* Adjust for filters and gap */
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 10px;
+    max-width: none;
+  }
+
+  canvas {
+    max-height: 350px; /* Taller charts for tablets */
+  }
+}
+@media (max-width: 768px) {
+
+  .dashboard {
+    grid-template-columns: 1fr; /* Stack everything */
+  }
+
+  .charts-and-tables {
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr)); /* 2 columns */
+    gap: 8px; /* Tighter spacing */
+  }
+
+  #playerStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); /* Smaller cards */
+    gap: 8px;
+  }
+
+  canvas {
+    max-height: 325px; /* Slightly smaller than tablets */
+  }
+
+  .chart-container {
+    padding: 15px; /* Reduced padding */
+  }
+
+  .filters {
+    padding: 15px; /* Slightly tighter */
+  }
+}
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .logo h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .mode-buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .top-mode-button {
+    flex: 0 1 auto;
+    min-width: 80px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 0 5px;
+  }
+
+  .stat-card {
+    padding: 6px;
+    min-width: 0;
+  }
+
+  .stat-title {
+    font-size: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-change {
+    font-size: 0.7rem;
+  }
+
+  #singleEventStats,
+  #multiEventStats,
+  #playerStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+
+  .data-table-container {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    font-size: 0.75rem;
+    table-layout: auto; /* Allow table to adjust based on content */
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 6px 4px; /* Reduce horizontal padding */
+    font-size: 0.7rem;
+    min-width: auto; /* Remove min-width restriction */
+    white-space: normal; /* Allow text wrapping */
+  }
+
+  .data-table th {
+    padding-right: 10px;
+  }
+
+  .sort-arrow {
+    font-size: 10px;
+  }
+
+  /* Section to hide columns */
+  /* 
+  .data-table td:nth-child(n+4),
+  .data-table th:nth-child(n+4) {
+    display: none;
+  }
+  */
+
+  .bubble-menu {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .bubble-button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+
+  canvas {
+    max-height: 250px;
+  }
+}
+@media (max-width: 375px) {
+  .container {
+    padding: 10px 5px; /* Reduce container padding */
+  }
+  
+  .logo h1 {
+    font-size: 1.4rem; /* Smaller header text */
+  }
+  
+  .logo span {
+    font-size: 0.8rem; /* Smaller subheader */
+  }
+  
+  .top-mode-button {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    min-width: auto; /* Remove min-width */
+  }
+  
+  /* Make tables fully responsive */
+  .data-table-container {
+    padding: 5px;
+    margin-top: 15px;
+  }
+  
+  .data-table {
+    width: 100%;
+    font-size: 0.7rem;
+  }
+  
+  .data-table th, 
+  .data-table td {
+    padding: 4px 2px; /* Very tight padding */
+    font-size: 0.65rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  /* Adjust column widths to prioritize important data */
+  .data-table th:first-child,
+  .data-table td:first-child {
+    max-width: 70px; /* Limit name column width */
+  }
+  
+  /* Ensure numeric columns take minimal space */
+  .data-table th:not(:first-child),
+  .data-table td:not(:first-child) {
+    width: auto;
+    min-width: 30px;
+    max-width: 50px;
+  }
+  
+  /* Adjust chart containers */
+  .chart-container {
+    padding: 10px 5px;
+    margin-bottom: 15px;
+  }
+  
+  .chart-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  /* Improve filter sections */
+  .filters {
+    padding: 10px;
+  }
+  
+  .filters h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .filter-section h4 {
+    font-size: 0.9rem;
+  }
+  
+  /* Bubble menu adjustments */
+  .bubble-menu.display-toggle {
+    gap: 3px;
+  }
+  
+  .bubble-button.display-toggle-btn {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+  }
+  
+  /* Custom legend for small screens */
+  .custom-legend ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .custom-legend li {
+    font-size: 0.7rem;
+  }
+  
+  /* About section adjustments */
+  #aboutSection {
+    padding: 10px;
+  }
+  
+  .about-content h2 {
+    font-size: 1.5em;
+  }
+  
+  .about-content p,
+  .about-content li {
+    font-size: 0.9em;
+  }
+}
+@media (max-width: 320px) {
+  /* Horizontal scrolling for tables */
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+  }
+  
+  .data-table {
+    /* Minimum column widths to ensure data visibility */
+    min-width: 300px; /* Ensure table is at least this wide */
+  }
+  
+  /* Visual indicator that table is scrollable */
+  .data-table-container::after {
+    content: "← Scroll →";
+    display: block;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 5px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  /* Adjust stats cards to fit smaller screens */
+  .stats-container {
+    margin: 0;
+    width: 100%;
+  }
+  
+  .stat-card {
+    margin-bottom: 5px;
+  }
+  
+  /* Very minimal filters */
+  .filters h3 {
+    font-size: 1rem;
+  }
+  
+  .filter-section {
+    margin-bottom: 10px;
+  }
+  
+  /* Smaller buttons */
+  .top-mode-button, 
+  .bubble-button {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+  }
+  
+  /* Header adjustments */
+  .logo h1 {
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+  
+  /* Smaller charts */
+  canvas {
+    max-height: 200px;
+  }
+}
+
