@@ -14878,7 +14878,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 1,
     "Player": "Francini roberto",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 13,
     "Losses": 2,
     "Win Rate": 0.8666666666666667
@@ -14911,7 +14911,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 4,
     "Player": "Dinarina mislav",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 10,
     "Losses": 2,
     "Win Rate": 0.8333333333333334
@@ -14922,7 +14922,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 5,
     "Player": "Spaggiari filippo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 10,
     "Losses": 2,
     "Win Rate": 0.8333333333333334
@@ -15010,7 +15010,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 13,
     "Player": "Priami leonardo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 9,
     "Losses": 3,
     "Win Rate": 0.75
@@ -15450,7 +15450,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 53,
     "Player": "Vinci vincenzo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 7,
     "Losses": 4,
     "Win Rate": 0.6363636363636364
@@ -15604,7 +15604,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 67,
     "Player": "Leone alessandro",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 7,
     "Losses": 5,
     "Win Rate": 0.5833333333333334
@@ -15648,7 +15648,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 71,
     "Player": "Zanotti igor",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 5,
     "Win Rate": 0.5454545454545454
@@ -15758,7 +15758,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 81,
     "Player": "Ruggiero andrea",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 6,
     "Win Rate": 0.45454545454545453
@@ -16154,7 +16154,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 117,
     "Player": "Bevilacqua gianluca",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Win Rate": 0.6666666666666666
@@ -16231,7 +16231,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 124,
     "Player": "Mingione nicola",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Win Rate": 0.5714285714285714
@@ -16737,7 +16737,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 170,
     "Player": "Di guida imma",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -16902,7 +16902,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 185,
     "Player": "Ansaldo paolo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Win Rate": 0.5714285714285714
@@ -16968,7 +16968,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 191,
     "Player": "Baldelli jonathan",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Win Rate": 0.5714285714285714
@@ -17067,7 +17067,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 200,
     "Player": "Franceschini andrea",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -17177,7 +17177,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 210,
     "Player": "Fava andrea",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -17232,7 +17232,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 215,
     "Player": "De francesco nicola",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -17265,7 +17265,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 218,
     "Player": "Simone monaldi simone",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Win Rate": 0.42857142857142855
@@ -17342,7 +17342,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 225,
     "Player": "De vivo roberto",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -17705,7 +17705,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 258,
     "Player": "Vivaldi lorenzo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -17815,7 +17815,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 268,
     "Player": "Fabbri federico",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 2,
     "Win Rate": 0.5
@@ -17837,7 +17837,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 270,
     "Player": "Petoshati orland",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Win Rate": 0.42857142857142855
@@ -17870,7 +17870,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 273,
     "Player": "Mannella stefano",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Win Rate": 0.5
@@ -18046,7 +18046,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 289,
     "Player": "Bassetto matteo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Win Rate": 0.42857142857142855
@@ -18332,7 +18332,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 315,
     "Player": "Teneggi alessandro",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 3,
     "Win Rate": 0.4
@@ -18420,7 +18420,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 323,
     "Player": "Monticelli tommaso",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 3,
     "Win Rate": 0.4
@@ -18695,7 +18695,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 348,
     "Player": "Gonnelli simone",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 5,
     "Win Rate": 0.2857142857142857
@@ -18992,7 +18992,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 375,
     "Player": "Bonilauri augusto",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Win Rate": 0.3333333333333333
@@ -19047,7 +19047,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 380,
     "Player": "Battilani francesco",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
     "Win Rate": 0.25
@@ -19454,7 +19454,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 417,
     "Player": "Paglino mattia",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 5,
     "Win Rate": 0.16666666666666666
@@ -19630,7 +19630,7 @@ export const cleanedData = [
     "Event": "Paupergeddon Pisa",
     "Rank": 433,
     "Player": "Sborgia lorenzo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
     "Win Rate": 0
@@ -20036,7 +20036,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-01)",
     "Rank": 13,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 2,
@@ -20366,7 +20366,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-01)",
     "Rank": 43,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 5,
@@ -20436,7 +20436,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20447,7 +20447,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20458,7 +20458,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20469,7 +20469,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20480,7 +20480,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20491,7 +20491,7 @@ export const cleanedData = [
     "Deck": "Mono Black Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20502,7 +20502,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-01",
@@ -20513,7 +20513,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -20686,7 +20686,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-01)",
     "Rank": 16,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -20696,7 +20696,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-01)",
     "Rank": 17,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Jeskai Ephemerate",
     "Wins": 4,
     "Losses": 2,
@@ -20752,7 +20752,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-01)",
     "Rank": 22,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -20917,7 +20917,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-01)",
     "Rank": 37,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -21016,7 +21016,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-01)",
     "Rank": 46,
     "Player": "Isacconoli",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
     "Winrate": 0.25
@@ -21041,7 +21041,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -21052,7 +21052,7 @@ export const cleanedData = [
     "Deck": "Mono Red Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -21063,7 +21063,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -21074,7 +21074,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -21085,7 +21085,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-01",
@@ -21096,7 +21096,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21580,7 +21580,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21668,7 +21668,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21679,7 +21679,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21690,7 +21690,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21701,7 +21701,7 @@ export const cleanedData = [
     "Deck": "Azorius Tribe",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21712,7 +21712,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21723,7 +21723,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21734,7 +21734,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-01",
@@ -21745,7 +21745,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -21785,7 +21785,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-01)",
     "Rank": 4,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 6,
     "Losses": 2,
@@ -22060,7 +22060,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-01)",
     "Rank": 29,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -22251,7 +22251,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -22295,7 +22295,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -22306,7 +22306,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -22317,7 +22317,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -22328,7 +22328,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-01",
@@ -22339,7 +22339,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22834,7 +22834,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22900,7 +22900,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22911,7 +22911,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22922,7 +22922,7 @@ export const cleanedData = [
     "Deck": "Boros Bully",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22933,7 +22933,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-10",
@@ -22944,7 +22944,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-10",
@@ -23050,7 +23050,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-10)",
     "Rank": 10,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 2,
@@ -23105,7 +23105,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-10)",
     "Rank": 15,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Orzhov Blade",
     "Wins": 3,
     "Losses": 3,
@@ -23127,7 +23127,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-10)",
     "Rank": 17,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Azorius Familiars",
     "Wins": 3,
     "Losses": 3,
@@ -23171,7 +23171,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-10)",
     "Rank": 21,
-    "Player": "Keepany7vsyou",
+    "Player": "Keepany7Vsyou",
     "Deck": "Dimir Terror",
     "Wins": 3,
     "Losses": 3,
@@ -23384,7 +23384,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-10",
@@ -23395,7 +23395,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-10",
@@ -23406,7 +23406,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -23622,7 +23622,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-10)",
     "Rank": 20,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 2,
@@ -23677,7 +23677,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-10)",
     "Rank": 25,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 3,
@@ -23890,7 +23890,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -23967,7 +23967,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -23978,29 +23978,29 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-10)",
     "Rank": 53,
-    "Player": "Dr1nkwat3r",
+    "Player": "Dr1Nkwat3R",
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-10)",
     "Rank": 54,
-    "Player": "Fried-liver-attack",
+    "Player": "Fried-Liver-Attack",
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -24011,7 +24011,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -24022,18 +24022,18 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-10)",
     "Rank": 57,
-    "Player": "Dr4ken",
+    "Player": "Dr4Ken",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-10",
@@ -24044,7 +24044,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24546,7 +24546,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-11)",
     "Rank": 46,
-    "Player": "Fr0st3d",
+    "Player": "Fr0St3D",
     "Deck": "Izzet Control",
     "Wins": 2,
     "Losses": 3,
@@ -24557,7 +24557,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-11)",
     "Rank": 47,
-    "Player": "Ravager.pe",
+    "Player": "Ravager.Pe",
     "Deck": "Orzhov Blade",
     "Wins": 2,
     "Losses": 4,
@@ -24726,18 +24726,18 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-11)",
     "Rank": 63,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Altar Tron",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24748,7 +24748,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24759,7 +24759,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24770,7 +24770,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24781,7 +24781,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-11",
@@ -24792,7 +24792,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-11",
@@ -24876,7 +24876,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-11)",
     "Rank": 8,
-    "Player": "Pr0boszcz",
+    "Player": "Pr0Boszcz",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 3,
@@ -24932,7 +24932,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-11)",
     "Rank": 13,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -24986,7 +24986,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-11)",
     "Rank": 18,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -25298,7 +25298,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-11",
@@ -25309,7 +25309,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25393,7 +25393,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-11)",
     "Rank": 8,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
@@ -25459,7 +25459,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-11)",
     "Rank": 14,
-    "Player": "Jade-venus",
+    "Player": "Jade-Venus",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
@@ -25694,7 +25694,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25705,7 +25705,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25760,7 +25760,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25771,7 +25771,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25782,7 +25782,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25793,7 +25793,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25804,7 +25804,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25815,7 +25815,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25826,7 +25826,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-11",
@@ -25837,7 +25837,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-12",
@@ -25954,7 +25954,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 11,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 4,
     "Losses": 2,
@@ -26032,7 +26032,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 18,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -26075,7 +26075,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 22,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Golgari Gardens",
     "Wins": 3,
     "Losses": 3,
@@ -26241,7 +26241,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 37,
     "Player": "Msskinbolic",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -26306,7 +26306,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 43,
-    "Player": "S8shock",
+    "Player": "S8Shock",
     "Deck": "Azorius Familiars",
     "Wins": 1,
     "Losses": 3,
@@ -26354,7 +26354,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-12",
@@ -26376,18 +26376,18 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-12",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-12)",
     "Rank": 50,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Ashnod's Altar Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-12",
@@ -26398,7 +26398,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-12",
@@ -26409,7 +26409,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-12",
@@ -26420,14 +26420,14 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-07-12",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-12)",
     "Rank": 2,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Orzhov Blade",
     "Wins": 7,
     "Losses": 2,
@@ -26691,7 +26691,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-12)",
     "Rank": 26,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -26768,7 +26768,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-12)",
     "Rank": 33,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Broodscale Combo",
     "Wins": 2,
     "Losses": 4,
@@ -26882,7 +26882,7 @@ export const cleanedData = [
     "Deck": "Dimir Ninja Affinity",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-12",
@@ -26926,7 +26926,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-12",
@@ -26937,7 +26937,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-12",
@@ -26948,7 +26948,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-12",
@@ -26959,7 +26959,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-12",
@@ -27066,7 +27066,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-12)",
     "Rank": 10,
     "Player": "Twister66",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -27494,7 +27494,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-12)",
     "Rank": 49,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 2,
     "Losses": 5,
@@ -27637,7 +27637,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-12)",
     "Rank": 62,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 2,
@@ -27696,7 +27696,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-12",
@@ -27707,7 +27707,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 7,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28114,7 +28114,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28125,7 +28125,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28136,7 +28136,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28147,7 +28147,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28158,7 +28158,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
@@ -28169,12 +28169,12 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 1,
     "Player": "Discovern",
     "Deck": "Mono Blue Terror",
@@ -28185,7 +28185,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 2,
     "Player": "Vonschwarz8",
     "Deck": "Dimir Terror",
@@ -28196,7 +28196,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 3,
     "Player": "Apas72",
     "Deck": "Walls Combo",
@@ -28207,7 +28207,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 4,
     "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
@@ -28218,7 +28218,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 5,
     "Player": "Seasonofmists",
     "Deck": "Jund Broodscale",
@@ -28229,7 +28229,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 6,
     "Player": "Darius89",
     "Deck": "Jund Broodscale",
@@ -28240,7 +28240,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 7,
     "Player": "Lostonkato",
     "Deck": "Rakdos Madness",
@@ -28251,7 +28251,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 8,
     "Player": "Mahers",
     "Deck": "Red Kuldotha",
@@ -28262,7 +28262,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 9,
     "Player": "Barff",
     "Deck": "Dimir Control",
@@ -28273,7 +28273,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 10,
     "Player": "Tulio_Jaudy",
     "Deck": "Cawgates",
@@ -28284,7 +28284,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 11,
     "Player": "Samalama",
     "Deck": "Red Kuldotha",
@@ -28295,7 +28295,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 12,
     "Player": "Gartuyzz",
     "Deck": "Grixis Affinity",
@@ -28306,7 +28306,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 13,
     "Player": "John1111",
     "Deck": "Turbofog",
@@ -28317,7 +28317,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 14,
     "Player": "O_Danielakos",
     "Deck": "Dimir Terror",
@@ -28328,7 +28328,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 15,
     "Player": "Tunaktunak",
     "Deck": "Grixis Affinity",
@@ -28339,7 +28339,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 16,
     "Player": "Al_Bertor",
     "Deck": "Dimir Fae",
@@ -28350,7 +28350,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 17,
     "Player": "Wcl",
     "Deck": "Red Kuldotha",
@@ -28361,7 +28361,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 18,
     "Player": "Cornetto",
     "Deck": "Golgari Broodscale",
@@ -28372,7 +28372,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 19,
     "Player": "Brivenix",
     "Deck": "Dimir Fae",
@@ -28383,7 +28383,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 20,
     "Player": "Kefwyn",
     "Deck": "Dimir Fae",
@@ -28394,7 +28394,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 21,
     "Player": "__Noob__",
     "Deck": "Golgari Gardens",
@@ -28405,7 +28405,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 22,
     "Player": "Beicodegeia",
     "Deck": "Red Kuldotha",
@@ -28416,7 +28416,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 23,
     "Player": "Nicknorman",
     "Deck": "Turbofog",
@@ -28427,7 +28427,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 24,
     "Player": "Eccelleente",
     "Deck": "Gruul Eldrazi Stompy",
@@ -28438,7 +28438,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 25,
     "Player": "Mcwinsauce",
     "Deck": "Gruul Eldrazi Stompy",
@@ -28449,7 +28449,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 26,
     "Player": "Mafs",
     "Deck": "Red Kuldotha",
@@ -28460,7 +28460,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 27,
     "Player": "Amanatease",
     "Deck": "Grixis Affinity",
@@ -28471,7 +28471,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 28,
     "Player": "Jwaves",
     "Deck": "White Weenie",
@@ -28482,7 +28482,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 29,
     "Player": "Nmt_Sco94",
     "Deck": "White Weenie",
@@ -28493,7 +28493,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 30,
     "Player": "Varo",
     "Deck": "Grixis Affinity",
@@ -28504,7 +28504,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 31,
     "Player": "Barczek",
     "Deck": "Red Kuldotha",
@@ -28515,7 +28515,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 32,
     "Player": "Terminus0",
     "Deck": "Walls Combo",
@@ -28526,9 +28526,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 33,
-    "Player": "Dr4ken",
+    "Player": "Dr4Ken",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 5,
     "Losses": 3,
@@ -28537,7 +28537,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 34,
     "Player": "Carvs",
     "Deck": "Mono Blue Terror",
@@ -28548,7 +28548,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 35,
     "Player": "Frankgc98",
     "Deck": "Red Kuldotha",
@@ -28559,7 +28559,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 36,
     "Player": "Heliolima",
     "Deck": "Grixis Affinity",
@@ -28570,7 +28570,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 37,
     "Player": "336767322971",
     "Deck": "Golgari Broodscale",
@@ -28581,7 +28581,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 38,
     "Player": "Manjyui",
     "Deck": "White Weenie",
@@ -28592,7 +28592,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 39,
     "Player": "Purgatory_01",
     "Deck": "Dimir Terror",
@@ -28603,7 +28603,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 40,
     "Player": "Morphiling",
     "Deck": "Red Kuldotha",
@@ -28614,7 +28614,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 41,
     "Player": "Cooperthered",
     "Deck": "Jund Wildfire",
@@ -28625,7 +28625,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 42,
     "Player": "Countertopgarchomp",
     "Deck": "Jund Broodscale",
@@ -28636,7 +28636,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 43,
     "Player": "Hdg_Borise",
     "Deck": "Red Kuldotha",
@@ -28647,7 +28647,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 44,
     "Player": "Luminati",
     "Deck": "Mono Blue Terror",
@@ -28658,7 +28658,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 45,
     "Player": "Burnmann",
     "Deck": "White Weenie",
@@ -28669,7 +28669,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 46,
     "Player": "Loerien",
     "Deck": "Golgari Broodscale",
@@ -28680,7 +28680,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 47,
     "Player": "Sapoa",
     "Deck": "Rakdos Madness",
@@ -28691,9 +28691,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 48,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Golgari Gardens",
     "Wins": 5,
     "Losses": 3,
@@ -28702,7 +28702,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 49,
     "Player": "Lovecrayons",
     "Deck": "Red Kuldotha",
@@ -28713,7 +28713,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 50,
     "Player": "Carrot_Eater",
     "Deck": "Izzet Control",
@@ -28724,7 +28724,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 51,
     "Player": "Rgrzywocz",
     "Deck": "Turbofog",
@@ -28735,7 +28735,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 52,
     "Player": "Crazyleg",
     "Deck": "Hexproof",
@@ -28746,7 +28746,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 53,
     "Player": "Feitosa_",
     "Deck": "Red Kuldotha",
@@ -28757,7 +28757,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 54,
     "Player": "Bong0411",
     "Deck": "Red Kuldotha",
@@ -28768,7 +28768,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 55,
     "Player": "Lillhalonen",
     "Deck": "Hexproof",
@@ -28779,7 +28779,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 56,
     "Player": "Blvcky",
     "Deck": "Izzet Control",
@@ -28790,7 +28790,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 57,
     "Player": "Fives",
     "Deck": "White Weenie",
@@ -28801,7 +28801,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 58,
     "Player": "Lasvegaschaos",
     "Deck": "Hexproof",
@@ -28812,7 +28812,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 59,
     "Player": "Arkam",
     "Deck": "Orzhov Blade",
@@ -28823,7 +28823,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 60,
     "Player": "Payasito",
     "Deck": "1 Land Spy",
@@ -28834,7 +28834,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 61,
     "Player": "Ziofrancone",
     "Deck": "Grixis Affinity",
@@ -28845,7 +28845,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 62,
     "Player": "Tiagofuguete",
     "Deck": "Grixis Affinity",
@@ -28856,7 +28856,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 63,
     "Player": "Vini_Torres",
     "Deck": "Grixis Affinity",
@@ -28867,7 +28867,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 64,
     "Player": "Cranman69",
     "Deck": "Gruul Eldrazi Stompy",
@@ -28878,7 +28878,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 65,
     "Player": "Carlinhoss",
     "Deck": "Jund Broodscale",
@@ -28889,7 +28889,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 66,
     "Player": "Thiguyagain365164",
     "Deck": "Grixis Affinity",
@@ -28900,7 +28900,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 67,
     "Player": "Guii_Machado",
     "Deck": "Red Kuldotha",
@@ -28911,7 +28911,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 68,
     "Player": "Kidrenan",
     "Deck": "Gruul Eldrazi Stompy",
@@ -28922,7 +28922,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 69,
     "Player": "Pinolo_Cosmico",
     "Deck": "Jund Broodscale",
@@ -28933,7 +28933,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 70,
     "Player": "Cabezadebolo",
     "Deck": "Red Kuldotha",
@@ -28944,9 +28944,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 71,
-    "Player": "Ti0patinhas",
+    "Player": "Ti0Patinhas",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 4,
@@ -28955,7 +28955,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 72,
     "Player": "Mistakenn",
     "Deck": "Gruul Land Destruction",
@@ -28966,7 +28966,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 73,
     "Player": "Backoff",
     "Deck": "Red Kuldotha",
@@ -28977,7 +28977,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 74,
     "Player": "Sisifo94",
     "Deck": "Jund Broodscale",
@@ -28988,7 +28988,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 75,
     "Player": "Dududenunu",
     "Deck": "Red Kuldotha",
@@ -28999,7 +28999,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 76,
     "Player": "_Falcon_",
     "Deck": "Dimir Control",
@@ -29010,7 +29010,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 77,
     "Player": "Crazymorango",
     "Deck": "Jund Broodscale",
@@ -29021,7 +29021,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 78,
     "Player": "Alakhai",
     "Deck": "Red Kuldotha",
@@ -29032,7 +29032,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 79,
     "Player": "Pedrastone",
     "Deck": "Grixis Affinity",
@@ -29043,7 +29043,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 80,
     "Player": "Nattazan79",
     "Deck": "Hexproof",
@@ -29054,7 +29054,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 81,
     "Player": "Hype12232",
     "Deck": "Golgari Broodscale",
@@ -29065,7 +29065,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 82,
     "Player": "Mtgmoneymaker",
     "Deck": "Cycle Storm",
@@ -29076,7 +29076,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 83,
     "Player": "Alscec",
     "Deck": "Golgari Gardens",
@@ -29087,7 +29087,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 84,
     "Player": "Selfeisek",
     "Deck": "Red Kuldotha",
@@ -29098,7 +29098,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 85,
     "Player": "Drvendigo",
     "Deck": "Hexproof",
@@ -29109,7 +29109,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 86,
     "Player": "Gn42",
     "Deck": "Azorius Familiars",
@@ -29120,7 +29120,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 87,
     "Player": "Borbs",
     "Deck": "Azorius Familiars",
@@ -29131,7 +29131,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 88,
     "Player": "Yuxiaoyu",
     "Deck": "Grixis Affinity",
@@ -29142,7 +29142,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 89,
     "Player": "Grimlavamancer103",
     "Deck": "Red Kuldotha",
@@ -29153,7 +29153,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 90,
     "Player": "Lollopollo2001",
     "Deck": "Red Kuldotha",
@@ -29164,9 +29164,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 91,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Azorius Familiars",
     "Wins": 3,
     "Losses": 4,
@@ -29175,7 +29175,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 92,
     "Player": "Lepap",
     "Deck": "Dimir Terror",
@@ -29186,7 +29186,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 93,
     "Player": "Gbizzo",
     "Deck": "Red Kuldotha",
@@ -29197,7 +29197,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 94,
     "Player": "Muka33",
     "Deck": "Mono Blue Terror",
@@ -29208,7 +29208,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 95,
     "Player": "Gaffiere1903",
     "Deck": "Gruul Eldrazi Stompy",
@@ -29219,7 +29219,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 96,
     "Player": "Yszzz",
     "Deck": "Dimir Terror",
@@ -29230,7 +29230,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 97,
     "Player": "Luquettechq",
     "Deck": "Grixis Affinity",
@@ -29241,9 +29241,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 98,
-    "Player": "Cryomanc3r",
+    "Player": "Cryomanc3R",
     "Deck": "White Weenie",
     "Wins": 3,
     "Losses": 4,
@@ -29252,7 +29252,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 99,
     "Player": "Kanister",
     "Deck": "Rakdos Madness",
@@ -29263,9 +29263,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 100,
-    "Player": "Jade-venus",
+    "Player": "Jade-Venus",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
@@ -29274,7 +29274,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 101,
     "Player": "Outzeroo",
     "Deck": "Dimir Terror",
@@ -29285,7 +29285,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 102,
     "Player": "Roter_Erzengel",
     "Deck": "Azorius Familiars",
@@ -29296,7 +29296,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 103,
     "Player": "Maribves",
     "Deck": "Red Kuldotha",
@@ -29307,7 +29307,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 104,
     "Player": "Tspjendrek",
     "Deck": "Izzet Control",
@@ -29318,7 +29318,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 105,
     "Player": "Mtgesus",
     "Deck": "Grixis Affinity",
@@ -29329,7 +29329,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 106,
     "Player": "Klien7",
     "Deck": "Red Kuldotha",
@@ -29340,7 +29340,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 107,
     "Player": "Mah_Alves",
     "Deck": "Jund Broodscale",
@@ -29351,7 +29351,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 108,
     "Player": "Fermtg",
     "Deck": "Dimir Terror",
@@ -29362,7 +29362,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 109,
     "Player": "Glam_",
     "Deck": "Red Kuldotha",
@@ -29373,7 +29373,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 110,
     "Player": "Pavesito",
     "Deck": "Red Kuldotha",
@@ -29384,7 +29384,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 111,
     "Player": "Themelkman",
     "Deck": "Hexproof",
@@ -29395,9 +29395,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 112,
-    "Player": "3vildr4k3",
+    "Player": "3Vildr4K3",
     "Deck": "Jund Broodscale",
     "Wins": 2,
     "Losses": 3,
@@ -29406,7 +29406,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 113,
     "Player": "Darthkid",
     "Deck": "Dimir Terror",
@@ -29417,7 +29417,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 114,
     "Player": "Moniz0801",
     "Deck": "Elves",
@@ -29428,7 +29428,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 115,
     "Player": "Maccaciock",
     "Deck": "Jund Broodscale",
@@ -29439,7 +29439,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 116,
     "Player": "Othavirium",
     "Deck": "Golgari Broodscale",
@@ -29450,7 +29450,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 117,
     "Player": "Magicmam00",
     "Deck": "Grixis Affinity",
@@ -29461,7 +29461,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 118,
     "Player": "Ehdm",
     "Deck": "Grixis Affinity",
@@ -29472,9 +29472,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 119,
-    "Player": "Fried-liver-attack",
+    "Player": "Fried-Liver-Attack",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 2,
     "Losses": 2,
@@ -29483,7 +29483,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 120,
     "Player": "Tyerube1618",
     "Deck": "Cycle Storm",
@@ -29494,7 +29494,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 121,
     "Player": "_Batutinha_",
     "Deck": "Jund Broodscale",
@@ -29505,7 +29505,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 122,
     "Player": "Jace_Mtg",
     "Deck": "Golgari Gardens",
@@ -29516,7 +29516,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 123,
     "Player": "Supercow12653",
     "Deck": "Dimir Terror",
@@ -29527,7 +29527,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 124,
     "Player": "Gazmon48",
     "Deck": "Red Kuldotha",
@@ -29538,7 +29538,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 125,
     "Player": "Franzisco23195",
     "Deck": "Red Kuldotha",
@@ -29549,7 +29549,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 126,
     "Player": "Kaikas",
     "Deck": "Grixis Affinity",
@@ -29560,7 +29560,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 127,
     "Player": "Ritualsinkhole",
     "Deck": "Turbofog",
@@ -29571,7 +29571,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 128,
     "Player": "Rubensnetto",
     "Deck": "Jund Broodscale",
@@ -29582,7 +29582,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 129,
     "Player": "Prague",
     "Deck": "Dimir Terror",
@@ -29593,7 +29593,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 130,
     "Player": "Saviall",
     "Deck": "Izzet Control",
@@ -29604,7 +29604,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 131,
     "Player": "Drnastyog",
     "Deck": "Elves",
@@ -29615,9 +29615,9 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 132,
-    "Player": "416frowningtable",
+    "Player": "416Frowningtable",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
@@ -29626,7 +29626,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 133,
     "Player": "Gregoriusil",
     "Deck": "Azorius Familiars",
@@ -29637,7 +29637,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 134,
     "Player": "Bunbuneru",
     "Deck": "Hexproof",
@@ -29648,7 +29648,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 135,
     "Player": "Bless_Von",
     "Deck": "Gruul Eldrazi Stompy",
@@ -29659,7 +29659,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 136,
     "Player": "_Rogusbr_",
     "Deck": "Dimir Control",
@@ -29670,7 +29670,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 137,
     "Player": "Tiokadu",
     "Deck": "Simic Infect",
@@ -29681,7 +29681,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 138,
     "Player": "Selkcahs",
     "Deck": "Dimir Control",
@@ -29692,7 +29692,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 139,
     "Player": "Hampuse1",
     "Deck": "Hexproof",
@@ -29703,7 +29703,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 140,
     "Player": "Chaoticmtg",
     "Deck": "Jeskai Ephemerate",
@@ -29714,7 +29714,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 141,
     "Player": "Dalminho",
     "Deck": "Red Kuldotha",
@@ -29725,7 +29725,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 142,
     "Player": "Natalino_91",
     "Deck": "Red Kuldotha",
@@ -29736,7 +29736,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 143,
     "Player": "Ganjadejanga",
     "Deck": "Elves",
@@ -29747,7 +29747,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 144,
     "Player": "Berga_",
     "Deck": "Jund Broodscale",
@@ -29758,7 +29758,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 145,
     "Player": "Lauri_Protour",
     "Deck": "Red Kuldotha",
@@ -29769,7 +29769,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 146,
     "Player": "Ironbeagle",
     "Deck": "Rakdos Madness",
@@ -29780,7 +29780,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 147,
     "Player": "Boom_Bust",
     "Deck": "Red Kuldotha",
@@ -29791,7 +29791,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 148,
     "Player": "Dskbaywolf",
     "Deck": "Red Kuldotha",
@@ -29802,7 +29802,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 149,
     "Player": "Capitano_Cl",
     "Deck": "Grixis Affinity",
@@ -29813,7 +29813,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 150,
     "Player": "Boin",
     "Deck": "Red Kuldotha",
@@ -29824,7 +29824,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 151,
     "Player": "A_Adeptoterra",
     "Deck": "Gruul Eldrazi Stompy",
@@ -29835,7 +29835,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 152,
     "Player": "Truehero",
     "Deck": "Jund Broodscale",
@@ -29846,7 +29846,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 153,
     "Player": "Manalacaio",
     "Deck": "Burn",
@@ -29857,7 +29857,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 154,
     "Player": "Bezerra_Da_Silva",
     "Deck": "Gruul Eldrazi Stompy",
@@ -29868,7 +29868,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 155,
     "Player": "Bcs8995",
     "Deck": "Dimir Terror",
@@ -29879,7 +29879,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 156,
     "Player": "Misstrigger",
     "Deck": "Red Kuldotha",
@@ -29890,7 +29890,7 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 157,
     "Player": "Alessandropiraccini",
     "Deck": "Jund Broodscale",
@@ -29901,453 +29901,453 @@ export const cleanedData = [
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 158,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 159,
     "Player": "Nictophobia",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 160,
     "Player": "Dudarudi",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 161,
     "Player": "Medvedev",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 162,
     "Player": "Brasatore",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 163,
     "Player": "Elkvinci",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 164,
     "Player": "Tonyscapone",
     "Deck": "Gruul Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 165,
     "Player": "Clamego",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 166,
     "Player": "Comrade1312",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 167,
     "Player": "Rinazina",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 168,
     "Player": "Czacza",
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 169,
     "Player": "Capoeira02",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 170,
     "Player": "Demonictutors",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 171,
     "Player": "Xdaddy",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 172,
     "Player": "Primoshow1",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 173,
     "Player": "Alienware_",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 174,
     "Player": "Gobern",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 175,
     "Player": "Mistertwin",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 176,
     "Player": "Qu4",
     "Deck": "Goblins",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 177,
     "Player": "Ale_Mtg",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 178,
     "Player": "Walker735",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 179,
     "Player": "Jarvis_Me",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 180,
     "Player": "Macksmith",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 181,
     "Player": "Iab_Magic",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 182,
     "Player": "Simoneromarm",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 183,
     "Player": "Duki_Mtg",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 184,
     "Player": "Youngfire17",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 185,
     "Player": "Pepeteam",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 186,
     "Player": "Jbl2311",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 187,
     "Player": "Ixidor29",
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 188,
     "Player": "Jordanescu",
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 189,
     "Player": "Dreddybajs",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 190,
     "Player": "White_Tsar",
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 191,
     "Player": "Misplacedginger",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 192,
     "Player": "Elgaiteiro",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 193,
     "Player": "Karatedom",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 194,
-    "Player": "Walshi41ife",
+    "Player": "Walshi41Ife",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 195,
     "Player": "Mentalmisstep",
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 196,
-    "Player": "_J0se_",
+    "Player": "_J0Se_",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 197,
     "Player": "Pavelval",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-12",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-10-12)",
+    "Event": "MTGO Qualifier (2024-10-12)",
     "Rank": 198,
     "Player": "Oliverjuqs",
     "Deck": "Izzet Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30358,7 +30358,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-04-13",
@@ -30564,7 +30564,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-13)",
     "Rank": 20,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -30695,7 +30695,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-13)",
     "Rank": 32,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 3,
     "Losses": 3,
@@ -30809,7 +30809,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30886,7 +30886,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30897,7 +30897,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30908,7 +30908,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30919,7 +30919,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30930,7 +30930,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30941,7 +30941,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-13",
@@ -30952,7 +30952,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31223,7 +31223,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-13)",
     "Rank": 25,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Gardens",
     "Wins": 3,
     "Losses": 3,
@@ -31359,7 +31359,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31370,7 +31370,7 @@ export const cleanedData = [
     "Deck": "En-Kor Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31381,7 +31381,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31392,7 +31392,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31403,7 +31403,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31414,7 +31414,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-13",
@@ -31425,7 +31425,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -31436,7 +31436,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-07-13",
@@ -31784,7 +31784,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-13)",
     "Rank": 33,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -31861,7 +31861,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-13)",
     "Rank": 40,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Orzhov Blade",
     "Wins": 1,
     "Losses": 4,
@@ -31953,7 +31953,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -31964,7 +31964,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -31975,7 +31975,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -31986,7 +31986,7 @@ export const cleanedData = [
     "Deck": "Boros Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -31997,7 +31997,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32008,7 +32008,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32019,7 +32019,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32030,7 +32030,7 @@ export const cleanedData = [
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32041,7 +32041,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32052,7 +32052,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-13",
@@ -32063,7 +32063,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32202,7 +32202,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-13)",
     "Rank": 13,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Terror",
     "Wins": 4,
     "Losses": 2,
@@ -32312,7 +32312,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-13)",
     "Rank": 23,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -32334,7 +32334,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-13)",
     "Rank": 25,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -32356,7 +32356,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-13)",
     "Rank": 27,
-    "Player": "Ti0patinhas",
+    "Player": "Ti0Patinhas",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -32367,7 +32367,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-13)",
     "Rank": 28,
-    "Player": "Yurgen.ru",
+    "Player": "Yurgen.Ru",
     "Deck": "Izzet Fae",
     "Wins": 3,
     "Losses": 3,
@@ -32646,7 +32646,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32657,7 +32657,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32668,7 +32668,7 @@ export const cleanedData = [
     "Deck": "1 Land Spy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32679,7 +32679,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32690,7 +32690,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32701,7 +32701,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32712,7 +32712,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32723,7 +32723,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32734,7 +32734,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32745,7 +32745,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32756,7 +32756,7 @@ export const cleanedData = [
     "Deck": "Gruul Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-13",
@@ -32767,7 +32767,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33093,7 +33093,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-13)",
     "Rank": 30,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 3,
@@ -33317,7 +33317,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33328,7 +33328,7 @@ export const cleanedData = [
     "Deck": "Izzet Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33339,7 +33339,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33350,7 +33350,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33361,7 +33361,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33372,7 +33372,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-13",
@@ -33383,7 +33383,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33391,7 +33391,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 1,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 7,
     "Losses": 2,
     "Winrate": 0.7777777778
@@ -33413,7 +33413,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 3,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -33841,7 +33841,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 42,
-    "Player": "Temur4life",
+    "Player": "Temur4Life",
     "Deck": "Fog Tron",
     "Wins": 1,
     "Losses": 3,
@@ -33867,7 +33867,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33878,7 +33878,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33889,7 +33889,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33900,7 +33900,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33911,7 +33911,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33922,7 +33922,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -33933,7 +33933,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34083,8 +34083,8 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 14,
-    "Player": "Bullz0eye",
-    "Deck": "Affinity",
+    "Player": "Bullz0Eye",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -34523,7 +34523,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 54,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
@@ -34645,7 +34645,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 65,
     "Player": "Bokyfloky",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
     "Winrate": 0.25
@@ -34670,7 +34670,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34700,10 +34700,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-14)",
     "Rank": 70,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34714,7 +34714,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34725,7 +34725,7 @@ export const cleanedData = [
     "Deck": "Grixis Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34736,7 +34736,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34747,7 +34747,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-14",
@@ -34758,7 +34758,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -34853,7 +34853,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-14)",
     "Rank": 9,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
@@ -35154,7 +35154,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -35209,7 +35209,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -35220,7 +35220,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -35231,7 +35231,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -35242,7 +35242,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-14",
@@ -35253,7 +35253,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35315,7 +35315,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-14)",
     "Rank": 6,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Mono White Heroic",
     "Wins": 4,
     "Losses": 2,
@@ -35326,7 +35326,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-14)",
     "Rank": 7,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 5,
     "Losses": 2,
@@ -35513,7 +35513,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-14)",
     "Rank": 24,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 3,
     "Losses": 3,
@@ -35645,7 +35645,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-14)",
     "Rank": 36,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Rakdos Madness",
     "Wins": 3,
     "Losses": 3,
@@ -35836,7 +35836,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35847,7 +35847,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35858,7 +35858,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35869,7 +35869,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35880,7 +35880,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35891,7 +35891,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35902,7 +35902,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35913,7 +35913,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-14",
@@ -35924,7 +35924,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36452,7 +36452,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36463,7 +36463,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36474,7 +36474,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36485,7 +36485,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36496,7 +36496,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36507,7 +36507,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36518,7 +36518,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36529,7 +36529,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-14",
@@ -36540,7 +36540,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -36624,7 +36624,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-15)",
     "Rank": 8,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 3,
@@ -36947,7 +36947,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -36991,7 +36991,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -37002,7 +37002,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -37013,7 +37013,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -37024,7 +37024,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-15",
@@ -37035,7 +37035,7 @@ export const cleanedData = [
     "Deck": "Mono Black Aristocrats",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37519,7 +37519,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37552,7 +37552,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37563,7 +37563,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37574,7 +37574,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37585,7 +37585,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37596,7 +37596,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-15",
@@ -37607,7 +37607,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -37713,7 +37713,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-15)",
     "Rank": 10,
-    "Player": "Izzy-wilde",
+    "Player": "Izzy-Wilde",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
@@ -37779,7 +37779,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-15)",
     "Rank": 16,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -37977,7 +37977,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-15)",
     "Rank": 34,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 3,
@@ -38003,7 +38003,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -38047,7 +38047,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -38058,7 +38058,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -38069,7 +38069,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -38080,7 +38080,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
@@ -38091,29 +38091,29 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-15)",
     "Rank": 45,
-    "Player": "_J0se_",
+    "Player": "_J0Se_",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-15)",
     "Rank": 46,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38571,7 +38571,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-15)",
     "Rank": 42,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
@@ -38619,7 +38619,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38648,7 +38648,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-15)",
     "Rank": 49,
-    "Player": "Ravager.pe",
+    "Player": "Ravager.Pe",
     "Deck": "Orzhov Blade",
     "Wins": 1,
     "Losses": 4,
@@ -38659,7 +38659,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-15)",
     "Rank": 50,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Dimir Control",
     "Wins": 1,
     "Losses": 2,
@@ -38696,7 +38696,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38707,18 +38707,18 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-15)",
     "Rank": 55,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38729,7 +38729,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38740,7 +38740,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38751,7 +38751,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-15",
@@ -38762,7 +38762,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -38773,7 +38773,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 8,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-08-16",
@@ -39165,7 +39165,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-16)",
     "Rank": 37,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -39253,7 +39253,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-16)",
     "Rank": 45,
-    "Player": "Nmt-lacontea",
+    "Player": "Nmt-Lacontea",
     "Deck": "Mardu Ephemerate",
     "Wins": 1,
     "Losses": 2,
@@ -39290,7 +39290,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39345,7 +39345,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39356,7 +39356,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39367,7 +39367,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39378,7 +39378,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39389,18 +39389,18 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-16)",
     "Rank": 58,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39411,7 +39411,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39422,7 +39422,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-16",
@@ -39433,7 +39433,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-16",
@@ -39957,7 +39957,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-16)",
     "Rank": 48,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 2,
     "Losses": 3,
@@ -40034,7 +40034,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-16)",
     "Rank": 55,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Orzhov Blade",
     "Wins": 1,
     "Losses": 3,
@@ -40126,7 +40126,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-16",
@@ -40137,7 +40137,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-16",
@@ -40148,7 +40148,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-16",
@@ -40159,7 +40159,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-16",
@@ -40265,7 +40265,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-16)",
     "Rank": 10,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Azorius Glitters",
     "Wins": 4,
     "Losses": 2,
@@ -40299,7 +40299,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-16)",
     "Rank": 13,
     "Player": "O_Danielakos",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -40632,7 +40632,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-16",
@@ -40643,7 +40643,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-16",
@@ -40654,7 +40654,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-16",
@@ -40665,7 +40665,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-16",
@@ -40676,7 +40676,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -40892,7 +40892,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-16)",
     "Rank": 20,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -41127,7 +41127,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41138,7 +41138,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41149,7 +41149,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41160,7 +41160,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41171,7 +41171,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41182,7 +41182,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41193,7 +41193,7 @@ export const cleanedData = [
     "Deck": "Izzet Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-16",
@@ -41204,7 +41204,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-17",
@@ -41519,7 +41519,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-17)",
     "Rank": 29,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -41633,7 +41633,7 @@ export const cleanedData = [
     "Deck": "Selesnya Slivers",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-17",
@@ -41699,7 +41699,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-17",
@@ -41710,7 +41710,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-17",
@@ -41721,7 +41721,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-17",
@@ -41732,7 +41732,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42091,7 +42091,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 33,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Azorius Glitters",
     "Wins": 2,
     "Losses": 4,
@@ -42147,7 +42147,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 38,
     "Player": "_Mojo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -42238,7 +42238,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42249,7 +42249,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42260,7 +42260,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42271,7 +42271,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42282,7 +42282,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42293,7 +42293,7 @@ export const cleanedData = [
     "Deck": "Dimir Reanimator",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42304,7 +42304,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42443,7 +42443,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 13,
-    "Player": "Magic4ever_Mtgo",
+    "Player": "Magic4Ever_Mtgo",
     "Deck": "Golgari Gardens",
     "Wins": 4,
     "Losses": 2,
@@ -42597,7 +42597,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 27,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 3,
@@ -42850,7 +42850,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 50,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Azorius Glitters",
     "Wins": 2,
     "Losses": 4,
@@ -42861,7 +42861,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 51,
-    "Player": "Mh7lucky",
+    "Player": "Mh7Lucky",
     "Deck": "Mono Black Control",
     "Wins": 1,
     "Losses": 4,
@@ -42876,7 +42876,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42906,7 +42906,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 55,
     "Player": "O_Danielakos",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -42942,7 +42942,7 @@ export const cleanedData = [
     "Deck": "Burn",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42953,7 +42953,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42964,7 +42964,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42972,10 +42972,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-17)",
     "Rank": 61,
     "Player": "_Mojo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42986,7 +42986,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -42997,7 +42997,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-17",
@@ -43008,7 +43008,7 @@ export const cleanedData = [
     "Deck": "Turbo Initiative",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-17",
@@ -43059,7 +43059,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-17)",
     "Rank": 5,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 6,
     "Losses": 1,
@@ -43389,7 +43389,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-17)",
     "Rank": 35,
-    "Player": "K3ksmann",
+    "Player": "K3Ksmann",
     "Deck": "Izzet Control",
     "Wins": 2,
     "Losses": 4,
@@ -43470,7 +43470,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-17",
@@ -43481,7 +43481,7 @@ export const cleanedData = [
     "Deck": "Boros Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-17",
@@ -43492,7 +43492,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-17",
@@ -43503,7 +43503,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-17",
@@ -43514,7 +43514,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -43532,7 +43532,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 2,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 7,
     "Losses": 3,
@@ -43620,7 +43620,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 10,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 5,
     "Losses": 2,
@@ -43642,7 +43642,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 12,
-    "Player": "True-name-nemesis",
+    "Player": "True-Name-Nemesis",
     "Deck": "Golgari Gardens",
     "Wins": 4,
     "Losses": 2,
@@ -43675,7 +43675,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 15,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Mono Blue Terror",
     "Wins": 5,
     "Losses": 2,
@@ -43818,7 +43818,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 28,
-    "Player": "Daym0nz",
+    "Player": "Daym0Nz",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 3,
@@ -43873,7 +43873,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 33,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 4,
@@ -43906,7 +43906,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 36,
-    "Player": "Ravager.pe",
+    "Player": "Ravager.Pe",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 5,
@@ -43972,7 +43972,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 42,
-    "Player": "Temur4life",
+    "Player": "Temur4Life",
     "Deck": "Fog Tron",
     "Wins": 2,
     "Losses": 3,
@@ -43994,7 +43994,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 44,
-    "Player": "Fried-liver-attack",
+    "Player": "Fried-Liver-Attack",
     "Deck": "Rakdos Madness",
     "Wins": 1,
     "Losses": 2,
@@ -44126,11 +44126,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-17)",
     "Rank": 56,
-    "Player": "Dr4ken",
+    "Player": "Dr4Ken",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44141,7 +44141,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44152,7 +44152,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44163,7 +44163,7 @@ export const cleanedData = [
     "Deck": "Walls Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44174,7 +44174,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44185,7 +44185,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44196,7 +44196,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44207,7 +44207,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44218,7 +44218,7 @@ export const cleanedData = [
     "Deck": "Gond Combo",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-17",
@@ -44229,7 +44229,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44478,7 +44478,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-18)",
     "Rank": 23,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 3,
@@ -44489,7 +44489,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-18)",
     "Rank": 24,
-    "Player": "Cmc1andahalf",
+    "Player": "Cmc1Andahalf",
     "Deck": "Golgari Broodscale",
     "Wins": 4,
     "Losses": 3,
@@ -44841,11 +44841,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-18)",
     "Rank": 56,
-    "Player": "Hivel0rd",
+    "Player": "Hivel0Rd",
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44911,7 +44911,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44944,7 +44944,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44955,7 +44955,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44966,7 +44966,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44977,7 +44977,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44988,7 +44988,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -44999,7 +44999,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -45010,7 +45010,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -45021,7 +45021,7 @@ export const cleanedData = [
     "Deck": "Dimir Ninja Affinity",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -45032,7 +45032,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -45043,7 +45043,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-18",
@@ -45054,7 +45054,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-18",
@@ -45106,7 +45106,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-18)",
     "Rank": 5,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -45293,7 +45293,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-18)",
     "Rank": 22,
     "Player": "Twister66",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -45336,7 +45336,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-18)",
     "Rank": 26,
-    "Player": "Sorceress-queen",
+    "Player": "Sorceress-Queen",
     "Deck": "Simic Infect",
     "Wins": 3,
     "Losses": 3,
@@ -45413,7 +45413,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-18)",
     "Rank": 33,
-    "Player": "Cryomanc3r",
+    "Player": "Cryomanc3R",
     "Deck": "Orzhov Blade",
     "Wins": 1,
     "Losses": 4,
@@ -45494,7 +45494,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-18",
@@ -45512,11 +45512,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-18)",
     "Rank": 42,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-18",
@@ -45527,7 +45527,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-18",
@@ -45538,7 +45538,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45776,7 +45776,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-18)",
     "Rank": 22,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Terror",
     "Wins": 3,
     "Losses": 3,
@@ -45875,7 +45875,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-18)",
     "Rank": 31,
-    "Player": "Yurgen.ru",
+    "Player": "Yurgen.Ru",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 3,
@@ -45923,18 +45923,18 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-18)",
     "Rank": 36,
-    "Player": "Dr4ken",
+    "Player": "Dr4Ken",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45945,7 +45945,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45956,7 +45956,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45967,7 +45967,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45978,7 +45978,7 @@ export const cleanedData = [
     "Deck": "Gond Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-18",
@@ -45989,7 +45989,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46000,7 +46000,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-04-19",
@@ -46073,7 +46073,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-19)",
     "Rank": 8,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Azorius Familiars",
     "Wins": 4,
     "Losses": 3,
@@ -46293,7 +46293,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-19)",
     "Rank": 28,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 3,
     "Losses": 3,
@@ -46561,7 +46561,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46572,7 +46572,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46583,7 +46583,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46594,7 +46594,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46605,7 +46605,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46616,7 +46616,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46627,7 +46627,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46638,7 +46638,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46649,7 +46649,7 @@ export const cleanedData = [
     "Deck": "Boros Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46660,7 +46660,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-19",
@@ -46671,7 +46671,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -46799,7 +46799,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-19)",
     "Rank": 12,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
@@ -46821,7 +46821,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-19)",
     "Rank": 14,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Gruul Land Destruction",
     "Wins": 5,
     "Losses": 2,
@@ -47008,7 +47008,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-19)",
     "Rank": 31,
-    "Player": "Synth1a",
+    "Player": "Synth1A",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 4,
@@ -47239,7 +47239,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-19)",
     "Rank": 52,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
@@ -47294,7 +47294,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-19)",
     "Rank": 57,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Control",
     "Wins": 1,
     "Losses": 3,
@@ -47309,7 +47309,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47320,7 +47320,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47331,7 +47331,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47342,7 +47342,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47353,7 +47353,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47364,7 +47364,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47375,7 +47375,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47386,7 +47386,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-19",
@@ -47397,7 +47397,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -47416,7 +47416,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-19)",
     "Rank": 2,
     "Player": "Karatedom",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 2,
     "Winrate": 0.8
@@ -47570,7 +47570,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-19)",
     "Rank": 16,
     "Player": "Oppa",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -47789,7 +47789,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-19)",
     "Rank": 36,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Orzhov Blade",
     "Wins": 3,
     "Losses": 4,
@@ -48032,7 +48032,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-19)",
     "Rank": 58,
     "Player": "Duke12",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -48101,7 +48101,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48145,7 +48145,7 @@ export const cleanedData = [
     "Deck": "Walls Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48156,7 +48156,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48167,7 +48167,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48178,18 +48178,18 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-19)",
     "Rank": 72,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48200,7 +48200,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48211,7 +48211,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-19",
@@ -48222,7 +48222,7 @@ export const cleanedData = [
     "Deck": "Ashnod's Altar Combo",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
@@ -48636,7 +48636,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-19)",
     "Rank": 38,
-    "Player": "Gxs3v3n",
+    "Player": "Gxs3V3N",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 1,
     "Losses": 3,
@@ -48662,7 +48662,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
@@ -48684,7 +48684,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
@@ -48695,7 +48695,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
@@ -48706,7 +48706,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
@@ -48717,18 +48717,18 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-19",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-19)",
     "Rank": 46,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -48739,7 +48739,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-08-02",
@@ -49175,7 +49175,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-02)",
     "Rank": 41,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Mono Blue Terror",
     "Wins": 2,
     "Losses": 4,
@@ -49278,7 +49278,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49289,7 +49289,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49300,7 +49300,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49311,7 +49311,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49322,18 +49322,18 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-02)",
     "Rank": 55,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49344,7 +49344,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49355,7 +49355,7 @@ export const cleanedData = [
     "Deck": "Orzhov Gates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-02",
@@ -49366,7 +49366,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -49473,7 +49473,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 10,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -49506,7 +49506,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 13,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -49561,7 +49561,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 18,
     "Player": "Fingers1991",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -49715,7 +49715,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 32,
     "Player": "Ivernop",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -49813,7 +49813,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 41,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 2,
     "Losses": 4,
@@ -49912,7 +49912,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 50,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Dredge",
     "Wins": 2,
     "Losses": 5,
@@ -49971,7 +49971,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50037,7 +50037,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50048,7 +50048,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50059,7 +50059,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50070,7 +50070,7 @@ export const cleanedData = [
     "Deck": "Izzet Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50081,18 +50081,18 @@ export const cleanedData = [
     "Deck": "Azorius Tribe",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-02)",
     "Rank": 66,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50103,7 +50103,7 @@ export const cleanedData = [
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-02",
@@ -50114,7 +50114,7 @@ export const cleanedData = [
     "Deck": "Golgari Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50363,7 +50363,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-02)",
     "Rank": 23,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 3,
     "Losses": 3,
@@ -50488,7 +50488,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50517,7 +50517,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-02)",
     "Rank": 37,
-    "Player": "-magicrick93-",
+    "Player": "-Magicrick93-",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 1,
     "Losses": 4,
@@ -50565,7 +50565,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50576,7 +50576,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50587,7 +50587,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50598,7 +50598,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50609,7 +50609,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-02",
@@ -50620,7 +50620,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -50631,7 +50631,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-04-20",
@@ -50726,7 +50726,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-20)",
     "Rank": 10,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Hexproof",
     "Wins": 4,
     "Losses": 2,
@@ -50958,7 +50958,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-20)",
     "Rank": 31,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -51023,7 +51023,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-20)",
     "Rank": 37,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
@@ -51067,7 +51067,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-20)",
     "Rank": 41,
-    "Player": "Sorceress-queen",
+    "Player": "Sorceress-Queen",
     "Deck": "Mono Green Infect",
     "Wins": 1,
     "Losses": 4,
@@ -51082,7 +51082,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -51115,7 +51115,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -51126,7 +51126,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -51137,7 +51137,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -51148,7 +51148,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
@@ -51159,12 +51159,12 @@ export const cleanedData = [
     "Deck": "Mono White Heroic",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 1,
     "Player": "Ritualsinkhole",
     "Deck": "Turbofog",
@@ -51175,7 +51175,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 2,
     "Player": "Shade_Scorpion",
     "Deck": "Boros Glitters",
@@ -51186,7 +51186,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 3,
     "Player": "Countertopgarchomp",
     "Deck": "Boros Glitters",
@@ -51197,7 +51197,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 4,
     "Player": "Arcii",
     "Deck": "Cawgates",
@@ -51208,7 +51208,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 5,
     "Player": "Boytriton",
     "Deck": "Cawgates",
@@ -51219,7 +51219,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 6,
     "Player": "Hamuda",
     "Deck": "Goblin Class Combo",
@@ -51230,7 +51230,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 7,
     "Player": "Itsswiftytime",
     "Deck": "Dimir Terror",
@@ -51241,7 +51241,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 8,
     "Player": "Nmt_Sco94",
     "Deck": "Boros Glitters",
@@ -51252,7 +51252,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 9,
     "Player": "Beenew",
     "Deck": "Cawgates",
@@ -51263,7 +51263,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 10,
     "Player": "Gybird",
     "Deck": "Red Kuldotha",
@@ -51274,7 +51274,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 11,
     "Player": "Galeogiao",
     "Deck": "Golgari Gardens",
@@ -51285,7 +51285,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 12,
     "Player": "Mtgnate1",
     "Deck": "Red Kuldotha",
@@ -51296,7 +51296,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 13,
     "Player": "Nabenabetk",
     "Deck": "Azorius Glitters",
@@ -51307,7 +51307,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 14,
     "Player": "Ziofrancone",
     "Deck": "Turbofog",
@@ -51318,7 +51318,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 15,
     "Player": "Yprincipe",
     "Deck": "Red Kuldotha",
@@ -51329,7 +51329,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 16,
     "Player": "Tyerube1618",
     "Deck": "Cycle Storm",
@@ -51340,7 +51340,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 17,
     "Player": "Windup_Emma",
     "Deck": "Golgari Gardens",
@@ -51351,7 +51351,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 18,
     "Player": "Totemsilence",
     "Deck": "Orzhov Blade",
@@ -51362,7 +51362,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 19,
     "Player": "Romerito1",
     "Deck": "Hexproof",
@@ -51373,7 +51373,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 20,
     "Player": "Denisevichalexey",
     "Deck": "Jeskai Ephemerate",
@@ -51384,7 +51384,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 21,
     "Player": "Outzeroo",
     "Deck": "Dimir Fae",
@@ -51395,7 +51395,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 22,
     "Player": "Canepis16",
     "Deck": "Cawgates",
@@ -51406,7 +51406,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 23,
     "Player": "Mei0024",
     "Deck": "Boros Glitters",
@@ -51417,7 +51417,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 24,
     "Player": "Duke12",
     "Deck": "Boros Glitters",
@@ -51428,9 +51428,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 25,
-    "Player": "A.c.a.i_20006",
+    "Player": "A.C.A.I_20006",
     "Deck": "Red Kuldotha",
     "Wins": 5,
     "Losses": 3,
@@ -51439,7 +51439,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 26,
     "Player": "Ecobaronen",
     "Deck": "Red Kuldotha",
@@ -51450,7 +51450,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 27,
     "Player": "Beoulveheart",
     "Deck": "Gruul Land Destruction",
@@ -51461,7 +51461,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 28,
     "Player": "Lostonkato",
     "Deck": "Jeskai Ephemerate",
@@ -51472,7 +51472,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 29,
     "Player": "Ed_Elric",
     "Deck": "Red Kuldotha",
@@ -51483,7 +51483,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 30,
     "Player": "Medvedev",
     "Deck": "Red Kuldotha",
@@ -51494,7 +51494,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 31,
     "Player": "Graciasportanto",
     "Deck": "Jeskai Ephemerate",
@@ -51505,7 +51505,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 32,
     "Player": "Selkcahs",
     "Deck": "Red Kuldotha",
@@ -51516,7 +51516,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 33,
     "Player": "Beicodegeia",
     "Deck": "Goblin Class Combo",
@@ -51527,7 +51527,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 34,
     "Player": "Olavojusmtm",
     "Deck": "Dimir Control",
@@ -51538,7 +51538,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 35,
     "Player": "Jace_Mtg",
     "Deck": "Jeskai Ephemerate",
@@ -51549,7 +51549,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 36,
     "Player": "Misterasiago",
     "Deck": "Goblin Class Combo",
@@ -51560,7 +51560,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 37,
     "Player": "Boquinha",
     "Deck": "Elves",
@@ -51571,7 +51571,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 38,
     "Player": "Sebastianpozzo",
     "Deck": "Red Kuldotha",
@@ -51582,7 +51582,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 39,
     "Player": "Adryannthehero04",
     "Deck": "Rakdos Madness",
@@ -51593,9 +51593,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 40,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 5,
     "Losses": 3,
@@ -51604,9 +51604,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 41,
-    "Player": "_J0se_",
+    "Player": "_J0Se_",
     "Deck": "Hexproof",
     "Wins": 5,
     "Losses": 3,
@@ -51615,7 +51615,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 42,
     "Player": "Foresterf",
     "Deck": "Jeskai Ephemerate",
@@ -51626,7 +51626,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 43,
     "Player": "Lindoso01",
     "Deck": "Defender Stampede",
@@ -51637,7 +51637,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 44,
     "Player": "Bruskk",
     "Deck": "Golgari Gardens",
@@ -51648,7 +51648,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 45,
     "Player": "Gregoriusil",
     "Deck": "Azorius Familiars",
@@ -51659,7 +51659,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 46,
     "Player": "Fives",
     "Deck": "Azorius Glitters",
@@ -51670,7 +51670,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 47,
     "Player": "Immvp",
     "Deck": "Jeskai Ephemerate",
@@ -51681,7 +51681,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 48,
     "Player": "Tryhardmol",
     "Deck": "Boros Glitters",
@@ -51692,7 +51692,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 49,
     "Player": "Niederschatten",
     "Deck": "Dimir Fae",
@@ -51703,7 +51703,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 50,
     "Player": "Perret",
     "Deck": "Cawgates",
@@ -51714,7 +51714,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 51,
     "Player": "Sorrylmsotilted",
     "Deck": "Red Kuldotha",
@@ -51725,7 +51725,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 52,
     "Player": "Jaimeputoamo",
     "Deck": "Dimir Fae",
@@ -51736,7 +51736,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 53,
     "Player": "Cicciogire",
     "Deck": "Dimir Fae",
@@ -51747,7 +51747,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 54,
     "Player": "Magdaregina",
     "Deck": "Red Kuldotha",
@@ -51758,7 +51758,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 55,
     "Player": "Brivenix",
     "Deck": "Izzet Fae",
@@ -51769,7 +51769,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 56,
     "Player": "Iab_Magic",
     "Deck": "Golgari Gardens",
@@ -51780,7 +51780,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 57,
     "Player": "Jwaves",
     "Deck": "White Weenie",
@@ -51791,7 +51791,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 58,
     "Player": "Boom_Bust",
     "Deck": "Red Kuldotha",
@@ -51802,7 +51802,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 59,
     "Player": "Zaaaamu",
     "Deck": "Red Kuldotha",
@@ -51813,7 +51813,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 60,
     "Player": "Kirblinxy",
     "Deck": "Turbofog",
@@ -51824,7 +51824,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 61,
     "Player": "Tarkanmag",
     "Deck": "Dredge",
@@ -51835,7 +51835,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 62,
     "Player": "Paulocabral_Br",
     "Deck": "Azorius Glitters",
@@ -51846,7 +51846,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 63,
     "Player": "Luffydochapeudepalha",
     "Deck": "Golgari Gardens",
@@ -51857,7 +51857,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 64,
     "Player": "Liv_Br",
     "Deck": "Golgari Gardens",
@@ -51868,7 +51868,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 65,
     "Player": "Seasonofmists",
     "Deck": "Turbofog",
@@ -51879,7 +51879,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 66,
     "Player": "Ivernop",
     "Deck": "Mardu Synth",
@@ -51890,9 +51890,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 67,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 5,
@@ -51901,7 +51901,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 68,
     "Player": "Karatedom",
     "Deck": "Rakdos Madness",
@@ -51912,7 +51912,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 69,
     "Player": "Apas72",
     "Deck": "Defender Stampede",
@@ -51923,7 +51923,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 70,
     "Player": "Lukepedro",
     "Deck": "Izzet Control",
@@ -51934,7 +51934,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 71,
     "Player": "Matiaskm",
     "Deck": "Goblin Class Combo",
@@ -51945,7 +51945,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 72,
     "Player": "Carrot_Eater",
     "Deck": "Cawgates",
@@ -51956,7 +51956,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 73,
     "Player": "Walker735",
     "Deck": "Jeskai Glitters",
@@ -51967,7 +51967,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 74,
     "Player": "Capitano_Cl",
     "Deck": "Red Kuldotha",
@@ -51978,9 +51978,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 75,
-    "Player": "Tang3jin",
+    "Player": "Tang3Jin",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 5,
@@ -51989,9 +51989,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 76,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 5,
@@ -52000,7 +52000,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 77,
     "Player": "Luangne",
     "Deck": "Red Kuldotha",
@@ -52011,7 +52011,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 78,
     "Player": "Xelz",
     "Deck": "Goblin Class Combo",
@@ -52022,7 +52022,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 79,
     "Player": "Famechimica",
     "Deck": "Dimir Fae",
@@ -52033,7 +52033,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 80,
     "Player": "Alienware_",
     "Deck": "Boros Glitters",
@@ -52044,9 +52044,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 81,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 3,
@@ -52055,7 +52055,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 82,
     "Player": "Vini_Torres",
     "Deck": "Red Kuldotha",
@@ -52066,7 +52066,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 83,
     "Player": "Pepeteam",
     "Deck": "Dimir Terror",
@@ -52077,7 +52077,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 84,
     "Player": "Darthkid",
     "Deck": "Boros Synth",
@@ -52088,7 +52088,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 85,
     "Player": "Truehero",
     "Deck": "Jeskai Ephemerate",
@@ -52099,9 +52099,9 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 86,
-    "Player": "Diem4x",
+    "Player": "Diem4X",
     "Deck": "Boros Glitters",
     "Wins": 2,
     "Losses": 6,
@@ -52110,7 +52110,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 87,
     "Player": "Oliverjuqs",
     "Deck": "Dimir Fae",
@@ -52121,7 +52121,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 88,
     "Player": "Newbarola",
     "Deck": "Azorius Glitters",
@@ -52132,7 +52132,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 89,
     "Player": "Spockvidaloka",
     "Deck": "Izzet Control",
@@ -52143,7 +52143,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 90,
     "Player": "Shatun",
     "Deck": "Rakdos Madness",
@@ -52154,7 +52154,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 91,
     "Player": "Ale_Mtg",
     "Deck": "Dimir Terror",
@@ -52165,7 +52165,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 92,
     "Player": "Jeunejulio",
     "Deck": "Azorius Glitters",
@@ -52176,7 +52176,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 93,
     "Player": "Yesicabyalexisf",
     "Deck": "Golgari Gardens",
@@ -52187,7 +52187,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 94,
     "Player": "Ixidor29",
     "Deck": "Mono Blue Faeries",
@@ -52198,7 +52198,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 95,
     "Player": "336767322971",
     "Deck": "Golgari Gardens",
@@ -52209,10 +52209,10 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 96,
     "Player": "Nekonekoneko",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -52220,7 +52220,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 97,
     "Player": "__Noob__",
     "Deck": "Jeskai Ephemerate",
@@ -52231,7 +52231,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 98,
     "Player": "Brasatore",
     "Deck": "Red Kuldotha",
@@ -52242,7 +52242,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 99,
     "Player": "Yuxiaoyu",
     "Deck": "Golgari Gardens",
@@ -52253,10 +52253,10 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 100,
     "Player": "Burnt_Taco77",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -52264,7 +52264,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 101,
     "Player": "Handsomeppz",
     "Deck": "Dimir Fae",
@@ -52275,7 +52275,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 102,
     "Player": "Xenowan",
     "Deck": "Izzet Fae",
@@ -52286,7 +52286,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 103,
     "Player": "Bombaj",
     "Deck": "Dimir Terror",
@@ -52297,7 +52297,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 104,
     "Player": "Likeaferro",
     "Deck": "Red Kuldotha",
@@ -52308,7 +52308,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 105,
     "Player": "Barff",
     "Deck": "Dimir Fae",
@@ -52319,7 +52319,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 106,
     "Player": "Wesal",
     "Deck": "Boros Glitters",
@@ -52330,7 +52330,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 107,
     "Player": "Kampo",
     "Deck": "Goblin Class Combo",
@@ -52341,7 +52341,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 108,
     "Player": "Death_Grips",
     "Deck": "Azorius Glitters",
@@ -52352,7 +52352,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 109,
     "Player": "_Tia93_",
     "Deck": "Jeskai Ephemerate",
@@ -52363,7 +52363,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 110,
     "Player": "White_Tsar",
     "Deck": "Boros Glitters",
@@ -52374,7 +52374,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 111,
     "Player": "Magician15",
     "Deck": "Jeskai Ephemerate",
@@ -52385,7 +52385,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 112,
     "Player": "Arkany1",
     "Deck": "Gruul Land Destruction",
@@ -52396,10 +52396,10 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 113,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -52407,18 +52407,18 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 114,
     "Player": "Glam_",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 115,
     "Player": "Pavelval",
     "Deck": "Dimir Fae",
@@ -52429,7 +52429,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 116,
     "Player": "O_Danielakos",
     "Deck": "Dimir Terror",
@@ -52440,7 +52440,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 117,
     "Player": "Levunga21",
     "Deck": "Jeskai Ephemerate",
@@ -52451,7 +52451,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 118,
     "Player": "Eijunchn",
     "Deck": "Boros Glitters",
@@ -52462,7 +52462,7 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 119,
     "Player": "Saikyoluige",
     "Deck": "Boros Glitters",
@@ -52473,145 +52473,145 @@ export const cleanedData = [
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 120,
     "Player": "Alexanderrosdahl",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 121,
     "Player": "Dreddybajs",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 122,
     "Player": "Lord_Beerus",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 123,
     "Player": "Sanpop",
     "Deck": "Turbo Initiative",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 124,
     "Player": "Lennny",
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 125,
     "Player": "I_B_True",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 126,
     "Player": "Pedrastone",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 127,
     "Player": "Mcwinsauce",
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 128,
     "Player": "Albertosd",
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 129,
     "Player": "Marcobelacca95",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 130,
     "Player": "Trashboat100",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 131,
     "Player": "Mahers",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-04-20)",
+    "Event": "MTGO Showcase (2024-04-20)",
     "Rank": 132,
     "Player": "_Batutinha_",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -52622,7 +52622,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-12-20",
@@ -52904,7 +52904,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-20)",
     "Rank": 27,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -53018,7 +53018,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53029,7 +53029,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53040,7 +53040,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53051,7 +53051,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53062,7 +53062,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53073,7 +53073,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-20",
@@ -53084,7 +53084,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53542,7 +53542,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-20)",
     "Rank": 42,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "White Weenie",
     "Wins": 2,
     "Losses": 4,
@@ -53568,7 +53568,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53623,7 +53623,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53634,7 +53634,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53645,7 +53645,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53656,7 +53656,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53667,7 +53667,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53678,7 +53678,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53689,7 +53689,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53700,7 +53700,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53711,7 +53711,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53722,7 +53722,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
@@ -53733,12 +53733,12 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 1,
     "Player": "Spockvidaloka",
     "Deck": "Izzet Control",
@@ -53749,7 +53749,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 2,
     "Player": "Bernastorres",
     "Deck": "Grixis Affinity",
@@ -53760,7 +53760,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 3,
     "Player": "Karatedom",
     "Deck": "Red Kuldotha",
@@ -53771,7 +53771,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 4,
     "Player": "Nammersquats",
     "Deck": "Red Kuldotha",
@@ -53782,7 +53782,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 5,
     "Player": "Itsswiftytime",
     "Deck": "Broodscale Combo",
@@ -53793,7 +53793,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 6,
     "Player": "Arcii",
     "Deck": "Azorius Familiars",
@@ -53804,7 +53804,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 7,
     "Player": "Ritualsinkhole",
     "Deck": "Turbofog",
@@ -53815,7 +53815,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 8,
     "Player": "Countertopgarchomp",
     "Deck": "Broodscale Combo",
@@ -53826,7 +53826,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 9,
     "Player": "Ivernop",
     "Deck": "Mono Red Blitz",
@@ -53837,7 +53837,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 10,
     "Player": "Tyerube1618",
     "Deck": "Cycle Storm",
@@ -53848,7 +53848,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 11,
     "Player": "Shade_Scorpion",
     "Deck": "Dimir Terror",
@@ -53859,7 +53859,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 12,
     "Player": "Pedrastone",
     "Deck": "Grixis Affinity",
@@ -53870,7 +53870,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 13,
     "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
@@ -53881,7 +53881,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 14,
     "Player": "Olavojusmtm",
     "Deck": "Golgari Gardens",
@@ -53892,7 +53892,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 15,
     "Player": "Mentalmisstep",
     "Deck": "Broodscale Combo",
@@ -53903,7 +53903,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 16,
     "Player": "Wrzobuseks",
     "Deck": "Rakdos Madness",
@@ -53914,7 +53914,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 17,
     "Player": "Fingers1991",
     "Deck": "Red Kuldotha",
@@ -53925,7 +53925,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 18,
     "Player": "Foresterf",
     "Deck": "Jeskai Ephemerate",
@@ -53936,7 +53936,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 19,
     "Player": "Macksmith",
     "Deck": "Red Kuldotha",
@@ -53947,7 +53947,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 20,
     "Player": "Paulocabral_Br",
     "Deck": "Poison Storm",
@@ -53958,7 +53958,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 21,
     "Player": "Nmt_Sco94",
     "Deck": "White Weenie",
@@ -53969,7 +53969,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 22,
     "Player": "Heliolima",
     "Deck": "Red Kuldotha",
@@ -53980,7 +53980,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 23,
     "Player": "Gn42",
     "Deck": "Azorius Familiars",
@@ -53991,7 +53991,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 24,
     "Player": "_Against_",
     "Deck": "Grixis Affinity",
@@ -54002,7 +54002,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 25,
     "Player": "Kasa",
     "Deck": "Broodscale Combo",
@@ -54013,7 +54013,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 26,
     "Player": "Boytriton",
     "Deck": "White Weenie",
@@ -54024,7 +54024,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 27,
     "Player": "Hamuda",
     "Deck": "Grixis Affinity",
@@ -54035,24 +54035,24 @@ export const cleanedData = [
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 28,
     "Player": "Othavirium",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-20",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-20)",
+    "Event": "MTGO Showcase (2024-07-20)",
     "Rank": 29,
     "Player": "Gartuyzz",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54180,7 +54180,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-20)",
     "Rank": 12,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 5,
     "Losses": 2,
@@ -54367,7 +54367,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-20)",
     "Rank": 29,
-    "Player": "Chanel-santini",
+    "Player": "Chanel-Santini",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 4,
@@ -54646,7 +54646,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54657,7 +54657,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54668,7 +54668,7 @@ export const cleanedData = [
     "Deck": "Mardu Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54679,7 +54679,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54690,7 +54690,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54701,7 +54701,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54712,7 +54712,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54723,7 +54723,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54734,7 +54734,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54745,7 +54745,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
@@ -54756,18 +54756,18 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-20",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-20)",
     "Rank": 65,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-20",
@@ -55086,7 +55086,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-20",
@@ -55097,7 +55097,7 @@ export const cleanedData = [
     "Deck": "Golgari Midrange",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-20",
@@ -55126,11 +55126,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-20)",
     "Rank": 33,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-20",
@@ -55152,7 +55152,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55457,7 +55457,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 28,
     "Player": "Beicodegeia",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -55479,7 +55479,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 30,
     "Player": "Hamuda",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -55654,11 +55654,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 46,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55691,7 +55691,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55702,7 +55702,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55713,7 +55713,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55724,7 +55724,7 @@ export const cleanedData = [
     "Deck": "Turbo Initiative",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -55786,7 +55786,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 6,
-    "Player": "Rob85tx",
+    "Player": "Rob85Tx",
     "Deck": "Jeskai Glitters",
     "Wins": 5,
     "Losses": 3,
@@ -55798,7 +55798,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 7,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -55831,7 +55831,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 10,
     "Player": "Hamuda",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -56028,7 +56028,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 28,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Jeskai Ephemerate",
     "Wins": 4,
     "Losses": 3,
@@ -56216,7 +56216,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 45,
     "Player": "_Against_",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -56347,7 +56347,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 57,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 2,
     "Losses": 5,
@@ -56505,7 +56505,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -56513,10 +56513,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-21)",
     "Rank": 72,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -56527,7 +56527,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-21",
@@ -56538,7 +56538,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -56956,7 +56956,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -56967,7 +56967,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -56978,7 +56978,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -56989,7 +56989,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -57000,7 +57000,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-21",
@@ -57011,7 +57011,7 @@ export const cleanedData = [
     "Deck": "Egg Tron",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57436,7 +57436,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-21)",
     "Rank": 39,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Orzhov Blade",
     "Wins": 3,
     "Losses": 4,
@@ -57469,7 +57469,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-21)",
     "Rank": 42,
-    "Player": "Mr.page",
+    "Player": "Mr.Page",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 3,
     "Losses": 4,
@@ -57491,7 +57491,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-21)",
     "Rank": 44,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
@@ -57590,7 +57590,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-21)",
     "Rank": 53,
-    "Player": "Secr3tm0de",
+    "Player": "Secr3Tm0De",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 5,
@@ -57656,7 +57656,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-21)",
     "Rank": 59,
-    "Player": "Nmt-lacontea",
+    "Player": "Nmt-Lacontea",
     "Deck": "White Weenie",
     "Wins": 1,
     "Losses": 2,
@@ -57737,7 +57737,7 @@ export const cleanedData = [
     "Deck": "Walls Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57748,7 +57748,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57759,7 +57759,7 @@ export const cleanedData = [
     "Deck": "Azorius Tribe",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57770,7 +57770,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57781,7 +57781,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57792,7 +57792,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57803,7 +57803,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57814,7 +57814,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57825,7 +57825,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-21",
@@ -57836,7 +57836,7 @@ export const cleanedData = [
     "Deck": "Black Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-21",
@@ -57953,7 +57953,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-21)",
     "Rank": 11,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Gruul Land Destruction",
     "Wins": 4,
     "Losses": 2,
@@ -57964,7 +57964,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-21)",
     "Rank": 12,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Mardu Ephemerate",
     "Wins": 4,
     "Losses": 2,
@@ -58327,7 +58327,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-21)",
     "Rank": 45,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 5,
@@ -58353,7 +58353,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-21",
@@ -58364,7 +58364,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58826,7 +58826,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58837,7 +58837,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58848,7 +58848,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58859,7 +58859,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58870,7 +58870,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58881,7 +58881,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58892,7 +58892,7 @@ export const cleanedData = [
     "Deck": "Rakdos Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58903,7 +58903,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58914,7 +58914,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-21",
@@ -58925,14 +58925,14 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-22)",
     "Rank": 1,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 9,
     "Losses": 1,
@@ -59508,7 +59508,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59541,7 +59541,7 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59552,18 +59552,18 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-22)",
     "Rank": 58,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59574,7 +59574,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59585,7 +59585,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59596,7 +59596,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59607,7 +59607,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59618,7 +59618,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59629,7 +59629,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59640,7 +59640,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-22",
@@ -59651,7 +59651,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
@@ -59662,7 +59662,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-06-22",
@@ -60135,18 +60135,18 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-22)",
     "Rank": 45,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
@@ -60157,7 +60157,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
@@ -60168,7 +60168,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
@@ -60179,7 +60179,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-22",
@@ -60190,7 +60190,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-22",
@@ -60663,7 +60663,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-22",
@@ -60674,7 +60674,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-22",
@@ -60685,7 +60685,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-22",
@@ -60696,7 +60696,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-22",
@@ -60707,7 +60707,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61191,7 +61191,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61202,7 +61202,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61213,7 +61213,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61224,7 +61224,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61235,7 +61235,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61246,7 +61246,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61257,7 +61257,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61268,7 +61268,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61279,7 +61279,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61290,7 +61290,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61301,7 +61301,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-22",
@@ -61312,7 +61312,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61323,7 +61323,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-08-23",
@@ -61660,7 +61660,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-23)",
     "Rank": 32,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -61836,11 +61836,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-23)",
     "Rank": 48,
-    "Player": "Cmc1andahalf",
+    "Player": "Cmc1Andahalf",
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61873,7 +61873,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61884,7 +61884,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61895,7 +61895,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61906,7 +61906,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61917,7 +61917,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-23",
@@ -61928,7 +61928,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-23",
@@ -61939,7 +61939,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-03-23",
@@ -62056,7 +62056,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-23)",
     "Rank": 12,
-    "Player": "Diem4x",
+    "Player": "Diem4X",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 2,
@@ -62079,7 +62079,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-23)",
     "Rank": 14,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -62423,14 +62423,14 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-23",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-23)",
     "Rank": 46,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Azorius Glitters",
     "Wins": 1,
     "Losses": 5,
@@ -62445,7 +62445,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-23",
@@ -62456,7 +62456,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-23",
@@ -62467,7 +62467,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-23",
@@ -62478,7 +62478,7 @@ export const cleanedData = [
     "Deck": "Goblin Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-23",
@@ -62489,7 +62489,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-11-23",
@@ -62738,7 +62738,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-23)",
     "Rank": 24,
-    "Player": "Synth1a",
+    "Player": "Synth1A",
     "Deck": "Mono Blue Terror",
     "Wins": 2,
     "Losses": 3,
@@ -62749,7 +62749,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-23)",
     "Rank": 25,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -62940,7 +62940,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-23",
@@ -62951,7 +62951,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-23",
@@ -62962,7 +62962,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-23",
@@ -62973,7 +62973,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63435,14 +63435,14 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-24)",
     "Rank": 43,
-    "Player": "Laranjinha-br",
+    "Player": "Laranjinha-Br",
     "Deck": "Dredge",
     "Wins": 1,
     "Losses": 4,
@@ -63490,7 +63490,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63501,7 +63501,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63512,7 +63512,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63523,7 +63523,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63534,7 +63534,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63545,7 +63545,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-24",
@@ -63556,7 +63556,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -63608,7 +63608,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 5,
     "Player": "O_Danielakos",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -63772,7 +63772,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 20,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Orzhov Blade",
     "Wins": 3,
     "Losses": 3,
@@ -63871,7 +63871,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 29,
-    "Player": "Magic4ever_Mtgo",
+    "Player": "Magic4Ever_Mtgo",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 3,
@@ -63904,7 +63904,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 32,
-    "Player": "Pr0boszcz",
+    "Player": "Pr0Boszcz",
     "Deck": "Dredge",
     "Wins": 2,
     "Losses": 4,
@@ -63960,7 +63960,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 37,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -64018,7 +64018,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64029,7 +64029,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64040,7 +64040,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64051,7 +64051,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64278,7 +64278,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 21,
-    "Player": "Diem4x",
+    "Player": "Diem4X",
     "Deck": "Izzet Fae",
     "Wins": 4,
     "Losses": 2,
@@ -64311,7 +64311,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 24,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 3,
@@ -64323,7 +64323,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 25,
     "Player": "O_Danielakos",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -64608,18 +64608,18 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 51,
-    "Player": "Dr jon osterman",
+    "Player": "Dr Jon Osterman",
     "Deck": "Dimir Fae",
     "Wins": 1,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-03-24",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-24)",
     "Rank": 52,
-    "Player": "Paulocabral br",
+    "Player": "Paulocabral Br",
     "Deck": "Azorius Glitters",
     "Wins": 1,
     "Losses": 3,
@@ -64722,7 +64722,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64733,7 +64733,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64744,7 +64744,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-24",
@@ -64755,7 +64755,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -64763,7 +64763,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 1,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 1,
     "Winrate": 0.8888888889
@@ -64774,7 +64774,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 2,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 7,
     "Losses": 2,
     "Winrate": 0.7777777778
@@ -64884,7 +64884,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 12,
     "Player": "Likeaferro",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -64939,7 +64939,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 17,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -64960,7 +64960,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 19,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Dredge",
     "Wins": 4,
     "Losses": 2,
@@ -65015,7 +65015,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 24,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Cawgates",
     "Wins": 3,
     "Losses": 3,
@@ -65027,7 +65027,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 25,
     "Player": "Cicciogire",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -65071,7 +65071,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 29,
     "Player": "Solmbagallade",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -65093,7 +65093,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 31,
     "Player": "Yuxiaoyu",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -65104,7 +65104,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 32,
     "Player": "Graciasportanto",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -65192,7 +65192,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 40,
     "Player": "Db_Tiago",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -65236,7 +65236,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 44,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -65305,18 +65305,18 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-24)",
     "Rank": 51,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -65327,7 +65327,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -65338,7 +65338,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -65349,7 +65349,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -65360,7 +65360,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-24",
@@ -65371,7 +65371,7 @@ export const cleanedData = [
     "Deck": "Golgari Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -65382,7 +65382,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 10,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-11-24",
@@ -65444,7 +65444,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 7,
-    "Player": "Gds-in-modern",
+    "Player": "Gds-In-Modern",
     "Deck": "Mono Blue Terror",
     "Wins": 5,
     "Losses": 3,
@@ -65455,7 +65455,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 8,
-    "Player": "Dr4ken",
+    "Player": "Dr4Ken",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 5,
     "Losses": 3,
@@ -65565,7 +65565,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 18,
-    "Player": "Pr0boszcz",
+    "Player": "Pr0Boszcz",
     "Deck": "Golgari Broodscale",
     "Wins": 4,
     "Losses": 3,
@@ -65708,7 +65708,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 31,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 4,
@@ -65895,7 +65895,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 48,
-    "Player": "Daym0nz",
+    "Player": "Daym0Nz",
     "Deck": "Mono Blue Faeries",
     "Wins": 1,
     "Losses": 3,
@@ -65950,7 +65950,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 53,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 1,
     "Losses": 3,
@@ -65965,7 +65965,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -65987,7 +65987,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -65998,7 +65998,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66009,18 +66009,18 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-24)",
     "Rank": 59,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66031,7 +66031,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66042,7 +66042,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66053,7 +66053,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66064,7 +66064,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66075,7 +66075,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-24",
@@ -66086,7 +66086,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66313,7 +66313,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-25)",
     "Rank": 21,
-    "Player": "Cmc1andahalf",
+    "Player": "Cmc1Andahalf",
     "Deck": "Jund Broodscale",
     "Wins": 4,
     "Losses": 3,
@@ -66412,7 +66412,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-25)",
     "Rank": 30,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Mono Blue Terror",
     "Wins": 4,
     "Losses": 3,
@@ -66603,7 +66603,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66636,7 +66636,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66746,7 +66746,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66757,7 +66757,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66768,7 +66768,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66779,7 +66779,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66790,7 +66790,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66801,7 +66801,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66812,7 +66812,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-25",
@@ -66823,7 +66823,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
@@ -66853,7 +66853,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 3,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -66885,7 +66885,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 6,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 5,
     "Losses": 2,
@@ -66930,7 +66930,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 10,
     "Player": "_Dissonance_",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -66941,7 +66941,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 11,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -67062,7 +67062,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 22,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -67117,7 +67117,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 27,
     "Player": "Eduardojmp",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -67150,7 +67150,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 30,
     "Player": "Alvatar",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -67216,7 +67216,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 36,
     "Player": "Denisevichalexey",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 5,
     "Winrate": 0.1666666667
@@ -67227,10 +67227,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 37,
     "Player": "Ezocratto",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
@@ -67241,23 +67241,23 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-25)",
     "Rank": 39,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 1,
     "Player": "Kasa",
     "Deck": "Cawgates",
@@ -67268,7 +67268,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 2,
     "Player": "Foresterf",
     "Deck": "Jeskai Ephemerate",
@@ -67279,7 +67279,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 3,
     "Player": "Karatedom",
     "Deck": "Rakdos Madness",
@@ -67290,10 +67290,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 4,
     "Player": "Fingers1991",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 2,
     "Winrate": 0.8
@@ -67301,10 +67301,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 5,
     "Player": "Mentalmisstep",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 7,
     "Losses": 2,
     "Winrate": 0.7777777778
@@ -67312,7 +67312,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 6,
     "Player": "Tyerube1618",
     "Deck": "Cycle Storm",
@@ -67323,10 +67323,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 7,
     "Player": "Macksmith",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 3,
     "Winrate": 0.6666666667
@@ -67334,10 +67334,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 8,
     "Player": "Pedrastone",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 3,
     "Winrate": 0.6666666667
@@ -67345,7 +67345,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 9,
     "Player": "Mestarimatti",
     "Deck": "Jeskai Ephemerate",
@@ -67356,10 +67356,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 10,
     "Player": "Sebastianpozzo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -67367,7 +67367,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 11,
     "Player": "Rastaf",
     "Deck": "Red Kuldotha",
@@ -67378,9 +67378,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 12,
-    "Player": "Gds-in-modern",
+    "Player": "Gds-In-Modern",
     "Deck": "Izzet Control",
     "Wins": 6,
     "Losses": 2,
@@ -67389,7 +67389,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 13,
     "Player": "Olavojusmtm",
     "Deck": "Jeskai Ephemerate",
@@ -67400,10 +67400,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 14,
-    "Player": "_J0se_",
-    "Deck": "Affinity",
+    "Player": "_J0Se_",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -67411,7 +67411,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 15,
     "Player": "Nammersquats",
     "Deck": "Rakdos Madness",
@@ -67422,7 +67422,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 16,
     "Player": "Hamuda",
     "Deck": "Goblin Class Combo",
@@ -67433,7 +67433,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 17,
     "Player": "Barff",
     "Deck": "Gruul Land Destruction",
@@ -67444,10 +67444,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 18,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -67455,7 +67455,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 19,
     "Player": "Brivenix",
     "Deck": "Mono Blue Terror",
@@ -67466,7 +67466,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 20,
     "Player": "Pavelval",
     "Deck": "Golgari Gardens",
@@ -67477,7 +67477,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 21,
     "Player": "Sisif094",
     "Deck": "Mono Blue Faeries",
@@ -67488,7 +67488,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 22,
     "Player": "Ed_Elric",
     "Deck": "Walls Combo",
@@ -67499,10 +67499,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 23,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -67510,7 +67510,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 24,
     "Player": "Bernardocssa",
     "Deck": "Dimir Fae",
@@ -67521,7 +67521,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 25,
     "Player": "Grindera",
     "Deck": "Poison Storm",
@@ -67532,7 +67532,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 26,
     "Player": "Luangne",
     "Deck": "Cawgates",
@@ -67543,7 +67543,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 27,
     "Player": "Ivernop",
     "Deck": "Mono Red Blitz",
@@ -67554,7 +67554,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 28,
     "Player": "Skpchino",
     "Deck": "Gruul Land Destruction",
@@ -67565,7 +67565,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 29,
     "Player": "Dj_Desu",
     "Deck": "Red Kuldotha",
@@ -67576,7 +67576,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 30,
     "Player": "Yuxiaoyu",
     "Deck": "Izzet Control",
@@ -67587,7 +67587,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 31,
     "Player": "Lukepedro",
     "Deck": "Dredge",
@@ -67598,7 +67598,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 32,
     "Player": "Beicodegeia",
     "Deck": "Goblin Class Combo",
@@ -67609,7 +67609,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 33,
     "Player": "Crazymorango",
     "Deck": "Goblin Class Combo",
@@ -67620,10 +67620,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 34,
     "Player": "Nosferatu",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -67631,7 +67631,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 35,
     "Player": "Apas72",
     "Deck": "Walls Combo",
@@ -67642,7 +67642,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 36,
     "Player": "Felider",
     "Deck": "Red Kuldotha",
@@ -67653,7 +67653,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 37,
     "Player": "Paulocabral_Br",
     "Deck": "Poison Storm",
@@ -67664,7 +67664,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 38,
     "Player": "Pepeteam",
     "Deck": "Cawgates",
@@ -67675,7 +67675,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 39,
     "Player": "Knightcomplex",
     "Deck": "Azorius Familiars",
@@ -67686,7 +67686,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 40,
     "Player": "_Znt_",
     "Deck": "Gruul Land Destruction",
@@ -67697,7 +67697,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 41,
     "Player": "Joacounterspell",
     "Deck": "Dimir Fae",
@@ -67708,7 +67708,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 42,
     "Player": "Selfeisek",
     "Deck": "Red Kuldotha",
@@ -67719,7 +67719,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 43,
     "Player": "Spartano",
     "Deck": "Hexproof",
@@ -67730,10 +67730,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 44,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -67741,10 +67741,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 45,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -67752,7 +67752,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 46,
     "Player": "Gybird",
     "Deck": "Red Kuldotha",
@@ -67763,7 +67763,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 47,
     "Player": "Yesicabyalexisf",
     "Deck": "Cawgates",
@@ -67774,7 +67774,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 48,
     "Player": "Franmtg",
     "Deck": "Red Kuldotha",
@@ -67785,7 +67785,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 49,
     "Player": "Zaaaamu",
     "Deck": "Dimir Fae",
@@ -67796,7 +67796,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 50,
     "Player": "Kefwyn",
     "Deck": "Dimir Fae",
@@ -67807,7 +67807,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 51,
     "Player": "Doblep",
     "Deck": "Dimir Fae",
@@ -67818,7 +67818,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 52,
     "Player": "Newbarola",
     "Deck": "Cawgates",
@@ -67829,7 +67829,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 53,
     "Player": "Supercow12653",
     "Deck": "Cawgates",
@@ -67840,7 +67840,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 54,
     "Player": "Mahers",
     "Deck": "Red Kuldotha",
@@ -67851,7 +67851,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 55,
     "Player": "Carvs",
     "Deck": "Cawgates",
@@ -67862,10 +67862,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 56,
     "Player": "Tiagofuguete",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 4,
     "Winrate": 0.5
@@ -67873,7 +67873,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 57,
     "Player": "Spockvidaloka",
     "Deck": "Izzet Control",
@@ -67884,7 +67884,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 58,
     "Player": "Luminati",
     "Deck": "Dredge",
@@ -67895,7 +67895,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 59,
     "Player": "Michelbiro",
     "Deck": "Izzet Control",
@@ -67906,7 +67906,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 60,
     "Player": "Jace_Mtg",
     "Deck": "Jeskai Ephemerate",
@@ -67917,7 +67917,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 61,
     "Player": "Borbs",
     "Deck": "Azorius Familiars",
@@ -67928,7 +67928,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 62,
     "Player": "Carrot_Eater",
     "Deck": "Cawgates",
@@ -67939,7 +67939,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 63,
     "Player": "Thegrimlavamancer",
     "Deck": "Red Kuldotha",
@@ -67950,7 +67950,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 64,
     "Player": "Vampiroll",
     "Deck": "Walls Combo",
@@ -67961,7 +67961,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 65,
     "Player": "Egadd2894",
     "Deck": "Golgari Gardens",
@@ -67972,7 +67972,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 66,
     "Player": "Magdaregina",
     "Deck": "Red Kuldotha",
@@ -67983,7 +67983,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 67,
     "Player": "Cherlon",
     "Deck": "Red Kuldotha",
@@ -67994,7 +67994,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 68,
     "Player": "Liv_Br",
     "Deck": "Red Kuldotha",
@@ -68005,7 +68005,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 69,
     "Player": "Hampuse1",
     "Deck": "Ashnod's Altar Combo",
@@ -68016,7 +68016,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 70,
     "Player": "Jwaves",
     "Deck": "White Weenie",
@@ -68027,7 +68027,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 71,
     "Player": "Captain_Tsubasa",
     "Deck": "Gruul Land Destruction",
@@ -68038,7 +68038,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 72,
     "Player": "Ixidor29",
     "Deck": "Izzet Control",
@@ -68049,7 +68049,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 73,
     "Player": "Audi0336",
     "Deck": "Dimir Terror",
@@ -68060,7 +68060,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 74,
     "Player": "Selkcahs",
     "Deck": "Red Kuldotha",
@@ -68071,7 +68071,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 75,
     "Player": "Mnaga",
     "Deck": "Goblin Class Combo",
@@ -68082,7 +68082,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 76,
     "Player": "Make_It_Right",
     "Deck": "Gruul Land Destruction",
@@ -68093,10 +68093,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 77,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 5,
     "Winrate": 0.375
@@ -68104,7 +68104,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 78,
     "Player": "Jordanescu",
     "Deck": "Mono Red Blitz",
@@ -68115,7 +68115,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 79,
     "Player": "Aoftw",
     "Deck": "Hexproof",
@@ -68126,7 +68126,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 80,
     "Player": "Lasvegaschaos",
     "Deck": "Simic Land Destruction",
@@ -68137,7 +68137,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 81,
     "Player": "Purgatory_01",
     "Deck": "Dimir Control",
@@ -68148,7 +68148,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 82,
     "Player": "Nathansteuer",
     "Deck": "Jeskai Ephemerate",
@@ -68159,7 +68159,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 83,
     "Player": "Seasonofmists",
     "Deck": "Goblin Class Combo",
@@ -68170,7 +68170,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 84,
     "Player": "Mistakenn",
     "Deck": "Gruul Land Destruction",
@@ -68181,7 +68181,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 85,
     "Player": "Moongoblin",
     "Deck": "Red Kuldotha",
@@ -68192,7 +68192,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 86,
     "Player": "Renaar",
     "Deck": "Poison Storm",
@@ -68203,9 +68203,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 87,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 3,
     "Losses": 4,
@@ -68214,7 +68214,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 88,
     "Player": "Cambinho",
     "Deck": "Rakdos Madness",
@@ -68225,7 +68225,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 89,
     "Player": "Aelalea37",
     "Deck": "Boros Synth",
@@ -68236,10 +68236,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 90,
     "Player": "Magician15",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -68247,7 +68247,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 91,
     "Player": "Tugganaxos",
     "Deck": "Gruul Land Destruction",
@@ -68258,7 +68258,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 92,
     "Player": "Levunga21",
     "Deck": "Dredge",
@@ -68269,10 +68269,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 93,
     "Player": "Nmt_Sc094",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 5,
     "Winrate": 0.375
@@ -68280,7 +68280,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 94,
     "Player": "Heliolima",
     "Deck": "Golgari Gardens",
@@ -68291,10 +68291,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 95,
     "Player": "Mcwinsauce",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 3,
     "Winrate": 0.4
@@ -68302,7 +68302,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 96,
     "Player": "Wizard_2002",
     "Deck": "Hexproof",
@@ -68313,9 +68313,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 97,
-    "Player": "A.c.a.i_20006",
+    "Player": "A.C.A.I_20006",
     "Deck": "Dimir Terror",
     "Wins": 2,
     "Losses": 2,
@@ -68324,7 +68324,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 98,
     "Player": "Arkany1",
     "Deck": "Rakdos Madness",
@@ -68335,7 +68335,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 99,
     "Player": "Amarobr",
     "Deck": "Boros Synth",
@@ -68346,7 +68346,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 100,
     "Player": "Tsubasa_Cat",
     "Deck": "Cawgates",
@@ -68357,9 +68357,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 101,
-    "Player": "Drnasty0g",
+    "Player": "Drnasty0G",
     "Deck": "Rakdos Madness",
     "Wins": 2,
     "Losses": 3,
@@ -68368,7 +68368,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 102,
     "Player": "Mansueto",
     "Deck": "Orzhov Blade",
@@ -68379,7 +68379,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 103,
     "Player": "Tunaktunak",
     "Deck": "Jeskai Ephemerate",
@@ -68390,7 +68390,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 104,
     "Player": "Lindos001",
     "Deck": "Boros Synth",
@@ -68401,7 +68401,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 105,
     "Player": "Nofedep",
     "Deck": "Gruul Land Destruction",
@@ -68412,7 +68412,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 106,
     "Player": "Sandydogmtg",
     "Deck": "Red Kuldotha",
@@ -68423,7 +68423,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 107,
     "Player": "Martin_Dominguez",
     "Deck": "Turbofog",
@@ -68434,7 +68434,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 108,
     "Player": "Immvp",
     "Deck": "Dredge",
@@ -68445,9 +68445,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 109,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Golgari Gardens",
     "Wins": 2,
     "Losses": 6,
@@ -68456,7 +68456,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 110,
     "Player": "O_Danielakos",
     "Deck": "Dimir Terror",
@@ -68467,7 +68467,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 111,
     "Player": "Supermeon",
     "Deck": "Mono Blue Faeries",
@@ -68478,7 +68478,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 112,
     "Player": "Kirblinxy",
     "Deck": "Goblin Class Combo",
@@ -68489,9 +68489,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 113,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Cawgates",
     "Wins": 2,
     "Losses": 6,
@@ -68500,7 +68500,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 114,
     "Player": "Jovica",
     "Deck": "Goblin Class Combo",
@@ -68511,7 +68511,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 115,
     "Player": "Bong0411",
     "Deck": "Cawgates",
@@ -68522,7 +68522,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 116,
     "Player": "Twister66",
     "Deck": "Cawgates",
@@ -68533,10 +68533,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 117,
     "Player": "Bless_Von",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -68544,9 +68544,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 118,
-    "Player": "19lnc91",
+    "Player": "19Lnc91",
     "Deck": "Mono Blue Terror",
     "Wins": 1,
     "Losses": 2,
@@ -68555,7 +68555,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 119,
     "Player": "Bugsy69",
     "Deck": "Golgari Gardens",
@@ -68566,9 +68566,9 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 120,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 1,
     "Losses": 3,
@@ -68577,7 +68577,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 121,
     "Player": "Canepis16",
     "Deck": "Cycle Storm",
@@ -68588,7 +68588,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 122,
     "Player": "Countertopgarchomp",
     "Deck": "Cawgates",
@@ -68599,7 +68599,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 123,
     "Player": "Easymoneymarksman",
     "Deck": "Mono Blue Terror",
@@ -68610,7 +68610,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 124,
     "Player": "Pintumtg",
     "Deck": "Dredge",
@@ -68621,7 +68621,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 125,
     "Player": "Totemsilence",
     "Deck": "Orzhov Blade",
@@ -68632,10 +68632,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 126,
     "Player": "Thiagocagao",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -68643,10 +68643,10 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 127,
     "Player": "Walker735",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 5,
     "Winrate": 0.1666666667
@@ -68654,7 +68654,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 128,
     "Player": "Niederschatten",
     "Deck": "Dimir Fae",
@@ -68665,7 +68665,7 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 129,
     "Player": "Manjyui",
     "Deck": "Dimir Fae",
@@ -68676,211 +68676,211 @@ export const cleanedData = [
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 130,
     "Player": "Mistertwin",
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 131,
     "Player": "Wingedhussar",
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 132,
     "Player": "Ivanguille",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 133,
     "Player": "Magaramagara",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 134,
     "Player": "Tellkou",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 135,
     "Player": "Cicciogire",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 136,
     "Player": "Ritualsinkhole",
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 137,
     "Player": "Rubensnetto",
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 138,
     "Player": "Denisevichalexey",
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 139,
     "Player": "Likeaferro",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 140,
     "Player": "Misplacedginger",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 141,
     "Player": "_Against_",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 142,
     "Player": "Gn42",
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 143,
     "Player": "Ezocratto",
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 144,
     "Player": "Valimoth",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 145,
     "Player": "Dlnglis",
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 146,
     "Player": "Duke12",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 147,
     "Player": "Uegjo",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-25",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-05-25)",
+    "Event": "MTGO Showcase (2024-05-25)",
     "Rank": 148,
     "Player": "Viatt",
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69052,7 +69052,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 16,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 4,
     "Losses": 2,
@@ -69228,7 +69228,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 32,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
@@ -69250,7 +69250,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 34,
-    "Player": "-magicrick93-",
+    "Player": "-Magicrick93-",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 1,
     "Losses": 4,
@@ -69276,7 +69276,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69305,7 +69305,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 39,
-    "Player": "El-pollo-loco",
+    "Player": "El-Pollo-Loco",
     "Deck": "Mono Blue Terror",
     "Wins": 1,
     "Losses": 5,
@@ -69331,18 +69331,18 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 42,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69353,7 +69353,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69364,7 +69364,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69375,7 +69375,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69386,7 +69386,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
@@ -69397,18 +69397,18 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-25",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-25)",
     "Rank": 48,
-    "Player": "Yurgen.ru",
+    "Player": "Yurgen.Ru",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -69459,7 +69459,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 5,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 5,
     "Losses": 2,
@@ -69548,7 +69548,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 13,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -69558,7 +69558,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 14,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 4,
     "Losses": 2,
@@ -69734,7 +69734,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 30,
-    "Player": "Tang3jin",
+    "Player": "Tang3Jin",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 3,
@@ -69746,7 +69746,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 31,
     "Player": "Ramelao",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -69888,7 +69888,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 44,
-    "Player": "-nausea-",
+    "Player": "-Nausea-",
     "Deck": "Boros Glitters",
     "Wins": 2,
     "Losses": 3,
@@ -69933,7 +69933,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-26)",
     "Rank": 48,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -70024,7 +70024,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70035,7 +70035,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70046,7 +70046,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70057,7 +70057,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70068,7 +70068,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70079,7 +70079,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70090,7 +70090,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-26",
@@ -70101,7 +70101,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-26",
@@ -70240,7 +70240,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-26)",
     "Rank": 13,
-    "Player": "Tang3jin",
+    "Player": "Tang3Jin",
     "Deck": "Dredge",
     "Wins": 4,
     "Losses": 2,
@@ -70416,7 +70416,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-26)",
     "Rank": 29,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -70614,7 +70614,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-26)",
     "Rank": 47,
-    "Player": "Long-arch00",
+    "Player": "Long-Arch00",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 1,
     "Losses": 4,
@@ -70629,7 +70629,7 @@ export const cleanedData = [
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-26",
@@ -70640,7 +70640,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-26",
@@ -70651,18 +70651,18 @@ export const cleanedData = [
     "Deck": "Gruul Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-26",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-26)",
     "Rank": 51,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-26",
@@ -70673,7 +70673,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -70812,7 +70812,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 13,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 5,
     "Losses": 2,
@@ -70824,7 +70824,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 14,
     "Player": "Trivothegreat",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -70845,7 +70845,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 16,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 3,
@@ -70868,7 +70868,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 18,
     "Player": "Jiliac",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -70890,7 +70890,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 20,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -70923,7 +70923,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 23,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -70933,7 +70933,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 24,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Rakdos Madness",
     "Wins": 4,
     "Losses": 3,
@@ -70945,7 +70945,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 25,
     "Player": "Vini_Torres",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -70978,7 +70978,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 28,
     "Player": "Pedrastone",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -71011,7 +71011,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 31,
     "Player": "Likeaferro",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -71044,7 +71044,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 34,
     "Player": "Misplacedginger",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -71077,7 +71077,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 37,
     "Player": "Outzeroo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -71088,7 +71088,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 38,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -71121,7 +71121,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 41,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -71131,7 +71131,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 42,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Cawgates",
     "Wins": 2,
     "Losses": 2,
@@ -71209,7 +71209,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 49,
     "Player": "Lucajak",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 3,
     "Winrate": 0.4
@@ -71231,7 +71231,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 51,
     "Player": "Luanpizzio",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -71275,7 +71275,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 55,
     "Player": "Tozla",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
     "Winrate": 0.25
@@ -71300,7 +71300,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71319,10 +71319,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 59,
     "Player": "_Batutinha_",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71363,10 +71363,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-26)",
     "Rank": 63,
     "Player": "Macksmith",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71388,7 +71388,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71399,7 +71399,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71410,7 +71410,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-26",
@@ -71421,7 +71421,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71817,7 +71817,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71872,7 +71872,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71883,7 +71883,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71894,7 +71894,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71905,7 +71905,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71916,7 +71916,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71927,7 +71927,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-26",
@@ -71938,7 +71938,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -71949,7 +71949,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-04-27",
@@ -72012,7 +72012,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-27)",
     "Rank": 7,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -72374,7 +72374,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-27)",
     "Rank": 40,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Cawgates",
     "Wins": 1,
     "Losses": 3,
@@ -72411,7 +72411,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -72433,7 +72433,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -72444,7 +72444,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -72455,7 +72455,7 @@ export const cleanedData = [
     "Deck": "Rebel Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -72466,7 +72466,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-27",
@@ -72477,7 +72477,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -72517,7 +72517,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-27)",
     "Rank": 4,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
@@ -72715,7 +72715,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-27)",
     "Rank": 22,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
@@ -72814,7 +72814,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-27)",
     "Rank": 31,
-    "Player": "Damuga-murcia",
+    "Player": "Damuga-Murcia",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -72917,7 +72917,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -72961,7 +72961,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -72972,7 +72972,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -72983,7 +72983,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -72994,7 +72994,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -73005,7 +73005,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -73016,7 +73016,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -73027,7 +73027,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-27",
@@ -73038,7 +73038,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-27",
@@ -73155,7 +73155,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-27)",
     "Rank": 11,
-    "Player": "Nmt-lacontea",
+    "Player": "Nmt-Lacontea",
     "Deck": "White Weenie",
     "Wins": 4,
     "Losses": 2,
@@ -73210,7 +73210,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-27)",
     "Rank": 16,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "White Weenie",
     "Wins": 3,
     "Losses": 3,
@@ -73342,7 +73342,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-27)",
     "Rank": 28,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -73533,7 +73533,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-27",
@@ -73544,7 +73544,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-27",
@@ -73555,7 +73555,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -73584,7 +73584,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-27)",
     "Rank": 3,
-    "Player": "Fried-liver-attack",
+    "Player": "Fried-Liver-Attack",
     "Deck": "Izzet Control",
     "Wins": 6,
     "Losses": 2,
@@ -73661,7 +73661,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-27)",
     "Rank": 10,
-    "Player": "Dch97e",
+    "Player": "Dch97E",
     "Deck": "Mono Blue Terror",
     "Wins": 4,
     "Losses": 2,
@@ -73980,7 +73980,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-27)",
     "Rank": 39,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
@@ -74028,7 +74028,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74039,7 +74039,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74050,7 +74050,7 @@ export const cleanedData = [
     "Deck": "Izzet Blitz",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74061,7 +74061,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74072,7 +74072,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74083,7 +74083,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74094,7 +74094,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-27",
@@ -74105,7 +74105,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-27",
@@ -74244,7 +74244,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-27)",
     "Rank": 13,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -74343,7 +74343,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-27)",
     "Rank": 22,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 3,
@@ -74479,7 +74479,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-27",
@@ -74490,7 +74490,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-27",
@@ -74501,7 +74501,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -74618,7 +74618,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-28)",
     "Rank": 11,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Izzet Control",
     "Wins": 4,
     "Losses": 2,
@@ -74893,7 +74893,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-28)",
     "Rank": 36,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 3,
@@ -74963,7 +74963,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -74974,7 +74974,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -74985,7 +74985,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -74996,7 +74996,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75007,7 +75007,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75080,7 +75080,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-28)",
     "Rank": 7,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Izzet Control",
     "Wins": 5,
     "Losses": 2,
@@ -75454,7 +75454,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-28)",
     "Rank": 41,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 2,
     "Losses": 4,
@@ -75645,7 +75645,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75667,7 +75667,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75678,7 +75678,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75689,7 +75689,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75700,7 +75700,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-28",
@@ -75711,7 +75711,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -75883,7 +75883,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-28)",
     "Rank": 16,
-    "Player": "Blinkmoth-nexus",
+    "Player": "Blinkmoth-Nexus",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
@@ -76250,7 +76250,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76316,7 +76316,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76327,7 +76327,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76338,7 +76338,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76349,7 +76349,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76360,7 +76360,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76371,7 +76371,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76382,7 +76382,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76393,18 +76393,18 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-28)",
     "Rank": 63,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-28",
@@ -76415,7 +76415,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-28",
@@ -76543,7 +76543,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-28)",
     "Rank": 12,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Gruul Land Destruction",
     "Wins": 4,
     "Losses": 2,
@@ -76840,7 +76840,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-28)",
     "Rank": 39,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
@@ -76899,7 +76899,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-28",
@@ -76910,7 +76910,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-28",
@@ -76921,7 +76921,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77273,7 +77273,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77284,7 +77284,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77295,7 +77295,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77306,7 +77306,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77317,7 +77317,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77328,7 +77328,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-28",
@@ -77339,7 +77339,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77544,7 +77544,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-29)",
     "Rank": 19,
-    "Player": "Xx420blazeitxx",
+    "Player": "Xx420Blazeitxx",
     "Deck": "Mono Blue Terror",
     "Wins": 4,
     "Losses": 2,
@@ -77885,7 +77885,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-29)",
     "Rank": 50,
-    "Player": "Killerp0p0",
+    "Player": "Killerp0P0",
     "Deck": "Mono Blue Faeries",
     "Wins": 1,
     "Losses": 2,
@@ -77900,7 +77900,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77911,7 +77911,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77922,7 +77922,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77933,7 +77933,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77944,7 +77944,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77955,7 +77955,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77966,7 +77966,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77977,7 +77977,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77988,7 +77988,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-29",
@@ -77999,7 +77999,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-29",
@@ -78010,7 +78010,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-06-29",
@@ -78483,7 +78483,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-29",
@@ -78505,7 +78505,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-29",
@@ -78516,7 +78516,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-29",
@@ -78527,7 +78527,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78622,7 +78622,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-29)",
     "Rank": 9,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 2,
@@ -78754,7 +78754,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-29)",
     "Rank": 21,
-    "Player": "True-name-nemesis",
+    "Player": "True-Name-Nemesis",
     "Deck": "Golgari Gardens",
     "Wins": 3,
     "Losses": 3,
@@ -78776,7 +78776,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-29)",
     "Rank": 23,
-    "Player": "3draw_Tano",
+    "Player": "3Draw_Tano",
     "Deck": "Jund Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -78901,7 +78901,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78912,7 +78912,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78923,7 +78923,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78934,18 +78934,18 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-29)",
     "Rank": 38,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78956,7 +78956,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-29",
@@ -78967,7 +78967,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79363,7 +79363,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79396,7 +79396,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79451,7 +79451,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79462,7 +79462,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79473,7 +79473,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79484,7 +79484,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79495,7 +79495,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79506,7 +79506,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79517,7 +79517,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79528,7 +79528,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79539,7 +79539,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-29",
@@ -79550,7 +79550,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -79942,7 +79942,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-03)",
     "Rank": 36,
-    "Player": "_Dr4gun0v_",
+    "Player": "_Dr4Gun0V_",
     "Deck": "Gruul Land Destruction",
     "Wins": 2,
     "Losses": 4,
@@ -80056,7 +80056,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80067,7 +80067,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80078,7 +80078,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80089,7 +80089,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80100,7 +80100,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80111,7 +80111,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80122,7 +80122,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-03",
@@ -80133,7 +80133,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80273,7 +80273,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-03)",
     "Rank": 13,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -80305,7 +80305,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-03)",
     "Rank": 16,
-    "Player": "Sum1unopk",
+    "Player": "Sum1Unopk",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 2,
@@ -80426,7 +80426,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-03)",
     "Rank": 27,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -80536,7 +80536,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-03)",
     "Rank": 37,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 2,
     "Losses": 4,
@@ -80657,8 +80657,8 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-03)",
     "Rank": 48,
-    "Player": "Sorceress-queen",
-    "Deck": "Affinity",
+    "Player": "Sorceress-Queen",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -80716,7 +80716,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80727,7 +80727,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80738,7 +80738,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80749,7 +80749,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80760,7 +80760,7 @@ export const cleanedData = [
     "Deck": "Mono White Heroic",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80771,7 +80771,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-03",
@@ -80782,7 +80782,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81141,7 +81141,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-03)",
     "Rank": 33,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
@@ -81163,7 +81163,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-03)",
     "Rank": 35,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 4,
@@ -81218,7 +81218,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-03)",
     "Rank": 40,
-    "Player": "-magicrick93-",
+    "Player": "-Magicrick93-",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 2,
     "Losses": 4,
@@ -81431,7 +81431,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81442,7 +81442,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81453,7 +81453,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81464,7 +81464,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81475,7 +81475,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81486,7 +81486,7 @@ export const cleanedData = [
     "Deck": "Orzhov Midrange",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81497,7 +81497,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81508,7 +81508,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81519,7 +81519,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-03",
@@ -81530,7 +81530,7 @@ export const cleanedData = [
     "Deck": "Jeskai Tokens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -81702,7 +81702,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-30)",
     "Rank": 16,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
@@ -82069,7 +82069,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82080,7 +82080,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82091,7 +82091,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82102,7 +82102,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82113,7 +82113,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82124,7 +82124,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82135,7 +82135,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82146,7 +82146,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-30",
@@ -82157,7 +82157,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-30",
@@ -82395,7 +82395,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-30)",
     "Rank": 22,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -82593,7 +82593,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-30)",
     "Rank": 40,
-    "Player": "A.c.a.i_20006",
+    "Player": "A.C.A.I_20006",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
@@ -82637,7 +82637,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-30)",
     "Rank": 44,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 3,
@@ -82692,7 +82692,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-30)",
     "Rank": 49,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 3,
@@ -82773,7 +82773,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-30",
@@ -82828,7 +82828,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-30",
@@ -82839,7 +82839,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-30",
@@ -82850,7 +82850,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-30",
@@ -82861,7 +82861,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83342,7 +83342,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-30)",
     "Rank": 44,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -83367,7 +83367,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83444,7 +83444,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83455,7 +83455,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83466,7 +83466,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83477,7 +83477,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83488,7 +83488,7 @@ export const cleanedData = [
     "Deck": "Naya Slivers",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83499,7 +83499,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83510,7 +83510,7 @@ export const cleanedData = [
     "Deck": "Boros Synth",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-30",
@@ -83521,7 +83521,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83781,7 +83781,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-30)",
     "Rank": 24,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Golgari Broodscale",
     "Wins": 2,
     "Losses": 3,
@@ -83917,7 +83917,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83928,7 +83928,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83939,7 +83939,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83950,7 +83950,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83961,7 +83961,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-30",
@@ -83972,7 +83972,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -83983,7 +83983,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 9,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-08-31",
@@ -84390,7 +84390,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84423,7 +84423,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84434,7 +84434,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84445,7 +84445,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84456,7 +84456,7 @@ export const cleanedData = [
     "Deck": "Goblins",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84467,7 +84467,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84478,7 +84478,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-31",
@@ -84489,7 +84489,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -84837,7 +84837,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 32,
-    "Player": "Magic4ever mtgo",
+    "Player": "Magic4Ever_Mtgo",
     "Deck": "Golgari Gardens",
     "Wins": 3,
     "Losses": 3,
@@ -84903,7 +84903,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 38,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 4,
@@ -84914,7 +84914,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 39,
-    "Player": "Pr0boszcz",
+    "Player": "Pr0Boszcz",
     "Deck": "Azorius Glitters",
     "Wins": 2,
     "Losses": 4,
@@ -84970,7 +84970,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 44,
     "Player": "Outzeroo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 4,
     "Winrate": 0.2
@@ -85013,7 +85013,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 48,
-    "Player": "Darkbob1b",
+    "Player": "Darkbob1B",
     "Deck": "Izzet Control",
     "Wins": 1,
     "Losses": 3,
@@ -85050,7 +85050,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85061,18 +85061,18 @@ export const cleanedData = [
     "Deck": "Boros Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 53,
-    "Player": "Nmt-lacontea",
+    "Player": "Nmt-Lacontea",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85083,7 +85083,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85094,7 +85094,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85105,7 +85105,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85134,7 +85134,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 3,
-    "Player": "Pr0boszcz",
+    "Player": "Pr0Boszcz",
     "Deck": "Orzhov Pestilence",
     "Wins": 7,
     "Losses": 2,
@@ -85145,7 +85145,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 4,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Hexproof",
     "Wins": 6,
     "Losses": 3,
@@ -85299,7 +85299,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 18,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Jeskai Ephemerate",
     "Wins": 4,
     "Losses": 3,
@@ -85586,7 +85586,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 44,
     "Player": "O_Danielakos",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -85608,7 +85608,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 46,
     "Player": "Outzeroo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -85619,7 +85619,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 47,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -85706,7 +85706,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 55,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 2,
     "Losses": 5,
@@ -85831,7 +85831,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85853,18 +85853,18 @@ export const cleanedData = [
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-03-31)",
     "Rank": 69,
-    "Player": "S8shock",
+    "Player": "S8Shock",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-03-31",
@@ -85875,7 +85875,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -85938,7 +85938,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 6,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -85981,7 +85981,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 10,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Jeskai Ephemerate",
     "Wins": 4,
     "Losses": 2,
@@ -86036,7 +86036,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 15,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 2,
@@ -86081,7 +86081,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 19,
     "Player": "Tiagofuguete",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -86234,7 +86234,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 33,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Turbofog",
     "Wins": 3,
     "Losses": 3,
@@ -86257,7 +86257,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 35,
     "Player": "Ivernop",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -86322,7 +86322,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 41,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Dredge",
     "Wins": 2,
     "Losses": 4,
@@ -86345,7 +86345,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 43,
     "Player": "Vini_Torres",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -86389,7 +86389,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 47,
     "Player": "Baldo13",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -86400,7 +86400,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 48,
     "Player": "Pedrastone",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -86443,7 +86443,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 52,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 1,
     "Losses": 4,
@@ -86458,7 +86458,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86488,10 +86488,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 56,
     "Player": "Trivothegreat",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86499,10 +86499,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 57,
     "Player": "Cicciogire",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86513,7 +86513,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86524,7 +86524,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86535,7 +86535,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86543,10 +86543,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 61,
     "Player": "Juaki",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86554,10 +86554,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 62,
     "Player": "Fszlaien",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-31",
@@ -86565,10 +86565,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-31)",
     "Rank": 63,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -86751,7 +86751,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-04)",
     "Rank": 17,
-    "Player": "Blinkmoth-nexus",
+    "Player": "Blinkmoth-Nexus",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
@@ -86927,7 +86927,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-04)",
     "Rank": 33,
-    "Player": "Walshi41ife",
+    "Player": "Walshi41Ife",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
@@ -86938,7 +86938,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-04)",
     "Rank": 34,
-    "Player": "Kagami-meijin",
+    "Player": "Kagami-Meijin",
     "Deck": "Golgari Sacrifice",
     "Wins": 2,
     "Losses": 3,
@@ -87151,7 +87151,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87162,7 +87162,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87173,7 +87173,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87184,7 +87184,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87195,7 +87195,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87206,7 +87206,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87217,7 +87217,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87228,7 +87228,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-04",
@@ -87239,7 +87239,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87466,7 +87466,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-04)",
     "Rank": 21,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -87577,7 +87577,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-04)",
     "Rank": 31,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -87778,7 +87778,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87789,7 +87789,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87800,7 +87800,7 @@ export const cleanedData = [
     "Deck": "Izzet Fae",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87811,7 +87811,7 @@ export const cleanedData = [
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87822,7 +87822,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-04",
@@ -87833,7 +87833,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -87851,7 +87851,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-04)",
     "Rank": 2,
-    "Player": "Izzy-wilde",
+    "Player": "Izzy-Wilde",
     "Deck": "Red Kuldotha",
     "Wins": 6,
     "Losses": 3,
@@ -88181,7 +88181,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-04)",
     "Rank": 32,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 4,
@@ -88284,7 +88284,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88295,7 +88295,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88306,7 +88306,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88317,7 +88317,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88328,7 +88328,7 @@ export const cleanedData = [
     "Deck": "Poison Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88339,7 +88339,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88350,7 +88350,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-04",
@@ -88361,14 +88361,14 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 1,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 7,
     "Losses": 2,
@@ -88412,7 +88412,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 5,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 6,
     "Losses": 1,
@@ -88545,7 +88545,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 17,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -88621,7 +88621,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 24,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Azorius Familiars",
     "Wins": 3,
     "Losses": 3,
@@ -88852,7 +88852,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 45,
-    "Player": "Magic4everbotmodern3",
+    "Player": "Magic4Everbotmodern3",
     "Deck": "Golgari Gardens",
     "Wins": 2,
     "Losses": 4,
@@ -88889,7 +88889,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -88995,11 +88995,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-05)",
     "Rank": 58,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89010,7 +89010,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89021,7 +89021,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89032,7 +89032,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89043,7 +89043,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89054,7 +89054,7 @@ export const cleanedData = [
     "Deck": "Azorius Glitters",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-05",
@@ -89065,7 +89065,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89270,7 +89270,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-05)",
     "Rank": 19,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Mono White Heroic",
     "Wins": 4,
     "Losses": 2,
@@ -89468,7 +89468,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-05)",
     "Rank": 37,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "UNKNOWN",
     "Wins": 3,
     "Losses": 3,
@@ -89571,7 +89571,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89633,7 +89633,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-05)",
     "Rank": 52,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 3,
@@ -89659,7 +89659,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89670,7 +89670,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89681,7 +89681,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89692,7 +89692,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89703,7 +89703,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89714,7 +89714,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89725,7 +89725,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-05",
@@ -89736,7 +89736,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -89919,7 +89919,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 17,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 3,
@@ -89996,7 +89996,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 24,
-    "Player": "0men",
+    "Player": "0Men",
     "Deck": "Cycle Storm",
     "Wins": 3,
     "Losses": 3,
@@ -90073,7 +90073,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 31,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 4,
@@ -90117,7 +90117,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 35,
-    "Player": "Rob85tx",
+    "Player": "Rob85Tx",
     "Deck": "Boros Glitters",
     "Wins": 1,
     "Losses": 4,
@@ -90151,7 +90151,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 38,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 5,
     "Winrate": 0.1666666667
@@ -90176,7 +90176,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90187,7 +90187,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90271,7 +90271,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 8,
-    "Player": "19lnc91",
+    "Player": "19Lnc91",
     "Deck": "Mono Blue Terror",
     "Wins": 5,
     "Losses": 3,
@@ -90447,7 +90447,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 24,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Hexproof",
     "Wins": 4,
     "Losses": 3,
@@ -90491,7 +90491,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-05-05)",
     "Rank": 28,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 4,
     "Losses": 3,
@@ -90847,7 +90847,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90858,7 +90858,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90869,7 +90869,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90880,7 +90880,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90891,7 +90891,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90902,7 +90902,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90913,7 +90913,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-05-05",
@@ -90924,7 +90924,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-05",
@@ -91184,7 +91184,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-05)",
     "Rank": 24,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
@@ -91294,7 +91294,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-05)",
     "Rank": 34,
-    "Player": "Synth1a",
+    "Player": "Synth1A",
     "Deck": "Mono Blue Terror",
     "Wins": 2,
     "Losses": 4,
@@ -91408,7 +91408,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-05",
@@ -91419,7 +91419,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-05",
@@ -91430,7 +91430,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-05",
@@ -91441,7 +91441,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-05",
@@ -91452,7 +91452,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -91537,7 +91537,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-06)",
     "Rank": 8,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -91844,7 +91844,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-06)",
     "Rank": 36,
-    "Player": "Magic4everbotmodern2",
+    "Player": "Magic4Everbotmodern2",
     "Deck": "Golgari Gardens",
     "Wins": 3,
     "Losses": 4,
@@ -91976,7 +91976,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-06)",
     "Rank": 48,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Boros Glitters",
     "Wins": 2,
     "Losses": 5,
@@ -92145,7 +92145,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -92156,7 +92156,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -92167,7 +92167,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -92178,7 +92178,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -92189,7 +92189,7 @@ export const cleanedData = [
     "Deck": "Mono Green Infect",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-06",
@@ -92200,7 +92200,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92383,7 +92383,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-06)",
     "Rank": 17,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 2,
@@ -92614,7 +92614,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-06)",
     "Rank": 38,
-    "Player": "_J0se_",
+    "Player": "_J0Se_",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
@@ -92636,7 +92636,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-06)",
     "Rank": 40,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Mono Blue Terror",
     "Wins": 1,
     "Losses": 2,
@@ -92739,7 +92739,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92750,7 +92750,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92761,7 +92761,7 @@ export const cleanedData = [
     "Deck": "Green Tokens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92772,7 +92772,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92783,7 +92783,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-06",
@@ -92794,7 +92794,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
@@ -93300,7 +93300,7 @@ export const cleanedData = [
     "Deck": "Burn",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
@@ -93311,7 +93311,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
@@ -93322,7 +93322,7 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
@@ -93333,34 +93333,34 @@ export const cleanedData = [
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-06)",
     "Rank": 50,
-    "Player": "Tw33ty",
+    "Player": "Tw33Ty",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 1,
     "Player": "Olavojusmtm",
     "Deck": "Golgari Gardens",
     "Wins": 12,
     "Losses": 0,
-    "Winrate": 1
+    "Winrate": 1.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 2,
     "Player": "Spockvidaloka",
     "Deck": "Izzet Control",
@@ -93371,7 +93371,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 3,
     "Player": "Gartuyzz",
     "Deck": "Golgari Gardens",
@@ -93382,7 +93382,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 4,
     "Player": "Ivernop",
     "Deck": "Mono Red Blitz",
@@ -93393,7 +93393,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 5,
     "Player": "Paulocabral_Br",
     "Deck": "Red Kuldotha",
@@ -93404,7 +93404,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 6,
     "Player": "Othavirium",
     "Deck": "Broodscale Combo",
@@ -93415,7 +93415,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 7,
     "Player": "Liv_Br",
     "Deck": "Gruul Land Destruction",
@@ -93426,7 +93426,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 8,
     "Player": "Nammersquats",
     "Deck": "Grixis Affinity",
@@ -93437,7 +93437,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 9,
     "Player": "Sulleycrusher",
     "Deck": "Broodscale Combo",
@@ -93448,7 +93448,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 10,
     "Player": "Jwaves",
     "Deck": "White Weenie",
@@ -93459,7 +93459,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 11,
     "Player": "Albana",
     "Deck": "Walls Combo",
@@ -93470,7 +93470,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 12,
     "Player": "Themanland",
     "Deck": "Rakdos Madness",
@@ -93481,7 +93481,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 13,
     "Player": "Fisicman",
     "Deck": "Hexproof",
@@ -93492,7 +93492,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 14,
     "Player": "Kaikas",
     "Deck": "Grixis Affinity",
@@ -93503,7 +93503,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 15,
     "Player": "Yuxiaoyu",
     "Deck": "Mono Blue Terror",
@@ -93514,7 +93514,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 16,
     "Player": "Mattn",
     "Deck": "Broodscale Combo",
@@ -93525,9 +93525,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 17,
-    "Player": "Muril0ambra",
+    "Player": "Muril0Ambra",
     "Deck": "Rakdos Madness",
     "Wins": 7,
     "Losses": 2,
@@ -93536,7 +93536,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 18,
     "Player": "Cesta",
     "Deck": "Broodscale Combo",
@@ -93547,7 +93547,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 19,
     "Player": "_Tia93_",
     "Deck": "Grixis Affinity",
@@ -93558,7 +93558,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 20,
     "Player": "Liv_One",
     "Deck": "Walls Combo",
@@ -93569,7 +93569,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 21,
     "Player": "Tozla",
     "Deck": "Walls Combo",
@@ -93580,7 +93580,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 22,
     "Player": "Franmtg",
     "Deck": "Red Kuldotha",
@@ -93591,7 +93591,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 23,
     "Player": "Yahakara",
     "Deck": "Grixis Affinity",
@@ -93602,9 +93602,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 24,
-    "Player": "B1ast",
+    "Player": "B1Ast",
     "Deck": "Gruul Land Destruction",
     "Wins": 6,
     "Losses": 3,
@@ -93613,7 +93613,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 25,
     "Player": "Backoff",
     "Deck": "Grixis Affinity",
@@ -93624,7 +93624,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 26,
     "Player": "Apas72",
     "Deck": "Walls Combo",
@@ -93635,7 +93635,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 27,
     "Player": "Rastaf",
     "Deck": "Grixis Affinity",
@@ -93646,7 +93646,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 28,
     "Player": "Cbjr",
     "Deck": "Gruul Land Destruction",
@@ -93657,7 +93657,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 29,
     "Player": "Newbarola",
     "Deck": "Red Kuldotha",
@@ -93668,7 +93668,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 30,
     "Player": "Phoenix_Flame",
     "Deck": "Broodscale Combo",
@@ -93679,7 +93679,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 31,
     "Player": "Cornetto",
     "Deck": "Broodscale Combo",
@@ -93690,7 +93690,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 32,
     "Player": "Tiagofuguete",
     "Deck": "Red Kuldotha",
@@ -93701,7 +93701,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 33,
     "Player": "Mistertwin",
     "Deck": "Red Kuldotha",
@@ -93712,7 +93712,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 34,
     "Player": "Drvendigo",
     "Deck": "Hexproof",
@@ -93723,7 +93723,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 35,
     "Player": "Rasvd",
     "Deck": "Rakdos Madness",
@@ -93734,7 +93734,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 36,
     "Player": "Slaxx",
     "Deck": "Dimir Terror",
@@ -93745,7 +93745,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 37,
     "Player": "Nopainnogame_",
     "Deck": "Rakdos Madness",
@@ -93756,7 +93756,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 38,
     "Player": "Gybird",
     "Deck": "Red Kuldotha",
@@ -93767,7 +93767,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 39,
     "Player": "Chienz89",
     "Deck": "Mono Red Blitz",
@@ -93778,7 +93778,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 40,
     "Player": "Darkestmage",
     "Deck": "Dimir Terror",
@@ -93789,7 +93789,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 41,
     "Player": "Lordegg",
     "Deck": "Rakdos Madness",
@@ -93800,7 +93800,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 42,
     "Player": "Tulio_Jaudy",
     "Deck": "Selesnya Gates",
@@ -93811,7 +93811,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 43,
     "Player": "Thejunkdog",
     "Deck": "Rakdos Madness",
@@ -93822,9 +93822,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 44,
-    "Player": "567konner",
+    "Player": "567Konner",
     "Deck": "Rakdos Madness",
     "Wins": 6,
     "Losses": 3,
@@ -93833,7 +93833,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 45,
     "Player": "Caleb_Yetman",
     "Deck": "Broodscale Combo",
@@ -93844,7 +93844,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 46,
     "Player": "Barff",
     "Deck": "Red Kuldotha",
@@ -93855,7 +93855,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 47,
     "Player": "O_Danielakos",
     "Deck": "Dimir Terror",
@@ -93866,7 +93866,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 48,
     "Player": "Alessandropiraccini",
     "Deck": "Golgari Gardens",
@@ -93877,7 +93877,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 49,
     "Player": "Mechrataal",
     "Deck": "Red Kuldotha",
@@ -93888,7 +93888,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 50,
     "Player": "Alfonso_666666",
     "Deck": "Golgari Gardens",
@@ -93899,7 +93899,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 51,
     "Player": "Themutz",
     "Deck": "Grixis Affinity",
@@ -93910,7 +93910,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 52,
     "Player": "Swarm_Of_Mats",
     "Deck": "Cawgates",
@@ -93921,7 +93921,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 53,
     "Player": "Darius89",
     "Deck": "Mono Blue Terror",
@@ -93932,7 +93932,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 54,
     "Player": "Boom_Bust",
     "Deck": "Red Kuldotha",
@@ -93943,7 +93943,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 55,
     "Player": "Magician15",
     "Deck": "Azorius Tribe",
@@ -93954,7 +93954,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 56,
     "Player": "Camkelly13",
     "Deck": "Gruul Land Destruction",
@@ -93965,7 +93965,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 57,
     "Player": "Raydan",
     "Deck": "Grixis Affinity",
@@ -93976,7 +93976,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 58,
     "Player": "Moongoblin",
     "Deck": "Red Kuldotha",
@@ -93987,7 +93987,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 59,
     "Player": "Teamtrainspotting",
     "Deck": "Walls Combo",
@@ -93998,7 +93998,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 60,
     "Player": "Borbs",
     "Deck": "Azorius Familiars",
@@ -94009,7 +94009,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 61,
     "Player": "Onebigpin_",
     "Deck": "Broodscale Combo",
@@ -94020,7 +94020,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 62,
     "Player": "Countertopgarchomp",
     "Deck": "Broodscale Combo",
@@ -94031,7 +94031,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 63,
     "Player": "Jvidarte",
     "Deck": "Rakdos Madness",
@@ -94042,7 +94042,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 64,
     "Player": "Mistakenn",
     "Deck": "Gruul Land Destruction",
@@ -94053,7 +94053,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 65,
     "Player": "Menjo155",
     "Deck": "Walls Combo",
@@ -94064,7 +94064,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 66,
     "Player": "James_Zhi",
     "Deck": "Broodscale Combo",
@@ -94075,7 +94075,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 67,
     "Player": "Amanatease",
     "Deck": "Grixis Affinity",
@@ -94086,9 +94086,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 68,
-    "Player": "Tang3jin",
+    "Player": "Tang3Jin",
     "Deck": "Dredge",
     "Wins": 5,
     "Losses": 4,
@@ -94097,7 +94097,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 69,
     "Player": "Mtgmoneymaker",
     "Deck": "Grixis Affinity",
@@ -94108,9 +94108,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 70,
-    "Player": "_Dr4gun0v_",
+    "Player": "_Dr4Gun0V_",
     "Deck": "Gruul Land Destruction",
     "Wins": 5,
     "Losses": 4,
@@ -94119,7 +94119,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 71,
     "Player": "Grindera",
     "Deck": "Gruul Land Destruction",
@@ -94130,7 +94130,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 72,
     "Player": "Joaoclaudioms",
     "Deck": "Broodscale Combo",
@@ -94141,7 +94141,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 73,
     "Player": "Sarlanga",
     "Deck": "Gruul Land Destruction",
@@ -94152,7 +94152,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 74,
     "Player": "Ryugha",
     "Deck": "Red Kuldotha",
@@ -94163,9 +94163,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 75,
-    "Player": "Saidin.raken",
+    "Player": "Saidin.Raken",
     "Deck": "Gruul Storm",
     "Wins": 5,
     "Losses": 4,
@@ -94174,9 +94174,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 76,
-    "Player": "Neb12r",
+    "Player": "Neb12R",
     "Deck": "Mono Black Aristocrats",
     "Wins": 5,
     "Losses": 4,
@@ -94185,7 +94185,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 77,
     "Player": "Franzisco23195",
     "Deck": "Red Kuldotha",
@@ -94196,7 +94196,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 78,
     "Player": "Brivenix",
     "Deck": "Mono Blue Terror",
@@ -94207,7 +94207,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 79,
     "Player": "Kingziggy",
     "Deck": "Jeskai Ephemerate",
@@ -94218,9 +94218,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 80,
-    "Player": "G-monteiro",
+    "Player": "G-Monteiro",
     "Deck": "Mono White Heroic",
     "Wins": 5,
     "Losses": 4,
@@ -94229,7 +94229,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 81,
     "Player": "Bokyfloky",
     "Deck": "Walls Combo",
@@ -94240,7 +94240,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 82,
     "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
@@ -94251,7 +94251,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 83,
     "Player": "Beicodegeia",
     "Deck": "Broodscale Combo",
@@ -94262,7 +94262,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 84,
     "Player": "Loerien",
     "Deck": "Broodscale Combo",
@@ -94273,7 +94273,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 85,
     "Player": "Nicknorman",
     "Deck": "Gruul Land Destruction",
@@ -94284,7 +94284,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 86,
     "Player": "Somebory",
     "Deck": "Izzet Control",
@@ -94295,7 +94295,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 87,
     "Player": "Meudeus",
     "Deck": "Mono Blue Terror",
@@ -94306,7 +94306,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 88,
     "Player": "Echanez",
     "Deck": "Mono White Heroic",
@@ -94317,7 +94317,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 89,
     "Player": "_Deadhorse",
     "Deck": "White Weenie",
@@ -94328,7 +94328,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 90,
     "Player": "Pirol94",
     "Deck": "Rakdos Madness",
@@ -94339,7 +94339,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 91,
     "Player": "Kirblinxy",
     "Deck": "Izzet Control",
@@ -94350,7 +94350,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 92,
     "Player": "Littledarwin",
     "Deck": "Dimir Terror",
@@ -94361,7 +94361,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 93,
     "Player": "Fszlaien",
     "Deck": "Broodscale Combo",
@@ -94372,7 +94372,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 94,
     "Player": "Manny-",
     "Deck": "Gruul Land Destruction",
@@ -94383,9 +94383,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 95,
-    "Player": "A.c.a.i_20006",
+    "Player": "A.C.A.I_20006",
     "Deck": "Mono Blue Terror",
     "Wins": 4,
     "Losses": 3,
@@ -94394,7 +94394,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 96,
     "Player": "Perret",
     "Deck": "Broodscale Combo",
@@ -94405,7 +94405,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 97,
     "Player": "Ajl99",
     "Deck": "Mono Blue Terror",
@@ -94416,7 +94416,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 98,
     "Player": "Finespoo",
     "Deck": "Rakdos Madness",
@@ -94427,7 +94427,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 99,
     "Player": "Ninomagic90",
     "Deck": "Red Kuldotha",
@@ -94438,7 +94438,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 100,
     "Player": "Zenith777",
     "Deck": "Red Kuldotha",
@@ -94449,7 +94449,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 101,
     "Player": "Adrowo",
     "Deck": "Turbofog",
@@ -94460,7 +94460,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 102,
     "Player": "Chocochan",
     "Deck": "Mono Blue Faeries",
@@ -94471,7 +94471,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 103,
     "Player": "Ixidor29",
     "Deck": "Gruul Land Destruction",
@@ -94482,7 +94482,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 104,
     "Player": "Carrot_Eater",
     "Deck": "Izzet Control",
@@ -94493,7 +94493,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 105,
     "Player": "Outzeroo",
     "Deck": "Grixis Affinity",
@@ -94504,7 +94504,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 106,
     "Player": "Tunaktunak",
     "Deck": "Turbofog",
@@ -94515,7 +94515,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 107,
     "Player": "Selkcahs",
     "Deck": "Dimir Terror",
@@ -94526,7 +94526,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 108,
     "Player": "Zony",
     "Deck": "Walls Combo",
@@ -94537,7 +94537,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 109,
     "Player": "Tonyscapone",
     "Deck": "Gruul Storm",
@@ -94548,7 +94548,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 110,
     "Player": "Haqe",
     "Deck": "Gruul Land Destruction",
@@ -94559,7 +94559,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 111,
     "Player": "Bong0411",
     "Deck": "Grixis Affinity",
@@ -94570,7 +94570,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 112,
     "Player": "_Shatun_",
     "Deck": "Gruul Land Destruction",
@@ -94581,7 +94581,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 113,
     "Player": "Befa",
     "Deck": "Hexproof",
@@ -94592,7 +94592,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 114,
     "Player": "Sisyfos_Happy",
     "Deck": "Gruul Land Destruction",
@@ -94603,7 +94603,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 115,
     "Player": "Polarrobin",
     "Deck": "Orzhov Blade",
@@ -94614,7 +94614,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 116,
     "Player": "Antillectual",
     "Deck": "Mono Red Blitz",
@@ -94625,7 +94625,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 117,
     "Player": "Janisss",
     "Deck": "Gruul Land Destruction",
@@ -94636,7 +94636,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 118,
     "Player": "Drnastyog",
     "Deck": "Grixis Affinity",
@@ -94647,7 +94647,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 119,
     "Player": "Jace_Mtg",
     "Deck": "Jeskai Ephemerate",
@@ -94658,9 +94658,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 120,
-    "Player": "Drew647a",
+    "Player": "Drew647A",
     "Deck": "Rakdos Madness",
     "Wins": 4,
     "Losses": 5,
@@ -94669,7 +94669,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 121,
     "Player": "Kotka",
     "Deck": "Hexproof",
@@ -94680,7 +94680,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 122,
     "Player": "Lucabireskusku",
     "Deck": "Broodscale Combo",
@@ -94691,7 +94691,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 123,
     "Player": "Bmadman",
     "Deck": "Gruul Land Destruction",
@@ -94702,7 +94702,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 124,
     "Player": "Taliesinh",
     "Deck": "Orzhov Blade",
@@ -94713,7 +94713,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 125,
     "Player": "Pedrastone",
     "Deck": "Hexproof",
@@ -94724,9 +94724,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 126,
-    "Player": "-nausea-",
+    "Player": "-Nausea-",
     "Deck": "Elves",
     "Wins": 3,
     "Losses": 3,
@@ -94735,7 +94735,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 127,
     "Player": "Mrjack98",
     "Deck": "Broodscale Combo",
@@ -94746,7 +94746,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 128,
     "Player": "Mestarimatti",
     "Deck": "Gruul Land Destruction",
@@ -94757,7 +94757,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 129,
     "Player": "Liopoil",
     "Deck": "Walls Combo",
@@ -94768,7 +94768,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 130,
     "Player": "Barone",
     "Deck": "Rakdos Madness",
@@ -94779,7 +94779,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 131,
     "Player": "Mogged",
     "Deck": "Grixis Affinity",
@@ -94790,7 +94790,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 132,
     "Player": "Msskinbolic",
     "Deck": "Hexproof",
@@ -94801,7 +94801,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 133,
     "Player": "Skullpture",
     "Deck": "Broodscale Combo",
@@ -94812,7 +94812,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 134,
     "Player": "Magdaregina",
     "Deck": "Red Kuldotha",
@@ -94823,7 +94823,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 135,
     "Player": "Maccaciock",
     "Deck": "Broodscale Combo",
@@ -94834,7 +94834,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 136,
     "Player": "Luminati",
     "Deck": "Simic Infect",
@@ -94845,7 +94845,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 137,
     "Player": "Freakflag",
     "Deck": "Orzhov Blade",
@@ -94856,7 +94856,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 138,
     "Player": "Jujkata",
     "Deck": "Gruul Land Destruction",
@@ -94867,7 +94867,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 139,
     "Player": "Selfeisek",
     "Deck": "Red Kuldotha",
@@ -94878,7 +94878,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 140,
     "Player": "Tugganaxos",
     "Deck": "Mono Red Blitz",
@@ -94889,7 +94889,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 141,
     "Player": "Casanova_13",
     "Deck": "Rakdos Madness",
@@ -94900,7 +94900,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 142,
     "Player": "Yesicabyalexisf",
     "Deck": "Hexproof",
@@ -94911,7 +94911,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 143,
     "Player": "Mahers",
     "Deck": "Walls Combo",
@@ -94922,7 +94922,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 144,
     "Player": "Aoftw",
     "Deck": "Hexproof",
@@ -94933,7 +94933,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 145,
     "Player": "Lostonkato",
     "Deck": "Rakdos Madness",
@@ -94944,7 +94944,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 146,
     "Player": "Truehero",
     "Deck": "Broodscale Combo",
@@ -94955,7 +94955,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 147,
     "Player": "Kasa",
     "Deck": "Broodscale Combo",
@@ -94966,7 +94966,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 148,
     "Player": "Claudioh",
     "Deck": "Rakdos Madness",
@@ -94977,7 +94977,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 149,
     "Player": "Jpsn54",
     "Deck": "Boros Bully",
@@ -94988,7 +94988,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 150,
     "Player": "Ecobaronen",
     "Deck": "Rakdos Madness",
@@ -94999,7 +94999,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 151,
     "Player": "Arcii",
     "Deck": "Jeskai Ephemerate",
@@ -95010,7 +95010,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 152,
     "Player": "Panchengtao",
     "Deck": "Gruul Land Destruction",
@@ -95021,7 +95021,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 153,
     "Player": "Discovern",
     "Deck": "Mono Blue Terror",
@@ -95032,9 +95032,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 154,
-    "Player": "Mhc2cd40",
+    "Player": "Mhc2Cd40",
     "Deck": "Broodscale Combo",
     "Wins": 2,
     "Losses": 2,
@@ -95043,7 +95043,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 155,
     "Player": "E_Kaminuma",
     "Deck": "Broodscale Combo",
@@ -95054,7 +95054,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 156,
     "Player": "Parrit",
     "Deck": "Red Kuldotha",
@@ -95065,7 +95065,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 157,
     "Player": "Pietart",
     "Deck": "Grixis Affinity",
@@ -95076,7 +95076,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 158,
     "Player": "Sandydogmtg",
     "Deck": "Hexproof",
@@ -95087,7 +95087,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 159,
     "Player": "Misterasiago",
     "Deck": "Broodscale Combo",
@@ -95098,7 +95098,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 160,
     "Player": "Medvedev",
     "Deck": "Dredge",
@@ -95109,7 +95109,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 161,
     "Player": "Sickworld",
     "Deck": "Rakdos Madness",
@@ -95120,7 +95120,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 162,
     "Player": "Soseloso",
     "Deck": "Cycle Storm",
@@ -95131,7 +95131,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 163,
     "Player": "Mishka0817",
     "Deck": "Broodscale Combo",
@@ -95142,9 +95142,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 164,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 2,
     "Losses": 3,
@@ -95153,7 +95153,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 165,
     "Player": "Eliod",
     "Deck": "Rakdos Madness",
@@ -95164,7 +95164,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 166,
     "Player": "Ktowers08",
     "Deck": "Red Kuldotha",
@@ -95175,7 +95175,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 167,
     "Player": "Thagol",
     "Deck": "Broodscale Combo",
@@ -95186,7 +95186,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 168,
     "Player": "Boquinha",
     "Deck": "Elves",
@@ -95197,7 +95197,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 169,
     "Player": "Bobthedog",
     "Deck": "Boros Bully",
@@ -95208,7 +95208,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 170,
     "Player": "Mcscards",
     "Deck": "Broodscale Combo",
@@ -95219,7 +95219,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 171,
     "Player": "Esini",
     "Deck": "Rakdos Madness",
@@ -95230,7 +95230,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 172,
     "Player": "Lord_Beerus",
     "Deck": "Red Kuldotha",
@@ -95241,7 +95241,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 173,
     "Player": "Xwhale",
     "Deck": "Grixis Affinity",
@@ -95252,7 +95252,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 174,
     "Player": "Portadecadeia",
     "Deck": "Red Kuldotha",
@@ -95263,7 +95263,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 175,
     "Player": "Duke12",
     "Deck": "Rakdos Madness",
@@ -95274,7 +95274,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 176,
     "Player": "Hamuda",
     "Deck": "Grixis Affinity",
@@ -95285,7 +95285,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 177,
     "Player": "Heliolima",
     "Deck": "Grixis Affinity",
@@ -95296,18 +95296,18 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 178,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 179,
     "Player": "Kobayui",
     "Deck": "Boros Synth",
@@ -95318,7 +95318,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 180,
     "Player": "Rubensnetto",
     "Deck": "Dimir Terror",
@@ -95329,7 +95329,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 181,
     "Player": "Connorm426",
     "Deck": "Grixis Affinity",
@@ -95340,7 +95340,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 182,
     "Player": "Yashimoro",
     "Deck": "Broodscale Combo",
@@ -95351,7 +95351,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 183,
     "Player": "Mcwinsauce",
     "Deck": "Dimir Terror",
@@ -95362,7 +95362,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 184,
     "Player": "Magicmam00",
     "Deck": "Grixis Affinity",
@@ -95373,7 +95373,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 185,
     "Player": "Maear",
     "Deck": "Broodscale Combo",
@@ -95384,7 +95384,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 186,
     "Player": "Ninepoundhammer",
     "Deck": "Cawgates",
@@ -95395,7 +95395,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 187,
     "Player": "Labronico",
     "Deck": "Broodscale Combo",
@@ -95406,7 +95406,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 188,
     "Player": "Colakakao",
     "Deck": "Rakdos Madness",
@@ -95417,7 +95417,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 189,
     "Player": "The_Catfin",
     "Deck": "Rakdos Madness",
@@ -95428,7 +95428,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 190,
     "Player": "Oceansoul92",
     "Deck": "Red Kuldotha",
@@ -95439,7 +95439,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 191,
     "Player": "_Znt_",
     "Deck": "Gruul Land Destruction",
@@ -95450,7 +95450,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 192,
     "Player": "Carvs",
     "Deck": "Grixis Affinity",
@@ -95461,7 +95461,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 193,
     "Player": "Giuxgobbo",
     "Deck": "Goblins",
@@ -95472,7 +95472,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 194,
     "Player": "Pepeteam",
     "Deck": "Orzhov Blade",
@@ -95483,7 +95483,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 195,
     "Player": "Peppembr",
     "Deck": "Cycle Storm",
@@ -95494,7 +95494,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 196,
     "Player": "Redrob4287",
     "Deck": "Mono Black Burn",
@@ -95505,7 +95505,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 197,
     "Player": "Hughc",
     "Deck": "Broodscale Combo",
@@ -95516,7 +95516,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 198,
     "Player": "Feitosa",
     "Deck": "Mardu Ephemerate",
@@ -95527,7 +95527,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 199,
     "Player": "Vini_Torres",
     "Deck": "Grixis Affinity",
@@ -95538,7 +95538,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 200,
     "Player": "Eijunchn",
     "Deck": "Broodscale Combo",
@@ -95549,7 +95549,7 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 201,
     "Player": "Beenew",
     "Deck": "Broodscale Combo",
@@ -95560,9 +95560,9 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 202,
-    "Player": "Kagami-meijin",
+    "Player": "Kagami-Meijin",
     "Deck": "Boros Bully",
     "Wins": 1,
     "Losses": 2,
@@ -95571,431 +95571,431 @@ export const cleanedData = [
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 203,
     "Player": "Felider",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 204,
     "Player": "Daking3603",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 205,
     "Player": "Pokenate4",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 206,
     "Player": "Rooney56",
     "Deck": "Izzet Control",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 207,
     "Player": "Piegonti",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 208,
     "Player": "Musasabi",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 209,
     "Player": "Papuska",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 210,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 211,
     "Player": "Bullwinkkle6705",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 212,
     "Player": "Grantfly",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 213,
     "Player": "Bafusvlll",
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 214,
     "Player": "Capoeira02",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 215,
     "Player": "Ceralguy",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 216,
     "Player": "Niederschatten",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 217,
     "Player": "Agruskos93",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 218,
     "Player": "Kaziku",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 219,
     "Player": "Doctoroftime",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 220,
     "Player": "Ivanguille",
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 221,
     "Player": "Gn42",
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 222,
     "Player": "Wizard_2002",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 223,
     "Player": "Jordanescu",
     "Deck": "Mono Red Blitz",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 224,
     "Player": "Dnsolver",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 225,
     "Player": "__Noob__",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 226,
     "Player": "Giorgiocombo",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 227,
     "Player": "Dreddybajs",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 228,
     "Player": "Devilfetish",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 229,
     "Player": "Kaies",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 230,
     "Player": "Kachaxie",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 231,
     "Player": "Scavengingbooze",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 232,
     "Player": "Alanmaster1",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 233,
     "Player": "Ezocratto",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 234,
     "Player": "Seasonofmists",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 235,
     "Player": "Naisirc",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 236,
     "Player": "Eonwe7",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 237,
     "Player": "Capitano_Cl",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 238,
     "Player": "_Ruda_",
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 239,
     "Player": "Comrade1312",
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 240,
     "Player": "_Falcon_",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-06",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-07-06)",
+    "Event": "MTGO Showcase (2024-07-06)",
     "Rank": 241,
     "Player": "Txepi",
     "Deck": "Broodscale Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96101,7 +96101,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-06)",
     "Rank": 10,
-    "Player": "L337erhosen",
+    "Player": "L337Erhosen",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 4,
     "Losses": 2,
@@ -96222,7 +96222,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-06)",
     "Rank": 21,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
@@ -96376,7 +96376,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-10-06)",
     "Rank": 35,
-    "Player": "Mar6meini",
+    "Player": "Mar6Meini",
     "Deck": "Dimir Terror",
     "Wins": 2,
     "Losses": 4,
@@ -96457,7 +96457,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96479,7 +96479,7 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96567,7 +96567,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96578,7 +96578,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96589,7 +96589,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96600,7 +96600,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96611,7 +96611,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96622,7 +96622,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96633,7 +96633,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96644,7 +96644,7 @@ export const cleanedData = [
     "Deck": "White Weenie",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96655,7 +96655,7 @@ export const cleanedData = [
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96666,7 +96666,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-10-06",
@@ -96677,7 +96677,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -96717,7 +96717,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-06)",
     "Rank": 4,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Mono Blue Terror",
     "Wins": 6,
     "Losses": 2,
@@ -97150,7 +97150,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97227,7 +97227,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97238,7 +97238,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97249,7 +97249,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97260,7 +97260,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97271,7 +97271,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97282,7 +97282,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-06",
@@ -97293,7 +97293,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97455,7 +97455,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 15,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -97708,7 +97708,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 38,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -97799,7 +97799,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97810,7 +97810,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97821,7 +97821,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97832,7 +97832,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97843,18 +97843,18 @@ export const cleanedData = [
     "Deck": "Turbo Initiative",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 51,
-    "Player": "Ofmagic4ever",
+    "Player": "Ofmagic4Ever",
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97865,7 +97865,7 @@ export const cleanedData = [
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97876,7 +97876,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97887,18 +97887,18 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 55,
-    "Player": "Secr3tm0de",
+    "Player": "Secr3Tm0De",
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -97906,7 +97906,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 1,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 1,
     "Winrate": 0.8888888889
@@ -97928,7 +97928,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 3,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -98268,7 +98268,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 34,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 3,
     "Losses": 3,
@@ -98404,7 +98404,7 @@ export const cleanedData = [
     "Deck": "Hexproof",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98444,7 +98444,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 50,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Mono Blue Terror",
     "Wins": 1,
     "Losses": 2,
@@ -98488,11 +98488,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-04-07)",
     "Rank": 54,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98503,7 +98503,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98514,7 +98514,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98525,7 +98525,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98536,7 +98536,7 @@ export const cleanedData = [
     "Deck": "Turbo Initiative",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98547,7 +98547,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98558,7 +98558,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98569,7 +98569,7 @@ export const cleanedData = [
     "Deck": "Boros Glitters",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98580,7 +98580,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98591,7 +98591,7 @@ export const cleanedData = [
     "Deck": "Defender Stampede",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-04-07",
@@ -98602,7 +98602,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-07",
@@ -98686,7 +98686,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-07)",
     "Rank": 8,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 4,
     "Losses": 3,
@@ -98785,7 +98785,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-07)",
     "Rank": 17,
-    "Player": "-hazy-",
+    "Player": "-Hazy-",
     "Deck": "Mono Blue Faeries",
     "Wins": 2,
     "Losses": 3,
@@ -98976,7 +98976,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-07",
@@ -98987,7 +98987,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-07",
@@ -98998,7 +98998,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-07",
@@ -99009,7 +99009,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99038,7 +99038,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 3,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
@@ -99082,7 +99082,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 7,
-    "Player": "B1ast",
+    "Player": "B1Ast",
     "Deck": "Gruul Land Destruction",
     "Wins": 5,
     "Losses": 3,
@@ -99225,7 +99225,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 20,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 3,
@@ -99335,7 +99335,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 30,
-    "Player": "Frost3d",
+    "Player": "Frost3D",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
@@ -99533,7 +99533,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 48,
-    "Player": "567konner",
+    "Player": "567Konner",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 5,
@@ -99610,7 +99610,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-07-07)",
     "Rank": 55,
-    "Player": "Dr. jon osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 2,
@@ -99647,7 +99647,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 6,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99669,7 +99669,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99680,7 +99680,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99691,7 +99691,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99702,7 +99702,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99713,7 +99713,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99724,7 +99724,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99735,7 +99735,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-07-07",
@@ -99746,7 +99746,7 @@ export const cleanedData = [
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -99842,7 +99842,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-07)",
     "Rank": 9,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -100117,7 +100117,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-07)",
     "Rank": 34,
     "Player": "Hellsau",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -100340,7 +100340,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100362,7 +100362,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100373,7 +100373,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100384,7 +100384,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100395,7 +100395,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100406,7 +100406,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-07",
@@ -100417,7 +100417,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100868,7 +100868,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100901,7 +100901,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100912,7 +100912,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100923,7 +100923,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100934,7 +100934,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100945,7 +100945,7 @@ export const cleanedData = [
     "Deck": "Dimir Control",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-07",
@@ -100956,7 +100956,7 @@ export const cleanedData = [
     "Deck": "Fog Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101128,7 +101128,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-08)",
     "Rank": 16,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Mono Blue Faeries",
     "Wins": 4,
     "Losses": 2,
@@ -101260,7 +101260,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-08)",
     "Rank": 28,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
@@ -101337,7 +101337,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-12-08)",
     "Rank": 35,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Grixis Wildfire",
     "Wins": 2,
     "Losses": 3,
@@ -101451,7 +101451,7 @@ export const cleanedData = [
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101495,7 +101495,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101506,7 +101506,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101517,7 +101517,7 @@ export const cleanedData = [
     "Deck": "Jund Wildfire",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101528,7 +101528,7 @@ export const cleanedData = [
     "Deck": "Mardu Synth",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101539,7 +101539,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101550,7 +101550,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101561,7 +101561,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101572,7 +101572,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-12-08",
@@ -101583,7 +101583,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -101701,7 +101701,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 11,
     "Player": "Yriel",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -101778,7 +101778,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 18,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
     "Winrate": 0.5
@@ -101821,7 +101821,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 22,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Rakdos Madness",
     "Wins": 3,
     "Losses": 3,
@@ -101910,7 +101910,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 30,
     "Player": "Discovern",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 3,
     "Winrate": 0.4
@@ -101931,7 +101931,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 32,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Rakdos Madness",
     "Wins": 2,
     "Losses": 3,
@@ -101954,7 +101954,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 34,
     "Player": "Paulocabral_Br",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -101986,7 +101986,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-08)",
     "Rank": 37,
-    "Player": "R4cgobrrr",
+    "Player": "R4Cgobrrr",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
@@ -102056,7 +102056,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -102089,7 +102089,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -102100,7 +102100,7 @@ export const cleanedData = [
     "Deck": "Dimir Teachings",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -102111,7 +102111,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -102122,7 +102122,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
@@ -102133,12 +102133,12 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 1,
     "Player": "Mogg_Flunkies",
     "Deck": "Gruul Land Destruction",
@@ -102149,7 +102149,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 2,
     "Player": "Nathansteuer",
     "Deck": "Cawgates",
@@ -102160,7 +102160,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 3,
     "Player": "Killah_Suv",
     "Deck": "Hexproof",
@@ -102171,10 +102171,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 4,
     "Player": "Almostomniscient",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 2,
     "Winrate": 0.8
@@ -102182,7 +102182,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 5,
     "Player": "Rclint21",
     "Deck": "Fog Tron",
@@ -102193,7 +102193,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 6,
     "Player": "Zaaaamu",
     "Deck": "Dimir Fae",
@@ -102204,7 +102204,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 7,
     "Player": "Beenew",
     "Deck": "Cawgates",
@@ -102215,7 +102215,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 8,
     "Player": "Kobayui",
     "Deck": "Boros Synth",
@@ -102226,7 +102226,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 9,
     "Player": "Apas72",
     "Deck": "Walls Combo",
@@ -102237,7 +102237,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 10,
     "Player": "Kazuhiko",
     "Deck": "Jeskai Ephemerate",
@@ -102248,10 +102248,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 11,
     "Player": "Loerien",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -102259,7 +102259,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 12,
     "Player": "Jace_Mtg",
     "Deck": "Golgari Gardens",
@@ -102270,7 +102270,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 13,
     "Player": "Boin",
     "Deck": "Red Kuldotha",
@@ -102281,7 +102281,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 14,
     "Player": "Kasa",
     "Deck": "Cawgates",
@@ -102292,7 +102292,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 15,
     "Player": "Barff",
     "Deck": "Red Kuldotha",
@@ -102303,7 +102303,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 16,
     "Player": "Jordanescu",
     "Deck": "Mono Red Blitz",
@@ -102314,7 +102314,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 17,
     "Player": "Hampuse1",
     "Deck": "Hexproof",
@@ -102325,7 +102325,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 18,
     "Player": "Discovern",
     "Deck": "Mono Blue Terror",
@@ -102336,7 +102336,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 19,
     "Player": "Jpsn54",
     "Deck": "Cawgates",
@@ -102347,10 +102347,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 20,
     "Player": "Judasdjinn",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -102358,10 +102358,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 21,
     "Player": "Mogged",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -102369,7 +102369,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 22,
     "Player": "Manny-",
     "Deck": "Mono Blue Terror",
@@ -102380,7 +102380,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 23,
     "Player": "Carrot_Eater",
     "Deck": "Cawgates",
@@ -102391,7 +102391,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 24,
     "Player": "Vangrind",
     "Deck": "Red Kuldotha",
@@ -102402,7 +102402,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 25,
     "Player": "Billsive",
     "Deck": "Golgari Gardens",
@@ -102413,7 +102413,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 26,
     "Player": "Selkcahs",
     "Deck": "Cawgates",
@@ -102424,7 +102424,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 27,
     "Player": "Sknerusmckwacz",
     "Deck": "Red Kuldotha",
@@ -102435,7 +102435,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 28,
     "Player": "Countertopgarchomp",
     "Deck": "Cawgates",
@@ -102446,7 +102446,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 29,
     "Player": "Ale_Mtg",
     "Deck": "Dimir Terror",
@@ -102457,7 +102457,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 30,
     "Player": "Teyi",
     "Deck": "Cawgates",
@@ -102468,7 +102468,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 31,
     "Player": "Avocadotoast",
     "Deck": "Mono Blue Terror",
@@ -102479,7 +102479,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 32,
     "Player": "Klien7",
     "Deck": "Red Kuldotha",
@@ -102490,7 +102490,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 33,
     "Player": "Diego_Brando",
     "Deck": "Walls Combo",
@@ -102501,7 +102501,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 34,
     "Player": "Josecabezas",
     "Deck": "Red Kuldotha",
@@ -102512,7 +102512,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 35,
     "Player": "Alessandropiraccini",
     "Deck": "Dredge",
@@ -102523,7 +102523,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 36,
     "Player": "Mei0024",
     "Deck": "Cawgates",
@@ -102534,7 +102534,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 37,
     "Player": "Alienware_",
     "Deck": "Cawgates",
@@ -102545,7 +102545,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 38,
     "Player": "Xenowan",
     "Deck": "Izzet Control",
@@ -102556,7 +102556,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 39,
     "Player": "Gustshaman",
     "Deck": "Hexproof",
@@ -102567,7 +102567,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 40,
     "Player": "Adryannthehero04",
     "Deck": "Rakdos Madness",
@@ -102578,7 +102578,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 41,
     "Player": "Zimooo2",
     "Deck": "Walls Combo",
@@ -102589,7 +102589,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 42,
     "Player": "Wesal",
     "Deck": "Red Kuldotha",
@@ -102600,7 +102600,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 43,
     "Player": "Elementix",
     "Deck": "Dimir Fae",
@@ -102611,10 +102611,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 44,
-    "Player": "G-monteiro",
-    "Deck": "Affinity",
+    "Player": "G-Monteiro",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -102622,7 +102622,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 45,
     "Player": "Itsswiftytime",
     "Deck": "Dimir Terror",
@@ -102633,7 +102633,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 46,
     "Player": "Shikixyz",
     "Deck": "Cawgates",
@@ -102644,7 +102644,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 47,
     "Player": "Jben",
     "Deck": "Gruul Land Destruction",
@@ -102655,7 +102655,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 48,
     "Player": "Seasonofmists",
     "Deck": "Dredge",
@@ -102666,7 +102666,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 49,
     "Player": "Bokyfloky",
     "Deck": "Goblin Class Combo",
@@ -102677,7 +102677,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 50,
     "Player": "Pokerswizard",
     "Deck": "Dimir Fae",
@@ -102688,7 +102688,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 51,
     "Player": "Gregoriusil",
     "Deck": "Red Kuldotha",
@@ -102699,7 +102699,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 52,
     "Player": "J_Money10",
     "Deck": "Gruul Land Destruction",
@@ -102710,7 +102710,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 53,
     "Player": "Twister66",
     "Deck": "Cawgates",
@@ -102721,7 +102721,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 54,
     "Player": "Echanez",
     "Deck": "Mono Black Burn",
@@ -102732,7 +102732,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 55,
     "Player": "Lollopollo2001",
     "Deck": "Dredge",
@@ -102743,9 +102743,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 56,
-    "Player": "Kavu2br",
+    "Player": "Kavu2Br",
     "Deck": "Rakdos Madness",
     "Wins": 5,
     "Losses": 3,
@@ -102754,9 +102754,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 57,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Rakdos Madness",
     "Wins": 5,
     "Losses": 3,
@@ -102765,7 +102765,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 58,
     "Player": "Jwaves",
     "Deck": "White Weenie",
@@ -102776,10 +102776,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 59,
     "Player": "Macksmith",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
     "Winrate": 0.625
@@ -102787,7 +102787,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 60,
     "Player": "Littledarwin",
     "Deck": "Mono White Heroic",
@@ -102798,7 +102798,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 61,
     "Player": "Darkuna",
     "Deck": "Mono Black Burn",
@@ -102809,7 +102809,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 62,
     "Player": "Carvs",
     "Deck": "Cawgates",
@@ -102820,7 +102820,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 63,
     "Player": "Drvendigo",
     "Deck": "Red Kuldotha",
@@ -102831,7 +102831,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 64,
     "Player": "Karatedom",
     "Deck": "Azorius Familiars",
@@ -102842,7 +102842,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 65,
     "Player": "Musasabi",
     "Deck": "Cawgates",
@@ -102853,7 +102853,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 66,
     "Player": "Pavelval",
     "Deck": "Jeskai Ephemerate",
@@ -102864,7 +102864,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 67,
     "Player": "Michelbiro",
     "Deck": "Goblin Class Combo",
@@ -102875,10 +102875,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 68,
     "Player": "Jujubean__2004",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
     "Winrate": 0.6666666667
@@ -102886,7 +102886,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 69,
     "Player": "Mistakenn",
     "Deck": "Gruul Land Destruction",
@@ -102897,7 +102897,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 70,
     "Player": "Xuxa",
     "Deck": "Red Kuldotha",
@@ -102908,7 +102908,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 71,
     "Player": "337000000000",
     "Deck": "Mono Blue Terror",
@@ -102919,7 +102919,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 72,
     "Player": "Jujubinha39",
     "Deck": "Boros Synth",
@@ -102930,7 +102930,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 73,
     "Player": "Outzeroo",
     "Deck": "Dimir Fae",
@@ -102941,7 +102941,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 74,
     "Player": "Mikhathara1994",
     "Deck": "Red Kuldotha",
@@ -102952,7 +102952,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 75,
     "Player": "Sarlanga",
     "Deck": "Turbofog",
@@ -102963,7 +102963,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 76,
     "Player": "Savsave",
     "Deck": "Mono Blue Terror",
@@ -102974,7 +102974,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 77,
     "Player": "Bielzito",
     "Deck": "Izzet Control",
@@ -102985,7 +102985,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 78,
     "Player": "Pgbrewing",
     "Deck": "Rakdos Madness",
@@ -102996,9 +102996,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 79,
-    "Player": "Temur41ife",
+    "Player": "Temur41Ife",
     "Deck": "Fog Tron",
     "Wins": 4,
     "Losses": 4,
@@ -103007,7 +103007,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 80,
     "Player": "Luiz0211",
     "Deck": "Red Kuldotha",
@@ -103018,7 +103018,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 81,
     "Player": "Tortuf",
     "Deck": "Elves",
@@ -103029,7 +103029,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 82,
     "Player": "Lemonadeqq",
     "Deck": "Dredge",
@@ -103040,9 +103040,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 83,
-    "Player": "Pat0presidente",
+    "Player": "Pat0Presidente",
     "Deck": "Poison Storm",
     "Wins": 4,
     "Losses": 4,
@@ -103051,7 +103051,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 84,
     "Player": "Lucaacqua",
     "Deck": "Golgari Aristocrats",
@@ -103062,9 +103062,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 85,
-    "Player": "2radmtg",
+    "Player": "2Radmtg",
     "Deck": "Rakdos Madness",
     "Wins": 4,
     "Losses": 4,
@@ -103073,7 +103073,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 86,
     "Player": "Yuxiaoyu",
     "Deck": "Izzet Control",
@@ -103084,10 +103084,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 87,
     "Player": "Boom_Bust",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 4,
     "Winrate": 0.5
@@ -103095,7 +103095,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 88,
     "Player": "Clemagel",
     "Deck": "Orzhov Blade",
@@ -103106,7 +103106,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 89,
     "Player": "Niederschatten",
     "Deck": "Rakdos Madness",
@@ -103117,7 +103117,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 90,
     "Player": "Ivernop",
     "Deck": "Hexproof",
@@ -103128,7 +103128,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 91,
     "Player": "Doblep",
     "Deck": "Dimir Fae",
@@ -103139,7 +103139,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 92,
     "Player": "Xjonah",
     "Deck": "Red Kuldotha",
@@ -103150,7 +103150,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 93,
     "Player": "Yesicabyalexisf",
     "Deck": "Jeskai Ephemerate",
@@ -103161,7 +103161,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 94,
     "Player": "Tunaktunak",
     "Deck": "Turbofog",
@@ -103172,7 +103172,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 95,
     "Player": "Leaffii",
     "Deck": "Red Kuldotha",
@@ -103183,7 +103183,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 96,
     "Player": "Barone",
     "Deck": "Rakdos Madness",
@@ -103194,7 +103194,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 97,
     "Player": "Luangne",
     "Deck": "Boros Synth",
@@ -103205,7 +103205,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 98,
     "Player": "Edo_01",
     "Deck": "Cawgates",
@@ -103216,7 +103216,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 99,
     "Player": "Likeaferro",
     "Deck": "Gruul Land Destruction",
@@ -103227,7 +103227,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 100,
     "Player": "Kingsam161",
     "Deck": "Boros Synth",
@@ -103238,7 +103238,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 101,
     "Player": "White_Tsar",
     "Deck": "Izzet Control",
@@ -103249,10 +103249,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 102,
     "Player": "Jiliac",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 5,
     "Winrate": 0.375
@@ -103260,7 +103260,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 103,
     "Player": "Albertosd",
     "Deck": "Red Kuldotha",
@@ -103271,7 +103271,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 104,
     "Player": "Ihuman",
     "Deck": "Red Kuldotha",
@@ -103282,7 +103282,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 105,
     "Player": "Truehero",
     "Deck": "Cawgates",
@@ -103293,7 +103293,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 106,
     "Player": "Denisevichalexey",
     "Deck": "Jeskai Ephemerate",
@@ -103304,7 +103304,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 107,
     "Player": "Iaredeaded",
     "Deck": "Dredge",
@@ -103315,7 +103315,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 108,
     "Player": "Hughc",
     "Deck": "Rakdos Madness",
@@ -103326,7 +103326,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 109,
     "Player": "Hamuda",
     "Deck": "Goblin Class Combo",
@@ -103337,7 +103337,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 110,
     "Player": "Lordegg",
     "Deck": "Boros Synth",
@@ -103348,7 +103348,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 111,
     "Player": "Qu4",
     "Deck": "Izzet Control",
@@ -103359,7 +103359,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 112,
     "Player": "Bafusviii",
     "Deck": "Red Kuldotha",
@@ -103370,7 +103370,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 113,
     "Player": "Newbarola",
     "Deck": "Cawgates",
@@ -103381,7 +103381,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 114,
     "Player": "_Batutinha_",
     "Deck": "Dimir Terror",
@@ -103392,7 +103392,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 115,
     "Player": "Viatt",
     "Deck": "Gruul Land Destruction",
@@ -103403,9 +103403,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 116,
-    "Player": "_Dr4gun0v_",
+    "Player": "_Dr4Gun0V_",
     "Deck": "Gruul Land Destruction",
     "Wins": 3,
     "Losses": 5,
@@ -103414,7 +103414,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 117,
     "Player": "Pedrastone",
     "Deck": "Golgari Gardens",
@@ -103425,7 +103425,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 118,
     "Player": "Arkany1",
     "Deck": "Rakdos Madness",
@@ -103436,7 +103436,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 119,
     "Player": "Grindera",
     "Deck": "Cawgates",
@@ -103447,7 +103447,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 120,
     "Player": "Spockvidaloka",
     "Deck": "Red Kuldotha",
@@ -103458,7 +103458,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 121,
     "Player": "Ed_Elric",
     "Deck": "Walls Combo",
@@ -103469,7 +103469,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 122,
     "Player": "Franmtg",
     "Deck": "Red Kuldotha",
@@ -103480,7 +103480,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 123,
     "Player": "Totemsilence",
     "Deck": "Orzhov Blade",
@@ -103491,7 +103491,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 124,
     "Player": "Bong0411",
     "Deck": "Cawgates",
@@ -103502,9 +103502,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 125,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 3,
     "Losses": 5,
@@ -103513,7 +103513,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 126,
     "Player": "Haqe",
     "Deck": "Mono Blue Terror",
@@ -103524,7 +103524,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 127,
     "Player": "Vini_Torres",
     "Deck": "Red Kuldotha",
@@ -103535,7 +103535,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 128,
     "Player": "Galeogiao",
     "Deck": "Hexproof",
@@ -103546,7 +103546,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 129,
     "Player": "Edraros3",
     "Deck": "Gruul Land Destruction",
@@ -103557,7 +103557,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 130,
     "Player": "Felider",
     "Deck": "Red Kuldotha",
@@ -103568,7 +103568,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 131,
     "Player": "Milkk",
     "Deck": "Dimir Fae",
@@ -103579,10 +103579,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 132,
     "Player": "Yriel",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
     "Winrate": 0.3333333333
@@ -103590,7 +103590,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 133,
     "Player": "Mnaga",
     "Deck": "Cawgates",
@@ -103601,7 +103601,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 134,
     "Player": "Moniz0801",
     "Deck": "Red Kuldotha",
@@ -103612,7 +103612,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 135,
     "Player": "Lord_Beerus",
     "Deck": "Rakdos Madness",
@@ -103623,7 +103623,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 136,
     "Player": "Luffydochapeudepalha",
     "Deck": "Golgari Gardens",
@@ -103634,7 +103634,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 137,
     "Player": "Evandro_Kim",
     "Deck": "Red Kuldotha",
@@ -103645,7 +103645,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 138,
     "Player": "Suechtler",
     "Deck": "Red Kuldotha",
@@ -103656,7 +103656,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 139,
     "Player": "Paulocabral_Br",
     "Deck": "Mardu Synth",
@@ -103667,7 +103667,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 140,
     "Player": "Magdaregina",
     "Deck": "Red Kuldotha",
@@ -103678,9 +103678,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 141,
-    "Player": "416frowningtable",
+    "Player": "416Frowningtable",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 6,
@@ -103689,7 +103689,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 142,
     "Player": "Komattaman",
     "Deck": "Red Kuldotha",
@@ -103700,7 +103700,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 143,
     "Player": "Canepis16",
     "Deck": "Cawgates",
@@ -103711,9 +103711,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 144,
-    "Player": "Tang3jin",
+    "Player": "Tang3Jin",
     "Deck": "Mono Blue Terror",
     "Wins": 2,
     "Losses": 6,
@@ -103722,7 +103722,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 145,
     "Player": "Rastaf",
     "Deck": "Red Kuldotha",
@@ -103733,10 +103733,10 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 146,
     "Player": "Sandydogmtg",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 2,
     "Winrate": 0.3333333333
@@ -103744,7 +103744,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 147,
     "Player": "Nmt_Sco94",
     "Deck": "Rakdos Madness",
@@ -103755,7 +103755,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 148,
     "Player": "Soseloso",
     "Deck": "Gruul Land Destruction",
@@ -103766,7 +103766,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 149,
     "Player": "Skuup",
     "Deck": "Poison Storm",
@@ -103777,7 +103777,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 150,
     "Player": "Cherochara",
     "Deck": "Red Kuldotha",
@@ -103788,7 +103788,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 151,
     "Player": "__Noob__",
     "Deck": "Golgari Gardens",
@@ -103799,9 +103799,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 152,
-    "Player": "Cana-brava",
+    "Player": "Cana-Brava",
     "Deck": "Gruul Land Destruction",
     "Wins": 1,
     "Losses": 3,
@@ -103810,7 +103810,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 153,
     "Player": "Make_It_Right",
     "Deck": "Red Kuldotha",
@@ -103821,9 +103821,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 154,
-    "Player": "Ti0patinhas",
+    "Player": "Ti0Patinhas",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 5,
@@ -103832,7 +103832,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 155,
     "Player": "Trivothegreat",
     "Deck": "Gruul Land Destruction",
@@ -103843,7 +103843,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 156,
     "Player": "Maemtg",
     "Deck": "Cawgates",
@@ -103854,7 +103854,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 157,
     "Player": "Medvedev",
     "Deck": "Poison Storm",
@@ -103865,7 +103865,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 158,
     "Player": "Jvidarte",
     "Deck": "Golgari Gardens",
@@ -103876,7 +103876,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 159,
     "Player": "Kirblinxy",
     "Deck": "Goblin Class Combo",
@@ -103887,9 +103887,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 160,
-    "Player": "A.c.a.i_20006",
+    "Player": "A.C.A.I_20006",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 2,
@@ -103898,7 +103898,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 161,
     "Player": "Choutin",
     "Deck": "Mono Blue Terror",
@@ -103909,7 +103909,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 162,
     "Player": "_Stream",
     "Deck": "Red Kuldotha",
@@ -103920,7 +103920,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 163,
     "Player": "Scipios",
     "Deck": "Cawgates",
@@ -103931,7 +103931,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 164,
     "Player": "Solerme",
     "Deck": "Golgari Gardens",
@@ -103942,9 +103942,9 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 165,
-    "Player": "N0i",
+    "Player": "N0I",
     "Deck": "Ashnod's Altar Combo",
     "Wins": 1,
     "Losses": 2,
@@ -103953,7 +103953,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 166,
     "Player": "Piegonti",
     "Deck": "Dimir Fae",
@@ -103964,7 +103964,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 167,
     "Player": "Ekeross",
     "Deck": "Cawgates",
@@ -103975,7 +103975,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 168,
     "Player": "Shade_Scorpion",
     "Deck": "Dimir Terror",
@@ -103986,7 +103986,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 169,
     "Player": "Beicodegeia",
     "Deck": "Dimir Fae",
@@ -103997,7 +103997,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 170,
     "Player": "Derekbla",
     "Deck": "Izzet Control",
@@ -104008,18 +104008,18 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 171,
     "Player": "Feski713",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 172,
     "Player": "John1111",
     "Deck": "Cawgates",
@@ -104030,7 +104030,7 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 173,
     "Player": "Arcii",
     "Deck": "Cawgates",
@@ -104041,332 +104041,332 @@ export const cleanedData = [
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 174,
     "Player": "Gn42",
     "Deck": "Azorius Familiars",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 175,
     "Player": "Bernastorres",
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 176,
     "Player": "Pokenate4",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 177,
     "Player": "Magician15",
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 178,
     "Player": "Jose",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 179,
     "Player": "Ixenei",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 180,
     "Player": "Jakehelms",
     "Deck": "Walls Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 181,
     "Player": "Clamego",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 182,
     "Player": "Meninoney",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 183,
     "Player": "Wingedhussar",
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 184,
     "Player": "Kaikas",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 185,
     "Player": "Mcwinsauce",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 186,
     "Player": "Spokes",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 187,
     "Player": "Kaziku",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 188,
     "Player": "Nahuel10",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 189,
     "Player": "Tenntyou",
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 190,
     "Player": "_Znt_",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 191,
     "Player": "Eijunchn",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 192,
     "Player": "Azatoyellow",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 193,
     "Player": "Sebastianpozzo",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 194,
     "Player": "Boytriton",
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 195,
     "Player": "Oscar_Franco",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 196,
     "Player": "Olavojusmtm",
     "Deck": "Jeskai Ephemerate",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 197,
     "Player": "Profsnorly",
     "Deck": "Orzhov Blade",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 198,
     "Player": "Tyerube1618",
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 199,
     "Player": "Selfeisek",
     "Deck": "Rakdos Storm",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 200,
     "Player": "Terminus0",
     "Deck": "Walls Combo",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 201,
     "Player": "Fermtg",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 202,
     "Player": "Txepi",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-08",
     "EventType": "online",
-    "Event": "MTGO Challenge (2024-06-08)",
+    "Event": "MTGO Super (2024-06-08)",
     "Rank": 203,
     "Player": "Crazymorango",
     "Deck": "Goblin Class Combo",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104439,7 +104439,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-11-08)",
     "Rank": 7,
-    "Player": "Jose guillermo",
+    "Player": "Jose Guillermo",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 2,
@@ -104784,7 +104784,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104817,7 +104817,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104828,7 +104828,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104839,7 +104839,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104850,7 +104850,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104861,7 +104861,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Faeries",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104872,7 +104872,7 @@ export const cleanedData = [
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-08",
@@ -104883,7 +104883,7 @@ export const cleanedData = [
     "Deck": "Dredge",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -104912,7 +104912,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-08)",
     "Rank": 3,
-    "Player": "8salazzar8",
+    "Player": "8Salazzar8",
     "Deck": "Jund Broodscale",
     "Wins": 6,
     "Losses": 3,
@@ -105011,7 +105011,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-09-08)",
     "Rank": 12,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
@@ -105488,7 +105488,7 @@ export const cleanedData = [
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105521,7 +105521,7 @@ export const cleanedData = [
     "Deck": "Cycle Storm",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105532,7 +105532,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105543,7 +105543,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105554,7 +105554,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105565,7 +105565,7 @@ export const cleanedData = [
     "Deck": "Cawgates",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105576,7 +105576,7 @@ export const cleanedData = [
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105587,7 +105587,7 @@ export const cleanedData = [
     "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105598,7 +105598,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105609,7 +105609,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105620,7 +105620,7 @@ export const cleanedData = [
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-09-08",
@@ -105631,7 +105631,7 @@ export const cleanedData = [
     "Deck": "Orzhov Pestilence",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106067,7 +106067,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-08-09)",
     "Rank": 40,
-    "Player": "_A.c.a.i_2007_",
+    "Player": "_A.C.A.I_2007_",
     "Deck": "Grixis Affinity",
     "Wins": 2,
     "Losses": 4,
@@ -106159,7 +106159,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106203,7 +106203,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106214,7 +106214,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106225,7 +106225,7 @@ export const cleanedData = [
     "Deck": "Rakdos Madness",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106236,7 +106236,7 @@ export const cleanedData = [
     "Deck": "Dimir Terror",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106247,7 +106247,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106258,7 +106258,7 @@ export const cleanedData = [
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106269,7 +106269,7 @@ export const cleanedData = [
     "Deck": "Golgari Gardens",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-08-09",
@@ -106280,7 +106280,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-09",
@@ -106288,7 +106288,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 1,
     "Player": "Oceansoul92",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 8,
     "Losses": 2,
     "Winrate": 0.8
@@ -106343,7 +106343,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 6,
     "Player": "Topleitche",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
     "Winrate": 0.75
@@ -106387,7 +106387,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 10,
     "Player": "Hamuda",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -106431,7 +106431,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 14,
     "Player": "Angus91",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 2,
     "Winrate": 0.7142857143
@@ -106541,7 +106541,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 24,
     "Player": "Luffydochapeudepalha",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 3,
     "Winrate": 0.5714285714
@@ -106595,7 +106595,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 29,
-    "Player": "Numb3r0ne",
+    "Player": "Numb3R0Ne",
     "Deck": "Rakdos Madness",
     "Wins": 4,
     "Losses": 3,
@@ -106728,7 +106728,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 41,
     "Player": "Liv_One",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -106749,7 +106749,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 43,
-    "Player": "Bullz0eye",
+    "Player": "Bullz0Eye",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 4,
@@ -106772,7 +106772,7 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 45,
     "Player": "Db_Fireshoes",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 4,
     "Winrate": 0.4285714286
@@ -106914,7 +106914,7 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 58,
-    "Player": "Sai199orz",
+    "Player": "Sai199Orz",
     "Deck": "Turbofog",
     "Wins": 1,
     "Losses": 3,
@@ -106980,11 +106980,11 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 64,
-    "Player": "Lucasg1ggs",
+    "Player": "Lucasg1Ggs",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-09",
@@ -107006,7 +107006,7 @@ export const cleanedData = [
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-09",
@@ -107017,7 +107017,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-09",
@@ -107025,10 +107025,10 @@ export const cleanedData = [
     "Event": "MTGO Challenge (2024-06-09)",
     "Rank": 68,
     "Player": "Mate_Wosk",
-    "Deck": "Affinity",
+    "Deck": "Grixis Affinity",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-06-09",
@@ -107039,7 +107039,7 @@ export const cleanedData = [
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-09",
@@ -107369,7 +107369,7 @@ export const cleanedData = [
     "Deck": "Elves",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-09",
@@ -107380,7 +107380,7 @@ export const cleanedData = [
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   },
   {
     "Date": "2024-11-09",
@@ -107391,6 +107391,6 @@ export const cleanedData = [
     "Deck": "Turbofog",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0
+    "Winrate": 0.0
   }
-];
+]
