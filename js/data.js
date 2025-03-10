@@ -1,3 +1,4 @@
+/*Players are normalized to have only the first letter in uppercase, this differs from MTGO nicknames but it is necessary as the sourced data does not always follows the original MTGO nickname*/
 export const cleanedData = [
   {
     "Date": "2025-01-03",

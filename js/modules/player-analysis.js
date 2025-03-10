@@ -28,7 +28,7 @@ export function updatePlayerAnalytics() {
 
   if (playerFilterMenu && !playerFilterMenu.dataset.initialized) {
     const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b));
-    playerFilterMenu.innerHTML = `<option value="">Select a Player</option>` + 
+    playerFilterMenu.innerHTML = `<option value="">Select EVENT TYPE First</option>` + 
       players.map(player => `<option value="${player}">${player}</option>`).join("");
     playerFilterMenu.dataset.initialized = "true";
   }
