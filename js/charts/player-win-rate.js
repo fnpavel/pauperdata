@@ -50,14 +50,19 @@ export function updatePlayerWinRateChart() {
                     selectedEventTypes.length === 0 ? "No Event Type Selected" : 
                     "No Data";
       playerWinRateChart = new Chart(playerWinRateCtx, {
-        type: "bar",
+        type: "line",
         data: {
           labels: [label],
           datasets: [{
             label: "Player Win Rate %",
             data: [0],
             backgroundColor: '#FFD700',
-            barPercentage: 0.3,
+            borderColor: '#FFD700',       // Add this line
+            borderWidth: 2,               // Add this line
+            pointRadius: 5,               // Add this line
+            tension: 0.3,                 // Add this line
+            fill: false,                  // Add this line
+            linePercentage: 0.3,
             categoryPercentage: 0.8
           }]
         },
@@ -244,7 +249,7 @@ export function updatePlayerWinRateChart() {
 
   try {
     playerWinRateChart = new Chart(playerWinRateCtx, {
-      type: "bar",
+      type: "line",
       data: {
         labels: dates,
         datasets: [
@@ -252,7 +257,12 @@ export function updatePlayerWinRateChart() {
             label: `${selectedPlayer} Win Rate %`,
             data: playerWinRates,
             backgroundColor: '#FFD700',
-            barPercentage: 0.5,
+            borderColor: '#FFD700',       // Add this line
+            borderWidth: 2,               // Add this line
+            pointRadius: 5,               // Add this line
+            tension: 0.3,                 // Add this line
+            fill: false,                  // Add this line
+            linePercentage: 0.5,
             categoryPercentage: 0.8
           }
         ]
