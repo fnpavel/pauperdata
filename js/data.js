@@ -76456,7 +76456,7 @@ export const cleanedData = [
   "EventType": "online",
   "Event": "MTGO Challenge (2024-06-28)",
   "Rank": 4,
-  "Player": "Oceansou192",
+  "Player": "Oceansoul92",
   "Deck": "Red Kuldotha",
   "Wins": 5,
   "Losses": 3,
