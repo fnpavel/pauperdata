@@ -57,11 +57,11 @@ export function updatePlayerWinRateChart() {
             label: "Player Win Rate %",
             data: [0],
             backgroundColor: '#FFD700',
-            borderColor: '#FFD700',       // Add this line
-            borderWidth: 2,               // Add this line
-            pointRadius: 5,               // Add this line
-            tension: 0.3,                 // Add this line
-            fill: false,                  // Add this line
+            borderColor: '#FFD700',       
+            borderWidth: 2,               
+            pointRadius: 5,               
+            tension: 0.3,                 
+            fill: false,                  
             linePercentage: 0.3,
             categoryPercentage: 0.8
           }]
@@ -257,11 +257,11 @@ export function updatePlayerWinRateChart() {
             label: `${selectedPlayer} Win Rate %`,
             data: playerWinRates,
             backgroundColor: '#FFD700',
-            borderColor: '#FFD700',       // Add this line
-            borderWidth: 2,               // Add this line
-            pointRadius: 5,               // Add this line
-            tension: 0.3,                 // Add this line
-            fill: false,                  // Add this line
+            borderColor: '#FFD700',       
+            borderWidth: 2,               
+            pointRadius: 5,               
+            tension: 0.3,                 
+            fill: false,                  
             linePercentage: 0.5,
             categoryPercentage: 0.8
           }
