@@ -533,14 +533,17 @@ export function populateSingleEventStats(filteredData) {
   toggleStatCardVisibility("singleTopDecksCard", true);
   const totalPlayers = filteredData.length;
   const topDecks = calculateTopDecks(filteredData);
-  const top8Decks = filteredData
-    .filter(row => row.Rank >= 1 && row.Rank <= 8)
-    .map(row => row.Deck)
-    .filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
-  const uniqueTop8Decks = new Set(top8Decks);
 
   // Calculate deck counts for each range
   const deckCountsByRange = {
+    "Top 8": filteredData
+      .filter(row => row.Rank >= 1 && row.Rank <= 8)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
     "Top 16": filteredData
       .filter(row => row.Rank >= 9 && row.Rank <= 16)
       .reduce((acc, row) => {
@@ -574,21 +577,24 @@ export function populateSingleEventStats(filteredData) {
           if (!decks || decks[0] === null) return "";
           const validDecks = decks.filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
           if (validDecks.length === 0) return "";
+          const deckCounts = deckCountsByRange[range];
+          const maxCopies = Math.max(...Object.values(deckCounts), 0);
+          if (maxCopies === 0) return ""; // No valid decks in this range
+          const mostPlayedDecks = Object.entries(deckCounts)
+            .filter(([_, count]) => count === maxCopies)
+            .map(([deck]) => deck);
           let deckStatsText;
-          if (range === "Top 8" && top8Decks.length === 8 && uniqueTop8Decks.size === 8) {
+          const rangeCount = {
+            "Top 8": filteredData.filter(row => row.Rank >= 1 && row.Rank <= 8).length,
+            "Top 16": filteredData.filter(row => row.Rank >= 9 && row.Rank <= 16).length,
+            "Top 32": filteredData.filter(row => row.Rank >= 17 && row.Rank <= 32).length,
+            "Below Top 32": filteredData.filter(row => row.Rank > 32).length
+          }[range];
+          const uniqueDecksCount = Object.keys(deckCounts).length;
+          const maxEntries = range === "Top 8" ? 8 : range === "Top 16" ? 8 : range === "Top 32" ? 16 : rangeCount;
+          if (rangeCount === maxEntries && uniqueDecksCount === rangeCount && maxCopies === 1) {
             deckStatsText = "All Unique Decks";
-          } else if (range === "Top 8") {
-            deckStatsText = validDecks.map(deck => {
-              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
-              return `${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
-            }).join(", ");
           } else {
-            const deckCounts = deckCountsByRange[range];
-            const maxCopies = Math.max(...Object.values(deckCounts), 0);
-            if (maxCopies === 0) return ""; // No valid decks in this range
-            const mostPlayedDecks = Object.entries(deckCounts)
-              .filter(([_, count]) => count === maxCopies)
-              .map(([deck]) => deck);
             deckStatsText = mostPlayedDecks.map(deck => {
               const stats = calculateDeckStats(filteredData, deck, totalPlayers);
               return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
@@ -640,14 +646,17 @@ export function populateMultiEventStats(filteredData) {
 
   const totalPlayers = filteredData.length;
   const topDecks = calculateTopDecks(filteredData);
-  const top8Decks = filteredData
-    .filter(row => row.Rank >= 1 && row.Rank <= 8)
-    .map(row => row.Deck)
-    .filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
-  const uniqueTop8Decks = new Set(top8Decks);
 
   // Calculate deck counts for each range
   const deckCountsByRange = {
+    "Top 8": filteredData
+      .filter(row => row.Rank >= 1 && row.Rank <= 8)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
     "Top 16": filteredData
       .filter(row => row.Rank >= 9 && row.Rank <= 16)
       .reduce((acc, row) => {
@@ -681,21 +690,24 @@ export function populateMultiEventStats(filteredData) {
           if (!decks || decks[0] === null) return "";
           const validDecks = decks.filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
           if (validDecks.length === 0) return "";
+          const deckCounts = deckCountsByRange[range];
+          const maxCopies = Math.max(...Object.values(deckCounts), 0);
+          if (maxCopies === 0) return ""; // No valid decks in this range
+          const mostPlayedDecks = Object.entries(deckCounts)
+            .filter(([_, count]) => count === maxCopies)
+            .map(([deck]) => deck);
           let deckStatsText;
-          if (range === "Top 8" && top8Decks.length === 8 && uniqueTop8Decks.size === 8) {
+          const rangeCount = {
+            "Top 8": filteredData.filter(row => row.Rank >= 1 && row.Rank <= 8).length,
+            "Top 16": filteredData.filter(row => row.Rank >= 9 && row.Rank <= 16).length,
+            "Top 32": filteredData.filter(row => row.Rank >= 17 && row.Rank <= 32).length,
+            "Below Top 32": filteredData.filter(row => row.Rank > 32).length
+          }[range];
+          const uniqueDecksCount = Object.keys(deckCounts).length;
+          const maxEntries = range === "Top 8" ? 8 : range === "Top 16" ? 8 : range === "Top 32" ? 16 : rangeCount;
+          if (rangeCount === maxEntries && uniqueDecksCount === rangeCount && maxCopies === 1) {
             deckStatsText = "All Unique Decks";
-          } else if (range === "Top 8") {
-            deckStatsText = validDecks.map(deck => {
-              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
-              return `${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
-            }).join(", ");
           } else {
-            const deckCounts = deckCountsByRange[range];
-            const maxCopies = Math.max(...Object.values(deckCounts), 0);
-            if (maxCopies === 0) return ""; // No valid decks in this range
-            const mostPlayedDecks = Object.entries(deckCounts)
-              .filter(([_, count]) => count === maxCopies)
-              .map(([deck]) => deck);
             deckStatsText = mostPlayedDecks.map(deck => {
               const stats = calculateDeckStats(filteredData, deck, totalPlayers);
               return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
