@@ -1,4 +1,4 @@
-// js/charts/event-funnel.js
+// js/charts/single-funnel.js
 import { setChartLoading } from '../utils/dom.js';
 import { cleanedData } from '../data.js';
 
