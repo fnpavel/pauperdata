@@ -2,15 +2,14 @@
 import { cleanedData } from '../data.js';
 import { updateEventAnalytics, updateMultiEventAnalytics } from './event-analysis.js';
 import { updatePlayerAnalytics } from './player-analysis.js';
-import { updateEventMetaWinRateChart } from '../charts/event-meta-win-rate.js';
+import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
-import { updateEventFunnelChart } from '../charts/event-funnel.js';
-import { updateDeckEvolutionChart } from '../charts/deck-evolution.js';
+import { updateEventFunnelChart } from '../charts/single-funnel.js';
+import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 
-// Global variables to hold filtered data
+// Global variable to hold filtered data
 let filteredData = [];
-let slicedFilteredData = [];
 
 export function setupFilters() {
   console.log("Setting up filters...");
@@ -28,7 +27,7 @@ export function setupFilters() {
 
   // Player Filter Menu
   const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b)); // Case-insensitive sort
+  const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b));
   playerFilterMenu.innerHTML = `<option value="">No Player Selected</option>` + 
     players.map(player => `<option value="${player}">${player}</option>`).join("");
   playerFilterMenu.value = "";
@@ -44,9 +43,6 @@ export function setupFilters() {
   const playerEndDateSelect = document.getElementById("playerEndDateSelect");
   playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
   playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-
-  // Position Slicer
-  setupPositionSlicer();
 
   // Initial UI State
   const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
@@ -66,65 +62,7 @@ export function setupFilters() {
   updateAllCharts();
 }
 
-function setupPositionSlicer() {
-  const maxRank = Math.max(...cleanedData.map(row => row.Rank));
-  const positionOptions = Array.from({ length: maxRank }, (_, i) => i + 1)
-    .map(rank => `<option value="${rank}">${rank}</option>`).join("");
-
-  const positionStartSelect = document.getElementById("positionStartSelect");
-  const positionEndSelect = document.getElementById("positionEndSelect");
-  const positionTypeButtons = document.querySelectorAll(".position-type");
-
-  positionStartSelect.innerHTML = `<option value="">All</option>${positionOptions}`;
-  positionEndSelect.innerHTML = `<option value="">All</option>${positionOptions}`;
-  positionStartSelect.value = "";
-  positionEndSelect.value = "";
-
-  // Position Start/End listeners
-  positionStartSelect.addEventListener("change", () => {
-    updateSlicedFilteredData();
-    updatePositionSlicerCharts();
-  });
-  positionEndSelect.addEventListener("change", () => {
-    updateSlicedFilteredData();
-    updatePositionSlicerCharts();
-  });
-
-  // Meta/Win Rate toggle listeners
-  positionTypeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      positionTypeButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-      console.log("Position type changed to:", button.dataset.type);
-      updatePositionSlicerCharts();
-    });
-  });
-}
-
-// Updates slicedFilteredData based on position slicer
-function updateSlicedFilteredData() {
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
-  slicedFilteredData = filteredData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
-}
-
-// Updates only slicer-affected charts
-function updatePositionSlicerCharts() {
-  const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
-  const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
-
-  if (activeTopMode === "event") {
-    if (activeAnalysisMode === "single") {
-      updateEventMetaWinRateChart(slicedFilteredData);
-      //updateEventFunnelChart(slicedFilteredData);
-    } else if (activeAnalysisMode === "multi") {
-      updateMultiMetaWinRateChart(slicedFilteredData);
-      updateMultiPlayerWinRateChart(slicedFilteredData);
-    }
-  }
-}
-
-// Updates all charts for non-slicer filter changes
+// Updates all charts for filter changes
 export function updateAllCharts() {
   const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
   const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
@@ -138,9 +76,8 @@ export function updateAllCharts() {
       filteredData = cleanedData.filter(row => 
         row.EventType === selectedEventType && selectedEvents.includes(row.Event)
       );
-      updateSlicedFilteredData(); // Update sliced data after updating filteredData
-      updateEventMetaWinRateChart(slicedFilteredData);
-      updateEventFunnelChart(slicedFilteredData);
+      updateEventMetaWinRateChart();
+      updateEventFunnelChart(filteredData);
       updateEventAnalytics();
     } else if (activeAnalysisMode === "multi") {
       const startDate = document.getElementById("startDateSelect").value;
@@ -150,14 +87,13 @@ export function updateAllCharts() {
       filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
         ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
         : [];
-      updateSlicedFilteredData(); // Update sliced data after updating filteredData
-      updateMultiMetaWinRateChart(slicedFilteredData);
+      updateMultiMetaWinRateChart();
       updateMultiPlayerWinRateChart();
-      updateDeckEvolutionChart(filteredData); // Use filteredData, not sliced
+      updateDeckEvolutionChart();
       updateMultiEventAnalytics();
     }
   } else if (activeTopMode === "player") {
-    updatePlayerAnalytics(); // Player analytics ignores slicer
+    updatePlayerAnalytics();
   }
 }
 
@@ -196,8 +132,8 @@ export function setupTopModeListeners() {
         multiEventCharts.style.display = activeAnalysisMode === "multi" ? "block" : "none";
 
         updateEventFilter();
-        updateDateOptions();      // Update Multi-Event dates
-        updatePlayerDateOptions(); // Update Player Analysis dates
+        updateDateOptions();
+        updatePlayerDateOptions();
         updateAllCharts();
       } else if (mode === "player") {
         eventAnalysisSection.style.display = "none";
@@ -210,7 +146,7 @@ export function setupTopModeListeners() {
         console.log("Player Analytics: Event type filters reset. Active types:", 
           Array.from(eventTypeButtons).filter(btn => btn.classList.contains("active")).map(btn => btn.dataset.type));
         
-        updatePlayerDateOptions(); // Update player dates and player filter
+        updatePlayerDateOptions();
         updatePlayerAnalytics();
       }
     });
@@ -239,8 +175,8 @@ export function setupAnalysisModeListeners() {
       multiEventCharts.style.display = mode === "multi" ? "block" : "none";
       eventFilterSection.style.display = mode === "single" ? "block" : "none";
 
-      updateDateOptions();      // Update Multi-Event dates
-      updatePlayerDateOptions(); // Update Player Analysis dates and player filter
+      updateDateOptions();
+      updatePlayerDateOptions();
       updateAllCharts();
     });
   });
@@ -267,7 +203,6 @@ export function setupEventTypeListeners() {
 
       setTimeout(() => {
         updateEventFilter();
-        // Reset and update date dropdowns
         const startDateSelect = document.getElementById("startDateSelect");
         const endDateSelect = document.getElementById("endDateSelect");
         const playerStartDateSelect = document.getElementById("playerStartDateSelect");
@@ -277,7 +212,7 @@ export function setupEventTypeListeners() {
         if (playerStartDateSelect) playerStartDateSelect.value = "";
         if (playerEndDateSelect) playerEndDateSelect.value = "";
         updateDateOptions();
-        updatePlayerDateOptions(); // Also updates player filter
+        updatePlayerDateOptions();
         updateAllCharts();
       }, 0);
     });
@@ -298,19 +233,19 @@ export function setupPlayerFilterListeners() {
 
   if (playerFilterMenu) {
     playerFilterMenu.addEventListener("change", () => {
-      updatePlayerDateOptions(); // Update dates when player changes
+      updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
   if (playerStartDateSelect) {
     playerStartDateSelect.addEventListener("change", () => {
-      updatePlayerDateOptions(); // Update end date options when start date changes
+      updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
   if (playerEndDateSelect) {
     playerEndDateSelect.addEventListener("change", () => {
-      updatePlayerDateOptions(); // Update start date options when end date changes
+      updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
@@ -339,7 +274,7 @@ export function updateEventFilter() {
     ].sort((a, b) => {
       const dateA = cleanedData.find(row => row.Event === a).Date;
       const dateB = cleanedData.find(row => row.Event === b).Date;
-      return new Date(dateB) - new Date(dateA);
+      return new Date(dateB) - new Date(a);
     });
     eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
     eventFilterMenu.value = events[0] || "";
@@ -368,14 +303,12 @@ export function updateDateOptions() {
   const selectedStartDate = startDateSelect.value;
   const selectedEndDate = endDateSelect.value;
 
-  // Reset if selected date is no longer valid
   if (selectedStartDate && !dates.includes(selectedStartDate)) startDateSelect.value = "";
   if (selectedEndDate && !dates.includes(selectedEndDate)) endDateSelect.value = "";
 
   const currentStartDate = startDateSelect.value;
   const currentEndDate = endDateSelect.value;
 
-  // Enforce date range constraints
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
     endDateSelect.innerHTML = `<option value="">Select End Date</option>${validEndDates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
@@ -399,7 +332,6 @@ export function updatePlayerDateOptions() {
     .map(button => button.dataset.type.toLowerCase());
   const selectedPlayer = playerFilterMenu.value;
 
-  // Update player filter: show all players if no event types selected, otherwise filter by event types
   const players = selectedEventTypes.length === 0
     ? [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b))
     : [...new Set(cleanedData
@@ -409,7 +341,6 @@ export function updatePlayerDateOptions() {
   playerFilterMenu.innerHTML = `<option value="">No Player Selected</option>` + 
     players.map(player => `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`).join("");
 
-  // Filter dates by selected player and event types (if any)
   const dates = selectedPlayer
     ? [...new Set(cleanedData
         .filter(row => row.Player === selectedPlayer && (selectedEventTypes.length === 0 || selectedEventTypes.includes(row.EventType.toLowerCase())))
@@ -427,14 +358,12 @@ export function updatePlayerDateOptions() {
   const selectedStartDate = startDateSelect.value;
   const selectedEndDate = endDateSelect.value;
 
-  // Reset if selected date is no longer valid
   if (selectedStartDate && !dates.includes(selectedStartDate)) startDateSelect.value = "";
   if (selectedEndDate && !dates.includes(selectedEndDate)) endDateSelect.value = "";
 
   const currentStartDate = startDateSelect.value;
   const currentEndDate = endDateSelect.value;
 
-  // Enforce date range constraints
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
     endDateSelect.innerHTML = `<option value="">Select End Date</option>${validEndDates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
