@@ -4,17 +4,14 @@ import { cleanedData } from '../data.js';
 
 export let metaWinRateChart = null;
 
-export function updateMultiMetaWinRateChart() {
-  console.log("updateMultiMetaWinRateChart called...");
+export function updateMultiMetaWinRateChart(sortBy = 'meta') {
+  console.log("updateMultiMetaWinRateChart called...", { sortBy });
   setChartLoading("metaWinRateChart", true);
 
   const startDate = document.getElementById("startDateSelect").value;
   const endDate = document.getElementById("endDateSelect").value;
   const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
     .map(button => button.dataset.type);
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
-  const positionType = document.querySelector('.position-type.active')?.dataset.type || "meta";
 
   const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
     ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
@@ -35,62 +32,56 @@ export function updateMultiMetaWinRateChart() {
     acc[row.Deck].count += 1;
     return acc;
   }, {});
+
   const decks = Object.keys(deckStats);
-  const metaPercentages = decks.map(deck => (deckStats[deck].count / totalPlayers) * 100);
-  const winRates = decks.map(deck => {
-    const { wins, losses } = deckStats[deck];
-    return (wins + losses) > 0 ? (wins / (wins + losses)) * 100 : 0;
+  const deckData = decks.map(deck => ({
+    deck,
+    meta: (deckStats[deck].count / totalPlayers) * 100,
+    winRate: (deckStats[deck].wins + deckStats[deck].losses) > 0 
+      ? (deckStats[deck].wins / (deckStats[deck].wins + deckStats[deck].losses)) * 100 
+      : 0
+  }));
+
+  // Sort decks based on sortBy
+  const sortedDecks = deckData.sort((a, b) => {
+    if (sortBy === 'meta') {
+      return b.meta - a.meta || a.deck.localeCompare(b.deck);
+    } else {
+      return b.winRate - a.winRate || a.deck.localeCompare(b.deck);
+    }
   });
 
-  // Sort and filter by positionType
-  const deckData = decks.map((deck, i) => ({
-    deck,
-    meta: metaPercentages[i],
-    winRate: winRates[i]
-  }));
-  const sortedDecks = positionType === "meta"
-    ? deckData.sort((a, b) => b.meta - a.meta || a.deck.localeCompare(b.deck))
-    : deckData.sort((a, b) => b.winRate - a.winRate || a.deck.localeCompare(b.deck));
-  const filteredDecks = sortedDecks.slice(positionStart - 1, positionEnd);
-  const filteredDeckNames = filteredDecks.map(d => d.deck);
+  const deckNames = sortedDecks.map(d => d.deck);
+  const metaPercentages = sortedDecks.map(d => d.meta);
+  const winRates = sortedDecks.map(d => d.winRate);
+  const metaMin = Math.max(0, Math.min(...metaPercentages) - 5);
+  const metaMax = Math.max(...metaPercentages) + 5;
 
-  // Update dropdown options dynamically
-  const positionStartSelect = document.getElementById("positionStartSelect");
-  const positionEndSelect = document.getElementById("positionEndSelect");
-  const maxPosition = decks.length;
-  const positionOptions = Array.from({ length: maxPosition }, (_, i) => i + 1)
-    .map(rank => `<option value="${rank}">${rank}</option>`).join("");
-  positionStartSelect.innerHTML = `<option value="">All</option>${positionOptions}`;
-  positionEndSelect.innerHTML = `<option value="">All</option>${positionOptions}`;
-  positionStartSelect.value = positionStart <= maxPosition ? positionStart : "";
-  positionEndSelect.value = positionEnd <= maxPosition ? positionEnd : "";
-
-  if (filteredDeckNames.length === 0) {
-    console.log("No decks in range, skipping chart creation...");
+  if (deckNames.length === 0) {
+    console.log("No decks, skipping chart creation...");
     if (metaWinRateChart) metaWinRateChart.destroy();
     setChartLoading("metaWinRateChart", false);
     return;
   }
 
-  const filteredMetaPercentages = filteredDecks.map(d => d.meta);
-  const filteredWinRates = filteredDecks.map(d => d.winRate);
-  const metaMin = Math.max(0, Math.min(...filteredMetaPercentages) - 5);
-  const metaMax = Math.max(...filteredMetaPercentages) + 5;
-
   const datasets = [
     {
       type: 'bar',
       label: 'Meta %',
-      data: filteredMetaPercentages,
-      backgroundColor: '#FF6347', // Single color for Meta %
+      data: metaPercentages,
+      backgroundColor: '#CC3700', // Muted tomato
+      borderColor: '#A32C00',
+      borderWidth: 1,
       yAxisID: 'y',
       order: 2
     },
     {
       type: 'bar',
       label: 'Win Rate %',
-      data: filteredWinRates,
-      backgroundColor: '#4682B4', // Single color for Win Rate %
+      data: winRates,
+      backgroundColor: '#326789', // Muted steel blue
+      borderColor: '#2A566F',
+      borderWidth: 1,
       yAxisID: 'y2',
       order: 1
     }
@@ -106,7 +97,7 @@ export function updateMultiMetaWinRateChart() {
 
   try {
     metaWinRateChart = new Chart(metaWinRateMultiCtx, {
-      data: { labels: filteredDeckNames, datasets },
+      data: { labels: deckNames, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
@@ -127,7 +118,11 @@ export function updateMultiMetaWinRateChart() {
             ticks: { color: '#fff' } 
           },
           x: { 
-            title: { display: true, text: "Decks", color: '#fff' }, 
+            title: { 
+              display: true, 
+              text: `Decks (Sorted by ${sortBy === 'meta' ? 'Meta %' : 'Win Rate %'})`, 
+              color: '#fff' 
+            }, 
             grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.1)' }, 
             ticks: { color: '#fff', autoSkip: false, maxRotation: 45, minRotation: 45 } 
           }
@@ -138,7 +133,7 @@ export function updateMultiMetaWinRateChart() {
             position: 'top',
             labels: { 
               color: '#e0e0e0', 
-              font: { size: 14, weight: 'bold' },
+              font: { size: 14, family: "'Bitter', serif" },
               boxWidth: 20,
               padding: 10
             }
@@ -146,7 +141,25 @@ export function updateMultiMetaWinRateChart() {
           tooltip: {
             callbacks: {
               label: context => `${context.dataset.label}: ${context.raw.toFixed(2)}%`
-            }
+            },
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleFont: { family: "'Bitter', serif", size: 14, weight: 'bold' },
+            bodyFont: { family: "'Bitter', serif", size: 12 },
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            borderColor: '#FFD700',
+            borderWidth: 1,
+            padding: 10
+          }
+        },
+        animation: {
+          duration: 1000,
+          easing: 'easeOutQuart'
+        },
+        elements: {
+          bar: {
+            borderRadius: 4,
+            borderSkipped: false
           }
         }
       }
@@ -154,5 +167,27 @@ export function updateMultiMetaWinRateChart() {
   } catch (error) {
     console.error("Error initializing Multi-Event Meta/Win Rate Chart:", error);
   }
+
+  // Add toggle buttons if not already present
+  const chartContainer = document.querySelector('#metaWinRateChart').parentElement;
+  let toggleDiv = chartContainer.querySelector('.sort-toggle');
+  if (!toggleDiv) {
+    toggleDiv = document.createElement('div');
+    toggleDiv.className = 'sort-toggle';
+    toggleDiv.innerHTML = `
+      <button class="table-toggle-btn ${sortBy === 'meta' ? 'active' : ''}" data-sort="meta">Sort by Meta</button>
+      <button class="table-toggle-btn ${sortBy === 'winRate' ? 'active' : ''}" data-sort="winRate">Sort by Win Rate</button>
+    `;
+    chartContainer.insertBefore(toggleDiv, metaWinRateMultiCtx);
+
+    toggleDiv.querySelectorAll('.table-toggle-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        toggleDiv.querySelectorAll('.table-toggle-btn').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        updateMultiMetaWinRateChart(button.dataset.sort);
+      });
+    });
+  }
+
   setChartLoading("metaWinRateChart", false);
 }
