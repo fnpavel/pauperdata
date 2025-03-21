@@ -125,7 +125,7 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
 
         rows.sort((a, b) => {
           const aVal = typeof a[sortKey] === 'string' ? a[sortKey].toLowerCase() : a[sortKey];
-          const bVal = typeof b[sortKey] === 'string' ? b[sortKey].toLowerCase() : b[sortKey];
+          const bVal = typeof b[sortKey] === 'string' ? bVal.toLowerCase() : b[sortKey];
           return isAscending ? (aVal > bVal ? -1 : 1) : (aVal < bVal ? -1 : 1);
         });
 
@@ -189,16 +189,16 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
       updateElementHTML("singleEventTableBody", rows.length === 0
         ? "<tr><td colspan='8'>No data available for the selected event.</td></tr>"
         : rows.map(row => `
-<tr>
-        <td>${row.deck}</td>
-        <td>${row.count}</td>
-        <td>${row.metaShare.toFixed(1)}%</td>
-        <td>${row.winRate.toFixed(1)}%</td>
-        <td>${displayMode === 'raw' ? row.top8 : (row.top8 === 0 ? '--' : row.top8Percent.toFixed(1) + '%')}</td>
-        <td>${displayMode === 'raw' ? row.top16 : (row.top16 === 0 ? '--' : row.top16Percent.toFixed(1) + '%')}</td>
-        <td>${displayMode === 'raw' ? row.top32 : (row.top32 === 0 ? '--' : row.top32Percent.toFixed(1) + '%')}</td>
-        <td>${displayMode === 'raw' ? row.belowTop32 : (row.belowTop32 === 0 ? '--' : row.belowTop32Percent.toFixed(1) + '%')}</td>
-      </tr>
+          <tr>
+            <td>${row.deck}</td>
+            <td>${row.count}</td>
+            <td>${row.metaShare.toFixed(1)}%</td>
+            <td>${row.winRate.toFixed(1)}%</td>
+            <td>${displayMode === 'raw' ? row.top8 : (row.top8 === 0 ? '--' : row.top8Percent.toFixed(1) + '%')}</td>
+            <td>${displayMode === 'raw' ? row.top16 : (row.top16 === 0 ? '--' : row.top16Percent.toFixed(1) + '%')}</td>
+            <td>${displayMode === 'raw' ? row.top32 : (row.top32 === 0 ? '--' : row.top32Percent.toFixed(1) + '%')}</td>
+            <td>${displayMode === 'raw' ? row.belowTop32 : (row.belowTop32 === 0 ? '--' : row.belowTop32Percent.toFixed(1) + '%')}</td>
+          </tr>
         `).join(""));
     };
 
@@ -515,9 +515,8 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
 }
 
 export function populateSingleEventStats(filteredData) {
-  
   toggleStatCardVisibility("singleEventInfoCard", true);
-  updateElementText("eventInfoName", filteredData.length > 0 ? filteredData[0].Event : "No Event Selected"); // New element for event name
+  updateElementText("eventInfoName", filteredData.length > 0 ? filteredData[0].Event : "No Event Selected");
   updateElementText("eventInfoDate", filteredData.length > 0 ? formatDate(filteredData[0].Date) : "No Data");
   updateElementText("eventInfoPlayers", filteredData.length > 0 ? `${filteredData.length} Players` : "--");
 
@@ -533,16 +532,87 @@ export function populateSingleEventStats(filteredData) {
 
   toggleStatCardVisibility("singleTopDecksCard", true);
   const totalPlayers = filteredData.length;
-  updateElementHTML("singleTopDecksDetails", filteredData.length === 0 ? "No Data" : Object.entries(calculateTopDecks(filteredData))
-    .map(([range, deck]) => deck ? `<div><span class="label">${range}:</span> <span class="value">${deck} (${formatPercentage(calculateDeckStats(filteredData, deck, totalPlayers).winRate)} WR / ${formatPercentage(calculateDeckStats(filteredData, deck, totalPlayers).metaShare)} Meta)</span></div>` : "")
-    .filter(Boolean)
-    .join("") || "No Data");
+  const topDecks = calculateTopDecks(filteredData);
+  const top8Decks = filteredData
+    .filter(row => row.Rank >= 1 && row.Rank <= 8)
+    .map(row => row.Deck)
+    .filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
+  const uniqueTop8Decks = new Set(top8Decks);
+
+  // Calculate deck counts for each range
+  const deckCountsByRange = {
+    "Top 16": filteredData
+      .filter(row => row.Rank >= 9 && row.Rank <= 16)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+    "Top 32": filteredData
+      .filter(row => row.Rank >= 17 && row.Rank <= 32)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+    "Below Top 32": filteredData
+      .filter(row => row.Rank > 32)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {})
+  };
+
+  updateElementHTML("singleTopDecksDetails", filteredData.length === 0 
+    ? "No Data" 
+    : Object.entries(topDecks)
+        .map(([range, decks]) => {
+          if (!decks || decks[0] === null) return "";
+          const validDecks = decks.filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
+          if (validDecks.length === 0) return "";
+          let deckStatsText;
+          if (range === "Top 8" && top8Decks.length === 8 && uniqueTop8Decks.size === 8) {
+            deckStatsText = "All Unique Decks";
+          } else if (range === "Top 8") {
+            deckStatsText = validDecks.map(deck => {
+              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
+              return `${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
+            }).join(", ");
+          } else {
+            const deckCounts = deckCountsByRange[range];
+            const maxCopies = Math.max(...Object.values(deckCounts), 0);
+            if (maxCopies === 0) return ""; // No valid decks in this range
+            const mostPlayedDecks = Object.entries(deckCounts)
+              .filter(([_, count]) => count === maxCopies)
+              .map(([deck]) => deck);
+            deckStatsText = mostPlayedDecks.map(deck => {
+              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
+              return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
+            }).join(", ");
+          }
+          return `<div><span class="label">${range}:</span> <span class="value">${deckStatsText}</span></div>`;
+        })
+        .filter(Boolean)
+        .join("") || "No Data"
+  );
 
   toggleStatCardVisibility("singleMostCopiesCard", true);
-  const deckCounts = filteredData.reduce((acc, row) => { acc[row.Deck] = (acc[row.Deck] || 0) + 1; return acc; }, {});
-  const mostCopiesDeck = filteredData.length > 0 ? Object.keys(deckCounts).reduce((a, b) => deckCounts[a] > deckCounts[b] ? a : b, null) : "No Data";
-  updateElementText("singleMostCopiesDeck", mostCopiesDeck);
-  updateElementText("singleMostCopiesDetails", mostCopiesDeck === "No Data" ? "--" : `${deckCounts[mostCopiesDeck]} Copies`);
+  const deckCounts = filteredData.reduce((acc, row) => {
+    if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+      acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+    }
+    return acc;
+  }, {});
+  const maxCopies = Math.max(...Object.values(deckCounts), 0);
+  const mostCopiesDecks = Object.entries(deckCounts)
+    .filter(([_, count]) => count === maxCopies)
+    .map(([deck]) => deck);
+  updateElementText("singleMostCopiesDeck", filteredData.length > 0 && mostCopiesDecks.length > 0 ? mostCopiesDecks.join(", ") : "No Data");
+  updateElementText("singleMostCopiesDetails", filteredData.length > 0 && maxCopies > 0 ? `${maxCopies} Copies` : "--");
 }
 
 export function populateMultiEventStats(filteredData) {
@@ -569,13 +639,84 @@ export function populateMultiEventStats(filteredData) {
   updateElementText("leastPlayersCount", `${leastPlayersEvent.count} Players`);
 
   const totalPlayers = filteredData.length;
-  updateElementHTML("multiTopDecksDetails", Object.entries(calculateTopDecks(filteredData))
-    .map(([range, deck]) => deck ? `<div><span class="label">${range}:</span> <span class="value">${deck} (${formatPercentage(calculateDeckStats(filteredData, deck, totalPlayers).winRate)} WR / ${formatPercentage(calculateDeckStats(filteredData, deck, totalPlayers).metaShare)} Meta)</span></div>` : "")
-    .filter(Boolean)
-    .join("") || "--");
+  const topDecks = calculateTopDecks(filteredData);
+  const top8Decks = filteredData
+    .filter(row => row.Rank >= 1 && row.Rank <= 8)
+    .map(row => row.Deck)
+    .filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
+  const uniqueTop8Decks = new Set(top8Decks);
 
-  const deckCounts = filteredData.reduce((acc, row) => { acc[row.Deck] = (acc[row.Deck] || 0) + 1; return acc; }, {});
-  const mostCopiesDeck = Object.keys(deckCounts).reduce((a, b) => deckCounts[a] > deckCounts[b] ? a : b, "--");
-  updateElementText("multiMostCopiesDeck", mostCopiesDeck);
-  updateElementText("multiMostCopiesDetails", mostCopiesDeck === "--" ? "0 Copies" : `${deckCounts[mostCopiesDeck]} Copies`);
+  // Calculate deck counts for each range
+  const deckCountsByRange = {
+    "Top 16": filteredData
+      .filter(row => row.Rank >= 9 && row.Rank <= 16)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+    "Top 32": filteredData
+      .filter(row => row.Rank >= 17 && row.Rank <= 32)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {}),
+    "Below Top 32": filteredData
+      .filter(row => row.Rank > 32)
+      .reduce((acc, row) => {
+        if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+          acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+        }
+        return acc;
+      }, {})
+  };
+
+  updateElementHTML("multiTopDecksDetails", filteredData.length === 0 
+    ? "--" 
+    : Object.entries(topDecks)
+        .map(([range, decks]) => {
+          if (!decks || decks[0] === null) return "";
+          const validDecks = decks.filter(deck => deck !== "UNKNOWN" && deck !== "No Show");
+          if (validDecks.length === 0) return "";
+          let deckStatsText;
+          if (range === "Top 8" && top8Decks.length === 8 && uniqueTop8Decks.size === 8) {
+            deckStatsText = "All Unique Decks";
+          } else if (range === "Top 8") {
+            deckStatsText = validDecks.map(deck => {
+              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
+              return `${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
+            }).join(", ");
+          } else {
+            const deckCounts = deckCountsByRange[range];
+            const maxCopies = Math.max(...Object.values(deckCounts), 0);
+            if (maxCopies === 0) return ""; // No valid decks in this range
+            const mostPlayedDecks = Object.entries(deckCounts)
+              .filter(([_, count]) => count === maxCopies)
+              .map(([deck]) => deck);
+            deckStatsText = mostPlayedDecks.map(deck => {
+              const stats = calculateDeckStats(filteredData, deck, totalPlayers);
+              return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
+            }).join(", ");
+          }
+          return `<div><span class="label">${range}:</span> <span class="value">${deckStatsText}</span></div>`;
+        })
+        .filter(Boolean)
+        .join("") || "--"
+  );
+
+  const deckCounts = filteredData.reduce((acc, row) => {
+    if (row.Deck !== "UNKNOWN" && row.Deck !== "No Show") {
+      acc[row.Deck] = (acc[row.Deck] || 0) + 1;
+    }
+    return acc;
+  }, {});
+  const maxCopies = Math.max(...Object.values(deckCounts), 0);
+  const mostCopiesDecks = Object.entries(deckCounts)
+    .filter(([_, count]) => count === maxCopies)
+    .map(([deck]) => deck);
+  updateElementText("multiMostCopiesDeck", mostCopiesDecks.length > 0 ? mostCopiesDecks.join(", ") : "--");
+  updateElementText("multiMostCopiesDetails", maxCopies > 0 ? `${maxCopies} Copies` : "0 Copies");
 }
