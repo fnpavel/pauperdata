@@ -1,4 +1,4 @@
-// js/charts/deck-evolution.js
+// js/charts/multi-deck-evolution.js
 import { setChartLoading } from '../utils/dom.js';
 import { cleanedData } from '../data.js';
 import { updateMultiEventTables } from '../modules/event-analysis.js';
