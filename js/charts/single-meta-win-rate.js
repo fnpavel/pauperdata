@@ -1,4 +1,4 @@
-// js/charts/event-meta-win-rate.js
+// js/charts/single-meta-win-rate.js
 import { setChartLoading } from '../utils/dom.js';
 import { cleanedData } from '../data.js';
 import { updateSingleEventTables } from '../modules/event-analysis.js';
