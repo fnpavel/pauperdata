@@ -17,10 +17,20 @@ export function setupFilters() {
   // Event Filter Menu
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const events = [...new Set(cleanedData.map(row => row.Event))].sort((a, b) => {
-    const dateA = cleanedData.find(row => row.Event === a).Date;
-    const dateB = cleanedData.find(row => row.Event === b).Date;
-    return new Date(dateB) - new Date(dateA);
+    // Extract date from event string or fall back to row.Date
+    const getEventDate = (event) => {
+      const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
+      const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
+      return new Date(dateStr);
+    };
+
+    const dateA = getEventDate(a);
+    const dateB = getEventDate(b);
+
+    // Sort by date (earliest to latest)
+    return dateA - dateB; // Latest dates last
   });
+
   eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
   eventFilterMenu.value = events[0] || "";
   updateEventFilter();
@@ -272,10 +282,20 @@ export function updateEventFilter() {
       .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
       .map(row => row.Event))
     ].sort((a, b) => {
-      const dateA = cleanedData.find(row => row.Event === a).Date;
-      const dateB = cleanedData.find(row => row.Event === b).Date;
-      return new Date(dateB) - new Date(a);
+      // Extract date from event string or fall back to row.Date
+      const getEventDate = (event) => {
+        const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
+        const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
+        return new Date(dateStr);
+      };
+
+      const dateA = getEventDate(a);
+      const dateB = getEventDate(b);
+
+      // Sort by date (earliest to latest)
+      return dateA - dateB; // Latest dates last
     });
+
     eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
     eventFilterMenu.value = events[0] || "";
   }
