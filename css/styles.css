@@ -158,6 +158,8 @@ header::before {
   grid-template-columns: 280px 1fr auto; /* Filters | Charts | Deck Stats Sidebar (Player Analytics) */
 }
 
+
+
 .filters {
   background-color: var(--secondary);
   border-radius: 10px;
@@ -483,6 +485,15 @@ canvas {
   transition: opacity 0.3s ease; /* Smooth opacity transition for chart updates */
 }
 
+/*SPECIFIC CHART */
+#eventFunnelChart {
+  max-height: 800px !important; /* Override default 300px */
+}
+
+#multiPlayerWinRateChart {
+  max-height: 400px !important; /* Default is 300px */
+}
+
 /* Custom Legend Styling */
 .custom-legend {
   margin-bottom: 15px;
@@ -642,6 +653,13 @@ th.desc .sort-arrow {
   background-color: #3a3a4a;
   transform: scale(1.05);
   box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.sort-toggle {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
 }
 
 /* Animations */
