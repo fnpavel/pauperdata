@@ -110051,1726 +110051,1726 @@ export const cleanedData = [
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 1,
-    "Name": "Bong0411",
+    "Player": "Bong0411",
     "Deck": "Red Kuldotha",
     "Wins": 7,
     "Losses": 2,
-    "Winrate": 0.7777777778
+    "Win Rate": 0.7777777778
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 2,
-    "Name": "Medvedev",
+    "Player": "Medvedev",
     "Deck": "Mono Black Aristocrats",
     "Wins": 7,
     "Losses": 2,
-    "Winrate": 0.7777777778
+    "Win Rate": 0.7777777778
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 3,
-    "Name": "Mirozel1",
+    "Player": "Mirozel1",
     "Deck": "Grixis Affinity",
     "Wins": 6,
     "Losses": 2,
-    "Winrate": 0.75
+    "Win Rate": 0.75
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 4,
-    "Name": "Yesicabyalexisf",
+    "Player": "Yesicabyalexisf",
     "Deck": "Mono Blue Faeries",
     "Wins": 5,
     "Losses": 3,
-    "Winrate": 0.625
+    "Win Rate": 0.625
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 5,
-    "Name": "Truehero",
+    "Player": "Truehero",
     "Deck": "Jund Wildfire",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 6,
-    "Name": "Hockeybro26",
+    "Player": "Hockeybro26",
     "Deck": "Hexproof",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 7,
-    "Name": "Pnascimento",
+    "Player": "Pnascimento",
     "Deck": "Hexproof",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 8,
-    "Name": "Tiomax",
+    "Player": "Tiomax",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 4,
     "Losses": 3,
-    "Winrate": 0.5714285714
+    "Win Rate": 0.5714285714
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 9,
-    "Name": "Kakaroto86",
+    "Player": "Kakaroto86",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 10,
-    "Name": "Kaikas",
+    "Player": "Kaikas",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 11,
-    "Name": "Luffydochapeudepalha",
+    "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 12,
-    "Name": "Misterasiago",
+    "Player": "Misterasiago",
     "Deck": "Jund Broodscale",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 13,
-    "Name": "Dr. Jon Osterman",
+    "Player": "Dr. Jon Osterman",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 14,
-    "Name": "Gzusreturned",
+    "Player": "Gzusreturned",
     "Deck": "Hexproof",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 15,
-    "Name": "Tyerube1618",
+    "Player": "Tyerube1618",
     "Deck": "Altar Tron",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 16,
-    "Name": "Paparmsky",
+    "Player": "Paparmsky",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 17,
-    "Name": "Luminati",
+    "Player": "Luminati",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 18,
-    "Name": "Cam_13",
+    "Player": "Cam_13",
     "Deck": "Mono Blue Terror",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 19,
-    "Name": "Beicodegeia",
+    "Player": "Beicodegeia",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 20,
-    "Name": "Pedrastone",
+    "Player": "Pedrastone",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 21,
-    "Name": "Outzeroo",
+    "Player": "Outzeroo",
     "Deck": "Rakdos Madness",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 22,
-    "Name": "Pepeteam",
+    "Player": "Pepeteam",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 23,
-    "Name": "Yugi_Muto",
+    "Player": "Yugi_Muto",
     "Deck": "Rakdos Madness",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 24,
-    "Name": "Edgo",
+    "Player": "Edgo",
     "Deck": "Dimir Control",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 25,
-    "Name": "Xto2",
+    "Player": "Xto2",
     "Deck": "Mono Blue Faeries",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 26,
-    "Name": "Viashinoperuano",
+    "Player": "Viashinoperuano",
     "Deck": "Dimir Fae",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 27,
-    "Name": "Pirol94",
+    "Player": "Pirol94",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 28,
-    "Name": "Tiagofuguete",
+    "Player": "Tiagofuguete",
     "Deck": "Jund Wildfire",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 29,
-    "Name": "Arturcosta",
+    "Player": "Arturcosta",
     "Deck": "Rakdos Madness",
     "Wins": 1,
     "Losses": 4,
-    "Winrate": 0.2
+    "Win Rate": 0.2
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 30,
-    "Name": "Boom_Bust",
+    "Player": "Boom_Bust",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 31,
-    "Name": "Than",
+    "Player": "Than",
     "Deck": "Mono Blue Faeries",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 32,
-    "Name": "Walker735",
+    "Player": "Walker735",
     "Deck": "Jund Wildfire",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 33,
-    "Name": "Thalai",
+    "Player": "Thalai",
     "Deck": "Grixis Affinity",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 34,
-    "Name": "Nicknorman",
+    "Player": "Nicknorman",
     "Deck": "Golgari Broodscale",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 35,
-    "Name": "Hamuda",
+    "Player": "Hamuda",
     "Deck": "Jund Broodscale",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 36,
-    "Name": "Minhoquinha",
+    "Player": "Minhoquinha",
     "Deck": "Rakdos Madness",
     "Wins": 1,
     "Losses": 5,
-    "Winrate": 0.1666666667
+    "Win Rate": 0.1666666667
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 37,
-    "Name": "Db_Kirblinxy",
+    "Player": "Db_Kirblinxy",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 38,
-    "Name": "Bernastorres",
+    "Player": "Bernastorres",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 39,
-    "Name": "Soxos",
+    "Player": "Soxos",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 40,
-    "Name": "Niederschatten",
+    "Player": "Niederschatten",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 41,
-    "Name": "Alessandropiraccini",
+    "Player": "Alessandropiraccini",
     "Deck": "Dimir Fae",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-14",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-14)",
     "Rank": 42,
-    "Name": "Dangerb1234",
+    "Player": "Dangerb1234",
     "Deck": "Gruul Land Destruction",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 1,
-    "Name": "Pepeteam",
+    "Player": "Pepeteam",
     "Deck": "Golgari Broodscale",
     "Wins": 8,
     "Losses": 1,
-    "Winrate": 0.8888888889
+    "Win Rate": 0.8888888889
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 2,
-    "Name": "Kirblinxy",
+    "Player": "Kirblinxy",
     "Deck": "Turbofog",
     "Wins": 7,
     "Losses": 2,
-    "Winrate": 0.7777777778
+    "Win Rate": 0.7777777778
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 3,
-    "Name": "Heisen01",
+    "Player": "Heisen01",
     "Deck": "Jund Wildfire",
     "Wins": 7,
     "Losses": 1,
-    "Winrate": 0.875
+    "Win Rate": 0.875
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 4,
-    "Name": "Luffydochapeudepalha",
+    "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
     "Wins": 5,
     "Losses": 3,
-    "Winrate": 0.625
+    "Win Rate": 0.625
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 5,
-    "Name": "Mahers",
+    "Player": "Mahers",
     "Deck": "Red Kuldotha",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 6,
-    "Name": "Yesicabyalexisf",
+    "Player": "Yesicabyalexisf",
     "Deck": "Mono Blue Faeries",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 7,
-    "Name": "Dragtar",
+    "Player": "Dragtar",
     "Deck": "White Weenie",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 8,
-    "Name": "Luminati",
+    "Player": "Luminati",
     "Deck": "Mono Blue Terror",
     "Wins": 4,
     "Losses": 3,
-    "Winrate": 0.5714285714
+    "Win Rate": 0.5714285714
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 9,
-    "Name": "Jakehelms",
+    "Player": "Jakehelms",
     "Deck": "Altar Tron",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 10,
-    "Name": "Hetare_Ane",
+    "Player": "Hetare_Ane",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 11,
-    "Name": "Brasatore",
+    "Player": "Brasatore",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 12,
-    "Name": "Flower270",
+    "Player": "Flower270",
     "Deck": "Jund Broodscale",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 13,
-    "Name": "Ivernop",
+    "Player": "Ivernop",
     "Deck": "Turbofog",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 14,
-    "Name": "Discovern",
+    "Player": "Discovern",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 15,
-    "Name": "__Noob__",
+    "Player": "__Noob__",
     "Deck": "Turbofog",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 16,
-    "Name": "Domoarigator",
+    "Player": "Domoarigator",
     "Deck": "Dimir Control",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 17,
-    "Name": "Shiib",
+    "Player": "Shiib",
     "Deck": "Elves",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 18,
-    "Name": "Auzzie51",
+    "Player": "Auzzie51",
     "Deck": "Altar Tron",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 19,
-    "Name": "Ixidor29",
+    "Player": "Ixidor29",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 20,
-    "Name": "Vini_Torres",
+    "Player": "Vini_Torres",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 21,
-    "Name": "Princesslthefirst",
+    "Player": "Princesslthefirst",
     "Deck": "Dredge",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 22,
-    "Name": "Smikkelmanjan",
+    "Player": "Smikkelmanjan",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 23,
-    "Name": "Niederschatten",
+    "Player": "Niederschatten",
     "Deck": "Mono Black Aristocrats",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 24,
-    "Name": "Choutin",
+    "Player": "Choutin",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 3,
-    "Winrate": 0.4
+    "Win Rate": 0.4
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 25,
-    "Name": "Edgo",
+    "Player": "Edgo",
     "Deck": "Dimir Control",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 26,
-    "Name": "Kaikas",
+    "Player": "Kaikas",
     "Deck": "Jund Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 27,
-    "Name": "Sailor_Moon",
+    "Player": "Sailor_Moon",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 28,
-    "Name": "Tsubasa_Cat",
+    "Player": "Tsubasa_Cat",
     "Deck": "Mono Black Aristocrats",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 29,
-    "Name": "Aniubbis",
+    "Player": "Aniubbis",
     "Deck": "Boros Synth",
     "Wins": 2,
     "Losses": 3,
-    "Winrate": 0.4
+    "Win Rate": 0.4
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 30,
-    "Name": "3Vildr4K3",
+    "Player": "3Vildr4K3",
     "Deck": "Altar Tron",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 31,
-    "Name": "Mirozel1",
+    "Player": "Mirozel1",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 32,
-    "Name": "Matheusponciano",
+    "Player": "Matheusponciano",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 3,
-    "Winrate": 0.4
+    "Win Rate": 0.4
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 33,
-    "Name": "Spyromancer",
+    "Player": "Spyromancer",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 34,
-    "Name": "Friskifraska",
+    "Player": "Friskifraska",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 35,
-    "Name": "Galeogiao",
+    "Player": "Galeogiao",
     "Deck": "Hexproof",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 36,
-    "Name": "Nmt_Sco94",
+    "Player": "Nmt_Sco94",
     "Deck": "Jund Broodscale",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 37,
-    "Name": "Ed_Elric",
+    "Player": "Ed_Elric",
     "Deck": "Jund Broodscale",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 38,
-    "Name": "Heterodox",
+    "Player": "Heterodox",
     "Deck": "Mono Blue Faeries",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 39,
-    "Name": "Moskalus",
+    "Player": "Moskalus",
     "Deck": "Red Kuldotha",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 40,
-    "Name": "Hampuse1",
+    "Player": "Hampuse1",
     "Deck": "Altar Tron",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 41,
-    "Name": "Medvedev",
+    "Player": "Medvedev",
     "Deck": "Mono Black Aristocrats",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 42,
-    "Name": "Mokemi",
+    "Player": "Mokemi",
     "Deck": "Gruul Land Destruction",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 43,
-    "Name": "Walker735",
+    "Player": "Walker735",
     "Deck": "Jund Wildfire",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 44,
-    "Name": "A_Adeptoterra",
+    "Player": "A_Adeptoterra",
     "Deck": "Azorius Familiars",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 45,
-    "Name": "Primoshow1",
+    "Player": "Primoshow1",
     "Deck": "Gruul Eldrazi Stompy",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 46,
-    "Name": "Denny98",
+    "Player": "Denny98",
     "Deck": "Jund Broodscale",
     "Wins": 1,
     "Losses": 5,
-    "Winrate": 0.1666666667
+    "Win Rate": 0.1666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 47,
-    "Name": "Vingadormtg",
+    "Player": "Vingadormtg",
     "Deck": "Mono Blue Faeries",
     "Wins": 1,
     "Losses": 4,
-    "Winrate": 0.2
+    "Win Rate": 0.2
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 48,
-    "Name": "Todoualice",
+    "Player": "Todoualice",
     "Deck": "Red Kuldotha",
     "Wins": 1,
     "Losses": 5,
-    "Winrate": 0.1666666667
+    "Win Rate": 0.1666666667
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 49,
-    "Name": "Tyerube1618",
+    "Player": "Tyerube1618",
     "Deck": "Altar Tron",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 50,
-    "Name": "Sanpop",
+    "Player": "Sanpop",
     "Deck": "Red Kuldotha",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 51,
-    "Name": "Cam_13",
+    "Player": "Cam_13",
     "Deck": "Mono Blue Terror",
     "Wins": 0,
     "Losses": 4,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 52,
-    "Name": "Metthyu",
+    "Player": "Metthyu",
     "Deck": "Altar Tron",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 53,
-    "Name": "Beicodegeia",
+    "Player": "Beicodegeia",
     "Deck": "Golgari Broodscale",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-15",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-15)",
     "Rank": 54,
-    "Name": "Hype12232",
+    "Player": "Hype12232",
     "Deck": "Jund Broodscale",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 1,
-    "Name": "Heisen01",
+    "Player": "Heisen01",
     "Deck": "Jund Wildfire",
     "Wins": 8,
     "Losses": 1,
-    "Winrate": 0.8888888889
+    "Win Rate": 0.8888888889
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 2,
-    "Name": "Slaxx",
+    "Player": "Slaxx",
     "Deck": "Red Kuldotha",
     "Wins": 7,
     "Losses": 2,
-    "Winrate": 0.7777777778
+    "Win Rate": 0.7777777778
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 3,
-    "Name": "Hobbyhorstorian",
+    "Player": "Hobbyhorstorian",
     "Deck": "Golgari Broodscale",
     "Wins": 6,
     "Losses": 2,
-    "Winrate": 0.75
+    "Win Rate": 0.75
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 4,
-    "Name": "Patxi",
+    "Player": "Patxi",
     "Deck": "Golgari Broodscale",
     "Wins": 5,
     "Losses": 3,
-    "Winrate": 0.625
+    "Win Rate": 0.625
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 5,
-    "Name": "Nicknorman",
+    "Player": "Nicknorman",
     "Deck": "Golgari Broodscale",
     "Wins": 6,
     "Losses": 1,
-    "Winrate": 0.8571428571
+    "Win Rate": 0.8571428571
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 6,
-    "Name": "Pedrastone",
+    "Player": "Pedrastone",
     "Deck": "Hexproof",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 7,
-    "Name": "Caleb_Yetman",
+    "Player": "Caleb_Yetman",
     "Deck": "Jund Broodscale",
     "Wins": 5,
     "Losses": 2,
-    "Winrate": 0.7142857143
+    "Win Rate": 0.7142857143
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 8,
-    "Name": "Yesicabyalexisf",
+    "Player": "Yesicabyalexisf",
     "Deck": "Mono Blue Faeries",
     "Wins": 4,
     "Losses": 3,
-    "Winrate": 0.5714285714
+    "Win Rate": 0.5714285714
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 9,
-    "Name": "Niederschatten",
+    "Player": "Niederschatten",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 10,
-    "Name": "Jwaves",
+    "Player": "Jwaves",
     "Deck": "White Weenie",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 11,
-    "Name": "Jinjaa",
+    "Player": "Jinjaa",
     "Deck": "Dimir Control",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 12,
-    "Name": "Bullz0Eye",
+    "Player": "Bullz0Eye",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 2,
-    "Winrate": 0.6
+    "Win Rate": 0.6
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 13,
-    "Name": "Luddrox",
+    "Player": "Luddrox",
     "Deck": "Grixis Affinity",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 14,
-    "Name": "John1111",
+    "Player": "John1111",
     "Deck": "Mono Blue Faeries",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 15,
-    "Name": "Ivernop",
+    "Player": "Ivernop",
     "Deck": "Turbofog",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 16,
-    "Name": "O_Danielakos",
+    "Player": "O_Danielakos",
     "Deck": "Red Kuldotha",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 17,
-    "Name": "Viashinoperuano",
+    "Player": "Viashinoperuano",
     "Deck": "Dimir Fae",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 18,
-    "Name": "Walker735",
+    "Player": "Walker735",
     "Deck": "Jund Wildfire",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 19,
-    "Name": "Auzzie51",
+    "Player": "Auzzie51",
     "Deck": "Altar Tron",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 20,
-    "Name": "Eccelleente",
+    "Player": "Eccelleente",
     "Deck": "Hexproof",
     "Wins": 4,
     "Losses": 2,
-    "Winrate": 0.6666666667
+    "Win Rate": 0.6666666667
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 21,
-    "Name": "Lollopollo2001",
+    "Player": "Lollopollo2001",
     "Deck": "Dredge",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 22,
-    "Name": "Luffydochapeudepalha",
+    "Player": "Luffydochapeudepalha",
     "Deck": "Grixis Affinity",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 23,
-    "Name": "_Babbuja_",
+    "Player": "_Babbuja_",
     "Deck": "Mono Blue Faeries",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 24,
-    "Name": "Thegreatdragon",
+    "Player": "Thegreatdragon",
     "Deck": "Mono Blue Terror",
     "Wins": 2,
     "Losses": 3,
-    "Winrate": 0.4
+    "Win Rate": 0.4
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 25,
-    "Name": "Pnascimento",
+    "Player": "Pnascimento",
     "Deck": "Jund Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 26,
-    "Name": "Ixidor29",
+    "Player": "Ixidor29",
     "Deck": "Hexproof",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 27,
-    "Name": "Boom_Bust",
+    "Player": "Boom_Bust",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 28,
-    "Name": "Aarong",
+    "Player": "Aarong",
     "Deck": "Dimir Control",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 29,
-    "Name": "Lostdreame",
+    "Player": "Lostdreame",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 30,
-    "Name": "Pepeteam",
+    "Player": "Pepeteam",
     "Deck": "Golgari Broodscale",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 31,
-    "Name": "Purgatory_01",
+    "Player": "Purgatory_01",
     "Deck": "Dimir Fae",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 32,
-    "Name": "Kanymtg",
+    "Player": "Kanymtg",
     "Deck": "Red Kuldotha",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 33,
-    "Name": "Bong0411",
+    "Player": "Bong0411",
     "Deck": "UNKNOWN",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 34,
-    "Name": "Bokyfloky",
+    "Player": "Bokyfloky",
     "Deck": "UNKNOWN",
     "Wins": 3,
     "Losses": 3,
-    "Winrate": 0.5
+    "Win Rate": 0.5
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 35,
-    "Name": "Paparmsky",
+    "Player": "Paparmsky",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 3,
-    "Winrate": 0.4
+    "Win Rate": 0.4
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 36,
-    "Name": "Aniubbis",
+    "Player": "Aniubbis",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 4,
-    "Winrate": 0.2
+    "Win Rate": 0.2
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 37,
-    "Name": "Abac0",
+    "Player": "Abac0",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 38,
-    "Name": "Outzeroo",
+    "Player": "Outzeroo",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 39,
-    "Name": "Crouchingpig",
+    "Player": "Crouchingpig",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 40,
-    "Name": "Lukaszkowalewski",
+    "Player": "Lukaszkowalewski",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 41,
-    "Name": "Quemario",
+    "Player": "Quemario",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 42,
-    "Name": "Wolek",
+    "Player": "Wolek",
     "Deck": "UNKNOWN",
     "Wins": 2,
     "Losses": 4,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 43,
-    "Name": "Misterasiago",
+    "Player": "Misterasiago",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 44,
-    "Name": "Neokipper",
+    "Player": "Neokipper",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 45,
-    "Name": "Jaketms",
+    "Player": "Jaketms",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 2,
-    "Winrate": 0.3333333333
+    "Win Rate": 0.3333333333
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 46,
-    "Name": "Voiceofdefiance",
+    "Player": "Voiceofdefiance",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 47,
-    "Name": "Myss1102",
+    "Player": "Myss1102",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 5,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 48,
-    "Name": "Yasiu86",
+    "Player": "Yasiu86",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 49,
-    "Name": "Luminati",
+    "Player": "Luminati",
     "Deck": "UNKNOWN",
     "Wins": 1,
     "Losses": 3,
-    "Winrate": 0.25
+    "Win Rate": 0.25
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 50,
-    "Name": "Bombaj",
+    "Player": "Bombaj",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 51,
-    "Name": "Alessandropiraccini",
+    "Player": "Alessandropiraccini",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 52,
-    "Name": "Ewerb123",
+    "Player": "Ewerb123",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 53,
-    "Name": "Gifts216",
+    "Player": "Gifts216",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 54,
-    "Name": "Seso",
+    "Player": "Seso",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 55,
-    "Name": "Trubalo",
+    "Player": "Trubalo",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 56,
-    "Name": "Pacman2810",
+    "Player": "Pacman2810",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 57,
-    "Name": "Maybenextime",
+    "Player": "Maybenextime",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 58,
-    "Name": "Misplacedginger",
+    "Player": "Misplacedginger",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 2,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 59,
-    "Name": "Mahers",
+    "Player": "Mahers",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 60,
-    "Name": "W4Nd3R3R",
+    "Player": "W4Nd3R3R",
     "Deck": "UNKNOWN",
     "Wins": 0,
     "Losses": 3,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   },
   {
     "Date": "2025-03-16",
     "EventType": "online",
     "Event": "MTGO Challenge (2025-03-16)",
     "Rank": 61,
-    "Name": "Db_Kirblinxy",
+    "Player": "Db_Kirblinxy",
     "Deck": "No Show",
     "Wins": 0,
     "Losses": 1,
-    "Winrate": 0.0
+    "Win Rate": 0.0
   }
 ]
