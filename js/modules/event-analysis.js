@@ -3,11 +3,11 @@
 // The Player Analysis is handled in player-analysis.js
 
 import { cleanedData } from '../data.js';
-import { updateEventMetaWinRateChart } from '../charts/event-meta-win-rate.js';
-import { updateEventFunnelChart } from '../charts/event-funnel.js';
+import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
+import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
-import { updateDeckEvolutionChart } from '../charts/deck-evolution.js';
+import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { toggleStatCardVisibility, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateDeckStats, calculateTopDecks } from '../utils/data.js';
 import { formatDate, formatPercentage, formatDateRange } from '../utils/format.js';
