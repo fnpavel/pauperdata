@@ -481,18 +481,59 @@ header::before {
 canvas {
   max-width: 100%;
   width: 100%;
-  max-height: 300px;
+  max-height: 500px; /*default was 300px, updated to 500px but need to change this later*/
   transition: opacity 0.3s ease; /* Smooth opacity transition for chart updates */
 }
 
-/*SPECIFIC CHART */
+
+/*SPECIFIC CHARTS */
 #eventFunnelChart {
-  max-height: 800px !important; /* Override default 300px */
+  max-height: 800px !important; /* Override default 500px */
 }
 
 #multiPlayerWinRateChart {
-  max-height: 400px !important; /* Default is 300px */
+  max-height: 400px !important; /* Default is 500px */
 }
+
+#metaWinRateEventChartContainer {
+  position: relative;
+  height: 600px; /* Increased from default (likely ~400px) */
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#metaWinRateEventChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bar-sort-options {
+  display: none; /* Hidden by default, shown only in Bar View */
+  margin-top: 5px;
+  text-align: center;
+  font-size: 12px;
+  color: #e0e0e0;
+  opacity: 0.7; /* Subtle appearance */
+}
+
+.bar-sort-options .sort-label {
+  margin-right: 8px;
+}
+
+.bar-sort-options label {
+  margin: 0 8px;
+  cursor: pointer;
+}
+
+.bar-sort-options input[type="radio"] {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.bar-sort-options input[type="radio"]:checked + span {
+  font-weight: bold; /* Slight emphasis on selected option */
+}
+
 
 /* Custom Legend Styling */
 .custom-legend {
