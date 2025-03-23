@@ -7,6 +7,7 @@ import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
+import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 
 // Global variable to hold filtered data
 let filteredData = [];
@@ -77,7 +78,6 @@ export function updateAllCharts() {
   const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
   const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
 
-  // Update filteredData based on current filters
   if (activeTopMode === "event") {
     if (activeAnalysisMode === "single") {
       const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
@@ -104,6 +104,7 @@ export function updateAllCharts() {
     }
   } else if (activeTopMode === "player") {
     updatePlayerAnalytics();
+    updatePlayerDeckPerformanceChart();
   }
 }
 
