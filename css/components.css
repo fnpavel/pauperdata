@@ -1,0 +1,410 @@
+.mode-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.top-mode-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid var(--accent);
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.top-mode-button::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: rgba(255, 215, 0, 0.2);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.4s ease, height 0.4s ease;
+}
+
+.top-mode-button:hover::after {
+  width: 200%;
+  height: 200%;
+}
+
+.top-mode-button.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  font-weight: bold;
+  box-shadow: 0 0 8px rgba(139, 0, 139, 0.5);
+}
+
+.top-mode-button:hover {
+  background-color: var(--dark);
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.4);
+  color: var(--accent);
+}
+
+.filters {
+  background-color: var(--secondary);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filters:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+}
+
+.filters h3 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--primary);
+}
+
+.filter-section {
+  margin-bottom: 20px;
+}
+
+.filter-section.hidden {
+  display: none;
+}
+
+.filter-section h4 {
+  margin-bottom: 10px;
+  color: var(--accent);
+}
+
+.bubble-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bubble-button {
+  padding: 8px 16px;
+  border-radius: 20px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid #444;
+  cursor: pointer;
+  transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: 1rem;
+}
+
+.bubble-button.active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  font-weight: bold;
+}
+
+.bubble-button:hover {
+  background-color: #3a3a4a;
+  transform: scale(1.05);
+  box-shadow: 0 2px 10px rgba(255, 215, 0, 0.3);
+}
+
+.bubble-menu label {
+  color: var(--light);
+  margin-right: 10px;
+}
+
+.bubble-menu select {
+  padding: 5px;
+  border-radius: 5px;
+  background-color: var(--dark);
+  color: var(--light);
+  border: 1px solid #444;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.bubble-menu select:hover {
+  background-color: #3a3a4a;
+  box-shadow: 0 2px 8px rgba(255, 255, 255, 0.1);
+}
+
+.stats-container {
+  display: grid;
+  gap: 15px;
+  margin-bottom: 20px;
+  opacity: 0;
+  animation: fadeIn 0.2s ease forwards;
+  animation-delay: 0.075s;
+  justify-content: stretch;
+}
+
+#singleEventStats.stats-container,
+#multiEventStats.stats-container {
+  width: calc(110% + 10px);
+  margin-left: 0px;
+  margin-right: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 15px;
+  max-width: none;
+  position: relative;
+  --dashboard-width: calc(280px + 1fr + (30px * 1));
+  width: var(--dashboard-width);
+}
+
+#playerStats.stats-container {
+  width: calc(110% + 10px);
+  margin-left: 0px;
+  margin-right: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  gap: 15px;
+  max-width: none;
+  position: relative;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, var(--secondary), #2c2c40);
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
+  min-width: 0;
+}
+
+.stat-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #2c2c40, var(--secondary));
+}
+
+.stat-card.hidden {
+  display: none;
+}
+
+.stat-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 4px;
+  height: 100%;
+  background-color: var(--primary);
+}
+
+.stat-card.updated {
+  animation: pulseUpdate 0.5s ease;
+}
+
+.stat-title {
+  font-size: 0.7rem;
+  color: #aaa;
+  margin-bottom: 3px;
+  line-height: 1.2;
+}
+
+.stat-value {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: var(--light);
+}
+
+.stat-change {
+  font-size: 0.8rem;
+  color: var(--mana-green);
+  margin-top: 3px;
+  line-height: 1.2;
+}
+
+.stat-change.negative {
+  color: var(--mana-red);
+}
+
+.stat-icon {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  opacity: 0.1;
+  font-size: 1.5rem;
+  transition: opacity 0.3s ease;
+}
+
+.stat-card:hover .stat-icon {
+  opacity: 0.3;
+}
+
+.stat-card.combined .stat-details {
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.stat-card.combined .stat-details div {
+  margin-bottom: 4px;
+}
+
+.stat-card.combined .stat-details .label {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.stat-card.combined .stat-details .value {
+  color: var(--light);
+}
+
+.stat-card#singleEventInfoCard .stat-value,
+.stat-card#singleTopPlayerCard .stat-value,
+.stat-card#singleRunnerUpCard .stat-value,
+.stat-card#singleMostCopiesCard .stat-value,
+.stat-card#multiTotalEventsCard .stat-value,
+.stat-card#multiMostPlayersCard .stat-value,
+.stat-card#multiLeastPlayersCard .stat-value,
+.stat-card#multiMostCopiesCard .stat-value,
+.stat-card#playerStats .stat-value {
+    font-size: 1.4rem;
+}
+
+.stat-card#singleEventInfoCard .stat-change,
+.stat-card#singleTopPlayerCard .stat-change,
+.stat-card#singleRunnerUpCard .stat-change,
+.stat-card#singleMostCopiesCard .stat-change,
+.stat-card#multiTotalEventsCard .stat-change,
+.stat-card#multiMostPlayersCard .stat-change,
+.stat-card#multiLeastPlayersCard .stat-change,
+.stat-card#multiMostCopiesCard .stat-change,
+.stat-card#playerStats .stat-change {
+    font-size: 1rem;
+}
+
+.deck-stats-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 300px;
+  width: auto;
+  max-width: 100%;
+}
+
+.deck-stats-sidebar #playerEventsCard .stat-details {
+  font-size: 0.7rem;
+  line-height: 1.4;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.deck-stats-sidebar #playerEventsCard .stat-details div {
+  margin-bottom: 4px;
+}
+
+.top-conversion-header {
+  text-align: center;
+  position: relative;
+  vertical-align: middle;
+}
+
+.bubble-menu.display-toggle {
+  display: inline-flex;
+  gap: 5px;
+  margin-top: 5px;
+  justify-content: center;
+}
+
+.bubble-button.display-toggle-btn {
+  padding: 4px 12px;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  border: 1px solid var(--dark);
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.raw-btn {
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+.raw-btn.active {
+  background-color: #333333;
+  color: var(--light);
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+.raw-btn:hover:not(.active) {
+  background-color: #1a1a1a;
+  color: var(--accent);
+  transform: scale(1.05);
+}
+
+.percent-btn {
+  background-color: var(--light);
+  color: var(--dark);
+}
+
+.percent-btn.active {
+  background-color: #e6d8b8;
+  color: var(--dark);
+  border-color: var(--accent);
+  box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+}
+
+.percent-btn:hover:not(.active) {
+  background-color: #c9b28f;
+  color: var(--dark);
+  transform: scale(1.05);
+}
+
+#aboutSection {
+  padding: 20px;
+  background: #1a1a1a;
+  color: #fff;
+  border-radius: 8px;
+  margin: 20px 0;
+}
+
+.about-content h2 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  font-family: 'Bitter', serif;
+}
+
+.about-content p {
+  font-size: 1.1em;
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.about-content h3 {
+  font-size: 1.4em;
+  margin: 15px 0 10px;
+  font-family: 'Bitter', serif;
+}
+
+.about-content ul {
+  list-style-type: disc;
+  padding-left: 20px;
+  margin-bottom: 15px;
+}
+
+.about-content li {
+  font-size: 1.1em;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+
+.about-content a {
+  color: #00CED1;
+  text-decoration: none;
+}
+
+.about-content a:hover {
+  text-decoration: underline;
+}
+
+#aboutButton.active {
+  background: #00CED1;
+  color: #000;
+}

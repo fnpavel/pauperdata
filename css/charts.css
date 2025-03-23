@@ -1,0 +1,193 @@
+.chart-container {
+  background-color: var(--secondary);
+  max-width: 100%;
+  width: 100%;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  position: relative;
+  opacity: 0;
+  animation: fadeInUp 0.2s ease forwards;
+  animation-delay: 0.175s;
+  transition: transform 0.3s ease, background 0.5s ease;
+}
+
+.chart-container:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(145deg, #2c2c40, var(--secondary));
+}
+
+.chart-container.updated {
+  animation: fadeUpdate 0.3s ease;
+}
+
+.chart-title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+  color: var(--light);
+}
+
+.chart-container div[id$="Loading"] {
+  max-width: 100%;
+  width: 100%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--light);
+  font-size: 1rem;
+  display: none;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.chart-container div[id$="Loading"]::before {
+  content: '';
+  display: inline-block;
+  max-width: 100%;
+  width: 100%;
+  height: 16px;
+  border: 2px solid var(--accent);
+  border-top: 2px solid transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-right: 8px;
+}
+
+#chartjs-tooltip {
+  transition: all 0.1s ease;
+  z-index: 9999;
+  border: 1px solid white;
+}
+
+canvas {
+  max-width: 100%;
+  width: 100%;
+  max-height: 500px;
+  transition: opacity 0.3s ease;
+}
+
+/* Specific Charts */
+#eventFunnelChart {
+  max-height: 800px !important;
+}
+
+#multiPlayerWinRateChart {
+  max-height: 400px !important;
+}
+
+#metaWinRateEventChartContainer {
+  position: relative;
+  height: 600px;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+#metaWinRateEventChart {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.bar-sort-options {
+  display: none;
+  margin-top: 5px;
+  text-align: center;
+  font-size: 12px;
+  color: #e0e0e0;
+  opacity: 0.7;
+}
+
+.bar-sort-options .sort-label {
+  margin-right: 8px;
+}
+
+.bar-sort-options label {
+  margin: 0 8px;
+  cursor: pointer;
+}
+
+.bar-sort-options input[type="radio"] {
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.bar-sort-options input[type="radio"]:checked + span {
+  font-weight: bold;
+}
+
+.custom-legend {
+  margin-bottom: 15px;
+  text-align: center;
+  padding: 5px 0;
+  background-color: transparent;
+}
+
+.custom-legend ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: inline-flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.custom-legend li {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  color: #FFFFFF;
+}
+
+.custom-legend li.hidden {
+  text-decoration: line-through;
+}
+
+.custom-legend li span {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 8px;
+  border: 1px solid #444;
+}
+
+#deckEvolutionTooltip {
+  font-family: 'Bitter', serif;
+  font-size: 11px;
+  color: var(--light);
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+}
+
+#deckEvolutionTooltip strong,
+#deckEvolutionTooltip div {
+  line-height: 1.4;
+}
+
+#deckEvolutionTooltip strong {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+#deckEvolutionTooltip .number {
+  color: var(--accent);
+}
+
+#playerWinRateTooltip {
+  font-family: 'Bitter', serif;
+  font-size: 11px;
+  color: var(--light);
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 3px;
+  padding: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+  line-height: 1.4;
+}
+
+#playerWinRateTooltip .number {
+  color: var(--accent);
+  font-weight: bold;
+}

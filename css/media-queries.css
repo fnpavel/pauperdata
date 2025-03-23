@@ -1,0 +1,334 @@
+@media (max-width: 1024px) {
+  .dashboard {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .deck-stats-sidebar {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  #singleEventStats,
+  #multiEventStats {
+    width: 100%;
+  }
+
+  #playerStats.stats-container {
+    width: calc(100% - 280px - 30px);
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 10px;
+    max-width: none;
+  }
+
+  canvas {
+    max-height: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  .charts-and-tables {
+    width: 100%;
+  }
+
+  .stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #playerStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 8px;
+  }
+
+  canvas {
+    max-height: 325px;
+  }
+
+  .chart-container {
+    padding: 15px;
+  }
+
+  .filters {
+    padding: 15px;
+  }
+}
+
+@media (max-width: 600px) {
+  .header-content {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .logo h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .mode-buttons {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .top-mode-button {
+    flex: 0 1 auto;
+    min-width: 80px;
+    padding: 6px 10px;
+    font-size: 0.85rem;
+  }
+
+  .stats-container {
+    grid-template-columns: 1fr;
+    gap: 6px;
+    margin-bottom: 10px;
+    padding: 0 5px;
+  }
+
+  .stat-card {
+    padding: 6px;
+    min-width: 0;
+  }
+
+  .stat-title {
+    font-size: 0.6rem;
+  }
+
+  .stat-value {
+    font-size: 1rem;
+  }
+
+  .stat-change {
+    font-size: 0.7rem;
+  }
+
+  #singleEventStats,
+  #multiEventStats,
+  #playerStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+  }
+
+  .data-table-container {
+    padding: 10px;
+    overflow-x: auto;
+  }
+
+  .data-table {
+    width: 100%;
+    font-size: 0.75rem;
+    table-layout: auto;
+  }
+
+  .data-table th,
+  .data-table td {
+    padding: 6px 4px;
+    font-size: 0.7rem;
+    min-width: auto;
+    white-space: normal;
+  }
+
+  .data-table th {
+    padding-right: 10px;
+  }
+
+  .sort-arrow {
+    font-size: 10px;
+  }
+
+  .bubble-menu {
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .bubble-button {
+    padding: 5px 10px;
+    font-size: 0.85rem;
+  }
+
+  canvas {
+    max-height: 250px;
+  }
+}
+
+@media (max-width: 375px) {
+  .container {
+    padding: 10px 5px;
+  }
+  
+  .logo h1 {
+    font-size: 1.4rem;
+  }
+  
+  .logo span {
+    font-size: 0.8rem;
+  }
+  
+  .top-mode-button {
+    padding: 4px 8px;
+    font-size: 0.8rem;
+    min-width: auto;
+  }
+  
+  .data-table-container {
+    padding: 5px;
+    margin-top: 15px;
+  }
+  
+  .data-table {
+    width: 100%;
+    font-size: 0.7rem;
+  }
+  
+  .data-table th, 
+  .data-table td {
+    padding: 4px 2px;
+    font-size: 0.65rem;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  
+  .data-table th:first-child,
+  .data-table td:first-child {
+    max-width: 70px;
+  }
+  
+  .data-table th:not(:first-child),
+  .data-table td:not(:first-child) {
+    width: auto;
+    min-width: 30px;
+    max-width: 50px;
+  }
+  
+  .chart-container {
+    padding: 10px 5px;
+    margin-bottom: 15px;
+  }
+  
+  .chart-title {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .filters {
+    padding: 10px;
+  }
+  
+  .filters h3 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+  
+  .filter-section h4 {
+    font-size: 0.9rem;
+  }
+  
+  .bubble-menu.display-toggle {
+    gap: 3px;
+  }
+  
+  .bubble-button.display-toggle-btn {
+    padding: 3px 8px;
+    font-size: 0.8rem;
+  }
+  
+  .custom-legend ul {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+  }
+  
+  .custom-legend li {
+    font-size: 0.7rem;
+  }
+  
+  #aboutSection {
+    padding: 10px;
+  }
+  
+  .about-content h2 {
+    font-size: 1.5em;
+  }
+  
+  .about-content p,
+  .about-content li {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 320px) {
+  .data-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .data-table {
+    min-width: 300px;
+  }
+  
+  .data-table-container::after {
+    content: "← Scroll →";
+    display: block;
+    text-align: center;
+    font-size: 0.7rem;
+    color: var(--accent);
+    margin-top: 5px;
+    animation: pulse 1.5s infinite ease-in-out;
+  }
+  
+  .stats-container {
+    margin: 0;
+    width: 100%;
+  }
+  
+  .stat-card {
+    margin-bottom: 5px;
+  }
+  
+  .filters h3 {
+    font-size: 1rem;
+  }
+  
+  .filter-section {
+    margin-bottom: 10px;
+  }
+  
+  .top-mode-button, 
+  .bubble-button {
+    padding: 3px 6px;
+    font-size: 0.75rem;
+  }
+  
+  .logo h1 {
+    font-size: 1.2rem;
+    line-height: 1.2;
+  }
+  
+  canvas {
+    max-height: 200px;
+  }
+}
