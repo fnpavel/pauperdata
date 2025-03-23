@@ -88,7 +88,8 @@ export function updatePlayerWinRateChart() {
               position: 'top',
               labels: { color: '#e0e0e0', font: { size: 14, weight: 'bold' } }
             },
-            tooltip: { enabled: false }
+            tooltip: { enabled: false },
+            datalabels: { display: false } // Explicitly disable data labels
           },
           animation: {
             onComplete: () => triggerUpdateAnimation('playerWinRateChartContainer')
@@ -126,11 +127,11 @@ export function updatePlayerWinRateChart() {
     const stats = eventStats[event];
     const deck = filteredData.find(row => row.Event === event)?.Deck || "N/A";
     return {
-      winRate: (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : null, // Null when no games
+      winRate: (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : null,
       deck
     };
   });
-  const playerWinRates = playerWinRateData.map(p => p.winRate !== null ? p.winRate : 0); // Chart uses 0, stats use null
+  const playerWinRates = playerWinRateData.map(p => p.winRate !== null ? p.winRate : 0);
 
   // Compute deck performance for stats cards
   const deckStats = filteredData.reduce((acc, row) => {
@@ -161,7 +162,6 @@ export function updatePlayerWinRateChart() {
       (event.winRate !== null && (!worst.winRate || event.winRate < worst.winRate)) ? event : worst, { winRate: null })
   }));
 
-  // Export deck performance for player-analysis.js
   window.playerDeckPerformance = deckPerformance;
 
   if (playerWinRateChart) playerWinRateChart.destroy();
@@ -294,7 +294,8 @@ export function updatePlayerWinRateChart() {
             external: tooltipHandler,
             mode: 'nearest',
             intersect: true
-          }
+          },
+          datalabels: { display: false } // Explicitly disable data labels
         },
         hover: { mode: 'nearest', intersect: true },
         animation: {

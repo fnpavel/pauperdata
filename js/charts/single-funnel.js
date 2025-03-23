@@ -180,10 +180,11 @@ export function updateEventFunnelChart() {
             borderWidth: 1,
             padding: 10
           },
-          datalabels: { // Optional
+          datalabels: {
             display: context => context.dataset.data[context.dataIndex] > 5,
             color: '#000000',
-            font: { size: 10, weight: 'bold', family: "'Bitter', serif" },
+
+            font: { size: 12, weight: 'bold', family: "'Bitter', serif" },
             formatter: value => `${value.toFixed(0)}%`
           }
         },
