@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Bitter:wght@400;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -165,7 +166,9 @@
               </div>
               <div id="metaWinRateChartLegend" class="custom-legend"></div>
               <div id="metaWinRateChartLoading">Loading...</div>
-              <canvas id="metaWinRateChart"></canvas>
+              <div id="metaWinRateChartContainer"> <!-- Added container -->
+                <canvas id="metaWinRateChart"></canvas>
+              </div>
             </div>
             <div class="chart-container">
               <h2 class="chart-title">Aggregate Player Win Rates</h2>
@@ -296,6 +299,12 @@
               <canvas id="playerWinRateChart"></canvas>
               <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
             </div>
+            <div class="chart-container">
+              <h2 class="chart-title">Deck Performance Scatter Plot</h2>
+            <div id="playerDeckPerformanceChartLoading">Loading...</div>
+            <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
+            <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+          </div>
             <div class="data-table-container">
               <h2 class="chart-title" id="playerRawTableTitle">--</h2>
               <table class="data-table" id="playerRawTable">
@@ -355,7 +364,7 @@
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
-        <p>Version 1.0 | Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from Grok 3 (xAI)</p>
+        <p>Version 1.1 | Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from Grok 3 (xAI)</p>
         <p>MTGO data gathered by <a href="https://x.com/Kirblinxy" target="_blank">Kirblinxy</a>. 
         <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</p></a>
         <p>Upstate NY data by <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">Upstate NY Pauper</a>. 
@@ -366,17 +375,18 @@
           <li>The whole page is not <b>yet</b> optimized for mobile</li>
           <li>Dropdown menus are not defaulting to an empty list</li>
           <li>Sometimes the Buttons fail to record their state and need to be clicked again</li>
+          <li>Scatter charts have too much information in them, zoom if needed to parse the information</li>
         </ul>
 
         <h3>Future Updates</h3>
         <ul>
           <li><s>Version 1.0: Improve the Top Conversion + Aggregate Player Win Rates chart.</s></li>
-          <li>Version 1.1: Add typing option in the players' and events' dropdown menus</li>
-          <li>Version 1.2: Implement a H2H Matrix</li> 
-          <li>Version 1.3: Improve the website for smaller screens</li>
-          <li>TBD: Improve the filtering for all the charts.</li>
+          <li><s>Version 1.1: Add scatter charts for the Event and Player Analysis.</s></li>
+          <li>Version 1.2: Implement a H2H Matrix.</li> 
+          <li>Version 1.3: Improve the filtering dropdown menus for all the charts.</li>
+          <li>TBD: Improve scatter charts</li>
+          <li>TBD: Improve the website for smaller screens</li>
           <li>TBD: Establish a database connection</li>
-          <li>TBD: Rewrite pretty much everything 💀</li>
           <li>TBD: Add Data from other formats</li>
         </ul>
 
@@ -396,18 +406,19 @@
   <script src="js/data.js" type="module"></script>
   <script src="js/utils/dom.js" type="module"></script>
   <script src="js/utils/data.js" type="module"></script>
-  <script src="js/utils/chart.js" type="module"></script>
+  <script src="js/utils/u-chart.js" type="module"></script>
   <script src="js/utils/format.js" type="module"></script>
-  <script src="js/charts/event-meta-win-rate.js" type="module"></script>
-  <script src="js/charts/event-funnel.js" type="module"></script>
+  <script src="js/charts/single-meta-win-rate.js" type="module"></script>
+  <script src="js/charts/single-funnel.js" type="module"></script>
   <script src="js/charts/multi-meta-win-rate.js" type="module"></script>
   <script src="js/charts/multi-player-win-rate.js" type="module"></script>
-  <script src="js/charts/deck-evolution.js" type="module"></script>
+  <script src="js/charts/multi-deck-evolution.js" type="module"></script>
   <script src="js/charts/player-win-rate.js" type="module"></script>
+  <script src="js/charts/player-deck-performance.js" type="module"></script>
   <script src="js/modules/event-analysis.js" type="module"></script>
   <script src="js/modules/player-analysis.js" type="module"></script>
   <script src="js/modules/filters.js" type="module"></script>
   <script src="js/main.js" type="module"></script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f9daab8534c1f',t:'MTc0MjU4MjgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
