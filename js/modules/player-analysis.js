@@ -4,6 +4,7 @@
 
 
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
+import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { updateElementText, updateElementHTML } from '../utils/dom.js';
 import { cleanedData } from '../data.js';
 
@@ -13,6 +14,7 @@ export function initPlayerAnalysis() {
 
 export function updatePlayerAnalysis(data) {
   updatePlayerWinRateChart();
+  updatePlayerDeckPerformanceChart();
   populatePlayerAnalysisRawData(data);
   populatePlayerStats(data);
 }
@@ -25,6 +27,8 @@ export function updatePlayerAnalytics() {
   const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
   const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
     .map(button => button.dataset.type);
+
+  console.log("Player Analytics Filters:", { startDate, endDate, selectedPlayer, selectedEventTypes });
 
   if (playerFilterMenu && !playerFilterMenu.dataset.initialized) {
     const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b));
@@ -42,10 +46,10 @@ export function updatePlayerAnalytics() {
       )
     : [];
 
-  const deckFilter = document.getElementById("playerDeckFilter");
-  const selectedDeck = deckFilter ? deckFilter.value : "";
-  const filteredData = selectedDeck ? baseFilteredData.filter(row => row.Deck === selectedDeck) : baseFilteredData;
-  updatePlayerAnalysis(filteredData);
+  console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);
+
+
+  updatePlayerAnalysis(baseFilteredData);
 }
 
 export function populatePlayerAnalysisRawData(data) {
