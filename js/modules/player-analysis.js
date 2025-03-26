@@ -2,7 +2,6 @@
 // Handles everything for the PLAYER ANALYSIS when changing the filtered data: Cards, Charts and Tables
 // The Event Analysis is handled in event-analysis.js
 
-
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { updateElementText, updateElementHTML } from '../utils/dom.js';
@@ -47,7 +46,6 @@ export function updatePlayerAnalytics() {
     : [];
 
   console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);
-
 
   updatePlayerAnalysis(baseFilteredData);
 }
@@ -215,9 +213,9 @@ export function populatePlayerAnalysisRawData(data) {
         const eventWinRates = stats.eventData.map(event => event.winRate);
         const bestEvent = stats.eventData.reduce((best, event) => event.winRate > (best.winRate || 0) ? event : best, {});
         const worstEvent = stats.eventData.length > 0 
-        ? stats.eventData.reduce((worst, event) => (event.winRate < worst.winRate ? event : worst), stats.eventData[0])
-        : { winRate: 0, event: "--", date: "--" };
-              return {
+          ? stats.eventData.reduce((worst, event) => (event.winRate < worst.winRate ? event : worst), stats.eventData[0])
+          : { winRate: 0, event: "--", date: "--" };
+        return {
           deck,
           events: [...new Set(stats.events)].length,
           wins: stats.wins,
@@ -349,8 +347,24 @@ export function populatePlayerStats(data) {
     updateElement("playerWorstDeckWinRate", "--");
     updateElement("playerWorstDeckBestWinRate", "--");
     updateElement("playerWorstDeckWorstWinRate", "--");
+    updateElement("playerMostPlayedDeckName", "--");
+    updateElement("playerMostPlayedDeckEvents", "0");
+    updateElement("playerMostPlayedDeckWinRate", "0%");
+    updateElement("playerMostPlayedDeckBestWinRate", "-- (Event: --)");
+    updateElement("playerMostPlayedDeckWorstWinRate", "-- (Event: --)");
+    updateElement("playerLeastPlayedDeckName", "--");
+    updateElement("playerLeastPlayedDeckEvents", "0");
+    updateElement("playerLeastPlayedDeckWinRate", "0%");
+    updateElement("playerLeastPlayedDeckBestWinRate", "-- (Event: --)");
+    updateElement("playerLeastPlayedDeckWorstWinRate", "-- (Event: --)");
+    updateElement("playerOverallWinRate", "--");
     const eventsDetails = document.getElementById("playerEventsDetails");
     if (eventsDetails) eventsDetails.innerHTML = "<div>No events selected</div>";
+    // Ensure all four stat-cards are visible, even with no data
+    document.getElementById("playerBestDeckCard").style.display = "block";
+    document.getElementById("playerWorstDeckCard").style.display = "block";
+    document.getElementById("playerMostPlayedDeckCard").style.display = "block";
+    document.getElementById("playerLeastPlayedDeckCard").style.display = "block";
     return;
   }
 
@@ -373,17 +387,19 @@ export function populatePlayerStats(data) {
   const deckEntries = Object.entries(deckCounts);
   const maxCount = deckEntries.length > 0 ? Math.max(...deckEntries.map(([_, count]) => count)) : 0;
   const mostPlayedDecks = deckEntries.length > 0 
-    ? deckEntries.filter(([_, count]) => count === maxCount).map(([deck]) => deck).join(", ") 
-    : "--";
+    ? deckEntries.filter(([_, count]) => count === maxCount).map(([deck]) => deck)
+    : [];
+  const mostPlayedDecksStr = mostPlayedDecks.length > 0 ? mostPlayedDecks.join(", ") : "--";
   const minCount = deckEntries.length > 0 ? Math.min(...deckEntries.map(([_, count]) => count)) : 0;
   const leastPlayedDecks = deckEntries.length > 0 
-    ? deckEntries.filter(([_, count]) => count === minCount).map(([deck]) => deck).join(", ") 
-    : "--";
+    ? deckEntries.filter(([_, count]) => count === minCount).map(([deck]) => deck)
+    : [];
+  const leastPlayedDecksStr = leastPlayedDecks.length > 0 ? leastPlayedDecks.join(", ") : "--";
 
   updateQueryElement("playerUniqueDecksCard", ".stat-value", uniqueDecks || "N/A");
-  updateQueryElement("playerMostPlayedCard", ".stat-value", mostPlayedDecks);
+  updateQueryElement("playerMostPlayedCard", ".stat-value", mostPlayedDecksStr);
   updateQueryElement("playerMostPlayedCard", ".stat-change", maxCount > 0 ? `${maxCount}x` : "");
-  updateQueryElement("playerLeastPlayedCard", ".stat-value", leastPlayedDecks);
+  updateQueryElement("playerLeastPlayedCard", ".stat-value", leastPlayedDecksStr);
   updateQueryElement("playerLeastPlayedCard", ".stat-change", minCount > 0 ? `${minCount}x` : "");
 
   const rankStats = { top1_8: 0, top9_16: 0, top17_32: 0, top33Plus: 0 };
@@ -448,27 +464,161 @@ export function populatePlayerStats(data) {
   const validDecks = deckPerformance.filter(deck => deck.wins + deck.losses > 0);
   console.log("Valid decks (with games played):", validDecks);
 
-  const bestDeck = validDecks.length > 0 
-    ? validDecks.reduce((best, curr) => curr.overallWinRate > best.overallWinRate ? curr : best)
+  // Find all decks tied for best and worst performing
+  const bestWinRate = validDecks.length > 0 
+    ? Math.max(...validDecks.map(deck => deck.overallWinRate))
     : null;
-  const worstDeck = validDecks.length > 0 
-    ? validDecks.reduce((worst, curr) => curr.overallWinRate < worst.overallWinRate ? curr : worst)
+  const bestDecks = bestWinRate !== null 
+    ? validDecks.filter(deck => deck.overallWinRate === bestWinRate)
+    : [];
+  const worstWinRate = validDecks.length > 0 
+    ? Math.min(...validDecks.map(deck => deck.overallWinRate))
     : null;
+  const worstDecks = worstWinRate !== null 
+    ? validDecks.filter(deck => deck.overallWinRate === worstWinRate)
+    : [];
 
-  console.log("Best deck:", bestDeck);
-  console.log("Worst deck:", worstDeck);
+  console.log("Best decks:", bestDecks);
+  console.log("Worst decks:", worstDecks);
 
-  updateElement("playerBestDeckName", bestDeck ? bestDeck.deck : "--");
-  updateElement("playerBestDeckEvents", bestDeck ? bestDeck.eventCount : "--");
-  updateElement("playerBestDeckWinRate", bestDeck ? `${bestDeck.overallWinRate.toFixed(2)}%` : "--");
-  updateElement("playerBestDeckBestWinRate", bestDeck ? `${bestDeck.bestEventData.winRate.toFixed(2)}% (${bestDeck.bestEventData.event})` : "--");
-  updateElement("playerBestDeckWorstWinRate", bestDeck ? `${bestDeck.worstEventData.winRate.toFixed(2)}% (${bestDeck.worstEventData.event})` : "--");
+  // Find all decks tied for most played and least played
+  const mostPlayedDeckEntries = mostPlayedDecks.length > 0 
+    ? deckPerformance.filter(deck => mostPlayedDecks.includes(deck.deck))
+    : [];
+  const leastPlayedDeckEntries = leastPlayedDecks.length > 0 
+    ? deckPerformance.filter(deck => leastPlayedDecks.includes(deck.deck))
+    : [];
 
-  updateElement("playerWorstDeckName", worstDeck ? worstDeck.deck : "--");
-  updateElement("playerWorstDeckEvents", worstDeck ? worstDeck.eventCount : "--");
-  updateElement("playerWorstDeckWinRate", worstDeck ? `${worstDeck.overallWinRate.toFixed(2)}%` : "--");
-  updateElement("playerWorstDeckBestWinRate", worstDeck ? `${worstDeck.bestEventData.winRate.toFixed(2)}% (${worstDeck.bestEventData.event})` : "--");
-  updateElement("playerWorstDeckWorstWinRate", worstDeck ? `${worstDeck.worstEventData.winRate.toFixed(2)}% (${worstDeck.worstEventData.event})` : "--");
+  console.log("Most played deck entries:", mostPlayedDeckEntries);
+  console.log("Least played deck entries:", leastPlayedDeckEntries);
+
+  // Calculate Overall Win Rate for the sidebar
+  const totalWins = filteredDataNoShow.reduce((sum, row) => sum + (row.Wins || 0), 0);
+  const totalLosses = filteredDataNoShow.reduce((sum, row) => sum + (row.Losses || 0), 0);
+  const overallWinRate = (totalWins + totalLosses) > 0 ? (totalWins / (totalWins + totalLosses)) * 100 : 0;
+  updateElement("playerOverallWinRate", overallWinRate ? `${overallWinRate.toFixed(2)}%` : "--");
+
+  // Set card titles, indicating ties if applicable
+  let bestDeckTitle = bestDecks.length > 1 ? "Best (Tied) Performing Deck" : "Best Performing Deck";
+  let worstDeckTitle = worstDecks.length > 1 ? "Worst (Tied) Performing Deck" : "Worst Performing Deck";
+  let mostPlayedDeckTitle = mostPlayedDeckEntries.length > 1 ? "Most (Tied) Played Deck" : "Most Played Deck";
+  let leastPlayedDeckTitle = leastPlayedDeckEntries.length > 1 ? "Least (Tied) Played Deck" : "Least Played Deck";
+
+  // Update Best Performing Deck card
+  const bestDeckCard = document.getElementById("playerBestDeckCard");
+  if (bestDeckCard) {
+    bestDeckCard.querySelector(".stat-title").textContent = bestDeckTitle;
+  }
+  if (bestDecks.length > 0) {
+    updateElement("playerBestDeckName", bestDecks.map(deck => deck.deck).join(", "));
+    updateElement("playerBestDeckEvents", bestDecks[0].eventCount);
+    updateElement("playerBestDeckWinRate", `${bestDecks[0].overallWinRate.toFixed(2)}%`);
+    const bestWinRates = bestDecks.map(deck => deck.bestEventData.winRate);
+    const bestEvents = bestDecks.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`);
+    updateElement("playerBestDeckBestWinRate", bestWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? bestEvents[0] 
+      : bestEvents.join(", "));
+    const worstWinRates = bestDecks.map(deck => deck.worstEventData.winRate);
+    const worstEvents = bestDecks.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`);
+    updateElement("playerBestDeckWorstWinRate", worstWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? worstEvents[0] 
+      : worstEvents.join(", "));
+  } else {
+    updateElement("playerBestDeckName", "--");
+    updateElement("playerBestDeckEvents", "--");
+    updateElement("playerBestDeckWinRate", "--");
+    updateElement("playerBestDeckBestWinRate", "--");
+    updateElement("playerBestDeckWorstWinRate", "--");
+  }
+  document.getElementById("playerBestDeckCard").style.display = "block";
+
+  // Update Worst Performing Deck card
+  const worstDeckCard = document.getElementById("playerWorstDeckCard");
+  if (worstDeckCard) {
+    worstDeckCard.querySelector(".stat-title").textContent = worstDeckTitle;
+  }
+  if (worstDecks.length > 0) {
+    updateElement("playerWorstDeckName", worstDecks.map(deck => deck.deck).join(", "));
+    updateElement("playerWorstDeckEvents", worstDecks[0].eventCount);
+    updateElement("playerWorstDeckWinRate", `${worstDecks[0].overallWinRate.toFixed(2)}%`);
+    const bestWinRates = worstDecks.map(deck => deck.bestEventData.winRate);
+    const bestEvents = worstDecks.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`);
+    updateElement("playerWorstDeckBestWinRate", bestWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? bestEvents[0] 
+      : bestEvents.join(", "));
+    const worstWinRates = worstDecks.map(deck => deck.worstEventData.winRate);
+    const worstEvents = worstDecks.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`);
+    updateElement("playerWorstDeckWorstWinRate", worstWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? worstEvents[0] 
+      : worstEvents.join(", "));
+  } else {
+    updateElement("playerWorstDeckName", "--");
+    updateElement("playerWorstDeckEvents", "--");
+    updateElement("playerWorstDeckWinRate", "--");
+    updateElement("playerWorstDeckBestWinRate", "--");
+    updateElement("playerWorstDeckWorstWinRate", "--");
+  }
+  document.getElementById("playerWorstDeckCard").style.display = "block";
+
+  // Update Most Played Deck card
+  const mostPlayedDeckCard = document.getElementById("playerMostPlayedDeckCard");
+  if (mostPlayedDeckCard) {
+    mostPlayedDeckCard.querySelector(".stat-title").textContent = mostPlayedDeckTitle;
+  }
+  if (mostPlayedDeckEntries.length > 0) {
+    updateElement("playerMostPlayedDeckName", mostPlayedDeckEntries.map(deck => deck.deck).join(", "));
+    updateElement("playerMostPlayedDeckEvents", mostPlayedDeckEntries[0].eventCount);
+    updateElement("playerMostPlayedDeckWinRate", mostPlayedDeckEntries.length === 1 
+      ? `${mostPlayedDeckEntries[0].overallWinRate.toFixed(2)}%`
+      : mostPlayedDeckEntries.map(deck => `${deck.overallWinRate.toFixed(2)}%`).join(", "));
+    const bestWinRates = mostPlayedDeckEntries.map(deck => deck.bestEventData.winRate);
+    const bestEvents = mostPlayedDeckEntries.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`);
+    updateElement("playerMostPlayedDeckBestWinRate", bestWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? bestEvents[0] 
+      : bestEvents.join(", "));
+    const worstWinRates = mostPlayedDeckEntries.map(deck => deck.worstEventData.winRate);
+    const worstEvents = mostPlayedDeckEntries.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`);
+    updateElement("playerMostPlayedDeckWorstWinRate", worstWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? worstEvents[0] 
+      : worstEvents.join(", "));
+  } else {
+    updateElement("playerMostPlayedDeckName", "--");
+    updateElement("playerMostPlayedDeckEvents", "0");
+    updateElement("playerMostPlayedDeckWinRate", "0%");
+    updateElement("playerMostPlayedDeckBestWinRate", "-- (Event: --)");
+    updateElement("playerMostPlayedDeckWorstWinRate", "-- (Event: --)");
+  }
+  document.getElementById("playerMostPlayedDeckCard").style.display = "block";
+
+  // Update Least Played Deck card
+  const leastPlayedDeckCard = document.getElementById("playerLeastPlayedDeckCard");
+  if (leastPlayedDeckCard) {
+    leastPlayedDeckCard.querySelector(".stat-title").textContent = leastPlayedDeckTitle;
+  }
+  if (leastPlayedDeckEntries.length > 0) {
+    updateElement("playerLeastPlayedDeckName", leastPlayedDeckEntries.map(deck => deck.deck).join(", "));
+    updateElement("playerLeastPlayedDeckEvents", leastPlayedDeckEntries[0].eventCount);
+    updateElement("playerLeastPlayedDeckWinRate", leastPlayedDeckEntries.length === 1 
+      ? `${leastPlayedDeckEntries[0].overallWinRate.toFixed(2)}%`
+      : leastPlayedDeckEntries.map(deck => `${deck.overallWinRate.toFixed(2)}%`).join(", "));
+    const bestWinRates = leastPlayedDeckEntries.map(deck => deck.bestEventData.winRate);
+    const bestEvents = leastPlayedDeckEntries.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`);
+    updateElement("playerLeastPlayedDeckBestWinRate", bestWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? bestEvents[0] 
+      : bestEvents.join(", "));
+    const worstWinRates = leastPlayedDeckEntries.map(deck => deck.worstEventData.winRate);
+    const worstEvents = leastPlayedDeckEntries.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`);
+    updateElement("playerLeastPlayedDeckWorstWinRate", worstWinRates.every((rate, _, arr) => rate === arr[0]) 
+      ? worstEvents[0] 
+      : worstEvents.join(", "));
+  } else {
+    updateElement("playerLeastPlayedDeckName", "--");
+    updateElement("playerLeastPlayedDeckEvents", "0");
+    updateElement("playerLeastPlayedDeckWinRate", "0%");
+    updateElement("playerLeastPlayedDeckBestWinRate", "-- (Event: --)");
+    updateElement("playerLeastPlayedDeckWorstWinRate", "-- (Event: --)");
+  }
+  document.getElementById("playerLeastPlayedDeckCard").style.display = "block";
 
   const eventsDetails = document.getElementById("playerEventsDetails");
   if (eventsDetails) {
