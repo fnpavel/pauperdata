@@ -1,13 +1,4 @@
-a {
-  color: #FFFFFF;
-  text-decoration: underline; 
-}
-
 a:hover {
-  color: #FFFFFF;
-  text-decoration: underlineoverline; 
-}
-
-a:visited {
-  color: #FFFFFF;
+  color: #5151f8;
+  text-decoration: underline; 
 }
