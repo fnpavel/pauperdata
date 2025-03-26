@@ -114,7 +114,7 @@
           <div class="filter-section">
             <h4>Event Type</h4>
             <div class="bubble-menu">
-              <button class="bubble-button event-type-filter active" data-type="offline">Offline</button>
+              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
               <button class="bubble-button event-type-filter" data-type="online">Online</button>
             </div>
           </div>
@@ -271,24 +271,25 @@
           <div class="stat-change" id="playerTop33Plus%"></div>
           <div class="stat-icon">🏅</div>
         </div>
+        <!-- Removed the Player Win Rate Stats stat-card from here -->
       </div>
 
       <div class="dashboard player-dashboard" id="playerDashboard">
         <div class="filters">
           <h3>Filter Options</h3>
           <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+              <button class="bubble-button event-type-filter" data-type="online">Online</button>
+            </div>
+          </div>
+          <div class="filter-section">
             <h4>Player</h4>
             <div class="bubble-menu">
               <select id="playerFilterMenu" class="player-filter-select">
                 <!-- Populated dynamically -->
               </select>
-            </div>
-          </div>
-          <div class="filter-section">
-            <h4>Event Type</h4>
-            <div class="bubble-menu">
-              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
-              <button class="bubble-button event-type-filter" data-type="online">Online</button>
             </div>
           </div>
         </div>
@@ -309,10 +310,10 @@
             </div>
             <div class="chart-container">
               <h2 class="chart-title">Deck Performance Scatter Plot</h2>
-            <div id="playerDeckPerformanceChartLoading">Loading...</div>
-            <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
-            <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-          </div>
+              <div id="playerDeckPerformanceChartLoading">Loading...</div>
+              <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
+              <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+            </div>
             <div class="data-table-container">
               <h2 class="chart-title" id="playerRawTableTitle">--</h2>
               <table class="data-table" id="playerRawTable">
@@ -335,6 +336,35 @@
         </div>
 
         <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
+          <div class="stat-card combined" id="playerWinRateStatsCard">
+            <div class="stat-title">Overall Win Rate</div>
+            <div class="stat-details" id="playerWinRateStatsDetails">
+              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerOverallWinRate">--</span></div>
+            </div>
+            <div class="stat-icon">📊</div>
+          </div>
+          <div class="stat-card combined" id="playerMostPlayedDeckCard" style="display: none;">
+            <div class="stat-title">Most Played Deck</div>
+            <div class="stat-details" id="playerMostPlayedDeckDetails">
+              <div><span class="label">Deck:</span> <span class="value" id="playerMostPlayedDeckName">--</span></div>
+              <div><span class="label">Events:</span> <span class="value" id="playerMostPlayedDeckEvents">0</span></div>
+              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerMostPlayedDeckWinRate">0%</span></div>
+              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerMostPlayedDeckBestWinRate">-- (Event: --)</span></div>
+              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerMostPlayedDeckWorstWinRate">-- (Event: --)</span></div>
+            </div>
+            <div class="stat-icon">⬆️</div>
+          </div>
+          <div class="stat-card combined" id="playerLeastPlayedDeckCard" style="display: none;">
+            <div class="stat-title">Least Played Deck</div>
+            <div class="stat-details" id="playerLeastPlayedDeckDetails">
+              <div><span class="label">Deck:</span> <span class="value" id="playerLeastPlayedDeckName">--</span></div>
+              <div><span class="label">Events:</span> <span class="value" id="playerLeastPlayedDeckEvents">0</span></div>
+              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWinRate">0%</span></div>
+              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerLeastPlayedDeckBestWinRate">-- (Event: --)</span></div>
+              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWorstWinRate">-- (Event: --)</span></div>
+            </div>
+            <div class="stat-icon">⬇️</div>
+          </div>
           <div class="stat-card combined" id="playerBestDeckCard">
             <div class="stat-title">Best Performing Deck</div>
             <div class="stat-details" id="playerBestDeckDetails">
@@ -372,12 +402,12 @@
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
-        <p>Version 1.1 | Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from Grok 3 (xAI)</p>
-        <p>MTGO data gathered by <a href="https://x.com/Kirblinxy" target="_blank">Kirblinxy</a>. 
-        <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</p></a>
-        <p>Upstate NY data by <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">Upstate NY Pauper</a>. 
+        <p>Version 1.1 | Made by <a href="https://twitter.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from Grok 3 (xAI)</p>
+        <p>MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a>
+        <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</a></p>
+        <p>Upstate NY data by <a href="https://m.facebook.com/profile.php?id=61558575774196" target="_blank">Upstate NY Pauper</a> <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">(Bluesky)</a></p>
 
-        <p>Contact (for bugs or to send data): <a href="https://x.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
+        <p>Contact (for bugs or to send data): <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
         <h3>Known Issues</h3>
         <ul>
           <li>The whole page is not <b>yet</b> optimized for mobile</li>
@@ -428,5 +458,5 @@
   <script src="js/modules/filters.js" type="module"></script>
   <script src="js/main.js" type="module"></script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f9daab8534c1f',t:'MTc0MjU4MjgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f9daab8534c1f',t:'MTc0MjU4MjgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9264525b1ce4456a',t:'MTc0Mjk2NzcxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
