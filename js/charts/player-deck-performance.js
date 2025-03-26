@@ -1,4 +1,3 @@
-// js/charts/player-deck-performance.js
 import { setChartLoading } from '../utils/dom.js';
 import { cleanedData } from '../data.js';
 
@@ -74,10 +73,7 @@ export function updatePlayerDeckPerformanceChart() {
             legend: { position: 'top', labels: { color: '#e0e0e0', font: { size: 14 } } },
             tooltip: { enabled: false },
             datalabels: { display: true },
-            zoom: { // Zoom disabled for "No Data" case
-              zoom: { enabled: false },
-              pan: { enabled: false }
-            }
+            zoom: { zoom: { enabled: false }, pan: { enabled: false } }
           }
         }
       });
@@ -166,66 +162,6 @@ export function updatePlayerDeckPerformanceChart() {
     return;
   }
 
-  const tooltipHandler = function(context) {
-    const tooltipModel = context.tooltip;
-    let tooltipEl = document.getElementById('chartjs-tooltip-deck');
-    if (!tooltipEl) {
-      tooltipEl = document.createElement('div');
-      tooltipEl.id = 'chartjs-tooltip-deck';
-      tooltipEl.style.background = 'rgba(0, 0, 0, 0.8)';
-      tooltipEl.style.color = '#fff';
-      tooltipEl.style.padding = '10px';
-      tooltipEl.style.borderRadius = '5px';
-      tooltipEl.style.position = 'absolute';
-      tooltipEl.style.pointerEvents = 'none';
-      tooltipEl.style.zIndex = '9999';
-      tooltipEl.style.fontSize = '12px';
-      tooltipEl.style.transition = 'all 0.1s ease';
-      document.body.appendChild(tooltipEl);
-    }
-
-    const detailsEl = document.getElementById('playerDeckPerformanceDetails');
-    if (!tooltipModel.opacity) {
-      tooltipEl.style.opacity = 0;
-      if (detailsEl) detailsEl.innerHTML = "";
-      return;
-    }
-
-    tooltipEl.style.opacity = 1;
-    const chartArea = context.chart.chartArea;
-    const canvasPosition = context.chart.canvas.getBoundingClientRect();
-    const tooltipWidth = tooltipEl.offsetWidth;
-    const tooltipHeight = tooltipEl.offsetHeight;
-
-    let left = canvasPosition.left + chartArea.left + tooltipModel.caretX + 10;
-    let top = canvasPosition.top + chartArea.top + tooltipModel.caretY - (tooltipHeight / 2);
-
-    if (left + tooltipWidth > canvasPosition.right) {
-      left = canvasPosition.left + chartArea.left + tooltipModel.caretX - tooltipWidth - 10;
-    }
-    if (top < canvasPosition.top) {
-      top = canvasPosition.top + 5;
-    } else if (top + tooltipHeight > canvasPosition.bottom) {
-      top = canvasPosition.bottom - tooltipHeight - 5;
-    }
-
-    tooltipEl.style.left = `${left}px`;
-    tooltipEl.style.top = `${top}px`;
-
-    const datasetIndex = tooltipModel.dataPoints[0].datasetIndex;
-    const point = datasets[datasetIndex].data[0];
-    const allDecks = point.decks;
-    const eventCount = point.x;
-    const winRate = point.y.toFixed(2);
-    const { wins, losses } = point;
-
-    tooltipEl.innerHTML = `${allDecks.join(', ')}<br>Events: ${eventCount}<br>Wins: ${wins}, Losses: ${losses} (WR: ${winRate}%)`;
-
-    if (detailsEl) {
-      detailsEl.innerHTML = `${allDecks.join(', ')}<br>Events: ${eventCount}<br>Wins: ${wins}, Losses: ${losses} (WR: ${winRate}%)`;
-    }
-  };
-
   try {
     playerDeckPerformanceChart = new Chart(ctx, {
       type: "scatter",
@@ -271,10 +207,31 @@ export function updatePlayerDeckPerformanceChart() {
             }
           },
           tooltip: {
-            enabled: false,
-            external: tooltipHandler,
+            enabled: true,  // Enable built-in tooltip
             mode: 'nearest',
-            intersect: true
+            intersect: true,
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            titleFont: { size: 14, weight: 'bold' },
+            bodyFont: { size: 12 },
+            titleColor: '#FFFFFF',
+            bodyColor: '#FFFFFF',
+            borderColor: '#FFD700',
+            borderWidth: 1,
+            padding: 10,
+            callbacks: {
+              label: (context) => {
+                const point = context.raw;
+                const allDecks = point.decks.join(', ');
+                const eventCount = point.x;
+                const winRate = point.y.toFixed(2);
+                const { wins, losses } = point;
+                return [
+                  allDecks,
+                  `Events: ${eventCount}`,
+                  `Wins: ${wins}, Losses: ${losses} (WR: ${winRate}%)`
+                ];
+              }
+            }
           },
           datalabels: {
             display: true,
@@ -291,22 +248,22 @@ export function updatePlayerDeckPerformanceChart() {
             zoom: {
               wheel: {
                 enabled: true, 
-                speed: 0.1   // Adjust zoom speed (0.1 = 10% per scroll)
+                speed: 0.1
               },
               drag: {
-                enabled: true, // Enable drag-to-zoom
-                backgroundColor: 'rgba(0, 0, 255, 0.3)', // Blue tint for selection area
+                enabled: true,
+                backgroundColor: 'rgba(0, 0, 255, 0.3)',
                 borderColor: 'rgba(0, 0, 255, 0.8)',
                 borderWidth: 1
               },
-              mode: 'xy' // Zoom both axes
+              mode: 'xy'
             },
             pan: {
-              enabled: true, // Enable panning after zooming
-              mode: 'xy'    // Pan both axes
+              enabled: true,
+              mode: 'xy'
             },
             limits: {
-              x: { min: 0, max: xAxisMax }, // Restrict zoom/pan to original range
+              x: { min: 0, max: xAxisMax },
               y: { min: 0, max: 100 }
             }
           }
