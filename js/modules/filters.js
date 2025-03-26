@@ -15,10 +15,19 @@ let filteredData = [];
 export function setupFilters() {
   console.log("Setting up filters...");
 
+  // Determine the initial mode on page load
+  const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
+  const eventTypeButtons = document.querySelectorAll(".event-type-filter");
+
+  // Set "online" as the default active Event Type for both modes on page load
+  eventTypeButtons.forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.type === "online");
+  });
+  console.log(`Initial mode is ${activeTopMode}: Set 'online' as default active Event Type`);
+
   // Event Filter Menu
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const events = [...new Set(cleanedData.map(row => row.Event))].sort((a, b) => {
-    // Extract date from event string or fall back to row.Date
     const getEventDate = (event) => {
       const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
       const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
@@ -27,8 +36,6 @@ export function setupFilters() {
 
     const dateA = getEventDate(a);
     const dateB = getEventDate(b);
-
-    // Sort by date (earliest to latest)
     return dateA - dateB; // Latest dates last
   });
 
@@ -38,9 +45,7 @@ export function setupFilters() {
 
   // Player Filter Menu
   const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b));
-  playerFilterMenu.innerHTML = `<option value="">No Player Selected</option>` + 
-    players.map(player => `<option value="${player}">${player}</option>`).join("");
+  playerFilterMenu.innerHTML = `<option value="">Select Event Type First</option>`;
   playerFilterMenu.value = "";
 
   // Date Selects for Multi-Event
@@ -132,8 +137,8 @@ export function setupTopModeListeners() {
         playerAnalysisSection.style.display = "none";
 
         const eventTypeButtons = document.querySelectorAll(".event-type-filter");
-        eventTypeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.type === "offline"));
-        console.log("Event Analytics: Event type filters reset to offline. Active types:", 
+        eventTypeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.type === "online"));
+        console.log("Event Analytics: Event type filters set to 'online'. Active types:", 
           Array.from(eventTypeButtons).filter(btn => btn.classList.contains("active")).map(btn => btn.dataset.type));
 
         const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
@@ -153,10 +158,18 @@ export function setupTopModeListeners() {
         playerCharts.style.display = "block";
         
         const eventTypeButtons = document.querySelectorAll(".event-type-filter");
-        eventTypeButtons.forEach(button => button.classList.remove("active"));
-        console.log("Player Analytics: Event type filters reset. Active types:", 
+        // Change: Set "online" as the default active Event Type in Player Analysis
+        eventTypeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.type === "online"));
+        console.log("Player Analytics: Event type filters set to 'online'. Active types:", 
           Array.from(eventTypeButtons).filter(btn => btn.classList.contains("active")).map(btn => btn.dataset.type));
         
+        const playerFilterMenu = document.getElementById("playerFilterMenu");
+        const playerStartDateSelect = document.getElementById("playerStartDateSelect");
+        const playerEndDateSelect = document.getElementById("playerEndDateSelect");
+        playerFilterMenu.value = "";
+        playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+        playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+
         updatePlayerDateOptions();
         updatePlayerAnalytics();
       }
@@ -283,7 +296,6 @@ export function updateEventFilter() {
       .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
       .map(row => row.Event))
     ].sort((a, b) => {
-      // Extract date from event string or fall back to row.Date
       const getEventDate = (event) => {
         const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
         const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
@@ -292,9 +304,7 @@ export function updateEventFilter() {
 
       const dateA = getEventDate(a);
       const dateB = getEventDate(b);
-
-      // Sort by date (earliest to latest)
-      return dateA - dateB; // Latest dates last
+      return dateB - dateA; // descending order
     });
 
     eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
@@ -353,26 +363,40 @@ export function updatePlayerDateOptions() {
     .map(button => button.dataset.type.toLowerCase());
   const selectedPlayer = playerFilterMenu.value;
 
-  const players = selectedEventTypes.length === 0
-    ? [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b))
-    : [...new Set(cleanedData
-        .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-        .map(row => row.Player))].sort((a, b) => a.localeCompare(b));
+  // Only populate Player dropdown if Event Type is selected
+  if (selectedEventTypes.length === 0) {
+    playerFilterMenu.innerHTML = `<option value="">Select Event Type First</option>`;
+    playerFilterMenu.value = "";
+    startDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+    endDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+    return;
+  }
+
+  // Populate Player dropdown based on selected Event Types
+  const players = [...new Set(cleanedData
+    .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
+    .map(row => row.Player))].sort((a, b) => a.localeCompare(b));
   const currentPlayer = players.includes(selectedPlayer) ? selectedPlayer : "";
   playerFilterMenu.innerHTML = `<option value="">No Player Selected</option>` + 
     players.map(player => `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`).join("");
 
-  const dates = selectedPlayer
-    ? [...new Set(cleanedData
-        .filter(row => row.Player === selectedPlayer && (selectedEventTypes.length === 0 || selectedEventTypes.includes(row.EventType.toLowerCase())))
-        .map(row => row.Date))].sort((a, b) => new Date(a) - new Date(b))
-    : [];
+  // Only populate Date dropdowns if both Event Type and Player are selected
+  if (!selectedPlayer) {
+    startDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+    endDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+    return;
+  }
+
+  // Populate Date dropdowns since both Event Type and Player are selected
+  const dates = [...new Set(cleanedData
+    .filter(row => row.Player === selectedPlayer && selectedEventTypes.includes(row.EventType.toLowerCase()))
+    .map(row => row.Date))].sort((a, b) => new Date(a) - new Date(b));
 
   console.log("Filtered dates for Player Analysis:", dates, "Selected Player:", selectedPlayer);
 
-  if (!selectedPlayer || dates.length === 0) {
-    startDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-    endDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+  if (dates.length === 0) {
+    startDateSelect.innerHTML = `<option value="">No Dates Available</option>`;
+    endDateSelect.innerHTML = `<option value="">No Dates Available</option>`;
     return;
   }
 
