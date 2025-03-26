@@ -110,49 +110,31 @@ export function updatePlayerDeckPerformanceChart() {
     '#DC143C', '#7B68EE', '#ADFF2F', '#FF4500', '#6A5ACD'
   ];
 
-  // Aggregate points by (X, Y) coordinates for clustering
-  const pointMap = {};
+  // Create a dataset for each deck without clustering
   let colorIndex = 0;
-  Object.keys(deckStats).forEach((deck) => {
+  const datasets = Object.keys(deckStats).map((deck) => {
     const stats = deckStats[deck];
     const totalGames = stats.wins + stats.losses;
     const winRate = totalGames > 0 ? (stats.wins / totalGames) * 100 : 0;
-    const x = stats.events.size;
-    const y = winRate;
-    const key = `${x},${y}`;
-    if (!pointMap[key]) {
-      pointMap[key] = {
-        x,
-        y,
-        decks: [],
-        color: colors[colorIndex++ % colors.length],
-        wins: 0,
-        losses: 0
-      };
-    }
-    pointMap[key].decks.push(deck);
-    pointMap[key].wins += stats.wins;
-    pointMap[key].losses += stats.losses;
+    const color = colors[colorIndex++ % colors.length];
+    return {
+      label: deck,
+      data: [{
+        x: stats.events.size,
+        y: winRate,
+        deck: deck,
+        wins: stats.wins,
+        losses: stats.losses
+      }],
+      backgroundColor: color,
+      borderColor: color,
+      borderWidth: 1,
+      pointRadius: 5,
+      pointHoverRadius: 7
+    };
   });
 
-  // Create datasets for each unique (X, Y) point
-  const datasets = Object.values(pointMap).map((point) => ({
-    label: point.decks.join(', '),
-    data: [{
-      x: point.x,
-      y: point.y,
-      decks: point.decks,
-      wins: point.wins,
-      losses: point.losses
-    }],
-    backgroundColor: point.color,
-    borderColor: point.color,
-    borderWidth: 1,
-    pointRadius: 5 + (point.decks.length - 1) * 2,
-    pointHoverRadius: 7 + (point.decks.length - 1) * 2
-  }));
-
-  console.log("Datasets with clustered labels:", datasets);
+  console.log("Datasets with individual deck points:", datasets);
 
   if (playerDeckPerformanceChart) playerDeckPerformanceChart.destroy();
   const ctx = document.getElementById("playerDeckPerformanceChart");
@@ -207,7 +189,7 @@ export function updatePlayerDeckPerformanceChart() {
             }
           },
           tooltip: {
-            enabled: true,  // Enable built-in tooltip
+            enabled: true,
             mode: 'nearest',
             intersect: true,
             backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -221,12 +203,12 @@ export function updatePlayerDeckPerformanceChart() {
             callbacks: {
               label: (context) => {
                 const point = context.raw;
-                const allDecks = point.decks.join(', ');
+                const deck = point.deck;
                 const eventCount = point.x;
                 const winRate = point.y.toFixed(2);
                 const { wins, losses } = point;
                 return [
-                  allDecks,
+                  deck,
                   `Events: ${eventCount}`,
                   `Wins: ${wins}, Losses: ${losses} (WR: ${winRate}%)`
                 ];
@@ -240,7 +222,7 @@ export function updatePlayerDeckPerformanceChart() {
               size: 12,
               weight: 'bold'
             },
-            formatter: (value) => value.decks.join(', '),
+            formatter: (value) => value.deck,
             align: 'top',
             offset: 4
           },
