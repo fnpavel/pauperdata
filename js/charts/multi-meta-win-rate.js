@@ -1,6 +1,6 @@
-// js/charts/multi-meta-win-rate.js
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getMultiEventChartData } from '../modules/filters.js';
+import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 
 export let metaWinRateChart = null;
 
@@ -8,15 +8,7 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
   console.log("updateMultiMetaWinRateChart called...", { viewType, sortBy });
   setChartLoading("metaWinRateChart", true);
 
-  const startDate = document.getElementById("startDateSelect").value;
-  const endDate = document.getElementById("endDateSelect").value;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-
-  const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
-    : [];
-
+  const filteredData = getMultiEventChartData();
   if (filteredData.length === 0) {
     console.log("No filtered data, skipping chart creation...");
     if (metaWinRateChart) metaWinRateChart.destroy();
@@ -24,25 +16,7 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
     return;
   }
 
-  const totalPlayers = filteredData.length;
-  const deckStats = filteredData.reduce((acc, row) => {
-    if (!acc[row.Deck]) acc[row.Deck] = { wins: 0, losses: 0, count: 0 };
-    acc[row.Deck].wins += row.Wins;
-    acc[row.Deck].losses += row.Losses;
-    acc[row.Deck].count += 1;
-    return acc;
-  }, {});
-
-  const decks = Object.keys(deckStats);
-  const deckData = decks.map(deck => ({
-    deck,
-    meta: (deckStats[deck].count / totalPlayers) * 100,
-    winRate: (deckStats[deck].wins + deckStats[deck].losses) > 0 
-      ? (deckStats[deck].wins / (deckStats[deck].wins + deckStats[deck].losses)) * 100 
-      : 0,
-    count: deckStats[deck].count
-  }));
-
+  const deckData = calculateMetaWinRateStats(filteredData);
   let labels, datasets, options;
 
   if (viewType === 'bar') {
@@ -50,7 +24,7 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
     const sortedDecks = deckData.sort((a, b) => {
       if (sortBy === 'meta') {
         return b.meta - a.meta || a.deck.localeCompare(b.deck);
-      } else { // 'winRate'
+      } else {
         return b.winRate - a.winRate || a.deck.localeCompare(b.deck);
       }
     });
@@ -225,47 +199,22 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
           datalabels: options.plugins?.datalabels || { display: false },
           zoom: {
             zoom: {
-              wheel: {
-                enabled: true,
-                speed: 0.1
-              },
-              drag: {
-                enabled: true,
-                backgroundColor: 'rgba(0, 0, 255, 0.3)',
-                borderColor: 'rgba(0, 0, 255, 0.8)',
-                borderWidth: 1
-              },
+              wheel: { enabled: true, speed: 0.1 },
+              drag: { enabled: true, backgroundColor: 'rgba(0, 0, 255, 0.3)', borderColor: 'rgba(0, 0, 255, 0.8)', borderWidth: 1 },
               mode: 'xy'
             },
-            pan: {
-              enabled: false // Disable panning
-            },
+            pan: { enabled: false },
             limits: viewType === 'bar' 
               ? { y: { min: options.scales.y.min, max: options.scales.y.max }, y2: { min: 0, max: 100 } }
               : { x: { min: 0, max: options.scales.x.max }, y: { min: 0, max: options.scales.y.max } }
           }
         },
-        animation: {
-          duration: 1000,
-          easing: 'easeOutQuart'
-        },
-        elements: viewType === 'bar' ? {
-          bar: {
-            borderRadius: 4,
-            borderSkipped: false
-          }
-        } : {
-          point: {
-            pointStyle: 'circle'
-          }
-        }
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        elements: viewType === 'bar' ? { bar: { borderRadius: 4, borderSkipped: false } } : { point: { pointStyle: 'circle' } }
       }
     });
 
-    // Add double-click to reset zoom
-    metaWinRateMultiCtx.ondblclick = () => {
-      metaWinRateChart.resetZoom();
-    };
+    metaWinRateMultiCtx.ondblclick = () => metaWinRateChart.resetZoom();
   } catch (error) {
     console.error("Error initializing Multi-Event Meta/Win Rate Chart:", error);
   }

@@ -1,6 +1,6 @@
-// js/charts/player-win-rate.js
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getPlayerWinRateChartData } from '../modules/filters.js';
+import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
 
 export let playerWinRateChart = null;
 
@@ -8,26 +8,10 @@ export function updatePlayerWinRateChart() {
   console.log("updatePlayerWinRateChart called...");
   setChartLoading("playerWinRateChart", true);
 
-  const startDate = document.getElementById("playerStartDateSelect").value;
-  const endDate = document.getElementById("playerEndDateSelect").value;
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-
-  const baseFilteredData = selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => 
-        row.Date >= startDate && 
-        row.Date <= endDate && 
-        row.Player === selectedPlayer && 
-        selectedEventTypes.includes(row.EventType)
-      )
-    : [];
-
-  const filteredDataNoShow = baseFilteredData.filter(row => row.Deck !== "No Show");
+  const filteredData = getPlayerWinRateChartData();
   const deckFilter = document.getElementById("playerDeckFilter");
   if (deckFilter) {
-    const decks = [...new Set(filteredDataNoShow.map(row => row.Deck))].sort();
+    const decks = [...new Set(filteredData.map(row => row.Deck))].sort();
     const currentDeck = deckFilter.value;
     deckFilter.innerHTML = `<option value="">All Decks</option>` + 
       decks.map(deck => `<option value="${deck}" ${deck === currentDeck ? 'selected' : ''}>${deck}</option>`).join("");
@@ -37,15 +21,15 @@ export function updatePlayerWinRateChart() {
     }
   }
 
-  const selectedDeck = deckFilter ? deckFilter.value : "";
-  const filteredData = selectedDeck ? filteredDataNoShow.filter(row => row.Deck === selectedDeck) : filteredDataNoShow;
-
-  if (!selectedPlayer || !startDate || !endDate || selectedEventTypes.length === 0 || filteredData.length === 0) {
+  if (!filteredData.length) {
     if (playerWinRateChart) playerWinRateChart.destroy();
     const playerWinRateCtx = document.getElementById("playerWinRateChart");
     if (playerWinRateCtx) {
+      const playerFilterMenu = document.getElementById("playerFilterMenu");
+      const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
+      const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).length;
       const label = !selectedPlayer ? "No Player Selected" : 
-                    selectedEventTypes.length === 0 ? "No Event Type Selected" : 
+                    selectedEventTypes === 0 ? "No Event Type Selected" : 
                     "No Data";
       playerWinRateChart = new Chart(playerWinRateCtx, {
         type: "line",
@@ -74,11 +58,29 @@ export function updatePlayerWinRateChart() {
           plugins: {
             legend: { position: 'top', labels: { color: '#e0e0e0', font: { size: 14, weight: 'bold' } } },
             tooltip: { enabled: false },
-            datalabels: { display: false }
+            datalabels: { display: false },
+            zoom: {
+              zoom: {
+                wheel: { enabled: true, speed: 0.1 },
+                drag: {
+                  enabled: true,
+                  backgroundColor: 'rgba(0, 0, 255, 0.3)',
+                  borderColor: 'rgba(0, 0, 255, 0.8)',
+                  borderWidth: 1
+                },
+                mode: 'xy'
+              },
+              pan: { enabled: false },
+              limits: { y: { min: 0, max: 100 } }
+            }
           },
           animation: { onComplete: () => triggerUpdateAnimation('playerWinRateChartContainer') }
         }
       });
+
+      playerWinRateCtx.ondblclick = () => {
+        playerWinRateChart.resetZoom();
+      };
     }
     setChartLoading("playerWinRateChart", false);
     return;
@@ -89,62 +91,9 @@ export function updatePlayerWinRateChart() {
    'playerBestDeckCard', 'playerWorstDeckCard', 'playerEventsHistory']
     .forEach(cardId => triggerUpdateAnimation(cardId));
 
-  const eventStats = filteredData.reduce((acc, row) => {
-    if (!acc[row.Event]) {
-      acc[row.Event] = { date: row.Date, winRate: 0, wins: 0, losses: 0 };
-    }
-    acc[row.Event].wins += row.Wins;
-    acc[row.Event].losses += row.Losses;
-    return acc;
-  }, {});
-
-  const events = Object.keys(eventStats);
-  const dates = events.map(event => eventStats[event].date).sort((a, b) => new Date(a) - new Date(b));
-  const eventByDate = {};
-  events.forEach(event => {
-    eventByDate[eventStats[event].date] = event;
-  });
-
-  const playerWinRateData = dates.map(date => {
-    const event = eventByDate[date];
-    const stats = eventStats[event];
-    const deck = filteredData.find(row => row.Event === event)?.Deck || "N/A";
-    return {
-      winRate: (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : null,
-      deck
-    };
-  });
-  const playerWinRates = playerWinRateData.map(p => p.winRate !== null ? p.winRate : 0);
-
-  const deckStats = filteredData.reduce((acc, row) => {
-    if (!acc[row.Deck]) {
-      acc[row.Deck] = { wins: 0, losses: 0, events: new Set(), eventData: [] };
-    }
-    acc[row.Deck].wins += row.Wins;
-    acc[row.Deck].losses += row.Losses;
-    acc[row.Deck].events.add(row.Event);
-    acc[row.Deck].eventData.push({
-      event: row.Event,
-      date: row.Date,
-      winRate: (row.Wins + row.Losses) > 0 ? (row.Wins / (row.Losses + row.Wins)) * 100 : null
-    });
-    return acc;
-  }, {});
-  const deckPerformance = Object.keys(deckStats).map(deck => ({
-    deck,
-    wins: deckStats[deck].wins,
-    losses: deckStats[deck].losses,
-    eventCount: deckStats[deck].events.size,
-    overallWinRate: (deckStats[deck].wins + deckStats[deck].losses) > 0 
-      ? (deckStats[deck].wins / (deckStats[deck].wins + deckStats[deck].losses)) * 100 
-      : null,
-    bestEventData: deckStats[deck].eventData.reduce((best, event) => 
-      (event.winRate !== null && (!best.winRate || event.winRate > best.winRate)) ? event : best, { winRate: null }),
-    worstEventData: deckStats[deck].eventData.reduce((worst, event) => 
-      (event.winRate !== null && (!worst.winRate || event.winRate < worst.winRate)) ? event : worst, { winRate: null })
-  }));
-
-  window.playerDeckPerformance = deckPerformance;
+  const { dates, winRates, decks, eventByDate } = calculatePlayerWinRateStats(filteredData);
+  const playerFilterMenu = document.getElementById("playerFilterMenu");
+  const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : "Unknown";
 
   if (playerWinRateChart) playerWinRateChart.destroy();
   const playerWinRateCtx = document.getElementById("playerWinRateChart");
@@ -161,7 +110,7 @@ export function updatePlayerWinRateChart() {
         labels: dates,
         datasets: [{
           label: `${selectedPlayer} Win Rate %`,
-          data: playerWinRates,
+          data: winRates,
           backgroundColor: '#FFD700',
           borderColor: '#FFD700',
           borderWidth: 2,
@@ -182,14 +131,14 @@ export function updatePlayerWinRateChart() {
         plugins: {
           legend: { position: 'top', labels: { color: '#e0e0e0', font: { size: 14, weight: 'bold' } } },
           tooltip: {
-            enabled: true, // Enable native tooltip
+            enabled: true,
             mode: 'nearest',
             intersect: true,
             callbacks: {
               label: function(context) {
                 const index = context.dataIndex;
-                const deck = playerWinRateData[index]?.deck || "N/A";
-                const winRate = playerWinRateData[index]?.winRate !== null ? playerWinRateData[index].winRate.toFixed(2) : "--";
+                const deck = decks[index];
+                const winRate = winRates[index].toFixed(2);
                 return `${deck} - Win Rate: ${winRate}%`;
               },
               afterBody: function(context) {
@@ -202,7 +151,7 @@ export function updatePlayerWinRateChart() {
                 const index = context[0].dataIndex;
                 const date = dates[index];
                 const event = eventByDate[date];
-                const eventData = cleanedData.filter(row => row.Event === event);
+                const eventData = filteredData.filter(row => row.Event === event);
                 const playerDeck = filteredData.find(row => row.Event === event)?.Deck || "N/A";
                 const deckPlayers = eventData.filter(row => row.Deck === playerDeck).length;
                 const totalPlayers = eventData.length;
@@ -220,16 +169,34 @@ export function updatePlayerWinRateChart() {
                   ${deckPlayers} players out of ${totalPlayers} played with ${playerDeck} (${metaShare}% of the Meta and ${deckWinRate}% WR)<br>
                   Event Won by ${winner.Player} with ${winner.Deck} (${winnerMetaShare}% of the Meta and ${winnerWinRate}% WR)
                 `;
-                return ""; // Return empty string to avoid extra text in native tooltip
+                return "";
               }
             }
           },
-          datalabels: { display: false }
+          datalabels: { display: false },
+          zoom: {
+            zoom: {
+              wheel: { enabled: true, speed: 0.1 },
+              drag: {
+                enabled: true,
+                backgroundColor: 'rgba(0, 0, 255, 0.3)',
+                borderColor: 'rgba(0, 0, 255, 0.8)',
+                borderWidth: 1
+              },
+              mode: 'xy'
+            },
+            pan: { enabled: false },
+            limits: { y: { min: 0, max: 100 } }
+          }
         },
         hover: { mode: 'nearest', intersect: true },
         animation: { onComplete: () => triggerUpdateAnimation('playerWinRateChartContainer') }
       }
     });
+
+    playerWinRateCtx.ondblclick = () => {
+      playerWinRateChart.resetZoom();
+    };
   } catch (error) {
     console.error("Error initializing Player Win Rate Chart:", error);
   }

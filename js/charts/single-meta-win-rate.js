@@ -1,6 +1,6 @@
-// js/charts/single-meta-win-rate.js
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getMetaWinRateChartData } from '../modules/filters.js';
+import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 import { updateSingleEventTables } from '../modules/event-analysis.js';
 
 export let metaWinRateEventChart = null;
@@ -9,16 +9,8 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
   console.log("updateEventMetaWinRateChart called...", { viewType, sortBy });
   setChartLoading("metaWinRateEventChart", true);
 
-  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
-  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
-
-  let eventData = cleanedData.filter(row => 
-    row.EventType === selectedEventType &&
-    selectedEvents.includes(row.Event)
-  );
-
-  if (eventData.length === 0 || selectedEvents.length === 0) {
+  const eventData = getMetaWinRateChartData();
+  if (eventData.length === 0) {
     console.log("No data, skipping chart creation...");
     if (metaWinRateEventChart) metaWinRateEventChart.destroy();
     updateSingleEventTables(eventData, 'raw');
@@ -26,27 +18,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
     return;
   }
 
-  const totalPlayers = eventData.length;
-  const deckStats = eventData.reduce((acc, row) => {
-    if (!acc[row.Deck]) {
-      acc[row.Deck] = { count: 0, wins: 0, losses: 0 };
-    }
-    acc[row.Deck].count += 1;
-    acc[row.Deck].wins += row.Wins;
-    acc[row.Deck].losses += row.Losses;
-    return acc;
-  }, {});
-
-  const decks = Object.keys(deckStats);
-  const deckData = decks.map(deck => ({
-    deck,
-    meta: (deckStats[deck].count / totalPlayers) * 100,
-    winRate: (deckStats[deck].wins + deckStats[deck].losses) > 0 
-      ? (deckStats[deck].wins / (deckStats[deck].wins + deckStats[deck].losses)) * 100 
-      : 0,
-    count: deckStats[deck].count
-  }));
-
+  const deckData = calculateMetaWinRateStats(eventData);
   let labels, datasets, options;
 
   if (viewType === 'bar') {
@@ -54,7 +26,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
     const sortedDecks = deckData.sort((a, b) => {
       if (sortBy === 'meta') {
         return b.meta - a.meta || a.deck.localeCompare(b.deck);
-      } else { // 'winRate'
+      } else {
         return b.winRate - a.winRate || a.deck.localeCompare(b.deck);
       }
     });
@@ -231,10 +203,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
           datalabels: options.plugins?.datalabels || { display: false },
           zoom: {
             zoom: {
-              wheel: {
-                enabled: true,
-                speed: 0.1
-              },
+              wheel: { enabled: true, speed: 0.1 },
               drag: {
                 enabled: true,
                 backgroundColor: 'rgba(0, 0, 255, 0.3)',
@@ -243,9 +212,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
               },
               mode: 'xy'
             },
-            pan: {
-              enabled: false // Disable panning
-            },
+            pan: { enabled: false },
             limits: viewType === 'bar' 
               ? { y: { min: options.scales.y.min, max: options.scales.y.max }, y2: { min: 0, max: 100 } }
               : { x: { min: 0, max: options.scales.x.max }, y: { min: 0, max: options.scales.y.max } }
@@ -256,19 +223,13 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
           easing: 'easeOutQuart'
         },
         elements: viewType === 'bar' ? {
-          bar: {
-            borderRadius: 4,
-            borderSkipped: false
-          }
+          bar: { borderRadius: 4, borderSkipped: false }
         } : {
-          point: {
-            pointStyle: 'circle'
-          }
+          point: { pointStyle: 'circle' }
         }
       }
     });
 
-    // Add double-click to reset zoom
     metaWinRateCtx.ondblclick = () => {
       metaWinRateEventChart.resetZoom();
     };

@@ -1,6 +1,6 @@
-// js/charts/multi-deck-evolution.js
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getDeckEvolutionChartData } from '../modules/filters.js';
+import { calculateDeckEvolutionStats } from "../utils/data-chart.js";
 import { updateMultiEventTables } from '../modules/event-analysis.js';
 
 export let deckEvolutionChart = null;
@@ -9,18 +9,7 @@ export function updateDeckEvolutionChart() {
   console.log("updateDeckEvolutionChart called...");
   setChartLoading("deckEvolutionChart", true);
 
-  const startDate = document.getElementById("startDateSelect").value;
-  const endDate = document.getElementById("endDateSelect").value;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
-
-  const filteredData = (startDate && endDate && selectedEventTypes.length > 0)
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
-    : [];
-  const chartData = filteredData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
-
+  const filteredData = getDeckEvolutionChartData();
   const deckSelect = document.getElementById("deckEvolutionSelect");
   if (!deckSelect) {
     console.error("Deck selection dropdown not found!");
@@ -47,7 +36,7 @@ export function updateDeckEvolutionChart() {
     return;
   }
 
-  if (chartData.length === 0 || !currentDeck) {
+  if (filteredData.length === 0 || !currentDeck) {
     deckEvolutionChart = new Chart(deckEvolutionCtx, {
       type: 'bar',
       data: {
@@ -66,39 +55,15 @@ export function updateDeckEvolutionChart() {
     return;
   }
 
-  const deckDataByDate = chartData.reduce((acc, row) => {
-    if (row.Deck === currentDeck) {
-      const date = row.Date;
-      if (!acc[date]) acc[date] = { wins: 0, losses: 0, count: 0, totalPlayers: 0 };
-      acc[date].wins += row.Wins;
-      acc[date].losses += row.Losses;
-      acc[date].count += 1;
-    }
-    acc[row.Date] = acc[row.Date] || { wins: 0, losses: 0, count: 0, totalPlayers: 0 };
-    acc[row.Date].totalPlayers += 1;
-    return acc;
-  }, {});
-
-  // Filter out dates with 0% meta share (count === 0)
-  const validDates = Object.keys(deckDataByDate)
-    .filter(date => deckDataByDate[date].count > 0) // Only include dates where deck appears
-    .sort((a, b) => new Date(a) - new Date(b));
-  
-  const metaShares = validDates.map(date => (deckDataByDate[date].count / (deckDataByDate[date].totalPlayers || 1)) * 100);
-  const winRates = validDates.map(date => {
-    const { wins, losses } = deckDataByDate[date];
-    return (wins + losses) > 0 ? (wins / (wins + losses)) * 100 : 0;
-  });
-
-  // Calculate dynamic max for Meta Share y-axis
-  const maxMetaShare = Math.max(...metaShares, 1); // Ensure at least 1% to avoid flat scale
-  const metaShareMax = Math.ceil(maxMetaShare / 10) * 10; // Round up to nearest 10
+  const { dates, metaShares, winRates } = calculateDeckEvolutionStats(filteredData, currentDeck);
+  const maxMetaShare = Math.max(...metaShares, 1);
+  const metaShareMax = Math.ceil(maxMetaShare / 10) * 10;
 
   const datasets = [
     {
       label: `Meta Share %`,
       data: metaShares,
-      backgroundColor: '#FF6347', // Tomato red for bars
+      backgroundColor: '#FF6347',
       borderColor: '#FF6347',
       borderWidth: 1,
       barPercentage: 0.5,
@@ -109,7 +74,7 @@ export function updateDeckEvolutionChart() {
       type: 'line',
       label: `Win Rate %`,
       data: winRates,
-      borderColor: '#FFD700', // Yellow line
+      borderColor: '#FFD700',
       backgroundColor: '#FFD700',
       pointBackgroundColor: '#FFD700',
       pointBorderColor: '#FFD700',
@@ -124,14 +89,14 @@ export function updateDeckEvolutionChart() {
   try {
     deckEvolutionChart = new Chart(deckEvolutionCtx, {
       type: 'bar',
-      data: { labels: validDates, datasets }, // Use filtered dates
+      data: { labels: dates, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
           y: { 
             beginAtZero: true, 
-            max: metaShareMax, // Dynamic max for Meta Share
+            max: metaShareMax,
             title: { display: true, text: "Meta Share %", color: '#fff' }, 
             grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
             ticks: { color: '#fff' } 
@@ -139,7 +104,7 @@ export function updateDeckEvolutionChart() {
           y2: { 
             position: 'right', 
             beginAtZero: true, 
-            max: 100, // Win Rate stays 0-100%
+            max: 100,
             title: { display: true, text: "Win Rate %", color: '#fff' }, 
             grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
             ticks: { color: '#fff' } 

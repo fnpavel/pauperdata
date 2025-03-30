@@ -1,5 +1,6 @@
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getPlayerDeckPerformanceChartData } from '../modules/filters.js';
+import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
 
 export let playerDeckPerformanceChart = null;
 
@@ -7,37 +8,17 @@ export function updatePlayerDeckPerformanceChart() {
   console.log("updatePlayerDeckPerformanceChart called...");
   setChartLoading("playerDeckPerformanceChart", true);
 
-  const startDate = document.getElementById("playerStartDateSelect").value;
-  const endDate = document.getElementById("playerEndDateSelect").value;
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-
-  console.log("Filters:", { startDate, endDate, selectedPlayer, selectedEventTypes });
-  console.log("Raw cleanedData length:", cleanedData.length);
-
-  const baseFilteredData = selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => 
-        row.Date >= startDate && 
-        row.Date <= endDate && 
-        row.Player === selectedPlayer && 
-        selectedEventTypes.includes(row.EventType)
-      )
-    : [];
-
-  console.log("baseFilteredData length:", baseFilteredData.length);
-
-  const filteredData = baseFilteredData.filter(row => row.Deck !== "No Show");
-  console.log("filteredData length (no 'No Show'):", filteredData.length);
-
-  if (!selectedPlayer || !startDate || !endDate || selectedEventTypes.length === 0 || filteredData.length === 0) {
-    console.log("No data condition triggered:", { selectedPlayer, startDate, endDate, eventTypes: selectedEventTypes.length, filteredDataLength: filteredData.length });
+  const filteredData = getPlayerDeckPerformanceChartData();
+  if (!filteredData.length) {
+    console.log("No data condition triggered");
     if (playerDeckPerformanceChart) playerDeckPerformanceChart.destroy();
     const ctx = document.getElementById("playerDeckPerformanceChart");
     if (ctx) {
+      const playerFilterMenu = document.getElementById("playerFilterMenu");
+      const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
+      const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).length;
       const label = !selectedPlayer ? "No Player Selected" : 
-                    selectedEventTypes.length === 0 ? "No Event Type Selected" : 
+                    selectedEventTypes === 0 ? "No Event Type Selected" : 
                     "No Data Available";
       playerDeckPerformanceChart = new Chart(ctx, {
         type: "scatter",
@@ -82,47 +63,25 @@ export function updatePlayerDeckPerformanceChart() {
     return;
   }
 
-  // Aggregate deck stats: number of events, total wins, total losses
-  const deckStats = filteredData.reduce((acc, row) => {
-    if (!acc[row.Deck]) {
-      acc[row.Deck] = {
-        events: new Set(),
-        wins: 0,
-        losses: 0
-      };
-    }
-    acc[row.Deck].events.add(row.Event);
-    acc[row.Deck].wins += row.Wins || 0;
-    acc[row.Deck].losses += row.Losses || 0;
-    return acc;
-  }, {});
-  console.log("deckStats:", deckStats);
-
-  // Calculate the maximum number of events across all decks
-  const maxEvents = Math.max(...Object.values(deckStats).map(stats => stats.events.size));
+  const deckStats = calculatePlayerDeckPerformanceStats(filteredData);
+  const maxEvents = Math.max(...deckStats.map(stats => stats.eventCount));
   const xAxisMax = maxEvents + 1;
-  console.log("Calculated xAxisMax:", xAxisMax);
 
-  // Define a color palette for decks
   const colors = [
     '#FFD700', '#FF6347', '#00CED1', '#32CD32', '#9370DB', 
     '#FF69B4', '#20B2AA', '#FFA500', '#4682B4', '#9ACD32',
     '#DC143C', '#7B68EE', '#ADFF2F', '#FF4500', '#6A5ACD'
   ];
 
-  // Create a dataset for each deck without clustering
   let colorIndex = 0;
-  const datasets = Object.keys(deckStats).map((deck) => {
-    const stats = deckStats[deck];
-    const totalGames = stats.wins + stats.losses;
-    const winRate = totalGames > 0 ? (stats.wins / totalGames) * 100 : 0;
+  const datasets = deckStats.map(stats => {
     const color = colors[colorIndex++ % colors.length];
     return {
-      label: deck,
+      label: stats.deck,
       data: [{
-        x: stats.events.size,
-        y: winRate,
-        deck: deck,
+        x: stats.eventCount,
+        y: stats.winRate,
+        deck: stats.deck,
         wins: stats.wins,
         losses: stats.losses
       }],
@@ -133,8 +92,6 @@ export function updatePlayerDeckPerformanceChart() {
       pointHoverRadius: 7
     };
   });
-
-  console.log("Datasets with individual deck points:", datasets);
 
   if (playerDeckPerformanceChart) playerDeckPerformanceChart.destroy();
   const ctx = document.getElementById("playerDeckPerformanceChart");
@@ -156,11 +113,7 @@ export function updatePlayerDeckPerformanceChart() {
             type: 'linear',
             title: { display: true, text: "Number of Events", color: '#fff' },
             grid: { color: 'rgba(255, 255, 255, 0.1)' },
-            ticks: { 
-              color: '#fff', 
-              stepSize: 1, 
-              beginAtZero: true 
-            },
+            ticks: { color: '#fff', stepSize: 1, beginAtZero: true },
             min: 0,
             max: xAxisMax
           },
@@ -218,48 +171,26 @@ export function updatePlayerDeckPerformanceChart() {
           datalabels: {
             display: true,
             color: '#fff',
-            font: {
-              size: 12,
-              weight: 'bold'
-            },
+            font: { size: 12, weight: 'bold' },
             formatter: (value) => value.deck,
             align: 'top',
             offset: 4
           },
           zoom: {
             zoom: {
-              wheel: {
-                enabled: true, 
-                speed: 0.1
-              },
-              drag: {
-                enabled: true,
-                backgroundColor: 'rgba(0, 0, 255, 0.3)',
-                borderColor: 'rgba(0, 0, 255, 0.8)',
-                borderWidth: 1
-              },
+              wheel: { enabled: true, speed: 0.1 },
+              drag: { enabled: true, backgroundColor: 'rgba(0, 0, 255, 0.3)', borderColor: 'rgba(0, 0, 255, 0.8)', borderWidth: 1 },
               mode: 'xy'
             },
-            pan: {
-              enabled: true,
-              mode: 'xy'
-            },
-            limits: {
-              x: { min: 0, max: xAxisMax },
-              y: { min: 0, max: 100 }
-            }
+            pan: { enabled: true, mode: 'xy' },
+            limits: { x: { min: 0, max: xAxisMax }, y: { min: 0, max: 100 } }
           }
         },
         hover: { mode: 'nearest', intersect: true }
       }
     });
 
-    // Add double-click to reset zoom
-    ctx.ondblclick = () => {
-      playerDeckPerformanceChart.resetZoom();
-    };
-
-    console.log("Chart initialized with datasets:", datasets);
+    ctx.ondblclick = () => playerDeckPerformanceChart.resetZoom();
   } catch (error) {
     console.error("Error initializing Player Deck Performance Chart:", error);
   }

@@ -1,6 +1,6 @@
-// js/charts/multi-player-win-rate.js
 import { setChartLoading } from '../utils/dom.js';
-import { cleanedData } from '../data.js';
+import { getDeckEvolutionChartData } from '../modules/filters.js'; // Reusing this as it applies position filters
+import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
 
 export let multiPlayerWinRateChart = null;
 
@@ -8,18 +8,7 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
   console.log("updateMultiPlayerWinRateChart called...", { sortBy });
   setChartLoading("multiPlayerWinRateChart", true);
 
-  const startDate = document.getElementById("startDateSelect").value;
-  const endDate = document.getElementById("endDateSelect").value;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
-
-  const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
-    : [];
-  const chartData = filteredData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
-
+  const chartData = getDeckEvolutionChartData(); // Already filtered with positionStart/End
   if (chartData.length === 0) {
     if (multiPlayerWinRateChart) multiPlayerWinRateChart.destroy();
     const multiPlayerWinRateCtx = document.getElementById("multiPlayerWinRateChart");
@@ -42,40 +31,21 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
     return;
   }
 
-  // Aggregate player stats
-  const playerStats = chartData.reduce((acc, row) => {
-    if (!acc[row.Player]) {
-      acc[row.Player] = { totalWinRate: 0, eventCount: 0, events: new Set() };
-    }
-    acc[row.Player].totalWinRate += row["Win Rate"] * 100;
-    acc[row.Player].events.add(row.Event);
-    return acc;
-  }, {});
-
-  // Calculate averages
-  const playerData = Object.entries(playerStats)
-    .map(([player, stats]) => {
-      stats.eventCount = stats.events.size;
-      const avgWinRate = stats.eventCount > 0 ? stats.totalWinRate / stats.eventCount : 0;
-      return { player, avgWinRate, eventCount: stats.eventCount };
-    });
-
-  // Sort based on user selection
+  const playerData = calculateMultiPlayerWinRateStats(chartData);
   const sortedPlayerData = playerData.sort((a, b) => {
     if (sortBy === 'winRate') {
-      return b.avgWinRate - a.avgWinRate || b.eventCount - a.eventCount; // Win rate, then events
+      return b.avgWinRate - a.avgWinRate || b.eventCount - a.eventCount;
     } else {
-      return b.eventCount - a.eventCount || b.avgWinRate - a.avgWinRate; // Events, then win rate
+      return b.eventCount - a.eventCount || b.avgWinRate - a.avgWinRate;
     }
   });
 
-  // Take top 10 players
   const topN = 10;
   const topPlayers = sortedPlayerData.slice(0, topN);
   const labels = topPlayers.map(p => p.player);
   const winRates = topPlayers.map(p => p.avgWinRate);
   const eventCounts = topPlayers.map(p => p.eventCount);
-  const maxEvents = Math.max(...eventCounts, 1); // Avoid division by 0
+  const maxEvents = Math.max(...eventCounts, 1);
 
   if (multiPlayerWinRateChart) multiPlayerWinRateChart.destroy();
   const multiPlayerWinRateCtx = document.getElementById("multiPlayerWinRateChart");
@@ -93,8 +63,8 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
         datasets: [
           {
             label: "Events Played",
-            data: eventCounts.map(count => (count / maxEvents) * 100), // Normalize to 100%
-            backgroundColor: '#A9A9A9', // Muted gray
+            data: eventCounts.map(count => (count / maxEvents) * 100),
+            backgroundColor: '#A9A9A9',
             borderColor: '#808080',
             borderWidth: 1,
             barPercentage: 0.8,
@@ -103,7 +73,7 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
           {
             label: "Average Win Rate (%)",
             data: winRates,
-            backgroundColor: '#CCAC00', // Muted gold
+            backgroundColor: '#CCAC00',
             borderColor: '#B59400',
             borderWidth: 1,
             barPercentage: 0.6,
@@ -185,23 +155,14 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
             padding: 10
           }
         },
-        animation: {
-          duration: 1000,
-          easing: 'easeOutQuart'
-        },
-        elements: {
-          bar: {
-            borderRadius: 4,
-            borderSkipped: false
-          }
-        }
+        animation: { duration: 1000, easing: 'easeOutQuart' },
+        elements: { bar: { borderRadius: 4, borderSkipped: false } }
       }
     });
   } catch (error) {
     console.error("Error initializing Multi-Event Player Win Rate Chart:", error);
   }
 
-  // Add toggle buttons if not already present
   const chartContainer = document.querySelector('#multiPlayerWinRateChart').parentElement;
   let toggleDiv = chartContainer.querySelector('.sort-toggle');
   if (!toggleDiv) {
@@ -213,7 +174,6 @@ export function updateMultiPlayerWinRateChart(sortBy = 'winRate') {
     `;
     chartContainer.insertBefore(toggleDiv, multiPlayerWinRateCtx);
     
-    // Add event listeners
     toggleDiv.querySelectorAll('.table-toggle-btn').forEach(button => {
       button.addEventListener('click', () => {
         toggleDiv.querySelectorAll('.table-toggle-btn').forEach(btn => btn.classList.remove('active'));
