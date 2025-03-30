@@ -9,7 +9,6 @@ import {
   setupEventFilterListeners, 
   setupPlayerFilterListeners 
 } from './modules/filters.js';
-//import { resizeOverflowedCharts } from './modules/layout.js';
 import { setupAboutListeners } from './modules/about.js';
 
 // Expose global functions for HTML event handlers
@@ -53,6 +52,4 @@ document.addEventListener('DOMContentLoaded', () => {
       import('./charts/player-deck-performance.js').then(module => module.updatePlayerDeckPerformanceChart());
     });
   }
-
-  //resizeOverflowedCharts(); //The charts have a wonky behavior on startup, this will resize them.
 });
