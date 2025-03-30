@@ -1,4 +1,6 @@
 // js/utils/dom.js
+
+Chart.register(ChartDataLabels);
 export function setChartLoading(chartId, isLoading) {
   const loadingElement = document.getElementById(`${chartId}Loading`);
   if (loadingElement) {
