@@ -8,6 +8,8 @@ import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.j
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
+import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
+import { hideAboutSection } from './about.js';
 
 // Global variable to hold filtered data
 let filteredData = [];
@@ -52,13 +54,13 @@ export function setupFilters() {
   const startDateSelect = document.getElementById("startDateSelect");
   const endDateSelect = document.getElementById("endDateSelect");
   startDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option>`;
-  endDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option>`;
+  endDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option}`;
 
   // Date Selects for Player Analysis
   const playerStartDateSelect = document.getElementById("playerStartDateSelect");
   const playerEndDateSelect = document.getElementById("playerEndDateSelect");
   playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-  playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+  playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option}`;
 
   // Initial UI State
   const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
@@ -92,7 +94,7 @@ export function updateAllCharts() {
         row.EventType === selectedEventType && selectedEvents.includes(row.Event)
       );
       updateEventMetaWinRateChart();
-      updateEventFunnelChart(filteredData);
+      updateEventFunnelChart();
       updateEventAnalytics();
     } else if (activeAnalysisMode === "multi") {
       const startDate = document.getElementById("startDateSelect").value;
@@ -108,9 +110,97 @@ export function updateAllCharts() {
       updateMultiEventAnalytics();
     }
   } else if (activeTopMode === "player") {
+    const startDate = document.getElementById("playerStartDateSelect").value;
+    const endDate = document.getElementById("playerEndDateSelect").value;
+    const playerFilterMenu = document.getElementById("playerFilterMenu");
+    const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
+    const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
+      .map(button => button.dataset.type);
+    filteredData = selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
+      ? cleanedData.filter(row => 
+          row.Date >= startDate && 
+          row.Date <= endDate && 
+          row.Player === selectedPlayer && 
+          selectedEventTypes.includes(row.EventType)
+        )
+      : [];
     updatePlayerAnalytics();
     updatePlayerDeckPerformanceChart();
+    updatePlayerWinRateChart();
   }
+}
+
+// function to get filtered data for funnel chart
+export function getFunnelChartData() {
+  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
+  const eventFilterMenu = document.getElementById("eventFilterMenu");
+  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
+  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
+  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
+
+  const filtered = cleanedData.filter(row => 
+    row.EventType === selectedEventType &&
+    selectedEvents.includes(row.Event)
+  );
+  return filtered.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
+}
+
+// function to get filtered data for meta win rate chart
+export function getMetaWinRateChartData() {
+  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
+  const eventFilterMenu = document.getElementById("eventFilterMenu");
+  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
+
+  return cleanedData.filter(row => 
+    row.EventType === selectedEventType &&
+    selectedEvents.includes(row.Event)
+  );
+}
+
+// multi-event filter functions
+export function getMultiEventChartData() {
+  const startDate = document.getElementById("startDateSelect").value;
+  const endDate = document.getElementById("endDateSelect").value;
+  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
+    .map(button => button.dataset.type);
+  return (startDate && endDate && selectedEventTypes.length > 0)
+    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
+    : [];
+}
+// deck evolution filter functions
+export function getDeckEvolutionChartData() {
+  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
+  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
+  const filteredData = getMultiEventChartData();
+  return filteredData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
+}
+
+// For Player Analysis -> Deck Performance
+export function getPlayerDeckPerformanceChartData() {
+  const startDate = document.getElementById("playerStartDateSelect").value;
+  const endDate = document.getElementById("playerEndDateSelect").value;
+  const playerFilterMenu = document.getElementById("playerFilterMenu");
+  const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
+  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
+    .map(button => button.dataset.type);
+
+  return selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
+    ? cleanedData.filter(row => 
+        row.Date >= startDate && 
+        row.Date <= endDate && 
+        row.Player === selectedPlayer && 
+        selectedEventTypes.includes(row.EventType) &&
+        row.Deck !== "No Show"
+      )
+    : [];
+}
+
+// For Player Analysis -> Win Rate across Time
+export function getPlayerWinRateChartData() {
+  const baseData = getPlayerDeckPerformanceChartData(); // Reuses base filtering
+  const deckFilter = document.getElementById("playerDeckFilter");
+  const selectedDeck = deckFilter ? deckFilter.value : "";
+  return selectedDeck ? baseData.filter(row => row.Deck === selectedDeck) : baseData;
 }
 
 export function setupTopModeListeners() {
@@ -131,6 +221,9 @@ export function setupTopModeListeners() {
 
       const mode = button.dataset.topMode;
       console.log("Top mode changed to:", mode);
+
+      // Hide the About section if visible
+      hideAboutSection(mode);
 
       if (mode === "event") {
         eventAnalysisSection.style.display = "block";
@@ -168,7 +261,7 @@ export function setupTopModeListeners() {
         const playerEndDateSelect = document.getElementById("playerEndDateSelect");
         playerFilterMenu.value = "";
         playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-        playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+        playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option}`;
 
         updatePlayerDateOptions();
         updatePlayerAnalytics();
