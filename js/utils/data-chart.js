@@ -1,8 +1,11 @@
 // js/utils/data-chart.js
 
-// function for funnel chart deck conversion stats
+
+// Function for Event Analysis -> Single Event: Event Top 8/16/32 Conversion
 export function calculateDeckConversionStats(data) {
-  const deckConversionStats = data.reduce((acc, row) => {
+  const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
+  
+  const deckConversionStats = filteredData.reduce((acc, row) => {
     if (!acc[row.Deck]) {
       acc[row.Deck] = {
         total: 0,
@@ -20,7 +23,7 @@ export function calculateDeckConversionStats(data) {
     return acc;
   }, {});
 
-  const topDecks = [...new Set(data.map(row => row.Deck))];
+  const topDecks = [...new Set(filteredData.map(row => row.Deck))];
   const percentages = topDecks.map(deck => {
     const stats = deckConversionStats[deck] || { total: 0, rank1_8: 0, rank9_16: 0, rank17_32: 0, rank33_worse: 0 };
     const total = stats.total;
@@ -41,10 +44,12 @@ export function calculateDeckConversionStats(data) {
     }));
 }
 
-// function for meta win rate chart deck stats
+// Function for Single and Multiple Events
 export function calculateMetaWinRateStats(data) {
-  const totalPlayers = data.length;
-  const deckStats = data.reduce((acc, row) => {
+  const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
+  const totalPlayers = filteredData.length;
+  
+  const deckStats = filteredData.reduce((acc, row) => {
     if (!acc[row.Deck]) {
       acc[row.Deck] = { count: 0, wins: 0, losses: 0 };
     }
@@ -65,9 +70,11 @@ export function calculateMetaWinRateStats(data) {
   }));
 }
 
-// function for deck evolution chart
+// Function for Event Analysis -> Multiple Events: Deck Evolution: Meta and Win Rate
 export function calculateDeckEvolutionStats(data, selectedDeck) {
-  const deckDataByDate = data.reduce((acc, row) => {
+  const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
+  
+  const deckDataByDate = filteredData.reduce((acc, row) => {
     if (row.Deck === selectedDeck) {
       const date = row.Date;
       if (!acc[date]) acc[date] = { wins: 0, losses: 0, count: 0, totalPlayers: 0 };
@@ -94,7 +101,8 @@ export function calculateDeckEvolutionStats(data, selectedDeck) {
   };
 }
 
-// function for multi-player win rate chart
+// Function for Event Analysis -> Multiple Events: Aggregate Player Win Rates
+// in multi-player-win-rate.js
 export function calculateMultiPlayerWinRateStats(data) {
   const playerStats = data.reduce((acc, row) => {
     if (!acc[row.Player]) {
@@ -113,9 +121,12 @@ export function calculateMultiPlayerWinRateStats(data) {
     });
 }
 
-// function for player deck performance chart
+// Function for Player Analysis: Deck Performance Scatter Plot
+// in player-deck-performance.js
 export function calculatePlayerDeckPerformanceStats(data) {
-  const deckStats = data.reduce((acc, row) => {
+  const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
+  
+  const deckStats = filteredData.reduce((acc, row) => {
     if (!acc[row.Deck]) {
       acc[row.Deck] = {
         events: new Set(),
@@ -143,9 +154,12 @@ export function calculatePlayerDeckPerformanceStats(data) {
   });
 }
 
-// function for player win rate chart
+// Function for Player Analysis: Player Analytics
+// in player-winrate.js
 export function calculatePlayerWinRateStats(data) {
-  const eventStats = data.reduce((acc, row) => {
+  const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
+  
+  const eventStats = filteredData.reduce((acc, row) => {
     if (!acc[row.Event]) {
       acc[row.Event] = { date: row.Date, winRate: 0, wins: 0, losses: 0, deck: row.Deck };
     }
