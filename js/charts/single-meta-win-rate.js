@@ -158,10 +158,11 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
           callbacks: {
             label: context => {
               if (!context.raw) return ''; // Handle cases where raw data might be missing
-              const deckName = context.raw.label;
-              const count = context.raw.count;
-              const metaPercent = context.raw.x.toFixed(2);
-              return `${deckName} ${count} copies (${metaPercent}%)`;
+              return [
+                `${context.raw.label}`,
+                `Meta: ${context.raw.count} (${context.raw.x.toFixed(2)}%)`,
+                `Win Rate: ${context.raw.y.toFixed(2)}%`
+              ];
             }
           }
         },
