@@ -4,8 +4,8 @@ import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 
 export let metaWinRateChart = null;
 
-export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
-  console.log("updateMultiMetaWinRateChart called...", { viewType, sortBy });
+export function updateMultiMetaWinRateChart() {
+  console.log("updateMultiMetaWinRateChart called...");
   setChartLoading("metaWinRateChart", true);
 
   const filteredData = getMultiEventChartData();
@@ -19,147 +19,78 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
   const deckData = calculateMetaWinRateStats(filteredData);
   let labels, datasets, options;
 
-  if (viewType === 'bar') {
-    console.log("Sorting bar view with sortBy:", sortBy);
-    const sortedDecks = deckData.sort((a, b) => {
-      if (sortBy === 'meta') {
-        return b.meta - a.meta || a.deck.localeCompare(b.deck);
-      } else {
-        return b.winRate - a.winRate || a.deck.localeCompare(b.deck);
-      }
-    });
-    console.log("Sorted decks:", sortedDecks.map(d => ({ deck: d.deck, meta: d.meta, winRate: d.winRate })));
+  // Scatter view logic
+  const scatterData = deckData.map(d => ({
+    x: d.meta,
+    y: d.winRate,
+    label: d.deck,
+    count: d.count
+  }));
 
-    const deckNames = sortedDecks.map(d => d.deck);
-    const metaPercentages = sortedDecks.map(d => d.meta);
-    const winRates = sortedDecks.map(d => d.winRate);
-    const metaMin = Math.max(0, Math.min(...metaPercentages) - 5);
-    const metaMax = Math.max(...metaPercentages) + 5;
+  const metaMax = deckData.length > 0 ? Math.max(...deckData.map(d => d.meta)) : 0;
+  const winRateMax = deckData.length > 0 ? Math.max(...deckData.map(d => d.winRate)) : 0;
 
-    if (deckNames.length === 0) {
-      console.log("No decks, skipping chart creation...");
-      if (metaWinRateChart) metaWinRateChart.destroy();
-      setChartLoading("metaWinRateChart", false);
-      return;
-    }
-
-    datasets = [
-      {
-        type: 'bar',
-        label: 'Meta %',
-        data: metaPercentages,
-        backgroundColor: '#CC3700',
-        borderColor: '#A32C00',
-        borderWidth: 1,
-        yAxisID: 'y',
-        order: 2
-      },
-      {
-        type: 'bar',
-        label: 'Win Rate %',
-        data: winRates,
-        backgroundColor: '#326789',
-        borderColor: '#2A566F',
-        borderWidth: 1,
-        yAxisID: 'y2',
-        order: 1
-      }
-    ];
-
-    options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { 
-          min: metaMin, 
-          max: metaMax, 
-          title: { display: true, text: "Meta %", color: '#fff' }, 
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-          ticks: { color: '#fff' } 
-        },
-        y2: { 
-          position: 'right', 
-          beginAtZero: true, 
-          max: 100, 
-          title: { display: true, text: "Win Rate %", color: '#fff' }, 
-          grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-          ticks: { color: '#fff' } 
-        },
-        x: { 
-          title: { 
-            display: true, 
-            text: `Decks (Sorted by ${sortBy === 'meta' ? 'Meta %' : 'Win Rate %'})`, 
-            color: '#fff' 
-          }, 
-          grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.1)' }, 
-          ticks: { color: '#fff', autoSkip: false, maxRotation: 45, minRotation: 45 } 
-        }
-      }
-    };
-
-    labels = deckNames;
-  } else if (viewType === 'scatter') {
-    const scatterData = deckData.map(d => ({
-      x: d.meta,
-      y: d.winRate,
-      label: d.deck,
-      count: d.count
-    }));
-
-    const metaMax = Math.max(...deckData.map(d => d.meta));
-    const winRateMax = Math.max(...deckData.map(d => d.winRate));
-
-    datasets = [
-      {
-        type: 'scatter',
-        label: 'Decks',
-        data: scatterData,
-        backgroundColor: '#FFD700',
-        borderColor: '#DAA520',
-        borderWidth: 1,
-        pointRadius: 8,
-        pointHoverRadius: 10
-      }
-    ];
-
-    options = {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        x: {
-          title: { display: true, text: "Meta %", color: '#fff' },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { color: '#fff', stepSize: Math.ceil(metaMax / 10) },
-          min: 0,
-          max: Math.ceil(metaMax / 5) * 5 + 5
-        },
-        y: {
-          title: { display: true, text: "Win Rate %", color: '#fff' },
-          grid: { color: 'rgba(255, 255, 255, 0.1)' },
-          ticks: { color: '#fff', stepSize: 10 },
-          min: 0,
-          max: Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10)
-        }
-      },
-      plugins: {
-        tooltip: {
-          callbacks: {
-            label: context => `${context.raw.label}: Copies ${context.raw.count}, Win Rate ${context.raw.y.toFixed(2)}%`
-          }
-        },
-        datalabels: {
-          display: true,
-          color: '#e0e0e0',
-          font: { size: 10, family: "'Bitter', serif" },
-          formatter: (value) => value.label,
-          align: 'top',
-          offset: 4
-        }
-      }
-    };
-
-    labels = [];
+  if (deckData.length === 0) {
+    console.log("No decks, skipping chart creation...");
+    if (metaWinRateChart) metaWinRateChart.destroy();
+    setChartLoading("metaWinRateChart", false);
+    return;
   }
+
+  datasets = [
+    {
+      type: 'scatter',
+      label: 'Decks',
+      data: scatterData,
+      backgroundColor: '#FFD700',
+      borderColor: '#DAA520',
+      borderWidth: 1,
+      pointRadius: 8,
+      pointHoverRadius: 10
+    }
+  ];
+
+  options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      x: {
+        title: { display: true, text: "Meta %", color: '#fff' },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        ticks: { color: '#fff', stepSize: metaMax > 0 ? Math.ceil(metaMax / 10) : 1 },
+        min: 0,
+        max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10
+      },
+      y: {
+        title: { display: true, text: "Win Rate %", color: '#fff' },
+        grid: { color: 'rgba(255, 255, 255, 0.1)' },
+        ticks: { color: '#fff', stepSize: 10 },
+        min: 0,
+        max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100
+      }
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: context => [
+            `${context.raw.label}`,
+            `Copies: ${context.raw.count}`,
+            `Win Rate: ${context.raw.y.toFixed(2)}%`
+          ]
+        }
+      },
+      datalabels: {
+        display: true,
+        color: '#e0e0e0',
+        font: { size: 10, family: "'Bitter', serif" },
+        formatter: (value) => value.label,
+        align: 'top',
+        offset: 4
+      }
+    }
+  };
+
+  labels = [];
 
   if (metaWinRateChart) metaWinRateChart.destroy();
   const metaWinRateMultiCtx = document.getElementById("metaWinRateChart");
@@ -167,6 +98,150 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
     console.error("Meta Win Rate Chart (Multi-Event) canvas not found!");
     setChartLoading("metaWinRateChart", false);
     return;
+  }
+
+  // Add searchable dropdown
+  const chartContainer = metaWinRateMultiCtx.parentElement;
+  let searchContainer = chartContainer.querySelector('.deck-search-container');
+  if (!searchContainer) {
+    searchContainer = document.createElement('div');
+    searchContainer.className = 'deck-search-container';
+    searchContainer.style.marginBottom = '15px';
+    searchContainer.style.position = 'relative';
+    
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search decks...';
+    searchInput.className = 'deck-search-input';
+    searchInput.style.width = '100%';
+    searchInput.style.padding = '8px';
+    searchInput.style.borderRadius = '4px';
+    searchInput.style.backgroundColor = '#2a2a2a';
+    searchInput.style.border = '1px solid #444';
+    searchInput.style.color = '#fff';
+    searchInput.style.fontFamily = "'Bitter', serif";
+    
+    const dropdown = document.createElement('div');
+    dropdown.className = 'deck-dropdown';
+    dropdown.style.display = 'none';
+    dropdown.style.position = 'absolute';
+    dropdown.style.top = '100%';
+    dropdown.style.left = '0';
+    dropdown.style.right = '0';
+    dropdown.style.maxHeight = '200px';
+    dropdown.style.overflowY = 'auto';
+    dropdown.style.backgroundColor = '#2a2a2a';
+    dropdown.style.border = '1px solid #444';
+    dropdown.style.borderRadius = '4px';
+    dropdown.style.zIndex = '1000';
+    
+    searchContainer.appendChild(searchInput);
+    searchContainer.appendChild(dropdown);
+    chartContainer.insertBefore(searchContainer, metaWinRateMultiCtx);
+
+    // Add event listeners for search functionality
+    searchInput.addEventListener('input', (e) => {
+      if (!metaWinRateChart) return; // Ensure chart exists
+      const searchTerm = e.target.value.toLowerCase();
+      
+      // If search input is cleared, reset the chart
+      if (searchTerm === '') {
+        const dataset = metaWinRateChart.data.datasets[0];
+        // Reset all points to default size and color
+        dataset.pointRadius = dataset.data.map(() => 8);
+        dataset.pointHoverRadius = dataset.data.map(() => 10);
+        dataset.backgroundColor = dataset.data.map(() => '#FFD700');
+        dataset.borderColor = dataset.data.map(() => '#DAA520');
+        dataset.pointStyle = dataset.data.map(() => 'circle'); // Reset point style
+        
+        // Reset zoom by setting axis limits directly
+        metaWinRateChart.options.scales.x.min = 0;
+        metaWinRateChart.options.scales.x.max = metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10;
+        metaWinRateChart.options.scales.y.min = 0;
+        metaWinRateChart.options.scales.y.max = winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100;
+        
+        metaWinRateChart.update();
+        dropdown.style.display = 'none';
+        return;
+      }
+      
+      // Get deck names from the chart's dataset
+      const deckNames = metaWinRateChart.data.datasets[0].data.map(point => point.label);
+      const filteredDecks = deckNames.filter(deck => 
+        deck && deck.toLowerCase().includes(searchTerm)
+      );
+      
+      dropdown.innerHTML = '';
+      dropdown.style.display = filteredDecks.length > 0 ? 'block' : 'none';
+      
+      filteredDecks.forEach(deck => {
+        const deckDiv = document.createElement('div');
+        deckDiv.textContent = deck;
+        deckDiv.style.padding = '8px';
+        deckDiv.style.cursor = 'pointer';
+        deckDiv.style.color = '#fff';
+        deckDiv.style.fontFamily = "'Bitter', serif";
+        deckDiv.style.fontWeight = 'bold';
+        deckDiv.style.borderBottom = '1px solid #444';
+        
+        deckDiv.addEventListener('mouseover', () => {
+          deckDiv.style.backgroundColor = '#444';
+        });
+        
+        deckDiv.addEventListener('mouseout', () => {
+          deckDiv.style.backgroundColor = 'transparent';
+        });
+        
+        deckDiv.addEventListener('click', () => {
+          if (!metaWinRateChart) return; // Ensure chart exists
+          searchInput.value = deck;
+          dropdown.style.display = 'none';
+          
+          // Find and highlight the selected deck's point
+          const dataset = metaWinRateChart.data.datasets[0];
+          const pointIndex = dataset.data.findIndex(d => d.label === deck);
+          if (pointIndex !== -1) {
+            // Reset all points to default
+            dataset.pointRadius = dataset.data.map(() => 8);
+            dataset.pointHoverRadius = dataset.data.map(() => 10);
+            dataset.backgroundColor = dataset.data.map(() => '#FFD700');
+            dataset.borderColor = dataset.data.map(() => '#DAA520');
+            dataset.pointStyle = dataset.data.map(() => 'circle'); // Reset point style
+            
+            // Highlight selected point
+            dataset.pointRadius[pointIndex] = 18;
+            dataset.pointHoverRadius[pointIndex] = 20;
+            dataset.backgroundColor[pointIndex] = '#FF0000';
+            dataset.borderColor[pointIndex] = '#CC0000';
+            dataset.pointStyle[pointIndex] = 'rectRot'; // Change shape to diamond
+            
+            // Center view on selected point
+            const xValue = dataset.data[pointIndex].x;
+            const yValue = dataset.data[pointIndex].y;
+            metaWinRateChart.options.scales.x.min = Math.max(0, xValue - 5);
+            metaWinRateChart.options.scales.x.max = xValue + 5;
+            metaWinRateChart.options.scales.y.min = Math.max(0, yValue - 20);
+            metaWinRateChart.options.scales.y.max = Math.min(100, yValue + 20);
+          }
+          
+          metaWinRateChart.update();
+        });
+        
+        dropdown.appendChild(deckDiv);
+      });
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!searchContainer.contains(e.target)) {
+        dropdown.style.display = 'none';
+      }
+    });
+  } else {
+    // Update search functionality if container already exists
+    const searchInput = searchContainer.querySelector('.deck-search-input');
+    const dropdown = searchContainer.querySelector('.deck-dropdown');
+    // We might need to re-attach listeners if the element is recreated, but for now assume it persists
   }
 
   try {
@@ -204,13 +279,14 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
               mode: 'xy'
             },
             pan: { enabled: false },
-            limits: viewType === 'bar' 
-              ? { y: { min: options.scales.y.min, max: options.scales.y.max }, y2: { min: 0, max: 100 } }
-              : { x: { min: 0, max: options.scales.x.max }, y: { min: 0, max: options.scales.y.max } }
+            limits: {
+              x: { min: 0, max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10 },
+              y: { min: 0, max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100 }
+            }
           }
         },
         animation: { duration: 1000, easing: 'easeOutQuart' },
-        elements: viewType === 'bar' ? { bar: { borderRadius: 4, borderSkipped: false } } : { point: { pointStyle: 'circle' } }
+        elements: { point: { pointStyle: 'circle' } }
       }
     });
 
@@ -219,75 +295,11 @@ export function updateMultiMetaWinRateChart(viewType = 'bar', sortBy = 'meta') {
     console.error("Error initializing Multi-Event Meta/Win Rate Chart:", error);
   }
 
-  const chartContainer = document.querySelector('#metaWinRateChartContainer') || document.querySelector('#multiEventCharts');
-  if (!chartContainer) {
-    console.error("Chart container not found!");
-    setChartLoading("metaWinRateChart", false);
-    return;
-  }
-
-  let toggleDiv = chartContainer.querySelector('.sort-toggle');
-  if (!toggleDiv) {
-    toggleDiv = document.createElement('div');
-    toggleDiv.className = 'sort-toggle';
-    toggleDiv.innerHTML = `
-      <button class="table-toggle-btn ${viewType === 'bar' ? 'active' : ''}" data-view="bar">Bar View</button>
-      <button class="table-toggle-btn ${viewType === 'scatter' ? 'active' : ''}" data-view="scatter">Scatter View</button>
-    `;
-    chartContainer.insertBefore(toggleDiv, metaWinRateMultiCtx);
-
-    toggleDiv.querySelectorAll('.table-toggle-btn').forEach(button => {
-      button.addEventListener('click', () => {
-        toggleDiv.querySelectorAll('.table-toggle-btn').forEach(btn => btn.classList.remove('active'));
-        button.classList.add('active');
-        const newViewType = button.dataset.view;
-        console.log("View toggled to:", newViewType);
-        updateMultiMetaWinRateChart(newViewType, newViewType === 'bar' ? sortBy : null);
-        updateSortOptionsVisibility(newViewType);
-      });
-    });
-  } else {
-    toggleDiv.querySelectorAll('.table-toggle-btn').forEach(btn => {
-      btn.classList.toggle('active', btn.dataset.view === viewType);
-    });
-  }
-
-  let sortOptionsDiv = chartContainer.querySelector('.bar-sort-options');
-  if (!sortOptionsDiv) {
-    console.log("Creating .bar-sort-options div");
-    sortOptionsDiv = document.createElement('div');
-    sortOptionsDiv.className = 'bar-sort-options';
-    sortOptionsDiv.innerHTML = `
-      <span class="sort-label">Sort by:</span>
-      <label><input type="radio" name="barSortMulti" value="meta" ${sortBy === 'meta' ? 'checked' : ''}> Meta</label>
-      <label><input type="radio" name="barSortMulti" value="winRate" ${sortBy === 'winRate' ? 'checked' : ''}> Win Rate</label>
-    `;
-    chartContainer.insertBefore(sortOptionsDiv, metaWinRateMultiCtx);
-
-    sortOptionsDiv.querySelectorAll('input[type="radio"]').forEach(radio => {
-      radio.addEventListener('change', () => {
-        const newSortBy = radio.value;
-        console.log("Radio changed, calling update with sortBy:", newSortBy);
-        updateMultiMetaWinRateChart('bar', newSortBy);
-      });
-    });
-  } else {
-    sortOptionsDiv.querySelector(`input[value="meta"]`).checked = sortBy === 'meta';
-    sortOptionsDiv.querySelector(`input[value="winRate"]`).checked = sortBy === 'winRate';
-  }
-
-  console.log("Updating sort options visibility for viewType:", viewType);
-  updateSortOptionsVisibility(viewType);
+  // Remove toggle buttons and sort options elements if they exist
+  const existingToggleDiv = chartContainer.querySelector('.sort-toggle');
+  if (existingToggleDiv) existingToggleDiv.remove();
+  const existingSortOptionsDiv = chartContainer.querySelector('.bar-sort-options');
+  if (existingSortOptionsDiv) existingSortOptionsDiv.remove();
 
   setChartLoading("metaWinRateChart", false);
-}
-
-function updateSortOptionsVisibility(viewType) {
-  const sortOptionsDiv = document.querySelector('#metaWinRateChartContainer .bar-sort-options');
-  if (sortOptionsDiv) {
-    console.log("Setting .bar-sort-options display to:", viewType === 'bar' ? 'block' : 'none');
-    sortOptionsDiv.style.display = viewType === 'bar' ? 'block' : 'none';
-  } else {
-    console.log("No .bar-sort-options div found in #metaWinRateChartContainer");
-  }
 }
