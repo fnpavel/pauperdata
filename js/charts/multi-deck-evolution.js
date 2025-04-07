@@ -170,7 +170,8 @@ export function updateDeckEvolutionChart() {
             titleFont: { size: 14, weight: 'bold' },
             bodyFont: { size: 12 },
             padding: 10
-          }
+          },
+          datalabels: {display: false}
         }
       }
     });
