@@ -1,6 +1,7 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getPlayerWinRateChartData } from '../modules/filters.js';
 import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
+import { cleanedData } from '../data.js';
 
 export let playerWinRateChart = null;
 
@@ -151,23 +152,35 @@ export function updatePlayerWinRateChart() {
                 const index = context[0].dataIndex;
                 const date = dates[index];
                 const event = eventByDate[date];
-                const eventData = filteredData.filter(row => row.Event === event);
-                const playerDeck = filteredData.find(row => row.Event === event)?.Deck || "N/A";
-                const deckPlayers = eventData.filter(row => row.Deck === playerDeck).length;
-                const totalPlayers = eventData.length;
-                const metaShare = totalPlayers > 0 ? ((deckPlayers / totalPlayers) * 100).toFixed(1) : 0;
-                const deckWins = eventData.filter(row => row.Deck === playerDeck).reduce((sum, row) => sum + row.Wins, 0);
-                const deckLosses = eventData.filter(row => row.Deck === playerDeck).reduce((sum, row) => sum + row.Losses, 0);
-                const deckWinRate = (deckWins + deckLosses) > 0 ? ((deckWins / (deckWins + deckLosses)) * 100).toFixed(1) : 0;
-                const winner = eventData.reduce((best, row) => row.Rank < best.Rank ? row : best, eventData[0]);
-                const winnerDeckPlayers = eventData.filter(row => row.Deck === winner.Deck).length;
+                
+                const fullEventData = cleanedData.filter(row => row.Event === event);
+                if (!fullEventData || fullEventData.length === 0) {
+                  detailsEl.innerHTML = "Event data not found.";
+                  return;
+                }
+
+                const analyzedPlayerRow = filteredData.find(row => row.Event === event);
+                const playerDeck = analyzedPlayerRow ? analyzedPlayerRow.Deck : "N/A";
+                
+                const totalPlayers = fullEventData.length;
+                const deckPlayersRows = fullEventData.filter(row => row.Deck === playerDeck);
+                const deckPlayersCount = deckPlayersRows.length;
+                const metaShare = totalPlayers > 0 ? ((deckPlayersCount / totalPlayers) * 100).toFixed(1) : 0;
+                
+                // Calculate win rate for the player's deck in this event
+                const deckWins = deckPlayersRows.reduce((sum, row) => sum + row.Wins, 0);
+                const deckLosses = deckPlayersRows.reduce((sum, row) => sum + row.Losses, 0);
+                const playerDeckWinRate = (deckWins + deckLosses) > 0 ? ((deckWins / (deckWins + deckLosses)) * 100).toFixed(1) : 0;
+
+                const winner = fullEventData.reduce((best, row) => row.Rank < best.Rank ? row : best, fullEventData[0]);
+                const winnerDeckPlayers = fullEventData.filter(row => row.Deck === winner.Deck).length;
                 const winnerMetaShare = totalPlayers > 0 ? ((winnerDeckPlayers / totalPlayers) * 100).toFixed(1) : 0;
                 const winnerWinRate = (winner.Wins + winner.Losses) > 0 ? ((winner.Wins / (winner.Wins + winner.Losses)) * 100).toFixed(1) : 0;
 
                 detailsEl.innerHTML = `
                   ${event} - ${date}<br>
-                  ${deckPlayers} players out of ${totalPlayers} played with ${playerDeck} (${metaShare}% of the Meta and ${deckWinRate}% WR)<br>
-                  Event Won by ${winner.Player} with ${winner.Deck} (${winnerMetaShare}% of the Meta and ${winnerWinRate}% WR)
+                  ${deckPlayersCount} players out of ${totalPlayers} played ${playerDeck} (${metaShare}% Meta Share, ${playerDeckWinRate}% WR)<br>
+                  Event Won by ${winner.Player} with ${winner.Deck} (${winnerMetaShare}% Meta Share, ${winnerWinRate}% WR)
                 `;
                 return "";
               }
