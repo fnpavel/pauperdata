@@ -35,6 +35,7 @@
         <h1>Pauper MTG Analytics</h1>
         <h2>Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a></h2>
         <h2 id="lastUpdatedDate">Last updated: --</h2>
+        <h2>Check the ABOUT section for known issues with this dashboard</h2>
       </div>
       <div class="mode-buttons">
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
@@ -422,10 +423,11 @@
         <p>Contact (for bugs or to send data): <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
         <h3>Known Issues</h3>
         <ul>
-          <li>The whole page is not <b>yet</b> optimized for mobile</li>
-          <li>Dropdown menus are not defaulting to an empty list</li>
-          <li>Sometimes the Buttons fail to record their state and need to be clicked again</li>
-          <b><li>Some decks are classified as UNKNOWN. This is because it wasn't possible to correctly label them. In the case of MTGO, the replay was deactivated and Kirblinxy can't collect the data past Top32</li></b>
+          <li>Dates displayed in the table for online events are incorrect as they show the previous day's date. This is a visual bug; a fix is in progress.</li>
+          <li>The dashboard is not <b>yet</b> optimized for mobile devices.</li>
+          <li>Dropdown menus do not default to an empty selection.</li>
+          <li>Filter buttons occasionally fail to register their state and may need to be clicked again.</li>
+          <b><li>Some decks are classified as UNKNOWN because they could not be correctly labeled. In MTGO events this is due to the deactivation of the replays which prevent data collection beyond the Top 32.</li></b>
         </ul>
 
         <h3>Future Updates</h3>
