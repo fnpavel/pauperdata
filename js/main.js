@@ -1,4 +1,5 @@
 // js/main.js
+import { lastUpdatedDate } from './data.js'; // the date is stored in data.js because weekly I'm pushing only changes there.
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
 import { 
@@ -18,9 +19,19 @@ window.updatePlayerAnalytics = updatePlayerAnalytics;
 window.toggleDataset = (chart, index) => import('./utils/u-chart.js').then(module => module.toggleDataset(chart, index));
 window.updatePlayerDeckPerformanceChart = () => import('./charts/player-deck-performance.js').then(module => module.updatePlayerDeckPerformanceChart());
 
+// Function to update the Last Updated date
+function setLastUpdatedDate() {
+  const dateElement = document.getElementById('lastUpdatedDate');
+  if (dateElement) {
+    dateElement.textContent = `Last updated: ${lastUpdatedDate}`;
+  }
+}
+
 // Initialize everything
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Initializing MTG Analytics Dashboard...');
+  
+  setLastUpdatedDate(); // Call the function to set the date
   
   // Initialize analysis modules
   initEventAnalysis();
