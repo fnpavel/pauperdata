@@ -1,7 +1,10 @@
 // js/utils/format.js
 export function formatDate(dateStr) { // From utils.js
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
+  // Split the date string to avoid timezone interpretation issues
+  const [year, month, day] = dateStr.split('-').map(Number);
+  // Create a date object using UTC values but interpret as local
+  const date = new Date(Date.UTC(year, month - 1, day)); 
+  return date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: '2-digit', year: 'numeric' });
 }
 
 export function formatPercentage(value) { // Existing from previous
