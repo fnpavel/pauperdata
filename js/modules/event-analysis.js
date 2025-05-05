@@ -7,7 +7,7 @@ import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { toggleStatCardVisibility, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
-import { formatDate, formatPercentage, formatDateRange } from '../utils/format.js';
+import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
 
 export function initEventAnalysis() {
   console.log('Event Analysis initialized');
@@ -68,7 +68,9 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
         <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
       </tr>
     `);
-    updateElementText("singleEventTableTitle", eventData.length > 0 ? `Raw Data for ${eventData[0].Event} on ${formatDate(eventData[0].Date)}` : "No Data Available");
+    let rawEventName = eventData.length > 0 ? eventData[0].Event : "";
+    const eventName = formatEventName(rawEventName);
+    updateElementText("singleEventTableTitle", eventName ? `Raw Data for ${eventName} on ${formatDate(eventData[0].Date)}` : "No Data Available");
 
     const rows = calculateSingleEventRawTable(eventData);
     updateElementHTML("singleEventTableBody", rows.length === 0 ? "<tr><td colspan='6'>No data available for the selected event.</td></tr>" : rows.map(row => `
@@ -104,7 +106,9 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
         <th data-sort="belowTop32">Below Top 32 <span class="sort-arrow"></span></th>
       </tr>
     `);
-    updateElementText("singleEventTableTitle", eventData.length > 0 ? `Aggregate Decks for ${eventData[0].Event} on ${formatDate(eventData[0].Date)}` : "No Data Available");
+    let rawEventName = eventData.length > 0 ? eventData[0].Event : "";
+    const eventName = formatEventName(rawEventName);
+    updateElementText("singleEventTableTitle", eventName ? `Aggregate Decks for ${eventName} on ${formatDate(eventData[0].Date)}` : "No Data Available");
 
     const rows = calculateSingleEventAggregateTable(eventData);
     let displayMode = 'percent';

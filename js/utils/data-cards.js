@@ -1,4 +1,5 @@
 // js/utils/data-cards.js
+import { formatEventName } from './format.js';
 
 export function calculateTopDecks(data) {
   return {
@@ -55,8 +56,11 @@ export function calculateSingleEventStats(filteredData) {
     }, {})
   };
 
+  let rawEventName = filteredData.length > 0 ? filteredData[0].Event : "No Event Selected";
+  const eventName = formatEventName(rawEventName);
+
   return {
-    eventName: filteredData.length > 0 ? filteredData[0].Event : "No Event Selected",
+    eventName: eventName,
     eventDate: filteredData.length > 0 ? filteredData[0].Date : "No Data",
     totalPlayers: totalPlayers > 0 ? `${totalPlayers} Players` : "--",
     topPlayer: topPlayer?.Player || "No Data",
