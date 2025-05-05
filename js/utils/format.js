@@ -22,3 +22,14 @@ export function formatDateRange(startDateStr, endDateStr) { // Existing from pre
     ? `${months} month${months > 1 ? 's' : ''}, in ${startYear}`
     : `${months} month${months > 1 ? 's' : ''}, from ${startYear} to ${endYear}`;
 }
+
+// The eventName for ONLINE Events is stored as "MTGO <type of Event> (YYYY-MM-DD)" so this function will remove the "(YYYY-MM-DD)" as to not clash with the date being displayed elsewhere.
+// Example: Raw Data for MTGO Challenge (2025-04-05) on May 04, 2025 isntead becomes Raw Data for MTGO Challenge on May 04, 2025 
+export function formatEventName(eventName) {
+  if (!eventName) return "";
+  const dateSuffixPattern = /\s*\(\d{4}-\d{2}-\d{2}\)$/;
+  if (dateSuffixPattern.test(eventName)) {
+    return eventName.replace(dateSuffixPattern, "");
+  }
+  return eventName;
+}
