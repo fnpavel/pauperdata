@@ -5,6 +5,13 @@ import { cleanedData } from '../data.js';
 import { calculatePlayerStats } from '../utils/data-cards.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
 
+function getSelectedPlayerEventTypes() {
+  const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).map(button =>
+    button.dataset.type.toLowerCase()
+  );
+}
+
 export function initPlayerAnalysis() {
   console.log('Player Analysis initialized');
 }
@@ -22,7 +29,7 @@ export function updatePlayerAnalytics() {
   const endDate = document.getElementById("playerEndDateSelect").value;
   const playerFilterMenu = document.getElementById("playerFilterMenu");
   const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).map(button => button.dataset.type);
+  const selectedEventTypes = getSelectedPlayerEventTypes();
 
   console.log("Player Analytics Filters:", { startDate, endDate, selectedPlayer, selectedEventTypes });
 
@@ -33,7 +40,7 @@ export function updatePlayerAnalytics() {
   }
 
   const baseFilteredData = selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && row.Player === selectedPlayer && selectedEventTypes.includes(row.EventType))
+    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && row.Player === selectedPlayer && selectedEventTypes.includes(row.EventType.toLowerCase()))
     : [];
 
   console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);

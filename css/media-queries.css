@@ -1,5 +1,9 @@
 @media (max-width: 1024px) {
-  .dashboard {
+  .event-dashboard {
+    grid-template-columns: 280px 1fr;
+  }
+
+  .player-dashboard {
     grid-template-columns: 280px 1fr;
   }
 
@@ -67,6 +71,15 @@
 
   .filters {
     padding: 15px;
+  }
+
+  .event-calendar-day {
+    min-height: 72px;
+  }
+
+  .event-calendar-event-button {
+    width: 12px;
+    height: 12px;
   }
 }
 
@@ -166,6 +179,25 @@
   .bubble-button {
     padding: 5px 10px;
     font-size: 0.85rem;
+  }
+
+  .event-calendar-toolbar {
+    gap: 6px;
+  }
+
+  .event-calendar-grid {
+    gap: 4px;
+  }
+
+  .event-calendar-day {
+    min-height: 62px;
+    padding: 6px;
+  }
+
+  .event-calendar-day-number,
+  .event-calendar-weekday,
+  .event-calendar-event-button {
+    font-size: 0.65rem;
   }
 
   canvas {

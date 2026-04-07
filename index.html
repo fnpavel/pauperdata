@@ -123,7 +123,7 @@
               <button class="bubble-button analysis-mode" data-mode="multi">Multiple Events</button>
             </div>
           </div>
-          <div class="filter-section">
+          <div class="filter-section" id="eventTypeFilterSection">
             <h4>Event Type</h4>
             <div class="bubble-menu">
               <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
@@ -132,11 +132,10 @@
           </div>
           <div class="filter-section" id="eventFilterSection">
             <h4>Event</h4>
-            <div class="bubble-menu">
-              <select id="eventFilterMenu" class="event-filter-select">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
+            <div id="eventCalendarFilter" class="event-calendar-filter"></div>
+            <select id="eventFilterMenu" class="event-filter-select event-filter-select-hidden" hidden aria-hidden="true">
+              <!-- Populated dynamically -->
+            </select>
           </div>
         </div>
 

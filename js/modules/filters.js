@@ -1,4 +1,3 @@
-// js/modules/filters.js
 import { cleanedData } from '../data.js';
 import { updateEventAnalytics, updateMultiEventAnalytics } from './event-analysis.js';
 import { updatePlayerAnalytics } from './player-analysis.js';
@@ -10,258 +9,570 @@ import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { hideAboutSection } from './about.js';
+import {
+  renderEventFilterCalendar,
+  resetEventFilterCalendarState,
+  primeEventFilterCalendarSelection
+} from './event-filter-calendar.js';
 
-// Global variable to hold filtered data
 let filteredData = [];
+let lastSingleEventType = '';
+
+const EVENT_GROUPS = {
+  'MTGO Challenge': {
+    key: 'challenge',
+    label: 'Challenge',
+    order: 0,
+    shortLabel: 'Challenge'
+  },
+  'MTGO Challenge 64': {
+    key: 'challenge',
+    label: 'Challenge',
+    order: 0,
+    shortLabel: 'Challenge 64'
+  },
+  'MTGO Qualifier': {
+    key: 'qualifier',
+    label: 'Qualifier',
+    order: 1,
+    shortLabel: 'Qualifier'
+  },
+  'MTGO Showcase': {
+    key: 'showcase',
+    label: 'Showcase',
+    order: 2,
+    shortLabel: 'Showcase'
+  },
+  'MTGO Super': {
+    key: 'super',
+    label: 'Super',
+    order: 3,
+    shortLabel: 'Super'
+  }
+};
+
+function getTopMode() {
+  return document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';
+}
+
+function getAnalysisMode() {
+  return document.querySelector('.analysis-mode.active')?.dataset.mode || 'single';
+}
+
+function getEventAnalysisSection() {
+  return document.getElementById('eventAnalysisSection');
+}
+
+function getPlayerAnalysisSection() {
+  return document.getElementById('playerAnalysisSection');
+}
+
+function getSectionEventTypeButtons(sectionElement) {
+  return Array.from(sectionElement?.querySelectorAll('.event-type-filter') || []);
+}
+
+function getActiveSectionEventTypes(sectionElement) {
+  return getSectionEventTypeButtons(sectionElement)
+    .filter(button => button.classList.contains('active'))
+    .map(button => button.dataset.type.toLowerCase());
+}
+
+function setDefaultSectionEventType(sectionElement, defaultType = 'online') {
+  const buttons = getSectionEventTypeButtons(sectionElement);
+  buttons.forEach(button => {
+    button.classList.toggle('active', button.dataset.type === defaultType);
+  });
+}
+
+function clearSectionEventTypes(sectionElement) {
+  const buttons = getSectionEventTypeButtons(sectionElement);
+  buttons.forEach(button => {
+    button.classList.remove('active');
+  });
+}
+
+function getSingleEventSelectedType() {
+  return getActiveSectionEventTypes(getEventAnalysisSection())[0] || '';
+}
+
+function getEventAnalysisSelectedTypes() {
+  return getActiveSectionEventTypes(getEventAnalysisSection());
+}
+
+function getPlayerAnalysisSelectedTypes() {
+  return getActiveSectionEventTypes(getPlayerAnalysisSection());
+}
+
+function getEventDate(eventName) {
+  const match = eventName.match(/\((\d{4}-\d{2}-\d{2})\)$/);
+  if (match) {
+    return match[1];
+  }
+
+  return cleanedData.find(row => row.Event === eventName)?.Date || '';
+}
+
+function stripEventDate(eventName) {
+  return eventName.replace(/\s*\(\d{4}-\d{2}-\d{2}\)$/, '');
+}
+
+function slugify(value) {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function getEventGroupInfo(eventName) {
+  const baseName = stripEventDate(eventName);
+  const predefinedGroup = EVENT_GROUPS[baseName];
+
+  if (predefinedGroup) {
+    return predefinedGroup;
+  }
+
+  const label = baseName.replace(/^MTGO\s+/, '');
+
+  return {
+    key: slugify(baseName),
+    label,
+    order: 100,
+    shortLabel: label
+  };
+}
+
+function buildSingleEventCalendarEntries(selectedEventType) {
+  const entries = new Map();
+
+  cleanedData.forEach(row => {
+    if (row.EventType.toLowerCase() !== selectedEventType || entries.has(row.Event)) {
+      return;
+    }
+
+    const groupInfo = getEventGroupInfo(row.Event);
+
+    entries.set(row.Event, {
+      name: row.Event,
+      date: row.Date || getEventDate(row.Event),
+      groupKey: groupInfo.key,
+      groupLabel: groupInfo.label,
+      groupOrder: groupInfo.order,
+      shortLabel: groupInfo.shortLabel
+    });
+  });
+
+  return Array.from(entries.values()).sort((a, b) => {
+    return b.date.localeCompare(a.date) || a.name.localeCompare(b.name);
+  });
+}
+
+function getLatestSingleEventEntry() {
+  const entries = new Map();
+
+  cleanedData.forEach(row => {
+    if (entries.has(row.Event)) {
+      return;
+    }
+
+    entries.set(row.Event, {
+      name: row.Event,
+      date: row.Date || getEventDate(row.Event),
+      eventType: row.EventType.toLowerCase()
+    });
+  });
+
+  return Array.from(entries.values()).sort((a, b) => {
+    return b.date.localeCompare(a.date) || a.name.localeCompare(b.name);
+  })[0] || null;
+}
+
+function populateEventFilterMenu(entries) {
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
+  if (!eventFilterMenu) {
+    return null;
+  }
+
+  eventFilterMenu.innerHTML = '';
+
+  if (entries.length === 0) {
+    const option = document.createElement('option');
+    option.value = '';
+    option.textContent = 'No events available';
+    eventFilterMenu.appendChild(option);
+    eventFilterMenu.value = '';
+    return eventFilterMenu;
+  }
+
+  entries.forEach(entry => {
+    const option = document.createElement('option');
+    option.value = entry.name;
+    option.textContent = entry.name;
+    eventFilterMenu.appendChild(option);
+  });
+
+  return eventFilterMenu;
+}
+
+function setSelectedSingleEvent(eventName, dispatchChange = false) {
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
+  if (!eventFilterMenu) {
+    return;
+  }
+
+  const previousValue = eventFilterMenu.value;
+  const hasOption = Array.from(eventFilterMenu.options).some(option => option.value === eventName);
+  eventFilterMenu.value = hasOption ? eventName : '';
+
+  if (dispatchChange && eventFilterMenu.value !== previousValue) {
+    eventFilterMenu.dispatchEvent(new Event('change'));
+  }
+}
+
+function setSingleEventType(eventType) {
+  const buttons = getSectionEventTypeButtons(getEventAnalysisSection());
+  buttons.forEach(button => {
+    button.classList.toggle('active', button.dataset.type === eventType);
+  });
+}
+
+function resetSelectValue(selectId) {
+  const select = document.getElementById(selectId);
+  if (select) {
+    select.value = '';
+  }
+}
+
+function resetMultiDateRange() {
+  resetSelectValue('startDateSelect');
+  resetSelectValue('endDateSelect');
+}
+
+function resetPlayerDateRange() {
+  resetSelectValue('playerStartDateSelect');
+  resetSelectValue('playerEndDateSelect');
+}
+
+function updateSingleEventFilterVisibility() {
+  const eventTypeSection = document.getElementById('eventTypeFilterSection');
+  const eventFilterSection = document.getElementById('eventFilterSection');
+  const isSingleMode = getAnalysisMode() === 'single';
+
+  if (eventTypeSection) {
+    eventTypeSection.style.display = 'block';
+  }
+
+  if (eventFilterSection) {
+    eventFilterSection.style.display = isSingleMode ? 'block' : 'none';
+  }
+}
+
+function hasSelectedSingleEvent() {
+  return Boolean(getSingleEventSelectedType() && document.getElementById('eventFilterMenu')?.value);
+}
+
+function applyLatestSingleEventSelection() {
+  const latestEntry = getLatestSingleEventEntry();
+  if (!latestEntry) {
+    clearSectionEventTypes(getEventAnalysisSection());
+    resetEventFilterCalendarState();
+    setSelectedSingleEvent('', false);
+    lastSingleEventType = '';
+    updateSingleEventFilterVisibility();
+    updateEventFilter();
+    return;
+  }
+
+  setSingleEventType(latestEntry.eventType);
+  resetEventFilterCalendarState();
+  setSelectedSingleEvent('', false);
+  lastSingleEventType = '';
+  updateSingleEventFilterVisibility();
+  updateEventFilter(latestEntry.name, true);
+}
 
 export function setupFilters() {
-  console.log("Setting up filters...");
+  console.log('Setting up filters...');
 
-  // Determine the initial mode on page load
-  const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
-  const eventTypeButtons = document.querySelectorAll(".event-type-filter");
+  setDefaultSectionEventType(getPlayerAnalysisSection());
+  console.log(`Initial mode is ${getTopMode()}: Event Analysis loads the latest registered event by default`);
 
-  // Set "online" as the default active Event Type for both modes on page load
-  eventTypeButtons.forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.type === "online");
-  });
-  console.log(`Initial mode is ${activeTopMode}: Set 'online' as default active Event Type`);
+  applyLatestSingleEventSelection();
 
-  // Event Filter Menu
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
-  const events = [...new Set(cleanedData.map(row => row.Event))].sort((a, b) => {
-    const getEventDate = (event) => {
-      const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
-      const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
-      return new Date(dateStr);
-    };
+  const playerFilterMenu = document.getElementById('playerFilterMenu');
+  if (playerFilterMenu) {
+    playerFilterMenu.innerHTML = '<option value="">Select Event Type First</option>';
+    playerFilterMenu.value = '';
+  }
 
-    const dateA = getEventDate(a);
-    const dateB = getEventDate(b);
-    return dateA - dateB; // Latest dates last
-  });
+  const startDateSelect = document.getElementById('startDateSelect');
+  const endDateSelect = document.getElementById('endDateSelect');
+  if (startDateSelect) {
+    startDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
+  }
+  if (endDateSelect) {
+    endDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
+  }
 
-  eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
-  eventFilterMenu.value = events[0] || "";
-  updateEventFilter();
+  const playerStartDateSelect = document.getElementById('playerStartDateSelect');
+  const playerEndDateSelect = document.getElementById('playerEndDateSelect');
+  if (playerStartDateSelect) {
+    playerStartDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+  }
+  if (playerEndDateSelect) {
+    playerEndDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+  }
 
-  // Player Filter Menu
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  playerFilterMenu.innerHTML = `<option value="">Select Event Type First</option>`;
-  playerFilterMenu.value = "";
+  const activeAnalysisMode = getAnalysisMode();
+  const singleEventStats = document.getElementById('singleEventStats');
+  const multiEventStats = document.getElementById('multiEventStats');
+  const singleEventCharts = document.getElementById('singleEventCharts');
+  const multiEventCharts = document.getElementById('multiEventCharts');
+  const eventFilterSection = document.getElementById('eventFilterSection');
 
-  // Date Selects for Multi-Event
-  const startDateSelect = document.getElementById("startDateSelect");
-  const endDateSelect = document.getElementById("endDateSelect");
-  startDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option>`;
-  endDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option}`;
+  if (singleEventStats) {
+    singleEventStats.style.display = activeAnalysisMode === 'single' ? 'grid' : 'none';
+  }
+  if (multiEventStats) {
+    multiEventStats.style.display = activeAnalysisMode === 'multi' ? 'grid' : 'none';
+  }
+  if (singleEventCharts) {
+    singleEventCharts.style.display = activeAnalysisMode === 'single' ? 'block' : 'none';
+  }
+  if (multiEventCharts) {
+    multiEventCharts.style.display = activeAnalysisMode === 'multi' ? 'block' : 'none';
+  }
+  if (eventFilterSection) {
+    eventFilterSection.style.display = 'none';
+  }
 
-  // Date Selects for Player Analysis
-  const playerStartDateSelect = document.getElementById("playerStartDateSelect");
-  const playerEndDateSelect = document.getElementById("playerEndDateSelect");
-  playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-  playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option}`;
-
-  // Initial UI State
-  const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
-  const singleEventStats = document.getElementById("singleEventStats");
-  const multiEventStats = document.getElementById("multiEventStats");
-  const singleEventCharts = document.getElementById("singleEventCharts");
-  const multiEventCharts = document.getElementById("multiEventCharts");
-  const eventFilterSection = document.getElementById("eventFilterSection");
-
-  singleEventStats.style.display = activeAnalysisMode === "single" ? "grid" : "none";
-  multiEventStats.style.display = activeAnalysisMode === "multi" ? "grid" : "none";
-  singleEventCharts.style.display = activeAnalysisMode === "single" ? "block" : "none";
-  multiEventCharts.style.display = activeAnalysisMode === "multi" ? "block" : "none";
-  eventFilterSection.style.display = activeAnalysisMode === "single" ? "block" : "none";
-
-  // Initial update
+  updateSingleEventFilterVisibility();
   updateAllCharts();
 }
 
-// Updates all charts for filter changes
 export function updateAllCharts() {
-  const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
-  const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
+  const activeTopMode = getTopMode();
+  const activeAnalysisMode = getAnalysisMode();
 
-  if (activeTopMode === "event") {
-    if (activeAnalysisMode === "single") {
-      const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
-      const eventFilterMenu = document.getElementById("eventFilterMenu");
-      const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
-      filteredData = cleanedData.filter(row => 
-        row.EventType === selectedEventType && selectedEvents.includes(row.Event)
-      );
+  if (activeTopMode === 'event') {
+    if (activeAnalysisMode === 'single') {
+      const selectedEventType = getSingleEventSelectedType();
+      const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
+
+      filteredData =
+        selectedEventType && selectedEvent
+          ? cleanedData.filter(row => {
+              return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+            })
+          : [];
+
       updateEventMetaWinRateChart();
       updateEventFunnelChart();
       updateEventAnalytics();
-    } else if (activeAnalysisMode === "multi") {
-      const startDate = document.getElementById("startDateSelect").value;
-      const endDate = document.getElementById("endDateSelect").value;
-      const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-        .map(button => button.dataset.type);
-      filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-        ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
-        : [];
+    } else {
+      const startDate = document.getElementById('startDateSelect')?.value || '';
+      const endDate = document.getElementById('endDateSelect')?.value || '';
+      const selectedEventTypes = getEventAnalysisSelectedTypes();
+
+      filteredData =
+        startDate && endDate && selectedEventTypes.length > 0
+          ? cleanedData.filter(row => {
+              return (
+                row.Date >= startDate &&
+                row.Date <= endDate &&
+                selectedEventTypes.includes(row.EventType.toLowerCase())
+              );
+            })
+          : [];
+
       updateMultiMetaWinRateChart();
       updateMultiPlayerWinRateChart();
       updateDeckEvolutionChart();
       updateMultiEventAnalytics();
     }
-  } else if (activeTopMode === "player") {
-    const startDate = document.getElementById("playerStartDateSelect").value;
-    const endDate = document.getElementById("playerEndDateSelect").value;
-    const playerFilterMenu = document.getElementById("playerFilterMenu");
-    const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-    const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-      .map(button => button.dataset.type);
-    filteredData = selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-      ? cleanedData.filter(row => 
-          row.Date >= startDate && 
-          row.Date <= endDate && 
-          row.Player === selectedPlayer && 
-          selectedEventTypes.includes(row.EventType)
-        )
-      : [];
+  } else if (activeTopMode === 'player') {
+    const startDate = document.getElementById('playerStartDateSelect')?.value || '';
+    const endDate = document.getElementById('playerEndDateSelect')?.value || '';
+    const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
+    const selectedEventTypes = getPlayerAnalysisSelectedTypes();
+
+    filteredData =
+      selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
+        ? cleanedData.filter(row => {
+            return (
+              row.Date >= startDate &&
+              row.Date <= endDate &&
+              row.Player === selectedPlayer &&
+              selectedEventTypes.includes(row.EventType.toLowerCase())
+            );
+          })
+        : [];
+
     updatePlayerAnalytics();
     updatePlayerDeckPerformanceChart();
     updatePlayerWinRateChart();
   }
 }
 
-// function to get filtered data for funnel chart
 export function getFunnelChartData() {
-  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
-  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
+  const selectedEventType = getSingleEventSelectedType();
+  const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
+  const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
+  const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
 
-  const filtered = cleanedData.filter(row => 
-    row.EventType === selectedEventType &&
-    selectedEvents.includes(row.Event)
-  );
+  const filtered = cleanedData.filter(row => {
+    return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+  });
+
   return filtered.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
 }
 
-// function to get filtered data for meta win rate chart
 export function getMetaWinRateChartData() {
-  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
-  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
+  const selectedEventType = getSingleEventSelectedType();
+  const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
 
-  return cleanedData.filter(row => 
-    row.EventType === selectedEventType &&
-    selectedEvents.includes(row.Event)
-  );
+  return cleanedData.filter(row => {
+    return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+  });
 }
 
-// multi-event filter functions
 export function getMultiEventChartData() {
-  const startDate = document.getElementById("startDateSelect").value;
-  const endDate = document.getElementById("endDateSelect").value;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
-  return (startDate && endDate && selectedEventTypes.length > 0)
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const selectedEventTypes = getEventAnalysisSelectedTypes();
+
+  return startDate && endDate && selectedEventTypes.length > 0
+    ? cleanedData.filter(row => {
+        return (
+          row.Date >= startDate &&
+          row.Date <= endDate &&
+          selectedEventTypes.includes(row.EventType.toLowerCase())
+        );
+      })
     : [];
 }
-// deck evolution filter functions
+
 export function getDeckEvolutionChartData() {
-  const positionStart = parseInt(document.getElementById("positionStartSelect")?.value) || 1;
-  const positionEnd = parseInt(document.getElementById("positionEndSelect")?.value) || Infinity;
-  const filteredData = getMultiEventChartData();
-  return filteredData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
+  const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
+  const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
+  const multiEventData = getMultiEventChartData();
+
+  return multiEventData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
 }
 
-// For Player Analysis -> Deck Performance
 export function getPlayerDeckPerformanceChartData() {
-  const startDate = document.getElementById("playerStartDateSelect").value;
-  const endDate = document.getElementById("playerEndDateSelect").value;
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type);
+  const startDate = document.getElementById('playerStartDateSelect')?.value || '';
+  const endDate = document.getElementById('playerEndDateSelect')?.value || '';
+  const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
+  const selectedEventTypes = getPlayerAnalysisSelectedTypes();
 
   return selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => 
-        row.Date >= startDate && 
-        row.Date <= endDate && 
-        row.Player === selectedPlayer && 
-        selectedEventTypes.includes(row.EventType) &&
-        row.Deck !== "No Show"
-      )
+    ? cleanedData.filter(row => {
+        return (
+          row.Date >= startDate &&
+          row.Date <= endDate &&
+          row.Player === selectedPlayer &&
+          selectedEventTypes.includes(row.EventType.toLowerCase()) &&
+          row.Deck !== 'No Show'
+        );
+      })
     : [];
 }
 
-// For Player Analysis -> Win Rate across Time
 export function getPlayerWinRateChartData() {
-  const baseData = getPlayerDeckPerformanceChartData(); // Reuses base filtering
-  const deckFilter = document.getElementById("playerDeckFilter");
-  const selectedDeck = deckFilter ? deckFilter.value : "";
+  const baseData = getPlayerDeckPerformanceChartData();
+  const selectedDeck = document.getElementById('playerDeckFilter')?.value || '';
   return selectedDeck ? baseData.filter(row => row.Deck === selectedDeck) : baseData;
 }
 
 export function setupTopModeListeners() {
-  const topModeButtons = document.querySelectorAll(".top-mode-button");
-  const eventAnalysisSection = document.getElementById("eventAnalysisSection");
-  const playerAnalysisSection = document.getElementById("playerAnalysisSection");
-  const singleEventStats = document.getElementById("singleEventStats");
-  const multiEventStats = document.getElementById("multiEventStats");
-  const playerStats = document.getElementById("playerStats");
-  const singleEventCharts = document.getElementById("singleEventCharts");
-  const multiEventCharts = document.getElementById("multiEventCharts");
-  const playerCharts = document.getElementById("playerCharts");
+  const topModeButtons = document.querySelectorAll('.top-mode-button');
+  const eventAnalysisSection = document.getElementById('eventAnalysisSection');
+  const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  const singleEventStats = document.getElementById('singleEventStats');
+  const multiEventStats = document.getElementById('multiEventStats');
+  const playerStats = document.getElementById('playerStats');
+  const singleEventCharts = document.getElementById('singleEventCharts');
+  const multiEventCharts = document.getElementById('multiEventCharts');
+  const playerCharts = document.getElementById('playerCharts');
 
   topModeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      topModeButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
+    button.addEventListener('click', () => {
+      topModeButtons.forEach(modeButton => modeButton.classList.remove('active'));
+      button.classList.add('active');
 
       const mode = button.dataset.topMode;
-      console.log("Top mode changed to:", mode);
+      console.log('Top mode changed to:', mode);
 
-      // Hide the About section if visible
       hideAboutSection(mode);
 
-      if (mode === "event") {
-        eventAnalysisSection.style.display = "block";
-        playerAnalysisSection.style.display = "none";
+      if (mode === 'event') {
+        if (eventAnalysisSection) {
+          eventAnalysisSection.style.display = 'block';
+        }
+        if (playerAnalysisSection) {
+          playerAnalysisSection.style.display = 'none';
+        }
 
-        const eventTypeButtons = document.querySelectorAll(".event-type-filter");
-        eventTypeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.type === "online"));
-        console.log("Event Analytics: Event type filters set to 'online'. Active types:", 
-          Array.from(eventTypeButtons).filter(btn => btn.classList.contains("active")).map(btn => btn.dataset.type));
+        setDefaultSectionEventType(getEventAnalysisSection());
+        console.log(
+          "Event Analytics: Event type filters set to 'online'. Active types:",
+          getEventAnalysisSelectedTypes()
+        );
 
-        const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
-        singleEventStats.style.display = activeAnalysisMode === "single" ? "grid" : "none";
-        multiEventStats.style.display = activeAnalysisMode === "multi" ? "grid" : "none";
-        singleEventCharts.style.display = activeAnalysisMode === "single" ? "block" : "none";
-        multiEventCharts.style.display = activeAnalysisMode === "multi" ? "block" : "none";
+        const activeAnalysisMode = getAnalysisMode();
+        if (activeAnalysisMode === 'single') {
+          applyLatestSingleEventSelection();
+        }
 
-        updateEventFilter();
+        if (singleEventStats) {
+          singleEventStats.style.display = activeAnalysisMode === 'single' ? 'grid' : 'none';
+        }
+        if (multiEventStats) {
+          multiEventStats.style.display = activeAnalysisMode === 'multi' ? 'grid' : 'none';
+        }
+        if (singleEventCharts) {
+          singleEventCharts.style.display = activeAnalysisMode === 'single' ? 'block' : 'none';
+        }
+        if (multiEventCharts) {
+          multiEventCharts.style.display = activeAnalysisMode === 'multi' ? 'block' : 'none';
+        }
+
+        updateSingleEventFilterVisibility();
         updateDateOptions();
-        updatePlayerDateOptions();
         updateAllCharts();
-      } else if (mode === "player") {
-        eventAnalysisSection.style.display = "none";
-        playerAnalysisSection.style.display = "block";
-        playerStats.style.display = "grid";
-        playerCharts.style.display = "block";
-        
-        const eventTypeButtons = document.querySelectorAll(".event-type-filter");
-        // Change: Set "online" as the default active Event Type in Player Analysis
-        eventTypeButtons.forEach(btn => btn.classList.toggle("active", btn.dataset.type === "online"));
-        console.log("Player Analytics: Event type filters set to 'online'. Active types:", 
-          Array.from(eventTypeButtons).filter(btn => btn.classList.contains("active")).map(btn => btn.dataset.type));
-        
-        const playerFilterMenu = document.getElementById("playerFilterMenu");
-        const playerStartDateSelect = document.getElementById("playerStartDateSelect");
-        const playerEndDateSelect = document.getElementById("playerEndDateSelect");
-        playerFilterMenu.value = "";
-        playerStartDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-        playerEndDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option}`;
+      } else if (mode === 'player') {
+        if (eventAnalysisSection) {
+          eventAnalysisSection.style.display = 'none';
+        }
+        if (playerAnalysisSection) {
+          playerAnalysisSection.style.display = 'block';
+        }
+        if (playerStats) {
+          playerStats.style.display = 'grid';
+        }
+        if (playerCharts) {
+          playerCharts.style.display = 'block';
+        }
+
+        setDefaultSectionEventType(getPlayerAnalysisSection());
+        console.log(
+          "Player Analytics: Event type filters set to 'online'. Active types:",
+          getPlayerAnalysisSelectedTypes()
+        );
+
+        const playerFilterMenu = document.getElementById('playerFilterMenu');
+        const playerStartDateSelect = document.getElementById('playerStartDateSelect');
+        const playerEndDateSelect = document.getElementById('playerEndDateSelect');
+
+        if (playerFilterMenu) {
+          playerFilterMenu.value = '';
+        }
+        if (playerStartDateSelect) {
+          playerStartDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+        }
+        if (playerEndDateSelect) {
+          playerEndDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+        }
 
         updatePlayerDateOptions();
         updatePlayerAnalytics();
@@ -271,27 +582,42 @@ export function setupTopModeListeners() {
 }
 
 export function setupAnalysisModeListeners() {
-  const analysisModeButtons = document.querySelectorAll(".analysis-mode");
-  const singleEventStats = document.getElementById("singleEventStats");
-  const multiEventStats = document.getElementById("multiEventStats");
-  const singleEventCharts = document.getElementById("singleEventCharts");
-  const multiEventCharts = document.getElementById("multiEventCharts");
-  const eventFilterSection = document.getElementById("eventFilterSection");
+  const analysisModeButtons = document.querySelectorAll('.analysis-mode');
+  const singleEventStats = document.getElementById('singleEventStats');
+  const multiEventStats = document.getElementById('multiEventStats');
+  const singleEventCharts = document.getElementById('singleEventCharts');
+  const multiEventCharts = document.getElementById('multiEventCharts');
+  const eventFilterSection = document.getElementById('eventFilterSection');
 
   analysisModeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      analysisModeButtons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
+    button.addEventListener('click', () => {
+      analysisModeButtons.forEach(modeButton => modeButton.classList.remove('active'));
+      button.classList.add('active');
 
       const mode = button.dataset.mode;
-      console.log("Analysis mode changed to:", mode);
+      console.log('Analysis mode changed to:', mode);
 
-      singleEventStats.style.display = mode === "single" ? "grid" : "none";
-      multiEventStats.style.display = mode === "multi" ? "grid" : "none";
-      singleEventCharts.style.display = mode === "single" ? "block" : "none";
-      multiEventCharts.style.display = mode === "multi" ? "block" : "none";
-      eventFilterSection.style.display = mode === "single" ? "block" : "none";
+      if (singleEventStats) {
+        singleEventStats.style.display = mode === 'single' ? 'grid' : 'none';
+      }
+      if (multiEventStats) {
+        multiEventStats.style.display = mode === 'multi' ? 'grid' : 'none';
+      }
+      if (singleEventCharts) {
+        singleEventCharts.style.display = mode === 'single' ? 'block' : 'none';
+      }
+      if (multiEventCharts) {
+        multiEventCharts.style.display = mode === 'multi' ? 'block' : 'none';
+      }
+      if (eventFilterSection) {
+        eventFilterSection.style.display = 'none';
+      }
 
+      if (mode === 'single') {
+        applyLatestSingleEventSelection();
+      }
+
+      updateSingleEventFilterVisibility();
       updateDateOptions();
       updatePlayerDateOptions();
       updateAllCharts();
@@ -300,220 +626,338 @@ export function setupAnalysisModeListeners() {
 }
 
 export function setupEventTypeListeners() {
-  const eventTypeButtons = document.querySelectorAll(".event-type-filter");
-  eventTypeButtons.forEach(button => {
-    button.addEventListener("click", () => {
-      const activeTopMode = document.querySelector(".top-mode-button.active")?.dataset.topMode || "event";
-      const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
-      
-      if (activeTopMode === "event" && activeAnalysisMode === "single") {
-        eventTypeButtons.forEach(btn => btn.classList.remove("active"));
-        button.classList.add("active");
-      } else {
-        button.classList.toggle("active");
-      }
-      
-      const currentActiveTypes = Array.from(eventTypeButtons)
-        .filter(btn => btn.classList.contains("active"))
-        .map(btn => btn.dataset.type);
-      console.log("After toggle - Active Event Types:", currentActiveTypes, "Top Mode:", activeTopMode, "Analysis Mode:", activeAnalysisMode);
+  const eventAnalysisButtons = getSectionEventTypeButtons(getEventAnalysisSection());
+  const playerAnalysisButtons = getSectionEventTypeButtons(getPlayerAnalysisSection());
 
-      setTimeout(() => {
+  eventAnalysisButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      if (getTopMode() === 'event' && getAnalysisMode() === 'single') {
+        eventAnalysisButtons.forEach(eventButton => {
+          eventButton.classList.toggle('active', eventButton === button);
+        });
+      } else {
+        button.classList.toggle('active');
+      }
+
+      console.log(
+        'After toggle - Event Analysis active Event Types:',
+        getEventAnalysisSelectedTypes(),
+        'Top Mode:',
+        getTopMode(),
+        'Analysis Mode:',
+        getAnalysisMode()
+      );
+
+      if (getAnalysisMode() === 'single') {
+        resetEventFilterCalendarState();
+        setSelectedSingleEvent('', false);
         updateEventFilter();
-        const startDateSelect = document.getElementById("startDateSelect");
-        const endDateSelect = document.getElementById("endDateSelect");
-        const playerStartDateSelect = document.getElementById("playerStartDateSelect");
-        const playerEndDateSelect = document.getElementById("playerEndDateSelect");
-        if (startDateSelect) startDateSelect.value = "";
-        if (endDateSelect) endDateSelect.value = "";
-        if (playerStartDateSelect) playerStartDateSelect.value = "";
-        if (playerEndDateSelect) playerEndDateSelect.value = "";
-        updateDateOptions();
-        updatePlayerDateOptions();
+      } else {
+        resetMultiDateRange();
+      }
+
+      updateSingleEventFilterVisibility();
+      updateDateOptions();
+      if (getAnalysisMode() !== 'single' || hasSelectedSingleEvent()) {
         updateAllCharts();
-      }, 0);
+      }
+    });
+  });
+
+  playerAnalysisButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      button.classList.toggle('active');
+
+      console.log(
+        'After toggle - Player Analysis active Event Types:',
+        getPlayerAnalysisSelectedTypes(),
+        'Top Mode:',
+        getTopMode()
+      );
+
+      resetPlayerDateRange();
+      updatePlayerDateOptions();
+
+      if (getTopMode() === 'player') {
+        updateAllCharts();
+      }
     });
   });
 }
 
 export function setupEventFilterListeners() {
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (eventFilterMenu) {
-    eventFilterMenu.addEventListener("change", updateAllCharts);
+    eventFilterMenu.addEventListener('change', updateAllCharts);
   }
 }
 
 export function setupPlayerFilterListeners() {
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const playerStartDateSelect = document.getElementById("playerStartDateSelect");
-  const playerEndDateSelect = document.getElementById("playerEndDateSelect");
+  const playerFilterMenu = document.getElementById('playerFilterMenu');
+  const playerStartDateSelect = document.getElementById('playerStartDateSelect');
+  const playerEndDateSelect = document.getElementById('playerEndDateSelect');
 
   if (playerFilterMenu) {
-    playerFilterMenu.addEventListener("change", () => {
+    playerFilterMenu.addEventListener('change', () => {
       updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
+
   if (playerStartDateSelect) {
-    playerStartDateSelect.addEventListener("change", () => {
+    playerStartDateSelect.addEventListener('change', () => {
       updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
+
   if (playerEndDateSelect) {
-    playerEndDateSelect.addEventListener("change", () => {
+    playerEndDateSelect.addEventListener('change', () => {
       updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
 }
 
-export function updateEventFilter() {
-  const activeAnalysisMode = document.querySelector(".analysis-mode.active")?.dataset.mode || "single";
-  let selectedEventTypes;
-  
-  if (activeAnalysisMode === "single") {
-    selectedEventTypes = [document.querySelector('.event-type-filter.active')?.dataset.type].filter(Boolean);
-  } else {
-    selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-      .map(button => button.dataset.type);
+export function updateEventFilter(preferredEvent = '', expandPreferredEvent = false) {
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
+  if (!eventFilterMenu || getAnalysisMode() !== 'single') {
+    return;
   }
-  console.log("Selected Event Types:", selectedEventTypes);
 
-  const eventFilterMenu = document.getElementById("eventFilterMenu");
-  if (selectedEventTypes.length === 0) {
-    eventFilterMenu.innerHTML = '<option value="">No Event Type Selected</option>';
-    eventFilterMenu.value = "";
-  } else {
-    const events = [...new Set(cleanedData
-      .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-      .map(row => row.Event))
-    ].sort((a, b) => {
-      const getEventDate = (event) => {
-        const match = event.match(/\((\d{4}-\d{2}-\d{2})\)$/);
-        const dateStr = match ? match[1] : cleanedData.find(row => row.Event === event).Date;
-        return new Date(dateStr);
-      };
+  const selectedEventType = getSingleEventSelectedType();
+  const eventTypeChanged = selectedEventType !== lastSingleEventType;
 
-      const dateA = getEventDate(a);
-      const dateB = getEventDate(b);
-      return dateB - dateA; // descending order
+  if (!selectedEventType) {
+    lastSingleEventType = '';
+    resetEventFilterCalendarState();
+    setSelectedSingleEvent('', false);
+    populateEventFilterMenu([]);
+    renderEventFilterCalendar({
+      entries: [],
+      selectedEvent: '',
+      onSelectEvent: eventName => setSelectedSingleEvent(eventName, true),
+      emptyMessage: 'Select an Event Type first.'
     });
-
-    eventFilterMenu.innerHTML = events.map(event => `<option value="${event}">${event}</option>`).join("");
-    eventFilterMenu.value = events[0] || "";
+    return;
   }
+
+  const entries = buildSingleEventCalendarEntries(selectedEventType);
+  if (eventTypeChanged) {
+    resetEventFilterCalendarState();
+    setSelectedSingleEvent('', false);
+  }
+
+  if (expandPreferredEvent) {
+    primeEventFilterCalendarSelection(preferredEvent, entries);
+  }
+
+  const currentSelectedEvent = preferredEvent || (eventTypeChanged ? '' : eventFilterMenu.value);
+
+  populateEventFilterMenu(entries);
+
+  const resolvedSelectedEvent = renderEventFilterCalendar({
+    entries,
+    selectedEvent: currentSelectedEvent,
+    onSelectEvent: eventName => setSelectedSingleEvent(eventName, true),
+    emptyMessage: 'No events available for the selected Event Type.'
+  });
+
+  lastSingleEventType = selectedEventType;
+  setSelectedSingleEvent(resolvedSelectedEvent, false);
 }
 
 export function updateDateOptions() {
-  const startDateSelect = document.getElementById("startDateSelect");
-  const endDateSelect = document.getElementById("endDateSelect");
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type.toLowerCase());
-  const dates = selectedEventTypes.length > 0
-    ? [...new Set(cleanedData
-        .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-        .map(row => row.Date))].sort((a, b) => new Date(a) - new Date(b))
-    : [];
+  const startDateSelect = document.getElementById('startDateSelect');
+  const endDateSelect = document.getElementById('endDateSelect');
 
-  console.log("Filtered dates for Multi-Event:", dates);
+  if (!startDateSelect || !endDateSelect) {
+    return;
+  }
+
+  const selectedEventTypes = getEventAnalysisSelectedTypes();
+  const dates =
+    selectedEventTypes.length > 0
+      ? [
+          ...new Set(
+            cleanedData
+              .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
+              .map(row => row.Date)
+          )
+        ].sort((a, b) => new Date(a) - new Date(b))
+      : [];
+
+  console.log('Filtered dates for Multi-Event:', dates);
 
   if (dates.length === 0) {
-    startDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option>`;
-    endDateSelect.innerHTML = `<option value="">Select Offline or Online Event first</option>`;
+    startDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
+    endDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
     return;
   }
 
   const selectedStartDate = startDateSelect.value;
   const selectedEndDate = endDateSelect.value;
 
-  if (selectedStartDate && !dates.includes(selectedStartDate)) startDateSelect.value = "";
-  if (selectedEndDate && !dates.includes(selectedEndDate)) endDateSelect.value = "";
+  if (selectedStartDate && !dates.includes(selectedStartDate)) {
+    startDateSelect.value = '';
+  }
+  if (selectedEndDate && !dates.includes(selectedEndDate)) {
+    endDateSelect.value = '';
+  }
 
   const currentStartDate = startDateSelect.value;
   const currentEndDate = endDateSelect.value;
 
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
-    endDateSelect.innerHTML = `<option value="">Select End Date</option>${validEndDates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    endDateSelect.innerHTML =
+      '<option value="">Select End Date</option>' +
+      validEndDates
+        .map(date => {
+          return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   } else {
-    endDateSelect.innerHTML = `<option value="">Select End Date</option>${dates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    endDateSelect.innerHTML =
+      '<option value="">Select End Date</option>' +
+      dates
+        .map(date => {
+          return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   }
 
   if (currentEndDate) {
     const validStartDates = dates.filter(date => date <= currentEndDate);
-    startDateSelect.innerHTML = `<option value="">Select Start Date</option>${validStartDates.map(date => `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    startDateSelect.innerHTML =
+      '<option value="">Select Start Date</option>' +
+      validStartDates
+        .map(date => {
+          return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   } else {
-    startDateSelect.innerHTML = `<option value="">Select Start Date</option>${dates.map(date => `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    startDateSelect.innerHTML =
+      '<option value="">Select Start Date</option>' +
+      dates
+        .map(date => {
+          return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   }
 }
 
 export function updatePlayerDateOptions() {
-  const startDateSelect = document.getElementById("playerStartDateSelect");
-  const endDateSelect = document.getElementById("playerEndDateSelect");
-  const playerFilterMenu = document.getElementById("playerFilterMenu");
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active'))
-    .map(button => button.dataset.type.toLowerCase());
+  const startDateSelect = document.getElementById('playerStartDateSelect');
+  const endDateSelect = document.getElementById('playerEndDateSelect');
+  const playerFilterMenu = document.getElementById('playerFilterMenu');
+
+  if (!startDateSelect || !endDateSelect || !playerFilterMenu) {
+    return;
+  }
+
+  const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
 
-  // Only populate Player dropdown if Event Type is selected
   if (selectedEventTypes.length === 0) {
-    playerFilterMenu.innerHTML = `<option value="">Select Event Type First</option>`;
-    playerFilterMenu.value = "";
-    startDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-    endDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+    playerFilterMenu.innerHTML = '<option value="">Select Event Type First</option>';
+    playerFilterMenu.value = '';
+    startDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+    endDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
     return;
   }
 
-  // Populate Player dropdown based on selected Event Types
-  const players = [...new Set(cleanedData
-    .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-    .map(row => row.Player))].sort((a, b) => a.localeCompare(b));
-  const currentPlayer = players.includes(selectedPlayer) ? selectedPlayer : "";
-  playerFilterMenu.innerHTML = `<option value="">No Player Selected</option>` + 
-    players.map(player => `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`).join("");
+  const players = [
+    ...new Set(
+      cleanedData
+        .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
+        .map(row => row.Player)
+    )
+  ].sort((a, b) => a.localeCompare(b));
 
-  // Only populate Date dropdowns if both Event Type and Player are selected
-  if (!selectedPlayer) {
-    startDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
-    endDateSelect.innerHTML = `<option value="">Select Player and Event Type first</option>`;
+  const currentPlayer = players.includes(selectedPlayer) ? selectedPlayer : '';
+
+  playerFilterMenu.innerHTML =
+    '<option value="">No Player Selected</option>' +
+    players
+      .map(player => {
+        return `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`;
+      })
+      .join('');
+
+  if (!currentPlayer) {
+    startDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+    endDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
     return;
   }
 
-  // Populate Date dropdowns since both Event Type and Player are selected
-  const dates = [...new Set(cleanedData
-    .filter(row => row.Player === selectedPlayer && selectedEventTypes.includes(row.EventType.toLowerCase()))
-    .map(row => row.Date))].sort((a, b) => new Date(a) - new Date(b));
+  const dates = [
+    ...new Set(
+      cleanedData
+        .filter(row => {
+          return row.Player === currentPlayer && selectedEventTypes.includes(row.EventType.toLowerCase());
+        })
+        .map(row => row.Date)
+    )
+  ].sort((a, b) => new Date(a) - new Date(b));
 
-  console.log("Filtered dates for Player Analysis:", dates, "Selected Player:", selectedPlayer);
+  console.log('Filtered dates for Player Analysis:', dates, 'Selected Player:', currentPlayer);
 
   if (dates.length === 0) {
-    startDateSelect.innerHTML = `<option value="">No Dates Available</option>`;
-    endDateSelect.innerHTML = `<option value="">No Dates Available</option>`;
+    startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     return;
   }
 
   const selectedStartDate = startDateSelect.value;
   const selectedEndDate = endDateSelect.value;
 
-  if (selectedStartDate && !dates.includes(selectedStartDate)) startDateSelect.value = "";
-  if (selectedEndDate && !dates.includes(selectedEndDate)) endDateSelect.value = "";
+  if (selectedStartDate && !dates.includes(selectedStartDate)) {
+    startDateSelect.value = '';
+  }
+  if (selectedEndDate && !dates.includes(selectedEndDate)) {
+    endDateSelect.value = '';
+  }
 
   const currentStartDate = startDateSelect.value;
   const currentEndDate = endDateSelect.value;
 
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
-    endDateSelect.innerHTML = `<option value="">Select End Date</option>${validEndDates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    endDateSelect.innerHTML =
+      '<option value="">Select End Date</option>' +
+      validEndDates
+        .map(date => {
+          return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   } else {
-    endDateSelect.innerHTML = `<option value="">Select End Date</option>${dates.map(date => `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    endDateSelect.innerHTML =
+      '<option value="">Select End Date</option>' +
+      dates
+        .map(date => {
+          return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   }
 
   if (currentEndDate) {
     const validStartDates = dates.filter(date => date <= currentEndDate);
-    startDateSelect.innerHTML = `<option value="">Select Start Date</option>${validStartDates.map(date => `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    startDateSelect.innerHTML =
+      '<option value="">Select Start Date</option>' +
+      validStartDates
+        .map(date => {
+          return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   } else {
-    startDateSelect.innerHTML = `<option value="">Select Start Date</option>${dates.map(date => `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`).join("")}`;
+    startDateSelect.innerHTML =
+      '<option value="">Select Start Date</option>' +
+      dates
+        .map(date => {
+          return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
+        })
+        .join('');
   }
 
   if (startDateSelect.value && endDateSelect.value) {
@@ -522,17 +966,26 @@ export function updatePlayerDateOptions() {
 }
 
 export function populateDateDropdowns(eventType) {
-  const filteredDates = [...new Set(cleanedData
-    .filter(row => row.EventType.toLowerCase() === eventType.toLowerCase())
-    .map(row => row.Date)
-  )].sort();
-  const startDateSelect = document.getElementById("startDateSelect");
-  const endDateSelect = document.getElementById("endDateSelect");
+  const filteredDates = [
+    ...new Set(
+      cleanedData
+        .filter(row => row.EventType.toLowerCase() === eventType.toLowerCase())
+        .map(row => row.Date)
+    )
+  ].sort();
+
+  const startDateSelect = document.getElementById('startDateSelect');
+  const endDateSelect = document.getElementById('endDateSelect');
+
   if (!startDateSelect || !endDateSelect) {
-    console.error("Date select elements not found!");
+    console.error('Date select elements not found!');
     return;
   }
-  const options = "<option value=''>--Select--</option>" + filteredDates.map(date => `<option value="${date}">${date}</option>`).join("");
+
+  const options =
+    "<option value=''>--Select--</option>" +
+    filteredDates.map(date => `<option value="${date}">${date}</option>`).join('');
+
   startDateSelect.innerHTML = options;
   endDateSelect.innerHTML = options;
 }

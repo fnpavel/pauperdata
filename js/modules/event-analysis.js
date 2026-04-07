@@ -9,6 +9,13 @@ import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
 
+function getSelectedEventAnalysisTypes() {
+  const eventAnalysisSection = document.getElementById('eventAnalysisSection');
+  return Array.from(eventAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).map(button =>
+    button.dataset.type.toLowerCase()
+  );
+}
+
 export function initEventAnalysis() {
   console.log('Event Analysis initialized');
 }
@@ -30,10 +37,10 @@ export function updateMultiEventAnalysis(data) {
 
 export function updateEventAnalytics() {
   console.log("Updating event analytics...");
-  const selectedEventType = document.querySelector('.event-type-filter.active')?.dataset.type || "";
+  const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
-  const eventData = cleanedData.filter(row => row.EventType === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
+  const eventData = cleanedData.filter(row => row.EventType.toLowerCase() === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
   updateSingleEventAnalysis(eventData, eventData.length);
 }
 
@@ -41,9 +48,9 @@ export function updateMultiEventAnalytics() {
   console.log("Updating multi-event analytics...");
   const startDate = document.getElementById("startDateSelect").value;
   const endDate = document.getElementById("endDateSelect").value;
-  const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).map(button => button.dataset.type);
+  const selectedEventTypes = getSelectedEventAnalysisTypes();
   const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType))
+    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType.toLowerCase()))
     : [];
   updateMultiEventAnalysis(filteredData);
 }

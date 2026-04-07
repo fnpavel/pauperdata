@@ -4,6 +4,11 @@ import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
 
 export let playerDeckPerformanceChart = null;
 
+function getSelectedPlayerEventTypeCount() {
+  const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).length;
+}
+
 export function updatePlayerDeckPerformanceChart() {
   console.log("updatePlayerDeckPerformanceChart called...");
   setChartLoading("playerDeckPerformanceChart", true);
@@ -16,7 +21,7 @@ export function updatePlayerDeckPerformanceChart() {
     if (ctx) {
       const playerFilterMenu = document.getElementById("playerFilterMenu");
       const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-      const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).length;
+      const selectedEventTypes = getSelectedPlayerEventTypeCount();
       const label = !selectedPlayer ? "No Player Selected" : 
                     selectedEventTypes === 0 ? "No Event Type Selected" : 
                     "No Data Available";

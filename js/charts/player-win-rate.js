@@ -5,6 +5,11 @@ import { cleanedData } from '../data.js';
 
 export let playerWinRateChart = null;
 
+function getSelectedPlayerEventTypeCount() {
+  const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).length;
+}
+
 export function updatePlayerWinRateChart() {
   console.log("updatePlayerWinRateChart called...");
   setChartLoading("playerWinRateChart", true);
@@ -28,7 +33,7 @@ export function updatePlayerWinRateChart() {
     if (playerWinRateCtx) {
       const playerFilterMenu = document.getElementById("playerFilterMenu");
       const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
-      const selectedEventTypes = Array.from(document.querySelectorAll('.event-type-filter.active')).length;
+      const selectedEventTypes = getSelectedPlayerEventTypeCount();
       const label = !selectedPlayer ? "No Player Selected" : 
                     selectedEventTypes === 0 ? "No Event Type Selected" : 
                     "No Data";
