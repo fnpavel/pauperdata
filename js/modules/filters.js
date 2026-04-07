@@ -289,7 +289,8 @@ function getDefaultMultiEventRange(dates) {
 function getMultiEventSelectionSummaryElements() {
   return {
     container: document.getElementById('multiEventSelectionSummary'),
-    content: document.getElementById('multiEventSelectionSummaryContent')
+    content: document.getElementById('multiEventSelectionSummaryContent'),
+    list: document.getElementById('multiEventSelectionList')
   };
 }
 
@@ -390,6 +391,20 @@ function getFilteredMultiEventRows() {
   });
 }
 
+function getExactSelectedMultiEvents() {
+  const events = new Map();
+
+  getFilteredMultiEventRows().forEach(row => {
+    if (!events.has(row.Event)) {
+      events.set(row.Event, row.Date || getEventDate(row.Event));
+    }
+  });
+
+  return Array.from(events.entries())
+    .sort((a, b) => b[1].localeCompare(a[1]) || a[0].localeCompare(b[0]))
+    .map(([eventName]) => eventName);
+}
+
 function toggleMultiEventGroupFilter(groupKey) {
   const groupSummaries = getMultiEventGroupSummaries();
   syncMultiEventGroupFilterState(groupSummaries);
@@ -406,8 +421,8 @@ function toggleMultiEventGroupFilter(groupKey) {
 }
 
 function updateMultiEventSelectionSummary() {
-  const { container, content } = getMultiEventSelectionSummaryElements();
-  if (!container || !content) {
+  const { container, content, list } = getMultiEventSelectionSummaryElements();
+  if (!container || !content || !list) {
     return;
   }
 
@@ -423,6 +438,7 @@ function updateMultiEventSelectionSummary() {
 
   if (groupSummaries.length === 0) {
     content.innerHTML = 'No events selected';
+    list.innerHTML = 'No events selected';
     return;
   }
 
@@ -450,6 +466,11 @@ function updateMultiEventSelectionSummary() {
     emptyState.textContent = 'No events selected';
     content.appendChild(emptyState);
   }
+
+  const exactSelectedEvents = getExactSelectedMultiEvents();
+  list.innerHTML = exactSelectedEvents.length > 0
+    ? exactSelectedEvents.map(eventName => `<div>${eventName}</div>`).join('')
+    : 'No events selected';
 }
 
 function updateSingleEventFilterVisibility() {

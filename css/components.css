@@ -250,6 +250,18 @@
   padding-top: 4px;
 }
 
+.multi-event-selection-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 0.76rem;
+  line-height: 1.35;
+  color: #d8d8e6;
+}
+
 .event-calendar-month-header {
   display: flex;
   align-items: center;
