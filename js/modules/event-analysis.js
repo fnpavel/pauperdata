@@ -234,7 +234,7 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
     const renderTableBody = () => updateElementHTML("multiEventTableBody", rows.length === 0 ? "<tr><td colspan='8'>No data available for the selected deck and filters.</td></tr>" : rows.map(row => `
       <tr>
         <td>${formatDate(row.date)}</td>
-        <td class="event-tooltip" data-tooltip="${row.event} had ${row.totalPlayers} Players, won by ${row.winner} w/ ${row.winnerDeck}">${row.event}</td>
+        <td class="event-tooltip" data-tooltip="${formatEventName(row.event)} had ${row.totalPlayers} Players, won by ${row.winner} w/ ${row.winnerDeck}">${formatEventName(row.event)}</td>
         <td>${row.metaShare.toFixed(2)}%</td>
         <td>${row.winRate.toFixed(2)}%</td>
         <td>${displayMode === 'raw' ? row.top8 : row.top8Percent.toFixed(2) + '%'}</td>
@@ -256,7 +256,7 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
 export function populateSingleEventStats(filteredData) {
   const stats = calculateSingleEventStats(filteredData);
   toggleStatCardVisibility("singleEventInfoCard", true);
-  updateElementText("eventInfoName", stats.eventName);
+  updateElementText("eventInfoName", formatEventName(stats.eventName));
   updateElementText("eventInfoDate", formatDate(stats.eventDate));
   updateElementText("eventInfoPlayers", stats.totalPlayers);
   toggleStatCardVisibility("singleTopPlayerCard", true);
@@ -303,9 +303,9 @@ export function populateMultiEventStats(filteredData) {
   updateElementText("totalEvents", stats.totalEvents);
   const card = document.getElementById("multiTotalEventsCard");
   if (card) card.querySelector('.stat-change').textContent = formatDateRange(document.getElementById("startDateSelect")?.value, document.getElementById("endDateSelect")?.value);
-  updateElementText("mostPlayersEvent", stats.mostPlayersEvent);
+  updateElementText("mostPlayersEvent", formatEventName(stats.mostPlayersEvent));
   updateElementText("mostPlayersCount", stats.mostPlayersCount);
-  updateElementText("leastPlayersEvent", stats.leastPlayersEvent);
+  updateElementText("leastPlayersEvent", formatEventName(stats.leastPlayersEvent));
   updateElementText("leastPlayersCount", stats.leastPlayersCount);
   updateElementText("multiMostCopiesDeck", stats.mostCopiesDeck);
   updateElementText("multiMostCopiesDetails", stats.mostCopiesDetails);

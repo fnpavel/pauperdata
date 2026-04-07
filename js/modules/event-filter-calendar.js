@@ -55,6 +55,27 @@ function compareEntriesByDateDesc(entryA, entryB) {
   return entryB.date.localeCompare(entryA.date) || entryA.name.localeCompare(entryB.name);
 }
 
+function toDisplayTitleCase(value) {
+  return value.replace(/\b([A-Za-z])([A-Za-z']*)\b/g, (_, firstChar, rest) => {
+    return `${firstChar.toUpperCase()}${rest.toLowerCase()}`;
+  });
+}
+
+function formatDisplayEventName(eventName) {
+  if (!eventName) {
+    return '';
+  }
+
+  const withoutMtgoPrefix = eventName.replace(/^MTGO\s+/i, '');
+  return withoutMtgoPrefix.replace(/^([^(]+?)(\s*\(\d{4}-\d{2}-\d{2}\))?$/, (_, labelPart, datePart = '') => {
+    return `${toDisplayTitleCase(labelPart.trim())}${datePart}`;
+  });
+}
+
+function formatToolbarLabel(label) {
+  return toDisplayTitleCase((label || '').replace(/^MTGO\s+/i, '').trim());
+}
+
 function buildGroupSummaries(entries) {
   const groupMap = new Map();
 
@@ -233,7 +254,7 @@ function drawCalendar(container, selectedEntry) {
   const summary = document.createElement('div');
   summary.className = 'event-calendar-summary';
   summary.innerHTML = displayedEventName
-    ? `<span class="event-calendar-summary-label">Current Event Selected</span><strong>${displayedEventName}</strong>`
+    ? `<span class="event-calendar-summary-label">Current Event Selected</span><strong>${formatDisplayEventName(displayedEventName)}</strong>`
     : '<span class="event-calendar-summary-label">Current Event Selected</span><strong>No event selected</strong>';
 
   const groupSection = document.createElement('div');
@@ -243,7 +264,7 @@ function drawCalendar(container, selectedEntry) {
   groupToolbar.className = 'event-calendar-toolbar';
   groups.forEach(group => {
     groupToolbar.appendChild(
-      createToolbarButton(group.label, group.key === calendarState.selectedGroupKey, () => {
+      createToolbarButton(formatToolbarLabel(group.label), group.key === calendarState.selectedGroupKey, () => {
         const latestGroupEntry = getLatestEntry(
           calendarState.entries.filter(entry => entry.groupKey === group.key)
         );
@@ -348,8 +369,8 @@ function drawCalendar(container, selectedEntry) {
         eventButton.type = 'button';
         eventButton.className = `event-calendar-event-button${entry.name === calendarState.selectedEvent ? ' active' : ''}`;
         eventButton.textContent = '';
-        eventButton.title = entry.name;
-        eventButton.setAttribute('aria-label', entry.name);
+        eventButton.title = formatDisplayEventName(entry.name);
+        eventButton.setAttribute('aria-label', formatDisplayEventName(entry.name));
         eventButton.addEventListener('click', () => {
           calendarState.selectedEvent = entry.name;
           calendarState.selectedGroupKey = entry.groupKey;

@@ -81,6 +81,10 @@
     width: 12px;
     height: 12px;
   }
+
+  .range-calendar-wrapper {
+    grid-template-columns: 1fr;
+  }
 }
 
 @media (max-width: 600px) {
@@ -198,6 +202,15 @@
   .event-calendar-weekday,
   .event-calendar-event-button {
     font-size: 0.65rem;
+  }
+
+  .range-calendar-panel {
+    padding: 10px;
+  }
+
+  .range-calendar-day,
+  .range-calendar-spacer {
+    min-height: 30px;
   }
 
   canvas {

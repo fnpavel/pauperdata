@@ -14,9 +14,12 @@ import {
   resetEventFilterCalendarState,
   primeEventFilterCalendarSelection
 } from './event-filter-calendar.js';
+import { renderMultiEventDateRangeCalendar } from './date-range-calendar.js';
 
 let filteredData = [];
 let lastSingleEventType = '';
+let multiEventGroupSelectionInitialized = false;
+let activeMultiEventGroupKeys = new Set();
 
 const EVENT_GROUPS = {
   'MTGO Challenge': {
@@ -123,15 +126,33 @@ function slugify(value) {
     .replace(/^-+|-+$/g, '');
 }
 
+function toDisplayTitleCase(value) {
+  return value.replace(/\b([A-Za-z])([A-Za-z']*)\b/g, (_, firstChar, rest) => {
+    return `${firstChar.toUpperCase()}${rest.toLowerCase()}`;
+  });
+}
+
+function normalizeEventBaseName(value) {
+  return toDisplayTitleCase(value.trim().replace(/\s+/g, ' '));
+}
+
+function formatGroupDisplayLabel(label) {
+  return toDisplayTitleCase((label || '').replace(/^MTGO\s+/i, '').trim());
+}
+
 function getEventGroupInfo(eventName) {
-  const baseName = stripEventDate(eventName);
+  const baseName = normalizeEventBaseName(stripEventDate(eventName));
   const predefinedGroup = EVENT_GROUPS[baseName];
 
   if (predefinedGroup) {
-    return predefinedGroup;
+    return {
+      ...predefinedGroup,
+      label: formatGroupDisplayLabel(predefinedGroup.label),
+      shortLabel: formatGroupDisplayLabel(predefinedGroup.shortLabel)
+    };
   }
 
-  const label = baseName.replace(/^MTGO\s+/, '');
+  const label = formatGroupDisplayLabel(baseName);
 
   return {
     key: slugify(baseName),
@@ -245,11 +266,190 @@ function resetSelectValue(selectId) {
 function resetMultiDateRange() {
   resetSelectValue('startDateSelect');
   resetSelectValue('endDateSelect');
+  multiEventGroupSelectionInitialized = false;
+  activeMultiEventGroupKeys = new Set();
 }
 
 function resetPlayerDateRange() {
   resetSelectValue('playerStartDateSelect');
   resetSelectValue('playerEndDateSelect');
+}
+
+function getDefaultMultiEventRange(dates) {
+  if (dates.length === 0) {
+    return { startDate: '', endDate: '' };
+  }
+
+  return {
+    startDate: dates[Math.max(0, dates.length - 2)],
+    endDate: dates[dates.length - 1]
+  };
+}
+
+function getMultiEventSelectionSummaryElements() {
+  return {
+    container: document.getElementById('multiEventSelectionSummary'),
+    content: document.getElementById('multiEventSelectionSummaryContent')
+  };
+}
+
+function getMultiEventSelectedEventEntries() {
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const selectedEventTypes = getEventAnalysisSelectedTypes();
+
+  if (!startDate || !endDate || selectedEventTypes.length === 0) {
+    return [];
+  }
+
+  const events = new Map();
+
+  cleanedData.forEach(row => {
+    if (
+      row.Date >= startDate &&
+      row.Date <= endDate &&
+      selectedEventTypes.includes(row.EventType.toLowerCase()) &&
+      !events.has(row.Event)
+    ) {
+      events.set(row.Event, row.Date || getEventDate(row.Event));
+    }
+  });
+
+  return Array.from(events.entries())
+    .map(([eventName, eventDate]) => {
+      const groupInfo = getEventGroupInfo(eventName);
+      return {
+        name: eventName,
+        date: eventDate,
+        groupKey: groupInfo.key,
+        groupLabel: groupInfo.label,
+        groupOrder: groupInfo.order
+      };
+    })
+    .sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
+}
+
+function getMultiEventGroupSummaries() {
+  const groups = new Map();
+
+  getMultiEventSelectedEventEntries().forEach(entry => {
+    if (!groups.has(entry.groupKey)) {
+      groups.set(entry.groupKey, {
+        key: entry.groupKey,
+        label: entry.groupLabel,
+        order: entry.groupOrder,
+        count: 0
+      });
+    }
+
+    groups.get(entry.groupKey).count += 1;
+  });
+
+  return Array.from(groups.values()).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+}
+
+function syncMultiEventGroupFilterState(groupSummaries) {
+  if (groupSummaries.length === 0) {
+    multiEventGroupSelectionInitialized = false;
+    activeMultiEventGroupKeys = new Set();
+    return;
+  }
+
+  const availableKeys = new Set(groupSummaries.map(group => group.key));
+
+  if (!multiEventGroupSelectionInitialized) {
+    activeMultiEventGroupKeys = new Set(availableKeys);
+    multiEventGroupSelectionInitialized = true;
+    return;
+  }
+
+  activeMultiEventGroupKeys = new Set(
+    Array.from(activeMultiEventGroupKeys).filter(groupKey => availableKeys.has(groupKey))
+  );
+}
+
+function getFilteredMultiEventRows() {
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const selectedEventTypes = getEventAnalysisSelectedTypes();
+
+  if (!startDate || !endDate || selectedEventTypes.length === 0) {
+    return [];
+  }
+
+  const groupSummaries = getMultiEventGroupSummaries();
+  syncMultiEventGroupFilterState(groupSummaries);
+
+  return cleanedData.filter(row => {
+    return (
+      row.Date >= startDate &&
+      row.Date <= endDate &&
+      selectedEventTypes.includes(row.EventType.toLowerCase()) &&
+      activeMultiEventGroupKeys.has(getEventGroupInfo(row.Event).key)
+    );
+  });
+}
+
+function toggleMultiEventGroupFilter(groupKey) {
+  const groupSummaries = getMultiEventGroupSummaries();
+  syncMultiEventGroupFilterState(groupSummaries);
+
+  if (activeMultiEventGroupKeys.has(groupKey)) {
+    activeMultiEventGroupKeys.delete(groupKey);
+  } else {
+    activeMultiEventGroupKeys.add(groupKey);
+  }
+
+  multiEventGroupSelectionInitialized = true;
+  updateMultiEventSelectionSummary();
+  updateAllCharts();
+}
+
+function updateMultiEventSelectionSummary() {
+  const { container, content } = getMultiEventSelectionSummaryElements();
+  if (!container || !content) {
+    return;
+  }
+
+  const shouldShow = getTopMode() === 'event' && getAnalysisMode() === 'multi';
+  container.style.display = shouldShow ? 'flex' : 'none';
+
+  if (!shouldShow) {
+    return;
+  }
+
+  const groupSummaries = getMultiEventGroupSummaries();
+  syncMultiEventGroupFilterState(groupSummaries);
+
+  if (groupSummaries.length === 0) {
+    content.innerHTML = 'No events selected';
+    return;
+  }
+
+  content.innerHTML = groupSummaries
+    .map(group => {
+      const isActive = activeMultiEventGroupKeys.has(group.key);
+      const countLabel = formatGroupDisplayLabel(group.count === 1 ? group.label : `${group.label}s`);
+
+      return `
+        <button type="button" class="multi-event-group-card ${isActive ? 'active' : ''}" data-group-key="${group.key}">
+          <span class="multi-event-group-card-count">${group.count}</span>
+          <span class="multi-event-group-card-label">${countLabel}</span>
+        </button>
+      `;
+    })
+    .join('');
+
+  content.querySelectorAll('.multi-event-group-card').forEach(button => {
+    button.addEventListener('click', () => toggleMultiEventGroupFilter(button.dataset.groupKey));
+  });
+
+  if (!groupSummaries.some(group => activeMultiEventGroupKeys.has(group.key))) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'multi-event-group-empty';
+    emptyState.textContent = 'No events selected';
+    content.appendChild(emptyState);
+  }
 }
 
 function updateSingleEventFilterVisibility() {
@@ -264,6 +464,8 @@ function updateSingleEventFilterVisibility() {
   if (eventFilterSection) {
     eventFilterSection.style.display = isSingleMode ? 'block' : 'none';
   }
+
+  updateMultiEventSelectionSummary();
 }
 
 function hasSelectedSingleEvent() {
@@ -288,6 +490,24 @@ function applyLatestSingleEventSelection() {
   lastSingleEventType = '';
   updateSingleEventFilterVisibility();
   updateEventFilter(latestEntry.name, true);
+}
+
+function setMultiEventDateSelection(type, value) {
+  const startDateSelect = document.getElementById('startDateSelect');
+  const endDateSelect = document.getElementById('endDateSelect');
+
+  if (!startDateSelect || !endDateSelect) {
+    return;
+  }
+
+  if (type === 'start') {
+    startDateSelect.value = value;
+  } else {
+    endDateSelect.value = value;
+  }
+
+  updateDateOptions();
+  updateAllCharts();
 }
 
 export function setupFilters() {
@@ -346,6 +566,7 @@ export function setupFilters() {
   }
 
   updateSingleEventFilterVisibility();
+  updateMultiEventSelectionSummary();
   updateAllCharts();
 }
 
@@ -373,16 +594,7 @@ export function updateAllCharts() {
       const endDate = document.getElementById('endDateSelect')?.value || '';
       const selectedEventTypes = getEventAnalysisSelectedTypes();
 
-      filteredData =
-        startDate && endDate && selectedEventTypes.length > 0
-          ? cleanedData.filter(row => {
-              return (
-                row.Date >= startDate &&
-                row.Date <= endDate &&
-                selectedEventTypes.includes(row.EventType.toLowerCase())
-              );
-            })
-          : [];
+      filteredData = startDate && endDate && selectedEventTypes.length > 0 ? getFilteredMultiEventRows() : [];
 
       updateMultiMetaWinRateChart();
       updateMultiPlayerWinRateChart();
@@ -436,19 +648,7 @@ export function getMetaWinRateChartData() {
 }
 
 export function getMultiEventChartData() {
-  const startDate = document.getElementById('startDateSelect')?.value || '';
-  const endDate = document.getElementById('endDateSelect')?.value || '';
-  const selectedEventTypes = getEventAnalysisSelectedTypes();
-
-  return startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => {
-        return (
-          row.Date >= startDate &&
-          row.Date <= endDate &&
-          selectedEventTypes.includes(row.EventType.toLowerCase())
-        );
-      })
-    : [];
+  return getFilteredMultiEventRows();
 }
 
 export function getDeckEvolutionChartData() {
@@ -539,6 +739,7 @@ export function setupTopModeListeners() {
 
         updateSingleEventFilterVisibility();
         updateDateOptions();
+        updateMultiEventSelectionSummary();
         updateAllCharts();
       } else if (mode === 'player') {
         if (eventAnalysisSection) {
@@ -615,11 +816,14 @@ export function setupAnalysisModeListeners() {
 
       if (mode === 'single') {
         applyLatestSingleEventSelection();
+      } else {
+        resetMultiDateRange();
       }
 
       updateSingleEventFilterVisibility();
       updateDateOptions();
       updatePlayerDateOptions();
+      updateMultiEventSelectionSummary();
       updateAllCharts();
     });
   });
@@ -658,6 +862,7 @@ export function setupEventTypeListeners() {
 
       updateSingleEventFilterVisibility();
       updateDateOptions();
+      updateMultiEventSelectionSummary();
       if (getAnalysisMode() !== 'single' || hasSelectedSingleEvent()) {
         updateAllCharts();
       }
@@ -792,21 +997,24 @@ export function updateDateOptions() {
   if (dates.length === 0) {
     startDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
     endDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
+    renderMultiEventDateRangeCalendar({
+      dates: [],
+      startDate: '',
+      endDate: '',
+      onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString),
+      onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString)
+    });
     return;
   }
 
-  const selectedStartDate = startDateSelect.value;
-  const selectedEndDate = endDateSelect.value;
+  let currentStartDate = dates.includes(startDateSelect.value) ? startDateSelect.value : '';
+  let currentEndDate = dates.includes(endDateSelect.value) ? endDateSelect.value : '';
 
-  if (selectedStartDate && !dates.includes(selectedStartDate)) {
-    startDateSelect.value = '';
+  if (!currentStartDate && !currentEndDate) {
+    const defaultRange = getDefaultMultiEventRange(dates);
+    currentStartDate = defaultRange.startDate;
+    currentEndDate = defaultRange.endDate;
   }
-  if (selectedEndDate && !dates.includes(selectedEndDate)) {
-    endDateSelect.value = '';
-  }
-
-  const currentStartDate = startDateSelect.value;
-  const currentEndDate = endDateSelect.value;
 
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
@@ -845,6 +1053,19 @@ export function updateDateOptions() {
         })
         .join('');
   }
+
+  startDateSelect.value = currentStartDate;
+  endDateSelect.value = currentEndDate;
+
+  renderMultiEventDateRangeCalendar({
+    dates,
+    startDate: currentStartDate,
+    endDate: currentEndDate,
+    onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString),
+    onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString)
+  });
+
+  updateMultiEventSelectionSummary();
 }
 
 export function updatePlayerDateOptions() {
