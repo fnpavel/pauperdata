@@ -9,8 +9,17 @@
   animation-delay: 0.225s;
 }
 
+.data-table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  border-radius: 8px;
+  -webkit-overflow-scrolling: touch;
+}
+
 .data-table {
   width: 100%;
+  min-width: max-content;
   border-collapse: collapse;
   margin-top: 15px;
 }

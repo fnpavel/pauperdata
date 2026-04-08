@@ -22,6 +22,14 @@
   animation: fadeUpdate 0.3s ease;
 }
 
+.player-primary-chart {
+  padding: 26px 24px;
+}
+
+.player-secondary-chart {
+  padding: 16px 18px;
+}
+
 .chart-title {
   font-size: 1.5rem;
   margin-bottom: 20px;
@@ -74,6 +82,16 @@ canvas {
 
 #multiPlayerWinRateChart {
   max-height: 400px !important;
+}
+
+#playerWinRateChart {
+  height: 600px !important;
+  max-height: 600px !important;
+}
+
+#playerDeckPerformanceChart {
+  height: 300px !important;
+  max-height: 300px !important;
 }
 
 #metaWinRateEventChartContainer {

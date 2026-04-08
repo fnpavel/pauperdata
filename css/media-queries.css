@@ -4,7 +4,8 @@
   }
 
   .player-dashboard {
-    grid-template-columns: 280px 1fr;
+    gap: 18px;
+    grid-template-columns: 248px 1fr;
   }
 
   .deck-stats-sidebar {
@@ -25,14 +26,26 @@
   }
 
   #playerStats.stats-container {
-    width: calc(100% - 280px - 30px);
+    width: 100%;
     margin-left: 0;
     margin-right: 0;
     padding: 0;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     max-width: none;
+  }
+
+  #playerStats.stats-container .player-stats-row-primary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  #playerStats.stats-container .player-stats-row-secondary {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  #playerStats.stats-container .stat-card {
+    min-height: 74px;
   }
 
   canvas {
@@ -57,8 +70,27 @@
   #playerStats.stats-container {
     width: 100%;
     margin-left: 0;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 8px;
+  }
+
+  #playerStats.stats-container .player-stats-row-primary,
+  #playerStats.stats-container .player-stats-row-secondary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #playerStats.stats-container .player-stats-row-secondary .stat-card {
+    min-height: 74px;
+  }
+
+  #playerWinRateChart {
+    height: 500px !important;
+    max-height: 500px !important;
+  }
+
+  #playerDeckPerformanceChart {
+    height: 280px !important;
+    max-height: 280px !important;
   }
 
   canvas {
@@ -150,7 +182,6 @@
 
   .data-table-container {
     padding: 10px;
-    overflow-x: auto;
   }
 
   .data-table {
@@ -327,8 +358,7 @@
 
 @media (max-width: 320px) {
   .data-table-container {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
+    overflow: visible;
   }
   
   .data-table {

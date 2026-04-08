@@ -35,7 +35,7 @@ export function updatePlayerAnalytics() {
 
   if (playerFilterMenu && !playerFilterMenu.dataset.initialized) {
     const players = [...new Set(cleanedData.map(row => row.Player))].sort((a, b) => a.localeCompare(b));
-    playerFilterMenu.innerHTML = `<option value="">Select EVENT TYPE First</option>` + players.map(player => `<option value="${player}">${player}</option>`).join("");
+    playerFilterMenu.innerHTML = players.map(player => `<option value="${player}">${player}</option>`).join("");
     playerFilterMenu.dataset.initialized = "true";
   }
 
@@ -183,10 +183,12 @@ export function populatePlayerStats(data) {
   updateQueryElement("playerLeastPlayedCard", ".stat-change", stats.leastPlayedCount);
 
   // Rank Stats
+  updateElement("playerTop1", stats.rankStats.top1);
   updateElement("playerTop1_8", stats.rankStats.top1_8);
   updateElement("playerTop9_16", stats.rankStats.top9_16);
   updateElement("playerTop17_32", stats.rankStats.top17_32);
   updateElement("playerTop33Plus", stats.rankStats.top33Plus);
+  updateElement("playerTop1%", stats.rankStats.top1Percent);
   updateElement("playerTop1_8%", stats.rankStats.top1_8Percent);
   updateElement("playerTop9_16%", stats.rankStats.top9_16Percent);
   updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);

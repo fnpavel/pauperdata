@@ -138,10 +138,12 @@ export function calculatePlayerStats(data) {
       leastPlayedDecks: "N/A",
       leastPlayedCount: "",
       rankStats: {
+        top1: "--",
         top1_8: "--",
         top9_16: "--",
         top17_32: "--",
         top33Plus: "--",
+        top1Percent: "--",
         top1_8Percent: "--",
         top9_16Percent: "--",
         top17_32Percent: "--",
@@ -190,19 +192,29 @@ export function calculatePlayerStats(data) {
   const leastPlayedCount = minCount > 0 ? `${minCount}x` : "";
 
   // Rank Stats
-  const rankStats = { top1_8: 0, top9_16: 0, top17_32: 0, top33Plus: 0 };
+  const rankStats = { top1: 0, top1_8: 0, top9_16: 0, top17_32: 0, top33Plus: 0 };
   data.forEach(row => {
-    if (row.Rank >= 1 && row.Rank <= 8) rankStats.top1_8 += 1;
-    else if (row.Rank >= 9 && row.Rank <= 16) rankStats.top9_16 += 1;
-    else if (row.Rank >= 17 && row.Rank <= 32) rankStats.top17_32 += 1;
-    else rankStats.top33Plus += 1;
+    if (row.Rank === 1) {
+      rankStats.top1 += 1;
+      rankStats.top1_8 += 1;
+    } else if (row.Rank >= 2 && row.Rank <= 8) {
+      rankStats.top1_8 += 1;
+    } else if (row.Rank >= 9 && row.Rank <= 16) {
+      rankStats.top9_16 += 1;
+    } else if (row.Rank >= 17 && row.Rank <= 32) {
+      rankStats.top17_32 += 1;
+    } else {
+      rankStats.top33Plus += 1;
+    }
   });
   const conversion = (count) => totalEvents === 0 ? "--" : `${((count / totalEvents) * 100).toFixed(0)}%`;
   const rankStatsFormatted = {
+    top1: rankStats.top1 || "--",
     top1_8: rankStats.top1_8 || "--",
     top9_16: rankStats.top9_16 || "--",
     top17_32: rankStats.top17_32 || "--",
     top33Plus: rankStats.top33Plus || "--",
+    top1Percent: conversion(rankStats.top1),
     top1_8Percent: conversion(rankStats.top1_8),
     top9_16Percent: conversion(rankStats.top9_16),
     top17_32Percent: conversion(rankStats.top17_32),

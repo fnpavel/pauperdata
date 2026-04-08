@@ -559,15 +559,79 @@
 }
 
 #playerStats.stats-container {
-  width: calc(110% + 10px);
-  margin-left: 0px;
+  width: 100%;
+  margin-left: 0;
   margin-right: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-  gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
   max-width: none;
   position: relative;
+}
+
+#playerStats.stats-container .player-stats-row {
+  display: grid;
+  gap: 8px;
+}
+
+#playerStats.stats-container .player-stats-row-primary {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+#playerStats.stats-container .player-stats-row-secondary {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+}
+
+#playerStats.stats-container .stat-card {
+  min-height: 82px;
+  padding: 6px 8px 20px;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+}
+
+#playerStats.stats-container .player-stats-row-secondary .stat-card {
+  min-height: 72px;
+}
+
+#playerStats.stats-container .stat-title {
+  font-size: 0.72rem;
+  margin-bottom: 0;
+  line-height: 1.1;
+}
+
+#playerStats.stats-container .stat-value {
+  font-size: 1.2rem;
+  line-height: 1.1;
+}
+
+#playerStats.stats-container .stat-change {
+  font-size: 0.84rem;
+  margin-top: 0;
+  line-height: 1.1;
+}
+
+#playerLeastPlayedCard .stat-title {
+  font-size: 0.64rem;
+}
+
+#playerLeastPlayedCard .stat-value {
+  font-size: 1.08rem;
+}
+
+#playerLeastPlayedCard .stat-change {
+  font-size: 0.76rem;
+}
+
+#playerStats.stats-container .stat-change:empty {
+  display: none;
+}
+
+#playerStats.stats-container .stat-icon {
+  right: 7px;
+  bottom: 5px;
+  font-size: 0.95rem;
 }
 
 .stat-card {
@@ -685,22 +749,43 @@
 }
 
 .deck-stats-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-  min-width: 300px;
-  width: auto;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  min-width: 0;
+  width: 236px;
   max-width: 100%;
+  align-self: start;
 }
 
-.deck-stats-sidebar #playerEventsCard .stat-details {
-  font-size: 0.7rem;
-  line-height: 1.4;
-  max-height: 150px;
+.deck-stats-sidebar .stat-title {
+  font-size: 0.78rem;
+}
+
+.deck-stats-sidebar .stat-details {
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
+.deck-stats-sidebar .stat-details .label,
+.deck-stats-sidebar .stat-details .value {
+  font-size: 0.78rem;
+}
+
+.deck-stats-sidebar #playerEventsHistory {
+  min-height: 0;
+}
+
+.deck-stats-sidebar #playerEventsHistory .stat-details {
+  font-size: 0.72rem;
+  line-height: 1.35;
+  max-height: 180px;
   overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
 }
 
-.deck-stats-sidebar #playerEventsCard .stat-details div {
+.deck-stats-sidebar #playerEventsHistory .stat-details div {
   margin-bottom: 4px;
 }
 

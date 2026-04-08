@@ -237,54 +237,63 @@
     <!-- Player Analysis Section -->
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">
-        <div class="stat-card" id="playerEventsCard">
-          <div class="stat-title">Total Events</div>
-          <div class="stat-value">Loading...</div>
-          <div class="stat-change"></div>
-          <div class="stat-icon">📅</div>
+        <div class="player-stats-row player-stats-row-primary">
+          <div class="stat-card" id="playerEventsCard">
+            <div class="stat-title">Total Events</div>
+            <div class="stat-value">Loading...</div>
+            <div class="stat-change"></div>
+            <div class="stat-icon">📅</div>
+          </div>
+          <div class="stat-card" id="playerUniqueDecksCard">
+            <div class="stat-title">Unique Decks Used</div>
+            <div class="stat-value">Loading...</div>
+            <div class="stat-icon">🃏</div>
+          </div>
+          <div class="stat-card" id="playerMostPlayedCard">
+            <div class="stat-title">Most Played Deck</div>
+            <div class="stat-value">Loading...</div>
+            <div class="stat-change"></div>
+            <div class="stat-icon">⬆️</div>
+          </div>
+          <div class="stat-card" id="playerLeastPlayedCard">
+            <div class="stat-title">Least Played Deck</div>
+            <div class="stat-value">Loading...</div>
+            <div class="stat-change"></div>
+            <div class="stat-icon">⬇️</div>
+          </div>
         </div>
-        <div class="stat-card" id="playerUniqueDecksCard">
-          <div class="stat-title">Unique Decks Used</div>
-          <div class="stat-value">Loading...</div>
-          <div class="stat-icon">🃏</div>
+        <div class="player-stats-row player-stats-row-secondary">
+          <div class="stat-card" id="playerTop1Card">
+            <div class="stat-title">Number of Top 1</div>
+            <div class="stat-value" id="playerTop1">0</div>
+            <div class="stat-change" id="playerTop1%"></div>
+            <div class="stat-icon">🥇</div>
+          </div>
+          <div class="stat-card" id="playerTop1_8Card">
+            <div class="stat-title">Number of Top 1-8</div>
+            <div class="stat-value" id="playerTop1_8">0</div>
+            <div class="stat-change" id="playerTop1_8%"></div>
+            <div class="stat-icon">🏆</div>
+          </div>
+          <div class="stat-card" id="playerTop9_16Card">
+            <div class="stat-title">Number of Top 9-16</div>
+            <div class="stat-value" id="playerTop9_16">0</div>
+            <div class="stat-change" id="playerTop9_16%"></div>
+            <div class="stat-icon">🏅</div>
+          </div>
+          <div class="stat-card" id="playerTop17_32Card">
+            <div class="stat-title">Number of Top 17-32</div>
+            <div class="stat-value" id="playerTop17_32">0</div>
+            <div class="stat-change" id="playerTop17_32%"></div>
+            <div class="stat-icon">🏅</div>
+          </div>
+          <div class="stat-card" id="playerTop33PlusCard">
+            <div class="stat-title">Number of Top 33+</div>
+            <div class="stat-value" id="playerTop33Plus">0</div>
+            <div class="stat-change" id="playerTop33Plus%"></div>
+            <div class="stat-icon">🏅</div>
+          </div>
         </div>
-        <div class="stat-card" id="playerMostPlayedCard">
-          <div class="stat-title">Most Played Deck</div>
-          <div class="stat-value">Loading...</div>
-          <div class="stat-change"></div>
-          <div class="stat-icon">⬆️</div>
-        </div>
-        <div class="stat-card" id="playerLeastPlayedCard">
-          <div class="stat-title">Least Played Deck</div>
-          <div class="stat-value">Loading...</div>
-          <div class="stat-change"></div>
-          <div class="stat-icon">⬇️</div>
-        </div>
-        <div class="stat-card" id="playerTop1_8Card">
-          <div class="stat-title">Number of Top 1-8</div>
-          <div class="stat-value" id="playerTop1_8">0</div>
-          <div class="stat-change" id="playerTop1_8%"></div>
-          <div class="stat-icon">🏆</div>
-        </div>
-        <div class="stat-card" id="playerTop9_16Card">
-          <div class="stat-title">Number of Top 9-16</div>
-          <div class="stat-value" id="playerTop9_16">0</div>
-          <div class="stat-change" id="playerTop9_16%"></div>
-          <div class="stat-icon">🏅</div>
-        </div>
-        <div class="stat-card" id="playerTop17_32Card">
-          <div class="stat-title">Number of Top 17-32</div>
-          <div class="stat-value" id="playerTop17_32">0</div>
-          <div class="stat-change" id="playerTop17_32%"></div>
-          <div class="stat-icon">🏅</div>
-        </div>
-        <div class="stat-card" id="playerTop33PlusCard">
-          <div class="stat-title">Number of Top 33+</div>
-          <div class="stat-value" id="playerTop33Plus">0</div>
-          <div class="stat-change" id="playerTop33Plus%"></div>
-          <div class="stat-icon">🏅</div>
-        </div>
-        <!-- Removed the Player Win Rate Stats stat-card from here -->
       </div>
 
       <div class="dashboard player-dashboard" id="playerDashboard">
@@ -309,19 +318,16 @@
 
         <div class="charts-and-tables">
           <div id="playerCharts">
-            <div class="chart-container">
+            <div class="chart-container player-primary-chart">
               <h2 class="chart-title">Player Analytics</h2>
-              <div class="bubble-menu">
-                <label>Start Date:</label>
-                <select id="playerStartDateSelect" onchange="updatePlayerAnalytics()"></select>
-                <label>End Date:</label>
-                <select id="playerEndDateSelect" onchange="updatePlayerAnalytics()"></select>
-              </div>
+              <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
+              <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+              <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
               <div id="playerWinRateChartLoading">Loading...</div>
               <canvas id="playerWinRateChart"></canvas>
               <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
             </div>
-            <div class="chart-container">
+            <div class="chart-container player-secondary-chart">
               <h2 class="chart-title">Deck Performance Scatter Plot</h2>
               <div id="playerDeckPerformanceChartLoading">Loading...</div>
               <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
@@ -329,21 +335,23 @@
             </div>
             <div class="data-table-container">
               <h2 class="chart-title" id="playerRawTableTitle">--</h2>
-              <table class="data-table" id="playerRawTable">
-                <thead id="playerRawTableHead">
-                  <tr>
-                    <th>Event (Players)</th>
-                    <th>Position</th>
-                    <th>Deck</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Win Rate</th>
-                    <th>%Meta, %WR</th>
-                    <th>Winner's Deck (%Meta, %WR)</th>
-                  </tr>
-                </thead>
-                <tbody id="playerRawTableBody"></tbody>
-              </table>
+              <div class="data-table-scroll player-data-table-scroll">
+                <table class="data-table" id="playerRawTable">
+                  <thead id="playerRawTableHead">
+                    <tr>
+                      <th>Event (Players)</th>
+                      <th>Position</th>
+                      <th>Deck</th>
+                      <th>Wins</th>
+                      <th>Losses</th>
+                      <th>Win Rate</th>
+                      <th>%Meta, %WR</th>
+                      <th>Winner's Deck (%Meta, %WR)</th>
+                    </tr>
+                  </thead>
+                  <tbody id="playerRawTableBody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>

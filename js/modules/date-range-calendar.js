@@ -14,10 +14,18 @@ const MONTH_NAMES = [
   'December'
 ];
 
-const rangeCalendarState = {
-  startViewMonth: '',
-  endViewMonth: ''
-};
+const rangeCalendarStates = new Map();
+
+function getRangeCalendarState(containerId) {
+  if (!rangeCalendarStates.has(containerId)) {
+    rangeCalendarStates.set(containerId, {
+      startViewMonth: '',
+      endViewMonth: ''
+    });
+  }
+
+  return rangeCalendarStates.get(containerId);
+}
 
 function getMonthKey(dateString) {
   return dateString ? dateString.slice(0, 7) : '';
@@ -230,27 +238,32 @@ function renderCalendarPanel({
   return panel;
 }
 
-export function renderMultiEventDateRangeCalendar({
+export function renderDateRangeCalendar({
+  containerId,
   dates = [],
   startDate = '',
   endDate = '',
+  startLabel = 'Start Date',
+  endLabel = 'End Date',
+  emptyMessage = 'Select an Event Type first.',
   onSelectStartDate,
   onSelectEndDate
 }) {
-  const container = document.getElementById('multiEventDateRangeCalendar');
+  const container = document.getElementById(containerId);
   if (!container) {
     return;
   }
 
   container.innerHTML = '';
+  const calendarState = getRangeCalendarState(containerId);
 
   if (dates.length === 0) {
     const emptyState = document.createElement('div');
     emptyState.className = 'event-calendar-empty';
-    emptyState.textContent = 'Select an Event Type first.';
+    emptyState.textContent = emptyMessage;
     container.appendChild(emptyState);
-    rangeCalendarState.startViewMonth = '';
-    rangeCalendarState.endViewMonth = '';
+    calendarState.startViewMonth = '';
+    calendarState.endViewMonth = '';
     return;
   }
 
@@ -260,13 +273,13 @@ export function renderMultiEventDateRangeCalendar({
   const startMonths = buildMonthOptions([...startSelectableDates]);
   const endMonths = buildMonthOptions([...endSelectableDates]);
 
-  rangeCalendarState.startViewMonth = ensureViewMonth(
-    rangeCalendarState.startViewMonth,
+  calendarState.startViewMonth = ensureViewMonth(
+    calendarState.startViewMonth,
     getMonthKey(startDate) || startMonths[0],
     startMonths
   );
-  rangeCalendarState.endViewMonth = ensureViewMonth(
-    rangeCalendarState.endViewMonth,
+  calendarState.endViewMonth = ensureViewMonth(
+    calendarState.endViewMonth,
     getMonthKey(endDate) || endMonths[endMonths.length - 1],
     endMonths
   );
@@ -276,18 +289,22 @@ export function renderMultiEventDateRangeCalendar({
 
   wrapper.appendChild(
     renderCalendarPanel({
-      title: 'Start Date',
-      viewMonth: rangeCalendarState.startViewMonth,
+      title: startLabel,
+      viewMonth: calendarState.startViewMonth,
       availableMonths: startMonths,
       selectableDates: startSelectableDates,
       allDatesSet,
       selectedDate: startDate,
       onNavigateMonth: monthKey => {
-        rangeCalendarState.startViewMonth = monthKey;
-        renderMultiEventDateRangeCalendar({
+        calendarState.startViewMonth = monthKey;
+        renderDateRangeCalendar({
+          containerId,
           dates,
           startDate,
           endDate,
+          startLabel,
+          endLabel,
+          emptyMessage,
           onSelectStartDate,
           onSelectEndDate
         });
@@ -298,18 +315,22 @@ export function renderMultiEventDateRangeCalendar({
 
   wrapper.appendChild(
     renderCalendarPanel({
-      title: 'End Date',
-      viewMonth: rangeCalendarState.endViewMonth,
+      title: endLabel,
+      viewMonth: calendarState.endViewMonth,
       availableMonths: endMonths,
       selectableDates: endSelectableDates,
       allDatesSet,
       selectedDate: endDate,
       onNavigateMonth: monthKey => {
-        rangeCalendarState.endViewMonth = monthKey;
-        renderMultiEventDateRangeCalendar({
+        calendarState.endViewMonth = monthKey;
+        renderDateRangeCalendar({
+          containerId,
           dates,
           startDate,
           endDate,
+          startLabel,
+          endLabel,
+          emptyMessage,
           onSelectStartDate,
           onSelectEndDate
         });
@@ -319,4 +340,19 @@ export function renderMultiEventDateRangeCalendar({
   );
 
   container.appendChild(wrapper);
+}
+
+export function renderMultiEventDateRangeCalendar(options = {}) {
+  return renderDateRangeCalendar({
+    containerId: 'multiEventDateRangeCalendar',
+    ...options
+  });
+}
+
+export function renderPlayerDateRangeCalendar(options = {}) {
+  return renderDateRangeCalendar({
+    containerId: 'playerDateRangeCalendar',
+    emptyMessage: 'Select a Player and Event Type first.',
+    ...options
+  });
 }

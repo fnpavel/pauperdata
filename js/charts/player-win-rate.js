@@ -93,7 +93,7 @@ export function updatePlayerWinRateChart() {
   }
 
   ['playerEventsCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard', 
-   'playerTop1_8Card', 'playerTop9_16Card', 'playerTop17_32Card', 'playerTop33PlusCard', 
+   'playerTop1Card', 'playerTop1_8Card', 'playerTop9_16Card', 'playerTop17_32Card', 'playerTop33PlusCard', 
    'playerBestDeckCard', 'playerWorstDeckCard', 'playerEventsHistory']
     .forEach(cardId => triggerUpdateAnimation(cardId));
 

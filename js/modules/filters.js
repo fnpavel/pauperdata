@@ -14,7 +14,7 @@ import {
   resetEventFilterCalendarState,
   primeEventFilterCalendarSelection
 } from './event-filter-calendar.js';
-import { renderMultiEventDateRangeCalendar } from './date-range-calendar.js';
+import { renderMultiEventDateRangeCalendar, renderPlayerDateRangeCalendar } from './date-range-calendar.js';
 
 let filteredData = [];
 let lastSingleEventType = '';
@@ -275,6 +275,31 @@ function resetPlayerDateRange() {
   resetSelectValue('playerEndDateSelect');
 }
 
+function getLatestPlayerDefaultSelection(selectedEventTypes = ['online']) {
+  const normalizedEventTypes =
+    selectedEventTypes.length > 0 ? selectedEventTypes : ['online'];
+
+  const latestWinner = cleanedData
+    .filter(row => {
+      return normalizedEventTypes.includes(row.EventType.toLowerCase()) && Number(row.Rank) === 1;
+    })
+    .sort((a, b) => b.Date.localeCompare(a.Date) || a.Event.localeCompare(b.Event))[0];
+
+  if (!latestWinner) {
+    return {
+      player: '',
+      startDate: '',
+      endDate: ''
+    };
+  }
+
+  return {
+    player: latestWinner.Player,
+    startDate: latestWinner.Date,
+    endDate: latestWinner.Date
+  };
+}
+
 function getDefaultMultiEventRange(dates) {
   if (dates.length === 0) {
     return { startDate: '', endDate: '' };
@@ -531,6 +556,24 @@ function setMultiEventDateSelection(type, value) {
   updateAllCharts();
 }
 
+function setPlayerDateSelection(type, value) {
+  const startDateSelect = document.getElementById('playerStartDateSelect');
+  const endDateSelect = document.getElementById('playerEndDateSelect');
+
+  if (!startDateSelect || !endDateSelect) {
+    return;
+  }
+
+  if (type === 'start') {
+    startDateSelect.value = value;
+  } else {
+    endDateSelect.value = value;
+  }
+
+  updatePlayerDateOptions();
+  updateAllCharts();
+}
+
 export function setupFilters() {
   console.log('Setting up filters...');
 
@@ -541,7 +584,7 @@ export function setupFilters() {
 
   const playerFilterMenu = document.getElementById('playerFilterMenu');
   if (playerFilterMenu) {
-    playerFilterMenu.innerHTML = '<option value="">Select Event Type First</option>';
+    playerFilterMenu.innerHTML = '';
     playerFilterMenu.value = '';
   }
 
@@ -557,11 +600,17 @@ export function setupFilters() {
   const playerStartDateSelect = document.getElementById('playerStartDateSelect');
   const playerEndDateSelect = document.getElementById('playerEndDateSelect');
   if (playerStartDateSelect) {
-    playerStartDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+    playerStartDateSelect.innerHTML = '';
   }
   if (playerEndDateSelect) {
-    playerEndDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+    playerEndDateSelect.innerHTML = '';
   }
+  renderPlayerDateRangeCalendar({
+    dates: [],
+    startDate: '',
+    endDate: ''
+  });
+  updatePlayerDateOptions();
 
   const activeAnalysisMode = getAnalysisMode();
   const singleEventStats = document.getElementById('singleEventStats');
@@ -782,20 +831,11 @@ export function setupTopModeListeners() {
           getPlayerAnalysisSelectedTypes()
         );
 
+        resetPlayerDateRange();
         const playerFilterMenu = document.getElementById('playerFilterMenu');
-        const playerStartDateSelect = document.getElementById('playerStartDateSelect');
-        const playerEndDateSelect = document.getElementById('playerEndDateSelect');
-
         if (playerFilterMenu) {
           playerFilterMenu.value = '';
         }
-        if (playerStartDateSelect) {
-          playerStartDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
-        }
-        if (playerEndDateSelect) {
-          playerEndDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
-        }
-
         updatePlayerDateOptions();
         updatePlayerAnalytics();
       }
@@ -1102,36 +1142,59 @@ export function updatePlayerDateOptions() {
   const selectedPlayer = playerFilterMenu.value;
 
   if (selectedEventTypes.length === 0) {
-    playerFilterMenu.innerHTML = '<option value="">Select Event Type First</option>';
+    playerFilterMenu.innerHTML = '<option value="">No Players Available</option>';
     playerFilterMenu.value = '';
-    startDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
-    endDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+    startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    renderPlayerDateRangeCalendar({
+      dates: [],
+      startDate: '',
+      endDate: '',
+      emptyMessage: 'No dates available.',
+      onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
+      onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
+    });
     return;
   }
+
+  const defaultSelection = getLatestPlayerDefaultSelection(selectedEventTypes);
 
   const players = [
     ...new Set(
       cleanedData
         .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-        .map(row => row.Player)
+      .map(row => row.Player)
     )
   ].sort((a, b) => a.localeCompare(b));
 
-  const currentPlayer = players.includes(selectedPlayer) ? selectedPlayer : '';
+  let currentPlayer = players.includes(selectedPlayer)
+    ? selectedPlayer
+    : players.includes(defaultSelection.player)
+      ? defaultSelection.player
+      : players[0] || '';
 
-  playerFilterMenu.innerHTML =
-    '<option value="">No Player Selected</option>' +
-    players
-      .map(player => {
-        return `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`;
-      })
-      .join('');
-
-  if (!currentPlayer) {
-    startDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
-    endDateSelect.innerHTML = '<option value="">Select Player and Event Type first</option>';
+  if (players.length === 0) {
+    playerFilterMenu.innerHTML = '<option value="">No Players Available</option>';
+    playerFilterMenu.value = '';
+    startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    renderPlayerDateRangeCalendar({
+      dates: [],
+      startDate: '',
+      endDate: '',
+      emptyMessage: 'No dates available.',
+      onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
+      onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
+    });
     return;
   }
+
+  playerFilterMenu.innerHTML = players
+    .map(player => {
+      return `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`;
+    })
+    .join('');
+  playerFilterMenu.value = currentPlayer;
 
   const dates = [
     ...new Set(
@@ -1148,63 +1211,78 @@ export function updatePlayerDateOptions() {
   if (dates.length === 0) {
     startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
+    renderPlayerDateRangeCalendar({
+      dates: [],
+      startDate: '',
+      endDate: '',
+      emptyMessage: 'No dates available for this player.',
+      onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
+      onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
+    });
     return;
   }
 
-  const selectedStartDate = startDateSelect.value;
-  const selectedEndDate = endDateSelect.value;
+  const selectedStartDate = dates.includes(startDateSelect.value) ? startDateSelect.value : '';
+  const selectedEndDate = dates.includes(endDateSelect.value) ? endDateSelect.value : '';
+  const fallbackDate =
+    currentPlayer === defaultSelection.player && dates.includes(defaultSelection.startDate)
+      ? defaultSelection.startDate
+      : dates[dates.length - 1];
 
-  if (selectedStartDate && !dates.includes(selectedStartDate)) {
-    startDateSelect.value = '';
-  }
-  if (selectedEndDate && !dates.includes(selectedEndDate)) {
-    endDateSelect.value = '';
-  }
+  let currentStartDate = selectedStartDate;
+  let currentEndDate = selectedEndDate;
 
-  const currentStartDate = startDateSelect.value;
-  const currentEndDate = endDateSelect.value;
+  if (!currentStartDate && !currentEndDate) {
+    currentStartDate = fallbackDate;
+    currentEndDate = fallbackDate;
+  } else if (!currentStartDate) {
+    currentStartDate = currentEndDate;
+  } else if (!currentEndDate) {
+    currentEndDate = currentStartDate;
+  }
 
   if (currentStartDate) {
     const validEndDates = dates.filter(date => date >= currentStartDate);
     endDateSelect.innerHTML =
-      '<option value="">Select End Date</option>' +
       validEndDates
         .map(date => {
           return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
         })
         .join('');
   } else {
-    endDateSelect.innerHTML =
-      '<option value="">Select End Date</option>' +
-      dates
-        .map(date => {
-          return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
-        })
-        .join('');
+    endDateSelect.innerHTML = dates
+      .map(date => {
+        return `<option value="${date}" ${date === currentEndDate ? 'selected' : ''}>${date}</option>`;
+      })
+      .join('');
   }
 
   if (currentEndDate) {
     const validStartDates = dates.filter(date => date <= currentEndDate);
     startDateSelect.innerHTML =
-      '<option value="">Select Start Date</option>' +
       validStartDates
         .map(date => {
           return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
         })
         .join('');
   } else {
-    startDateSelect.innerHTML =
-      '<option value="">Select Start Date</option>' +
-      dates
-        .map(date => {
-          return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
-        })
-        .join('');
+    startDateSelect.innerHTML = dates
+      .map(date => {
+        return `<option value="${date}" ${date === currentStartDate ? 'selected' : ''}>${date}</option>`;
+      })
+      .join('');
   }
 
-  if (startDateSelect.value && endDateSelect.value) {
-    updatePlayerAnalytics();
-  }
+  startDateSelect.value = currentStartDate;
+  endDateSelect.value = currentEndDate;
+
+  renderPlayerDateRangeCalendar({
+    dates,
+    startDate: currentStartDate,
+    endDate: currentEndDate,
+    onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
+    onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
+  });
 }
 
 export function populateDateDropdowns(eventType) {
