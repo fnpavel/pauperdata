@@ -1,4 +1,4 @@
-export const lastUpdatedDate = "2025-06-18";
+﻿export const lastUpdatedDate = "2026-04-08";
 
 /*Players are normalized to have only the first letter in uppercase, this differs from MTGO nicknames but it is necessary as the sourced data does not always follows the original MTGO nickname*/
 export const cleanedData = [
@@ -137019,3 +137019,4 @@ export const cleanedData = [
     "Win Rate": 0.4285714286
   }
 ];
+

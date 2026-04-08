@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -35,7 +35,7 @@
         <h1>Pauper MTG Analytics</h1>
         <h2>Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a></h2>
         <h2 id="lastUpdatedDate">Last updated: --</h2>
-        <h2>All updates are paused (both data and new features) until MTGO's replay feature is fixed. Kirb can’t pull data below Top 32, so the dashboard wouldn't show anything truly useful.</h2>
+        <h2>Project is being worked again, I'll update data by 2026-04-11</h2>
       </div>
       <div class="mode-buttons">
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
@@ -423,19 +423,27 @@
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
-        <p>Normally I will update the MTGO Challenge Data by Monday, but I am working to automatize the process and have updates as soon as Kirb shares his data collection sheets</p>
-        <p>Version 1.2 | Made by <a href="https://twitter.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from the AIs: Grok3, Claude and Gemini</p>
-        <p>MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a>
+        <p>Project work is active again, and I am rebuilding the update flow so new MTGO data can be published faster and with fewer manual steps.</p>
+        <p>Version 1.3 | Updated 2026-04-08 | Made by <a href="https://twitter.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from the AIs: Grok3, Claude and Gemini</p>
+        <p>MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a></p>
         <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</a></p>
         <p>Upstate NY data by <a href="https://m.facebook.com/profile.php?id=61558575774196" target="_blank">Upstate NY Pauper</a> <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">(Bluesky)</a></p>
 
         <p>Contact (for bugs or to send data): <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
+        <h3>Recent Changes</h3>
+        <ul>
+          <li>Single Event Analysis now uses a calendar-based event selector with grouped event families.</li>
+          <li>Multiple Events now has calendar controls plus a Current Events Selected summary.</li>
+          <li>Player Analysis was refreshed with better defaults, calendar controls, and a cleaner layout.</li>
+          <li>The data workflow is being rebuilt around staged CSV extraction and normalized JSON outputs.</li>
+        </ul>
+
         <h3>Known Issues</h3>
         <ul>
           <li>The dashboard is not <b>yet</b> optimized for mobile devices.</li>
-          <li>Dropdown menus do not default to an empty selection.</li>
-          <li>Filter buttons occasionally fail to register their state and may need to be clicked again.</li>
-          <b><li>Some decks are classified as UNKNOWN because they could not be correctly labeled. In MTGO events this is due to the deactivation of the replays which prevent data collection beyond the Top 32.</li></b>
+          <li>Some historical naming still needs normalization across players, decks, and special events.</li>
+          <li>Some decks are classified as UNKNOWN because the source sheet did not provide a reliable label for those finishes.</li>
+          <li>The Google Drive import flow is still transitional until the direct API-based sync is ready.</li>
         </ul>
 
         <h3>Future Updates</h3>
@@ -443,19 +451,20 @@
           <li><s>Version 1.0: Improve the Top Conversion + Aggregate Player Win Rates chart.</s></li>
           <li><s>Version 1.1: Add scatter charts for the Event and Player Analysis and split styles.css into multiple files</s></li>
           <li><s>Version 1.2: Add dropdown menus to filter all the Charts</s></li>
-          <li>Version 1.3: Implement Matchup Matrix for Decks and Players</li> 
+          <li><s>Version 1.3: Rebuild filters, refresh Player Analysis, and restore the data workflow.</s></li>
+          <li>Version 1.4: Implement Matchup Matrix for Decks and Players</li>
           <li>TBD: Improve the website for smaller screens</li>
-          <li>TBD: Organize and fix the filtering problems in the dropdown menu</li>
-          <li>TBD: Make the buttons properly record their state</li>
+          <li>TBD: Connect directly to Google Drive through the API</li>
+          <li>TBD: Continue normalizing player, deck, and event aliases</li>
           <li>TBD: Establish a database connection</li>
-          <li>TBD: Add Data from other formats</li>
+          <li>TBD: Add data from other formats</li>
         </ul>
 
         <h3>Events added</h3>
         <ul>
           <li>2023 Paupergeddon Pisa</li>
           <li>2025 Upstate New York Open</li>
-          <li>All 2024 and 2025 MTGO Pauper Challenges collected by Kirblinxy</li>
+          <li>Ongoing MTGO archive rebuild from the Google Drive workbook collection</li>
         </ul>
         <p><a href="#" id="backToApp">Back to Dashboard</a></p>
       </div>
@@ -484,3 +493,4 @@
 
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f9daab8534c1f',t:'MTc0MjU4MjgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9264525b1ce4456a',t:'MTc0Mjk2NzcxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
