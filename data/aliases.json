@@ -1,15 +1,7 @@
 {
   "generated_from": "js/data.js",
-  "last_updated_date": "2025-06-18",
-  "event_name_aliases": [
-    {
-      "raw_name": "MTGO SHOWCASE",
-      "canonical_name": "MTGO Showcase",
-      "display_name": "Showcase",
-      "series": "Showcase",
-      "source_system": "mtgo"
-    }
-  ],
+  "last_updated_date": "2026-04-07",
+  "event_name_aliases": [],
   "player_aliases": [],
   "deck_aliases": []
 }
