@@ -1,0 +1,23 @@
+# Ignore everything by default at the repo root.
+/*
+
+# Explicitly ignore raw source archives/workbooks.
+/data/staging
+
+# Keep this file itself.
+!/.gitignore
+
+# Keep the app entrypoint.
+!/index.html
+
+# Keep source folders.
+!/css/
+!/css/**
+!/js/
+!/js/**
+!/data/
+!/data/**
+
+# Ignore generated staging outputs inside the tracked data folder.
+/data/staging/
+/data/staging/**
