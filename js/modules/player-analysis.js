@@ -1,4 +1,4 @@
-import { cleanedData } from '../data.js';
+import { getAnalysisRows } from '../utils/analysis-data.js';
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { triggerUpdateAnimation, updateElementHTML } from '../utils/dom.js';
@@ -313,7 +313,7 @@ function buildEventRowsByName(eventNames) {
   const eventNameSet = new Set(eventNames);
   const eventRowsByName = new Map();
 
-  cleanedData.forEach(row => {
+  getAnalysisRows().forEach(row => {
     if (!eventNameSet.has(row.Event)) {
       return;
     }

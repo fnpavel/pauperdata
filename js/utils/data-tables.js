@@ -1,6 +1,6 @@
 // js/utils/data-tables.js
 
-import { cleanedData } from '../data.js';
+import { getAnalysisRows } from './analysis-data.js';
 
 // Single Event Tables
 export function calculateSingleEventRawTable(data) {
@@ -119,7 +119,7 @@ export function calculateMultiEventDeckTable(data, deckName) {
 // Player Tables
 export function calculatePlayerEventTable(data) {
   return data.map(row => {
-    const eventData = cleanedData.filter(r => r.Event === row.Event);
+    const eventData = getAnalysisRows().filter(r => r.Event === row.Event);
     const deckData = eventData.filter(r => r.Deck === row.Deck);
     const totalWins = deckData.reduce((sum, r) => sum + r.Wins, 0);
     const totalLosses = deckData.reduce((sum, r) => sum + r.Losses, 0);

@@ -1,4 +1,3 @@
-import { cleanedData } from '../data.js';
 import { updateEventAnalytics, updateMultiEventAnalytics } from './event-analysis.js';
 import { updatePlayerAnalytics } from './player-analysis.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
@@ -46,6 +45,11 @@ import {
   getMultiEventPresetSuggestedRange
 } from '../utils/multi-event-presets.js';
 import { formatDate, formatEventName } from '../utils/format.js';
+import {
+  getAnalysisRows,
+  isUnknownHeavyBelowTop32FilterEnabled,
+  setUnknownHeavyBelowTop32FilterEnabled
+} from '../utils/analysis-data.js';
 
 let filteredData = [];
 let lastSingleEventType = '';
@@ -72,6 +76,71 @@ function getTopMode() {
 
 function getAnalysisMode() {
   return document.querySelector('.analysis-mode.active')?.dataset.mode || 'single';
+}
+
+function getAnalysisQualityToggleButtons() {
+  return Array.from(document.querySelectorAll('[data-analysis-quality-toggle="unknown-heavy-below-top32"]'));
+}
+
+function syncAnalysisQualityToggleButtons() {
+  const isEnabled = isUnknownHeavyBelowTop32FilterEnabled();
+
+  getAnalysisQualityToggleButtons().forEach(button => {
+    button.classList.toggle('active', isEnabled);
+    button.setAttribute('aria-pressed', String(isEnabled));
+
+    const stateElement = button.querySelector('[data-analysis-quality-state]');
+    if (stateElement) {
+      stateElement.textContent = isEnabled ? 'On' : 'Off';
+    }
+  });
+}
+
+function refreshAnalysisQualityToggleState() {
+  const selectedSingleEvent = document.getElementById('eventFilterMenu')?.value || '';
+  const selectedEventType = getSingleEventSelectedType();
+  const activeMultiEventPreset = getActiveMultiEventPreset();
+  const activePlayerPreset = getPlayerAnalysisActivePreset();
+
+  syncAnalysisQualityToggleButtons();
+  renderQuickViewButtons('multi');
+  renderQuickViewButtons('player');
+  updateEventFilter(selectedSingleEvent, Boolean(selectedSingleEvent));
+  if (selectedEventType && !document.getElementById('eventFilterMenu')?.value) {
+    const fallbackEvent = buildSingleEventCalendarEntries(selectedEventType)[0]?.name || '';
+    if (fallbackEvent) {
+      updateEventFilter(fallbackEvent, true);
+    }
+  }
+  updateDateOptions();
+  updatePlayerDateOptions();
+
+  if (activeMultiEventPreset) {
+    applyActiveMultiEventPresetDateRange();
+  }
+
+  if (activePlayerPreset) {
+    applyActivePlayerPresetDateRange();
+  }
+
+  updateAllCharts();
+}
+
+function setupAnalysisQualityToggleListeners() {
+  getAnalysisQualityToggleButtons().forEach(button => {
+    if (button.dataset.listenerAdded === 'true') {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      setUnknownHeavyBelowTop32FilterEnabled(!isUnknownHeavyBelowTop32FilterEnabled());
+      refreshAnalysisQualityToggleState();
+    });
+
+    button.dataset.listenerAdded = 'true';
+  });
+
+  syncAnalysisQualityToggleButtons();
 }
 
 function getEventAnalysisSection() {
@@ -194,7 +263,8 @@ function getActiveQuickViewPresetIds(scope, activePresetValue = '') {
 }
 
 function getResolvedQuickViewYear(scope, activePresetIds = []) {
-  const yearOptions = getQuickViewPresetYearOptions(cleanedData);
+  const analysisRows = getAnalysisRows();
+  const yearOptions = getQuickViewPresetYearOptions(analysisRows);
   if (yearOptions.length === 0) {
     return '';
   }
@@ -203,10 +273,10 @@ function getResolvedQuickViewYear(scope, activePresetIds = []) {
     ? activePresetIds
     : getActiveQuickViewPresetIds(scope, activePresetIds);
   const activePreset = resolvedPresetIds
-    .map(presetId => getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true }))
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true }))
     .find(Boolean);
   const presetYear = activePreset?.releaseYear || '';
-  const currentYear = getActiveQuickViewYear(scope) || getDefaultQuickViewYear(cleanedData);
+  const currentYear = getActiveQuickViewYear(scope) || getDefaultQuickViewYear(analysisRows);
 
   if (currentYear && yearOptions.includes(currentYear)) {
     return currentYear;
@@ -226,14 +296,15 @@ function renderQuickViewButtons(scope) {
   }
 
   container.innerHTML = '';
+  const analysisRows = getAnalysisRows();
   const activePresetValue = container.dataset.activePreset || '';
   const activePresetIds = getActiveQuickViewPresetIds(scope, activePresetValue);
   const buttonClass = getQuickViewButtonClass(scope);
   const datasetKey = getQuickViewDatasetKey(scope);
   const staticPresets = getStaticQuickViewPresetDefinitions();
-  const yearOptions = getQuickViewPresetYearOptions(cleanedData);
+  const yearOptions = getQuickViewPresetYearOptions(analysisRows);
   const resolvedYear = getResolvedQuickViewYear(scope, activePresetIds);
-  const yearPresets = getSetQuickViewPresetDefinitions(cleanedData).filter(preset => preset.releaseYear === resolvedYear);
+  const yearPresets = getSetQuickViewPresetDefinitions(analysisRows).filter(preset => preset.releaseYear === resolvedYear);
 
   setActiveQuickViewYear(scope, resolvedYear);
 
@@ -311,7 +382,7 @@ function setMultiEventPresetButtonState(activePresetId = '') {
     root.dataset.activePreset = activePresetId;
   }
 
-  const preset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  const preset = getQuickViewPresetDefinitionById(activePresetId, getAnalysisRows(), { includeFuture: true });
   if (preset?.releaseYear) {
     setActiveQuickViewYear('multi', preset.releaseYear);
   }
@@ -324,7 +395,7 @@ function clearMultiEventPresetButtonState() {
 }
 
 function getDefaultSetQuickViewPresetId() {
-  return getLatestSetQuickViewPresetId(cleanedData);
+  return getLatestSetQuickViewPresetId(getAnalysisRows());
 }
 
 function ensureDefaultMultiEventPreset() {
@@ -427,7 +498,7 @@ function setPlayerPresetButtonState(activePresetId = '') {
   }
 
   const preset = activePresetIds
-    .map(presetId => getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true }))
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, getAnalysisRows(), { includeFuture: true }))
     .find(candidate => candidate?.releaseYear);
   if (preset?.releaseYear) {
     setActiveQuickViewYear('player', preset.releaseYear);
@@ -507,7 +578,8 @@ function applyActivePlayerPresetDateRange() {
 }
 
 function applyPlayerAnalysisPreset(presetId) {
-  const preset = getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true });
+  const analysisRows = getAnalysisRows();
+  const preset = getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true });
   const presetEventTypes = getPlayerPresetEventTypes(presetId);
   if (presetEventTypes) {
     const nextType = resolvePresetEventTypeSelection(getPlayerAnalysisSelectedTypes(), presetEventTypes);
@@ -525,7 +597,7 @@ function applyPlayerAnalysisPreset(presetId) {
     nextPresetIds = [preset.id];
   } else {
     const activeSetWindowIds = getPlayerAnalysisActivePresetIds().filter(activePresetId => {
-      const activePreset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+      const activePreset = getQuickViewPresetDefinitionById(activePresetId, analysisRows, { includeFuture: true });
       return activePreset?.kind === 'set-window' && activePreset.releaseYear === preset.releaseYear;
     });
     const nextPresetIdSet = new Set(activeSetWindowIds);
@@ -558,13 +630,13 @@ function getEventDate(eventName) {
     return match[1];
   }
 
-  return cleanedData.find(row => row.Event === eventName)?.Date || '';
+  return getAnalysisRows().find(row => row.Event === eventName)?.Date || '';
 }
 
 function buildSingleEventCalendarEntries(selectedEventType) {
   const entries = new Map();
 
-  cleanedData.forEach(row => {
+  getAnalysisRows().forEach(row => {
     if (row.EventType.toLowerCase() !== selectedEventType || entries.has(row.Event)) {
       return;
     }
@@ -589,7 +661,7 @@ function buildSingleEventCalendarEntries(selectedEventType) {
 function getLatestSingleEventEntry() {
   const entries = new Map();
 
-  cleanedData.forEach(row => {
+  getAnalysisRows().forEach(row => {
     if (entries.has(row.Event)) {
       return;
     }
@@ -1238,8 +1310,10 @@ function setPlayerDateSelection(type, value, options = {}) {
 export function setupFilters() {
   console.log('Setting up filters...');
 
-  setActiveQuickViewYear('multi', getDefaultQuickViewYear(cleanedData));
-  setActiveQuickViewYear('player', getDefaultQuickViewYear(cleanedData));
+  const analysisRows = getAnalysisRows();
+  setupAnalysisQualityToggleListeners();
+  setActiveQuickViewYear('multi', getDefaultQuickViewYear(analysisRows));
+  setActiveQuickViewYear('player', getDefaultQuickViewYear(analysisRows));
   renderQuickViewButtons('multi');
   renderQuickViewButtons('player');
   setDefaultSectionEventType(getPlayerAnalysisSection());
@@ -1318,7 +1392,7 @@ export function updateAllCharts() {
 
       filteredData =
         selectedEventType && selectedEvent
-          ? cleanedData.filter(row => {
+          ? getAnalysisRows().filter(row => {
               return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
             })
           : [];
@@ -1355,7 +1429,7 @@ export function getFunnelChartData() {
   const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
   const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
 
-  const filtered = cleanedData.filter(row => {
+  const filtered = getAnalysisRows().filter(row => {
     return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
   });
 
@@ -1366,7 +1440,7 @@ export function getMetaWinRateChartData() {
   const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
 
-  return cleanedData.filter(row => {
+  return getAnalysisRows().filter(row => {
     return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
   });
 }
@@ -1825,7 +1899,7 @@ export function updatePlayerDateOptions() {
 
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
-  const eventTypeRows = cleanedData.filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
+  const eventTypeRows = getAnalysisRows().filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
   const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
 
   if (selectedEventTypes.length === 0) {
@@ -1967,7 +2041,7 @@ export function updatePlayerDateOptions() {
 export function populateDateDropdowns(eventType) {
   const filteredDates = [
     ...new Set(
-      cleanedData
+      getAnalysisRows()
         .filter(row => row.EventType.toLowerCase() === eventType.toLowerCase())
         .map(row => row.Date)
     )

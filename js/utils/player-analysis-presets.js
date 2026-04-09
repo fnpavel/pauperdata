@@ -1,4 +1,4 @@
-import { cleanedData } from '../data.js';
+import { getAnalysisRows } from './analysis-data.js';
 import { rowMatchesPlayerKey } from './player-names.js';
 import {
   normalizeQuickViewPresetIds,
@@ -24,14 +24,14 @@ export function getPlayerAnalysisActivePresetIds() {
 }
 
 export function getPlayerPresetEventTypes(presetId) {
-  return getQuickViewPresetEventTypes(presetId, cleanedData);
+  return getQuickViewPresetEventTypes(presetId, getAnalysisRows());
 }
 
-export function getPlayerPresetRows(selectedEventTypes = [], presetId = '', rows = cleanedData) {
+export function getPlayerPresetRows(selectedEventTypes = [], presetId = '', rows = getAnalysisRows()) {
   return getQuickViewPresetRows(selectedEventTypes, presetId, rows);
 }
 
-export function getPlayerPresetSuggestedRange({ selectedEventTypes = [], presetId = '', playerKey = '', rows = cleanedData } = {}) {
+export function getPlayerPresetSuggestedRange({ selectedEventTypes = [], presetId = '', playerKey = '', rows = getAnalysisRows() } = {}) {
   const scopedRows = getPlayerPresetRows(selectedEventTypes, presetId, rows);
   const playerRows = playerKey ? scopedRows.filter(row => rowMatchesPlayerKey(row, playerKey)) : scopedRows;
 
