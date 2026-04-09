@@ -107,12 +107,14 @@ export function renderLeaderboardOverviewChart(leaderboardRows = [], filteredRow
                 return [];
               }
 
+              const pct = (count, total) => total > 0 ? formatLeaderboardPercentage((count / total) * 100) : '--';
+
               return [
-                `Top 1: ${row.top1}`,
-                `Top 8: ${row.top8}`,
-                `Top 9-16: ${row.top9_16}`,
-                `Top 17-32: ${row.top17_32}`,
-                `Top 33+: ${row.top33Plus}`,
+                `Trophies: ${row.top1} (${pct(row.top1, row.events)})`,
+                `Top 1-8: ${row.top8} (${pct(row.top8, row.events)})`,
+                `Top 9-16: ${row.top9_16} (${pct(row.top9_16, row.events)})`,
+                `Top 17-32: ${row.top17_32} (${pct(row.top17_32, row.events)})`,
+                `Top 33+: ${row.top33Plus} (${pct(row.top33Plus, row.events)})`,
                 `Events: ${row.events}`,
                 `Win Rate: ${formatLeaderboardPercentage(row.winRate)}`,
                 `Avg Finish: ${formatAverageFinish(row.averageFinish)}`
