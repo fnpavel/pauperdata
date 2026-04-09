@@ -81,6 +81,7 @@ const MULTI_EVENT_DRILLDOWN_CONFIG = {
 let currentSingleEventRows = [];
 let currentMultiEventRows = [];
 let activeSingleEventDrilldownCategory = '';
+let activeSingleEventDeckDrilldownName = '';
 let activeMultiEventDrilldownState = null;
 
 const TOP_DECK_RANGE_DEFINITIONS = [
@@ -865,6 +866,25 @@ function renderSingleEventDrilldown(categoryKey) {
   }
 
   const deckSummary = getSingleEventMostPopularDeckSummary();
+  const selectedDeckName = String(activeSingleEventDeckDrilldownName || '').trim();
+  const selectedDeckCopyCount = selectedDeckName
+    ? currentSingleEventRows.filter(row => String(row?.Deck || '').trim() === selectedDeckName).length
+    : 0;
+
+  if (selectedDeckName) {
+    const selectedDeckStats = calculateDeckStats(currentSingleEventRows, selectedDeckName, currentSingleEventRows.length);
+    const selectedDeckSubtitle = selectedDeckCopyCount > 0
+      ? `${eventDateLabel} | ${selectedDeckCopyCount} cop${selectedDeckCopyCount === 1 ? 'y' : 'ies'} | ${formatPercentage(selectedDeckStats.metaShare)} Meta | ${formatPercentage(selectedDeckStats.winRate)} WR`
+      : `${eventDateLabel} | No entries found for ${selectedDeckName}`;
+
+    elements.title.textContent = `${eventLabel} - ${selectedDeckName}`;
+    elements.subtitle.textContent = selectedDeckSubtitle;
+    elements.content.innerHTML = selectedDeckCopyCount > 0
+      ? buildSingleEventDeckDrilldownHtml([selectedDeckName], selectedDeckCopyCount)
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(`${selectedDeckName} is not present in the selected event.`)}</div>`;
+    return;
+  }
+
   const deckLabel = deckSummary.deckNames.length > 1 ? 'Most Popular Decks' : config.title;
   const subtitle = deckSummary.deckNames.length > 0
     ? `${eventDateLabel} | ${deckSummary.deckNames.length} deck${deckSummary.deckNames.length === 1 ? '' : 's'} at ${deckSummary.copyCount} cop${deckSummary.copyCount === 1 ? 'y' : 'ies'}`
@@ -941,7 +961,25 @@ function openSingleEventDrilldown(categoryKey) {
 
   activeMultiEventDrilldownState = null;
   activeSingleEventDrilldownCategory = categoryKey;
+  activeSingleEventDeckDrilldownName = '';
   renderSingleEventDrilldown(categoryKey);
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+}
+
+export function openSingleEventDeckDrilldown(deckName) {
+  const elements = getSingleEventDrilldownElements();
+  const normalizedDeckName = String(deckName || '').trim();
+  const deckCopyCount = currentSingleEventRows.filter(row => String(row?.Deck || '').trim() === normalizedDeckName).length;
+
+  if (!elements.overlay || !normalizedDeckName || deckCopyCount === 0) {
+    return;
+  }
+
+  activeMultiEventDrilldownState = null;
+  activeSingleEventDrilldownCategory = 'mostPopularDeck';
+  activeSingleEventDeckDrilldownName = normalizedDeckName;
+  renderSingleEventDrilldown('mostPopularDeck');
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
 }
@@ -971,6 +1009,7 @@ function closeSingleEventDrilldown() {
 
   overlay.hidden = true;
   activeSingleEventDrilldownCategory = '';
+  activeSingleEventDeckDrilldownName = '';
   activeMultiEventDrilldownState = null;
   document.body.classList.remove('modal-open');
 }

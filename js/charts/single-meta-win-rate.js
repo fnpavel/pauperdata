@@ -1,7 +1,7 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getMetaWinRateChartData } from '../modules/filters.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
-import { updateSingleEventTables } from '../modules/event-analysis.js';
+import { openSingleEventDeckDrilldown, updateSingleEventTables } from '../modules/event-analysis.js';
 import { getChartTheme } from '../utils/theme.js';
 
 export let metaWinRateEventChart = null;
@@ -131,6 +131,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
         borderColor: '#DAA520',
         borderWidth: 1,
         pointRadius: 8,
+        pointHitRadius: 18,
         pointHoverRadius: 10
       }
     ];
@@ -442,6 +443,20 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
           duration: 1000,
           easing: 'easeOutQuart'
         },
+        onClick: (_, activeElements, chart) => {
+          if (viewType !== 'scatter' || activeElements.length === 0) {
+            return;
+          }
+
+          const clickedPoint = chart.data.datasets[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
+          const clickedDeckName = String(clickedPoint?.label || '').trim();
+          if (clickedDeckName) {
+            openSingleEventDeckDrilldown(clickedDeckName);
+          }
+        },
+        onHover: (_, activeElements) => {
+          metaWinRateCtx.style.cursor = viewType === 'scatter' && activeElements.length > 0 ? 'pointer' : 'default';
+        },
         // View-specific elements
         elements: viewType === 'bar' ? {
           bar: { borderRadius: 4, borderSkipped: false }
@@ -457,6 +472,8 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
   } catch (error) {
     console.error("Error initializing Meta/Win Rate Chart:", error);
   }
+
+  metaWinRateCtx.style.cursor = 'default';
 
   let toggleDiv = chartContainer.querySelector('.sort-toggle');
   if (!toggleDiv) {
