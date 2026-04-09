@@ -3,6 +3,10 @@
     grid-template-columns: 280px 1fr;
   }
 
+  .leaderboard-dashboard {
+    grid-template-columns: 280px 1fr;
+  }
+
   .player-dashboard {
     gap: 18px;
     grid-template-columns: 248px 1fr;

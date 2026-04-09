@@ -2,6 +2,7 @@
 import { lastUpdatedDate } from './data.js'; // the date is stored in data.js because weekly I'm pushing only changes there.
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
+import { initLeaderboards, updateLeaderboardAnalytics } from './modules/leaderboards-analysis.js';
 import { 
   setupFilters, 
   setupTopModeListeners, 
@@ -39,6 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize analysis modules
   initEventAnalysis();
   initPlayerAnalysis();
+  initLeaderboards();
 
   setupAboutListeners();
   
@@ -61,6 +63,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (defaultTopMode === 'player') {
     updatePlayerAnalytics();
     window.updatePlayerDeckPerformanceChart(); // Initial call for Player Analysis
+  } else if (defaultTopMode === 'leaderboard') {
+    updateLeaderboardAnalytics();
   }
 
   // Add event listener for playerDeckPerformanceSelect

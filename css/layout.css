@@ -72,6 +72,10 @@ header::before {
   grid-template-columns: 280px minmax(0, 1fr);
 }
 
+.leaderboard-dashboard {
+  grid-template-columns: 280px minmax(0, 1fr);
+}
+
 .player-dashboard {
   gap: 16px;
   grid-template-columns: 248px minmax(0, 1fr) 236px;

@@ -25,6 +25,11 @@
   overflow: hidden;
 }
 
+.top-mode-button[data-top-mode="leaderboard"] {
+  min-width: 142px;
+  text-align: center;
+}
+
 .top-mode-button::after {
   content: '';
   position: absolute;
@@ -1743,7 +1748,8 @@ body.modal-open {
 }
 
 #singleEventStats.stats-container,
-#multiEventStats.stats-container {
+#multiEventStats.stats-container,
+#leaderboardStats.stats-container {
   width: calc(110% + 10px);
   margin-left: 0px;
   margin-right: 0;
@@ -1755,6 +1761,31 @@ body.modal-open {
   position: relative;
   --dashboard-width: calc(280px + 1fr + (30px * 1));
   width: var(--dashboard-width);
+}
+
+#leaderboardChartDetails {
+  color: var(--text-secondary);
+  padding: 10px;
+  text-align: center;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.leaderboard-table-helper {
+  margin-top: -4px;
+  margin-bottom: 12px;
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  line-height: 1.45;
+}
+
+#leaderboardTableBody .leaderboard-rank-cell {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+#leaderboardTableBody .leaderboard-average-finish {
+  font-variant-numeric: tabular-nums;
 }
 
 #playerStats.stats-container {

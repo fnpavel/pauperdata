@@ -76,6 +76,7 @@
       <div class="mode-buttons">
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
+        <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards</button>
         <button class="bubble-button" id="aboutButton">About</button>
         <div class="header-utility-stack">
           <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
@@ -535,6 +536,114 @@
       </div>
     </div>
 
+    <!-- Leaderboards Section -->
+    <div id="leaderboardsSection" style="display: none;">
+      <div class="stats-container" id="leaderboardStats">
+        <div class="stat-card" id="leaderboardTotalEventsCard">
+          <div class="stat-title">Total Events</div>
+          <div class="stat-value" id="leaderboardTotalEvents">0</div>
+          <div class="stat-change" id="leaderboardTotalEventsDetails">Select a set window</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="leaderboardTrackedPlayersCard">
+          <div class="stat-title">Tracked Players</div>
+          <div class="stat-value" id="leaderboardTrackedPlayers">0</div>
+          <div class="stat-change" id="leaderboardTrackedPlayersDetails">Across the selected events</div>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-card" id="leaderboardLeaderCard">
+          <div class="stat-title">Current Leader</div>
+          <div class="stat-value" id="leaderboardLeaderName">--</div>
+          <div class="stat-change" id="leaderboardLeaderDetails">0 pts / --</div>
+          <div class="stat-icon">🏆</div>
+        </div>
+        <div class="stat-card" id="leaderboardMostTrophiesCard">
+          <div class="stat-title">Most Trophies</div>
+          <div class="stat-value" id="leaderboardMostTrophiesName">--</div>
+          <div class="stat-change" id="leaderboardMostTrophiesDetails">0 wins</div>
+          <div class="stat-icon">🥇</div>
+        </div>
+        <div class="stat-card" id="leaderboardMostMatchWinsCard">
+          <div class="stat-title">Most Match Wins</div>
+          <div class="stat-value" id="leaderboardMostMatchWinsName">--</div>
+          <div class="stat-change" id="leaderboardMostMatchWinsDetails">0 wins / 0.0% WR</div>
+          <div class="stat-icon">📈</div>
+        </div>
+      </div>
+
+      <div class="dashboard leaderboard-dashboard" id="leaderboardDashboard">
+        <div class="filters">
+          <h3>Filter Options</h3>
+          <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+              <button class="bubble-button event-type-filter" data-type="online">Online</button>
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>Quick Views</h4>
+            <div id="leaderboardQuickViewButtons" class="quick-view-control"></div>
+          </div>
+          <div id="leaderboardSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+            <div id="leaderboardSelectionSummary" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Current Events Selected</div>
+              <div class="multi-event-selection-scroll">
+                <div id="leaderboardSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+              </div>
+            </div>
+            <div id="leaderboardSelectionListBox" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Selected Event List</div>
+              <div class="multi-event-selection-scroll">
+                <div id="leaderboardSelectionList" class="multi-event-selection-list player-event-history-list">No events selected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-and-tables">
+          <div class="chart-container">
+            <h2 class="chart-title">Set Leaderboard Overview</h2>
+            <div id="leaderboardDateRangeCalendar" class="range-calendar-container"></div>
+            <select id="leaderboardStartDateSelect" hidden aria-hidden="true"></select>
+            <select id="leaderboardEndDateSelect" hidden aria-hidden="true"></select>
+            <div id="leaderboardOverviewChartLoading">Loading...</div>
+            <canvas id="leaderboardOverviewChart" style="height: 420px;"></canvas>
+            <div id="leaderboardChartDetails" class="leaderboard-chart-details"></div>
+          </div>
+
+          <div class="data-table-container">
+            <h2 class="chart-title" id="leaderboardTableTitle">Set Leaderboard</h2>
+            <div class="leaderboard-table-helper" id="leaderboardTableHelper">
+              Scoring: Top 1 = 10 pts, Top 2-8 = 6 pts, Top 9-16 = 3 pts, Top 17-32 = 1 pt.
+            </div>
+            <div class="data-table-scroll player-data-table-scroll">
+              <table class="data-table" id="leaderboardTable">
+                <thead id="leaderboardTableHead">
+                  <tr>
+                    <th data-sort="displayRank">Rank <span class="sort-arrow"></span></th>
+                    <th data-sort="player">Player <span class="sort-arrow"></span></th>
+                    <th data-sort="score">Score <span class="sort-arrow"></span></th>
+                    <th data-sort="events">Events <span class="sort-arrow"></span></th>
+                    <th data-sort="top1">Top 1 <span class="sort-arrow"></span></th>
+                    <th data-sort="top8">Top 8 <span class="sort-arrow"></span></th>
+                    <th data-sort="top9_16">Top 9-16 <span class="sort-arrow"></span></th>
+                    <th data-sort="top17_32">Top 17-32 <span class="sort-arrow"></span></th>
+                    <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
+                    <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
+                    <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
+                    <th data-sort="averageFinish">Avg Finish <span class="sort-arrow"></span></th>
+                    <th data-sort="bestFinish">Best Finish <span class="sort-arrow"></span></th>
+                  </tr>
+                </thead>
+                <tbody id="leaderboardTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- About Section -->
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
@@ -593,6 +702,8 @@
   <script src="js/charts/player-deck-performance.js" type="module"></script>
   <script src="js/modules/event-analysis.js" type="module"></script>
   <script src="js/modules/player-analysis.js" type="module"></script>
+  <script src="js/modules/leaderboards-analysis.js" type="module"></script>
+  <script src="js/modules/leaderboards-chart.js" type="module"></script>
   <script src="js/modules/filters.js" type="module"></script>
   <script src="js/main.js" type="module"></script>
 

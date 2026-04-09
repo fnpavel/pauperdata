@@ -218,6 +218,29 @@ th.asc .sort-arrow {
   z-index: 4;
 }
 
+#leaderboardTable {
+  --leaderboard-rank-column-width: 72px;
+  --leaderboard-player-column-width: 220px;
+}
+
+#leaderboardTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+#leaderboardTable th:nth-child(1),
+#leaderboardTable td:nth-child(1) {
+  min-width: var(--leaderboard-rank-column-width);
+  width: var(--leaderboard-rank-column-width);
+}
+
+#leaderboardTable th:nth-child(2),
+#leaderboardTable td:nth-child(2) {
+  min-width: var(--leaderboard-player-column-width);
+  width: var(--leaderboard-player-column-width);
+}
+
 #multiEventTable th,
 #multiEventTable td {
   padding: 8px 6px;
@@ -282,6 +305,18 @@ th.asc .sort-arrow {
   box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
 }
 
+#leaderboardTable thead tr:first-child > th:nth-child(1),
+#leaderboardTable tbody td:first-child:not([colspan]) {
+  position: sticky;
+  left: 0;
+}
+
+#leaderboardTable thead tr:first-child > th:nth-child(2),
+#leaderboardTable tbody td:nth-child(2):not([colspan]) {
+  position: sticky;
+  left: var(--leaderboard-rank-column-width);
+}
+
 #singleEventTable thead tr:first-child > th:first-child,
 #multiEventTable thead tr:first-child > th:first-child {
   z-index: 6;
@@ -289,6 +324,16 @@ th.asc .sort-arrow {
 
 #playerRawTable thead tr:first-child > th:first-child {
   z-index: 6;
+}
+
+#leaderboardTable thead tr:first-child > th:nth-child(1) {
+  z-index: 7;
+  box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
+}
+
+#leaderboardTable thead tr:first-child > th:nth-child(2) {
+  z-index: 7;
+  box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
 }
 
 #singleEventTable tbody td:first-child,
@@ -302,12 +347,23 @@ th.asc .sort-arrow {
   background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
 }
 
+#leaderboardTable tbody td:first-child:not([colspan]),
+#leaderboardTable tbody td:nth-child(2):not([colspan]) {
+  z-index: 2;
+  background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+}
+
 #singleEventTable tbody tr:hover td:first-child,
 #multiEventTable tbody tr:hover td:first-child {
   background: rgba(217, 164, 65, 0.12);
 }
 
 #playerRawTable tbody tr:hover td:first-child:not([colspan]) {
+  background: rgba(217, 164, 65, 0.12);
+}
+
+#leaderboardTable tbody tr:hover td:first-child:not([colspan]),
+#leaderboardTable tbody tr:hover td:nth-child(2):not([colspan]) {
   background: rgba(217, 164, 65, 0.12);
 }
 

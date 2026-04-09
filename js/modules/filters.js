@@ -1,5 +1,6 @@
 import { updateEventAnalytics, updateMultiEventAnalytics } from './event-analysis.js';
 import { updatePlayerAnalytics } from './player-analysis.js';
+import { updateLeaderboardAnalytics } from './leaderboards-analysis.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
@@ -1516,6 +1517,8 @@ export function updateAllCharts() {
     updatePlayerAnalytics();
     updatePlayerDeckPerformanceChart();
     updatePlayerWinRateChart();
+  } else if (activeTopMode === 'leaderboard') {
+    updateLeaderboardAnalytics();
   }
 
   updatePlayerSelectionSummary();
@@ -1567,6 +1570,7 @@ export function setupTopModeListeners() {
   const topModeButtons = document.querySelectorAll('.top-mode-button');
   const eventAnalysisSection = document.getElementById('eventAnalysisSection');
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  const leaderboardsSection = document.getElementById('leaderboardsSection');
   const singleEventStats = document.getElementById('singleEventStats');
   const multiEventStats = document.getElementById('multiEventStats');
   const playerStats = document.getElementById('playerStats');
@@ -1590,6 +1594,9 @@ export function setupTopModeListeners() {
         }
         if (playerAnalysisSection) {
           playerAnalysisSection.style.display = 'none';
+        }
+        if (leaderboardsSection) {
+          leaderboardsSection.style.display = 'none';
         }
 
         setDefaultSectionEventType(getEventAnalysisSection());
@@ -1631,6 +1638,9 @@ export function setupTopModeListeners() {
         if (playerAnalysisSection) {
           playerAnalysisSection.style.display = 'block';
         }
+        if (leaderboardsSection) {
+          leaderboardsSection.style.display = 'none';
+        }
         if (playerStats) {
           playerStats.style.display = 'grid';
         }
@@ -1653,6 +1663,18 @@ export function setupTopModeListeners() {
         updatePlayerDateOptions();
         applyActivePlayerPresetDateRange();
         updatePlayerAnalytics();
+      } else if (mode === 'leaderboard') {
+        if (eventAnalysisSection) {
+          eventAnalysisSection.style.display = 'none';
+        }
+        if (playerAnalysisSection) {
+          playerAnalysisSection.style.display = 'none';
+        }
+        if (leaderboardsSection) {
+          leaderboardsSection.style.display = 'block';
+        }
+
+        updateLeaderboardAnalytics();
       }
     });
   });
