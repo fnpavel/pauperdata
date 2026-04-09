@@ -84,6 +84,21 @@ export function renderLeaderboardOverviewChart(leaderboardRows = [], filteredRow
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
+        title: {
+          display: true,
+          text: [
+            'Score Charts',
+            'Scoring: Top 1 = 10 pts, Top 2-8 = 6 pts, Top 9-16 = 3 pts, Top 17-32 = 1 pt.'
+          ],
+          color: '#f7f3ea',
+          font: {
+            size: 16,
+            weight: 'bold'
+          },
+          padding: {
+            bottom: 20
+          }
+        },
         legend: {
           display: false
         },
@@ -110,8 +125,8 @@ export function renderLeaderboardOverviewChart(leaderboardRows = [], filteredRow
               const pct = (count, total) => total > 0 ? formatLeaderboardPercentage((count / total) * 100) : '--';
 
               return [
-                `Trophies: ${row.top1} (${pct(row.top1, row.events)})`,
-                `Top 1-8: ${row.top8} (${pct(row.top8, row.events)})`,
+                `Top 1: ${row.top1} (${pct(row.top1, row.events)})`,
+                `Top 2-8: ${row.top8 - row.top1} (${pct(row.top8 - row.top1, row.events)})`,
                 `Top 9-16: ${row.top9_16} (${pct(row.top9_16, row.events)})`,
                 `Top 17-32: ${row.top17_32} (${pct(row.top17_32, row.events)})`,
                 `Top 33+: ${row.top33Plus} (${pct(row.top33Plus, row.events)})`,
