@@ -17,6 +17,19 @@ function getLatestRowDate(rows = cleanedData) {
   }, '');
 }
 
+export function normalizeQuickViewPresetIds(presetIds = []) {
+  const sourceValues = Array.isArray(presetIds) ? presetIds : [presetIds];
+  const uniqueIds = new Set();
+
+  sourceValues
+    .flatMap(value => String(value || '').split(','))
+    .map(value => value.trim())
+    .filter(Boolean)
+    .forEach(value => uniqueIds.add(value));
+
+  return Array.from(uniqueIds);
+}
+
 function buildSetWindowPresets(rows = cleanedData, { includeFuture = false } = {}) {
   const sortedWindows = [...setReleaseWindows].sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
   const latestRowDate = getLatestRowDate(rows);
@@ -69,6 +82,16 @@ export function getQuickViewPresetDefinitionById(presetId, rows = cleanedData, {
   return getQuickViewPresetDefinitions(rows, { includeFuture }).find(preset => preset.id === presetId) || null;
 }
 
+export function getQuickViewPresetDefinitionsByIds(presetIds = [], rows = cleanedData, { includeFuture = true } = {}) {
+  const presetsById = new Map(
+    getQuickViewPresetDefinitions(rows, { includeFuture }).map(preset => [preset.id, preset])
+  );
+
+  return normalizeQuickViewPresetIds(presetIds)
+    .map(presetId => presetsById.get(presetId))
+    .filter(Boolean);
+}
+
 export function getQuickViewPresetYearOptions(rows = cleanedData, { includeFuture = false } = {}) {
   return [...new Set(getSetQuickViewPresetDefinitions(rows, { includeFuture }).map(preset => preset.releaseYear))]
     .sort((a, b) => Number(b) - Number(a));
@@ -90,7 +113,12 @@ export function getLatestSetQuickViewPresetId(rows = cleanedData, { includeFutur
 }
 
 export function getQuickViewPresetEventTypes(presetId, rows = cleanedData) {
-  return getQuickViewPresetDefinitionById(presetId, rows)?.eventTypes || null;
+  const presets = getQuickViewPresetDefinitionsByIds(presetId, rows);
+  if (presets.length === 0) {
+    return null;
+  }
+
+  return [...new Set(presets.flatMap(preset => preset.eventTypes || []))];
 }
 
 export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', rows = cleanedData) {
@@ -99,15 +127,19 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
   }
 
   const baseRows = rows.filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
-  const preset = getQuickViewPresetDefinitionById(presetId, rows);
+  const presets = getQuickViewPresetDefinitionsByIds(presetId, rows);
 
-  if (!preset || preset.kind === 'static') {
+  if (presets.length === 0 || presets.some(preset => preset.kind === 'static')) {
     return baseRows;
   }
 
-  if (preset.kind === 'set-window') {
+  const setWindowPresets = presets.filter(preset => preset.kind === 'set-window');
+
+  if (setWindowPresets.length > 0) {
     return baseRows.filter(row => {
-      return row.Date >= preset.releaseDate && (!preset.nextReleaseDate || row.Date < preset.nextReleaseDate);
+      return setWindowPresets.some(preset => {
+        return row.Date >= preset.releaseDate && (!preset.nextReleaseDate || row.Date < preset.nextReleaseDate);
+      });
     });
   }
 

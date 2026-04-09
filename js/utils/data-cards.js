@@ -1,6 +1,15 @@
 // js/utils/data-cards.js
 import { formatEventName } from './format.js';
 
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function calculateTopDecks(data) {
   return {
     "Top 8": [...new Set(data.filter(row => row.Rank >= 1 && row.Rank <= 8).map(row => row.Deck))],
@@ -129,26 +138,62 @@ export function buildPlayerEventHistoryHTML(data) {
     return "<div>No events selected</div>";
   }
 
-  const eventsByDate = data.reduce((acc, row) => {
-    if (!acc[row.Date]) {
-      acc[row.Date] = [];
-    }
+  return [...data]
+    .sort((a, b) => {
+      const dateComparison = String(b?.Date || '').localeCompare(String(a?.Date || ''));
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
 
-    acc[row.Date].push({
-      event: row.Event,
-      deck: row.Deck,
-      rank: row.Rank
-    });
-    return acc;
-  }, {});
+      const rankComparison = Number(a?.Rank) - Number(b?.Rank);
+      if (rankComparison !== 0) {
+        return rankComparison;
+      }
 
-  return Object.keys(eventsByDate)
-    .sort()
-    .map(date => {
-      const eventDeckPairs = eventsByDate[date].map(item => `${item.event} (${item.deck}, Rank: ${item.rank})`);
-      return `<div><span class="label">${date}:</span> <span class="value">${eventDeckPairs.join(", ")}</span></div>`;
+      return String(a?.Event || '').localeCompare(String(b?.Event || ''));
+    })
+    .map(row => {
+      const eventName = String(row?.Event || '').trim();
+      const formattedEventName = formatEventName(eventName) || eventName || 'Unknown Event';
+      const eventDate = String(row?.Date || '').trim();
+      const deckName = String(row?.Deck || '').trim();
+      const rankValue = String(row?.Rank ?? '').trim();
+      const dateLabel = eventDate || '--';
+      const deckLabel = deckName || '--';
+      const rankLabel = rankValue ? `#${rankValue}` : '#--';
+
+      return `
+        <button
+          type="button"
+          class="player-event-history-item"
+          data-player-history-event="${escapeHtml(eventName)}"
+          data-player-history-date="${escapeHtml(eventDate)}"
+          data-player-history-deck="${escapeHtml(deckName)}"
+          data-player-history-rank="${escapeHtml(rankValue)}"
+          aria-label="${escapeHtml(`${formattedEventName} on ${dateLabel} with ${deckLabel}, ${rankLabel}`)}"
+        >
+          <span class="player-event-history-item-date">${escapeHtml(dateLabel)}</span>
+          <span class="player-event-history-item-main">${escapeHtml(formattedEventName)}</span>
+          <span class="player-event-history-item-meta">${escapeHtml(`${deckLabel} | ${rankLabel}`)}</span>
+        </button>
+      `;
     })
     .join("");
+}
+
+function formatDeckEventLabel(eventName) {
+  return formatEventName(eventName) || String(eventName || '').trim() || '--';
+}
+
+function formatDeckEventWinRateText(eventData) {
+  if (!eventData || !Number.isFinite(eventData.winRate)) {
+    return '--';
+  }
+
+  const eventLabel = formatDeckEventLabel(eventData.event);
+  return eventLabel && eventLabel !== '--'
+    ? `${eventData.winRate.toFixed(2)}% (${eventLabel})`
+    : `${eventData.winRate.toFixed(2)}%`;
 }
 
 // Player Stat Cards
@@ -182,9 +227,9 @@ export function calculatePlayerStats(data) {
       worstDeckTitle: "Worst Performing Deck",
       worstDecks: { name: "--", events: "--", winRate: "--", bestWinRate: "--", worstWinRate: "--" },
       mostPlayedDeckTitle: "Most Played Deck",
-      mostPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "-- (Event: --)", worstWinRate: "-- (Event: --)" },
+      mostPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" },
       leastPlayedDeckTitle: "Least Played Deck",
-      leastPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "-- (Event: --)", worstWinRate: "-- (Event: --)" },
+      leastPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" },
       eventHistoryHTML: "<div>No events selected</div>"
     };
   }
@@ -300,8 +345,8 @@ export function calculatePlayerStats(data) {
     name: bestDecks.map(deck => deck.deck).join(", "),
     events: bestDecks[0].eventCount.toString(),
     winRate: `${bestDecks[0].overallWinRate.toFixed(2)}%`,
-    bestWinRate: bestDecks.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`).join(", "),
-    worstWinRate: bestDecks.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`).join(", ")
+    bestWinRate: bestDecks.map(deck => formatDeckEventWinRateText(deck.bestEventData)).join(", "),
+    worstWinRate: bestDecks.map(deck => formatDeckEventWinRateText(deck.worstEventData)).join(", ")
   } : { name: "--", events: "--", winRate: "--", bestWinRate: "--", worstWinRate: "--" };
 
   const worstDeckTitle = worstDecks.length > 1 ? "Worst (Tied) Performing Deck" : "Worst Performing Deck";
@@ -309,8 +354,8 @@ export function calculatePlayerStats(data) {
     name: worstDecks.map(deck => deck.deck).join(", "),
     events: worstDecks[0].eventCount.toString(),
     winRate: `${worstDecks[0].overallWinRate.toFixed(2)}%`,
-    bestWinRate: worstDecks.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`).join(", "),
-    worstWinRate: worstDecks.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`).join(", ")
+    bestWinRate: worstDecks.map(deck => formatDeckEventWinRateText(deck.bestEventData)).join(", "),
+    worstWinRate: worstDecks.map(deck => formatDeckEventWinRateText(deck.worstEventData)).join(", ")
   } : { name: "--", events: "--", winRate: "--", bestWinRate: "--", worstWinRate: "--" };
 
   const mostPlayedDeckTitle = mostPlayedDeckEntries.length > 1 ? "Most (Tied) Played Deck" : "Most Played Deck";
@@ -320,9 +365,9 @@ export function calculatePlayerStats(data) {
     winRate: mostPlayedDeckEntries.length === 1 
       ? `${mostPlayedDeckEntries[0].overallWinRate.toFixed(2)}%`
       : mostPlayedDeckEntries.map(deck => `${deck.overallWinRate.toFixed(2)}%`).join(", "),
-    bestWinRate: mostPlayedDeckEntries.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`).join(", "),
-    worstWinRate: mostPlayedDeckEntries.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`).join(", ")
-  } : { name: "--", events: "0", winRate: "0%", bestWinRate: "-- (Event: --)", worstWinRate: "-- (Event: --)" };
+    bestWinRate: mostPlayedDeckEntries.map(deck => formatDeckEventWinRateText(deck.bestEventData)).join(", "),
+    worstWinRate: mostPlayedDeckEntries.map(deck => formatDeckEventWinRateText(deck.worstEventData)).join(", ")
+  } : { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" };
 
   const leastPlayedDeckTitle = leastPlayedDeckEntries.length > 1 ? "Least (Tied) Played Deck" : "Least Played Deck";
   const leastPlayedDecksData = leastPlayedDeckEntries.length > 0 ? {
@@ -331,9 +376,9 @@ export function calculatePlayerStats(data) {
     winRate: leastPlayedDeckEntries.length === 1 
       ? `${leastPlayedDeckEntries[0].overallWinRate.toFixed(2)}%`
       : leastPlayedDeckEntries.map(deck => `${deck.overallWinRate.toFixed(2)}%`).join(", "),
-    bestWinRate: leastPlayedDeckEntries.map(deck => `${deck.bestEventData.winRate.toFixed(2)}% (${deck.bestEventData.event})`).join(", "),
-    worstWinRate: leastPlayedDeckEntries.map(deck => `${deck.worstEventData.winRate.toFixed(2)}% (${deck.worstEventData.event})`).join(", ")
-  } : { name: "--", events: "0", winRate: "0%", bestWinRate: "-- (Event: --)", worstWinRate: "-- (Event: --)" };
+    bestWinRate: leastPlayedDeckEntries.map(deck => formatDeckEventWinRateText(deck.bestEventData)).join(", "),
+    worstWinRate: leastPlayedDeckEntries.map(deck => formatDeckEventWinRateText(deck.worstEventData)).join(", ")
+  } : { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" };
 
   // Event History with Rank
   const eventHistoryHTML = buildPlayerEventHistoryHTML(data);

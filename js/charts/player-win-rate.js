@@ -8,6 +8,7 @@ import { formatDate, formatEventName } from '../utils/format.js';
 
 export let playerWinRateChart = null;
 let pinnedPlayerPointKey = '';
+const PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE = 'Deck chips appear here once the current player filters include deck results.';
 
 const playerSummaryStatCardIds = [
   'playerEventsCard',
@@ -28,6 +29,145 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function getPlayerWinRateDeckFilterRoot() {
+  return document.getElementById('playerWinRateDeckFilter');
+}
+
+function readSelectedPlayerWinRateDeck() {
+  const root = getPlayerWinRateDeckFilterRoot();
+  if (!root) {
+    return '';
+  }
+
+  const directSelection = String(root.dataset.selectedDeck || '').trim();
+  if (directSelection) {
+    return directSelection;
+  }
+
+  try {
+    const parsed = JSON.parse(root.dataset.selectedDecks || '[]');
+    return Array.isArray(parsed) ? String(parsed[0] || '').trim() : '';
+  } catch (error) {
+    console.warn('Unable to parse player win-rate deck filter state:', error);
+    return '';
+  }
+}
+
+function writeSelectedPlayerWinRateDeck(selectedDeck) {
+  const root = getPlayerWinRateDeckFilterRoot();
+  if (!root) {
+    return;
+  }
+
+  const normalizedSelection = String(selectedDeck || '').trim();
+  root.dataset.selectedDeck = normalizedSelection;
+  root.dataset.selectedDecks = JSON.stringify(normalizedSelection ? [normalizedSelection] : []);
+}
+
+function isSelectablePlayerWinRateDeck(deckName) {
+  const normalizedDeck = String(deckName || '').trim();
+  return normalizedDeck !== '' && normalizedDeck !== 'No Show' && normalizedDeck.toUpperCase() !== 'UNKNOWN';
+}
+
+function getPlayerWinRateBaseData() {
+  return getPlayerWinRateChartData().filter(row => isSelectablePlayerWinRateDeck(row.Deck));
+}
+
+function renderPlayerWinRateDeckFilter(baseData) {
+  const root = getPlayerWinRateDeckFilterRoot();
+  if (!root) {
+    return '';
+  }
+
+  const availableDecks = [...new Set(
+    (baseData || [])
+      .map(row => String(row.Deck || '').trim())
+      .filter(isSelectablePlayerWinRateDeck)
+  )].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+  const currentSelectedDeck = readSelectedPlayerWinRateDeck();
+  const validSelectedDeck = availableDecks.includes(currentSelectedDeck) ? currentSelectedDeck : '';
+  writeSelectedPlayerWinRateDeck(validSelectedDeck);
+
+  if (availableDecks.length === 0) {
+    root.innerHTML = `
+      <div class="player-chart-filter-header">
+        <div class="player-chart-filter-copy">
+          <span class="player-chart-filter-label">Deck Filter</span>
+          <span class="player-chart-filter-note">Applies only to this chart.</span>
+        </div>
+      </div>
+      <div class="player-chart-filter-empty">${escapeHtml(PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE)}</div>
+    `;
+    return '';
+  }
+
+  const filterSummary = validSelectedDeck
+    ? `Applies only to this chart. Showing only ${validSelectedDeck} in the current time span.`
+    : `Applies only to this chart. Showing all ${availableDecks.length} decks in the current time span.`;
+
+  root.innerHTML = `
+    <div class="player-chart-filter-header">
+      <div class="player-chart-filter-copy">
+        <span class="player-chart-filter-label">Deck Filter</span>
+        <span class="player-chart-filter-note">${escapeHtml(filterSummary)}</span>
+      </div>
+    </div>
+    <div class="bubble-menu player-chart-filter-chips">
+      <button type="button" class="bubble-button player-win-rate-deck-chip player-win-rate-deck-chip-reset${!validSelectedDeck ? ' active' : ''}" data-player-win-rate-reset="true">All Decks</button>
+      ${availableDecks.map(deck => `
+        <button
+          type="button"
+          class="bubble-button player-win-rate-deck-chip${validSelectedDeck === deck ? ' active' : ''}"
+          data-player-win-rate-deck="${escapeHtml(deck)}"
+        >${escapeHtml(deck)}</button>
+      `).join('')}
+    </div>
+  `;
+
+  return validSelectedDeck;
+}
+
+function setupPlayerWinRateDeckFilterListeners() {
+  const root = getPlayerWinRateDeckFilterRoot();
+  if (!root || root.dataset.listenerAdded === 'true') {
+    return;
+  }
+
+  root.addEventListener('click', event => {
+    const resetButton = event.target.closest('[data-player-win-rate-reset="true"]');
+    if (resetButton) {
+      writeSelectedPlayerWinRateDeck('');
+      updatePlayerWinRateChart();
+      return;
+    }
+
+    const deckButton = event.target.closest('[data-player-win-rate-deck]');
+    if (!deckButton) {
+      return;
+    }
+
+    const deckName = String(deckButton.dataset.playerWinRateDeck || '').trim();
+    if (!isSelectablePlayerWinRateDeck(deckName)) {
+      return;
+    }
+
+    const currentSelectedDeck = readSelectedPlayerWinRateDeck();
+    writeSelectedPlayerWinRateDeck(currentSelectedDeck === deckName ? '' : deckName);
+    updatePlayerWinRateChart();
+  });
+
+  root.dataset.listenerAdded = 'true';
+}
+
+function filterPlayerWinRateDataByDeck(baseData, selectedDeck) {
+  if (!selectedDeck) {
+    return baseData;
+  }
+
+  return baseData.filter(row => String(row.Deck || '').trim() === selectedDeck);
 }
 
 function formatShortChartDate(dateStr, includeYear = false) {
@@ -270,18 +410,10 @@ export function updatePlayerWinRateChart() {
   const theme = getChartTheme();
   pinnedPlayerPointKey = '';
 
-  const filteredData = getPlayerWinRateChartData();
-  const deckFilter = document.getElementById("playerDeckFilter");
-  if (deckFilter) {
-    const decks = [...new Set(filteredData.map(row => row.Deck))].sort();
-    const currentDeck = deckFilter.value;
-    deckFilter.innerHTML = `<option value="">All Decks</option>` + 
-      decks.map(deck => `<option value="${deck}" ${deck === currentDeck ? 'selected' : ''}>${deck}</option>`).join("");
-    if (!deckFilter.dataset.listenerAdded) {
-      deckFilter.addEventListener("change", () => updatePlayerWinRateChart());
-      deckFilter.dataset.listenerAdded = "true";
-    }
-  }
+  setupPlayerWinRateDeckFilterListeners();
+  const baseData = getPlayerWinRateBaseData();
+  const selectedDeck = renderPlayerWinRateDeckFilter(baseData);
+  const filteredData = filterPlayerWinRateDataByDeck(baseData, selectedDeck);
 
   if (!filteredData.length) {
     renderPlayerEventDetailsPlaceholder('No event details available for the current filters.');

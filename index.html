@@ -52,7 +52,6 @@
         <h1>Pauper MTG Analytics</h1>
         <h2>Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a></h2>
         <h2 id="lastUpdatedDate">Last updated: --</h2>
-        <h2>Project is being worked again, I'll update data by 2026-04-11</h2>
       </div>
       <div class="mode-buttons">
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
@@ -268,6 +267,21 @@
       </div>
     </div>
 
+    <div id="eventStatDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="eventStatDrilldownTitle">
+        <div class="player-rank-drilldown-header">
+          <div class="player-rank-drilldown-heading">
+            <h3 id="eventStatDrilldownTitle">Event Details</h3>
+            <p id="eventStatDrilldownSubtitle">Select an event stat card to inspect the matching result.</p>
+          </div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="eventStatDrilldownClose" aria-label="Close event details">
+            Close
+          </button>
+        </div>
+        <div id="eventStatDrilldownContent" class="player-rank-drilldown-content"></div>
+      </div>
+    </div>
+
     <!-- Player Analysis Section -->
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">
@@ -373,6 +387,7 @@
             <div class="chart-container player-primary-chart">
               <h2 class="chart-title">Player Analytics</h2>
               <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
+              <div id="playerWinRateDeckFilter" class="player-chart-filter-panel"></div>
               <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
               <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
               <div id="playerWinRateChartLoading">Loading...</div>

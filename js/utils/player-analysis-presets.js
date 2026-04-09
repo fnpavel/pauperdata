@@ -1,15 +1,26 @@
 import { cleanedData } from '../data.js';
 import { rowMatchesPlayerKey } from './player-names.js';
 import {
+  normalizeQuickViewPresetIds,
   getQuickViewPresetEventTypes,
   getQuickViewPresetRows,
   getQuickViewPresetSuggestedRange
 } from './quick-view-presets.js';
 
 export function getPlayerAnalysisActivePreset() {
-  return document.getElementById('playerQuickViewButtons')?.dataset.activePreset
-    || document.querySelector('.player-preset-button.active')?.dataset.playerPreset
-    || '';
+  const activePresetValue = document.getElementById('playerQuickViewButtons')?.dataset.activePreset || '';
+  if (activePresetValue) {
+    return activePresetValue;
+  }
+
+  return Array.from(document.querySelectorAll('.player-preset-button.active'))
+    .map(button => button.dataset.playerPreset)
+    .filter(Boolean)
+    .join(',');
+}
+
+export function getPlayerAnalysisActivePresetIds() {
+  return normalizeQuickViewPresetIds(getPlayerAnalysisActivePreset());
 }
 
 export function getPlayerPresetEventTypes(presetId) {

@@ -5,6 +5,7 @@ import { triggerUpdateAnimation, updateElementHTML } from '../utils/dom.js';
 import { calculatePlayerStats } from '../utils/data-cards.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatEventName } from '../utils/format.js';
+import { getEventGroupInfo } from '../utils/event-groups.js';
 import { getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
 
@@ -13,6 +14,32 @@ function getSelectedPlayerEventTypes() {
   return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).map(button =>
     button.dataset.type.toLowerCase()
   );
+}
+
+function getActivePlayerEventGroupFilter() {
+  const selectionPanels = document.getElementById('playerSelectionPanels');
+  const activeGroupKeys = String(selectionPanels?.dataset.activeGroupKeys || '')
+    .split(',')
+    .map(value => value.trim())
+    .filter(Boolean);
+
+  return {
+    initialized: selectionPanels?.dataset.groupFilterInitialized === 'true',
+    activeGroupKeys: new Set(activeGroupKeys)
+  };
+}
+
+function applyPlayerEventGroupFilter(rows = []) {
+  const { initialized, activeGroupKeys } = getActivePlayerEventGroupFilter();
+  if (!initialized) {
+    return rows;
+  }
+
+  if (activeGroupKeys.size === 0) {
+    return [];
+  }
+
+  return rows.filter(row => activeGroupKeys.has(getEventGroupInfo(row.Event).key));
 }
 
 const playerSidebarCardIds = [
@@ -89,6 +116,34 @@ const PLAYER_SUMMARY_DRILLDOWN_CONFIG = {
   leastPlayedDecks: {
     cardId: 'playerLeastPlayedCard',
     title: 'Least Played Decks',
+    emptyMessage: 'No deck data in the current Player Analysis filters.'
+  }
+};
+
+const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {
+  overallWinRate: {
+    cardId: 'playerWinRateStatsCard',
+    fallbackTitle: 'Overall Win Rate',
+    emptyMessage: 'No deck data in the current Player Analysis filters.'
+  },
+  mostPlayedDeckStats: {
+    cardId: 'playerMostPlayedDeckCard',
+    fallbackTitle: 'Most Played Deck',
+    emptyMessage: 'No deck data in the current Player Analysis filters.'
+  },
+  leastPlayedDeckStats: {
+    cardId: 'playerLeastPlayedDeckCard',
+    fallbackTitle: 'Least Played Deck',
+    emptyMessage: 'No deck data in the current Player Analysis filters.'
+  },
+  bestDeckStats: {
+    cardId: 'playerBestDeckCard',
+    fallbackTitle: 'Best Performing Deck',
+    emptyMessage: 'No deck data in the current Player Analysis filters.'
+  },
+  worstDeckStats: {
+    cardId: 'playerWorstDeckCard',
+    fallbackTitle: 'Worst Performing Deck',
     emptyMessage: 'No deck data in the current Player Analysis filters.'
   }
 };
@@ -398,6 +453,24 @@ function buildPlayerDeckGroups(data = currentPlayerAnalysisRows) {
     });
 }
 
+function sortDeckGroupsByOverallWinRate(groups = []) {
+  return [...groups].sort((a, b) => {
+    if (b.overallWinRate !== a.overallWinRate) {
+      return b.overallWinRate - a.overallWinRate;
+    }
+
+    if (b.eventCount !== a.eventCount) {
+      return b.eventCount - a.eventCount;
+    }
+
+    if (a.averageFinish !== b.averageFinish) {
+      return a.averageFinish - b.averageFinish;
+    }
+
+    return a.deck.localeCompare(b.deck);
+  });
+}
+
 function getPlayerSummaryDrilldownItems(categoryKey, data = currentPlayerAnalysisRows) {
   switch (categoryKey) {
     case 'totalEvents':
@@ -413,6 +486,33 @@ function getPlayerSummaryDrilldownItems(categoryKey, data = currentPlayerAnalysi
       const deckGroups = buildPlayerDeckGroups(data);
       const minEventCount = deckGroups.length > 0 ? Math.min(...deckGroups.map(group => group.eventCount)) : 0;
       return deckGroups.filter(group => group.eventCount === minEventCount);
+    }
+    default:
+      return [];
+  }
+}
+
+function getPlayerSidebarDrilldownItems(categoryKey, data = currentPlayerAnalysisRows) {
+  const deckGroups = buildPlayerDeckGroups(data);
+
+  switch (categoryKey) {
+    case 'overallWinRate':
+      return sortDeckGroupsByOverallWinRate(deckGroups);
+    case 'mostPlayedDeckStats': {
+      const maxEventCount = deckGroups.length > 0 ? Math.max(...deckGroups.map(group => group.eventCount)) : 0;
+      return deckGroups.filter(group => group.eventCount === maxEventCount);
+    }
+    case 'leastPlayedDeckStats': {
+      const minEventCount = deckGroups.length > 0 ? Math.min(...deckGroups.map(group => group.eventCount)) : 0;
+      return deckGroups.filter(group => group.eventCount === minEventCount);
+    }
+    case 'bestDeckStats': {
+      const bestWinRate = deckGroups.length > 0 ? Math.max(...deckGroups.map(group => group.overallWinRate)) : Number.NEGATIVE_INFINITY;
+      return deckGroups.filter(group => group.overallWinRate === bestWinRate);
+    }
+    case 'worstDeckStats': {
+      const worstWinRate = deckGroups.length > 0 ? Math.min(...deckGroups.map(group => group.overallWinRate)) : Number.POSITIVE_INFINITY;
+      return deckGroups.filter(group => group.overallWinRate === worstWinRate);
     }
     default:
       return [];
@@ -568,6 +668,76 @@ function buildSameDeckEventComparisonNote(comparisonData) {
     describeWinRateComparison('WR', comparisonData.playerWinRateValue, 'deck average WR', comparisonData.averageDeckWinRate),
     describeWinRateComparison('WR', comparisonData.playerWinRateValue, 'best same-deck WR', comparisonData.bestDeckPilotWinRate)
   ]);
+}
+
+function getMetricComparisonDirection(subjectValue, referenceValue, { lowerIsBetter = false, tolerance = 0.1 } = {}) {
+  if (!Number.isFinite(subjectValue) || !Number.isFinite(referenceValue)) {
+    return 'even';
+  }
+
+  const difference = subjectValue - referenceValue;
+  if (Math.abs(difference) <= tolerance) {
+    return 'even';
+  }
+
+  if (lowerIsBetter) {
+    return difference < 0 ? 'better' : 'worse';
+  }
+
+  return difference > 0 ? 'better' : 'worse';
+}
+
+function getPlayerDeckEventComparisonTone(comparisonData) {
+  if (!comparisonData) {
+    return 'mixed-average';
+  }
+
+  const rankDirection = getMetricComparisonDirection(comparisonData.playerRank, comparisonData.averageRank, {
+    lowerIsBetter: true,
+    tolerance: 0.1
+  });
+  const winRateDirection = getMetricComparisonDirection(comparisonData.playerWinRateValue, comparisonData.averageDeckWinRate, {
+    tolerance: 0.1
+  });
+
+  const betterCount = [rankDirection, winRateDirection].filter(direction => direction === 'better').length;
+  const worseCount = [rankDirection, winRateDirection].filter(direction => direction === 'worse').length;
+
+  if (betterCount > 0 && worseCount === 0) {
+    return 'above-average';
+  }
+
+  if (worseCount > 0 && betterCount === 0) {
+    return 'below-average';
+  }
+
+  return 'mixed-average';
+}
+
+function getPlayerDeckEventComparisonToneLabel(comparisonTone) {
+  switch (comparisonTone) {
+    case 'above-average':
+      return 'Above Avg';
+    case 'below-average':
+      return 'Below Avg';
+    default:
+      return 'Mixed';
+  }
+}
+
+function buildPlayerDeckEventLegendHtml() {
+  return `
+    <div class="player-drilldown-event-legend">
+      <div class="player-drilldown-event-legend-note">
+        Colors compare each result against the same deck's average finish and win rate in that event.
+      </div>
+      <div class="player-drilldown-event-legend-items">
+        <span class="player-drilldown-event-legend-chip player-drilldown-event-legend-chip-above-average">Above average</span>
+        <span class="player-drilldown-event-legend-chip player-drilldown-event-legend-chip-mixed-average">Mixed</span>
+        <span class="player-drilldown-event-legend-chip player-drilldown-event-legend-chip-below-average">Below average</span>
+      </div>
+    </div>
+  `;
 }
 
 function buildDeckPilotsTooltipItems(rows = [], selectedPlayerKey = '') {
@@ -743,76 +913,92 @@ function buildPlayerRankDrilldownHtml(categoryKey) {
   const selectedPlayerKey = document.getElementById('playerFilterMenu')?.value || '';
   const eventRowsByName = buildEventRowsByName(matchingRows.map(row => row.Event));
 
-  return matchingRows.map(playerRow => {
-    const formattedEventName = formatEventName(playerRow.Event) || playerRow.Event || 'Unknown Event';
-    const eventDate = playerRow.Date ? formatDate(playerRow.Date) : '--';
-    const eventRows = eventRowsByName.get(playerRow.Event) || [];
-    const playerRank = Number(playerRow?.Rank) || Number.NaN;
-    const playerWinRateValue = getRowWinRateValue(playerRow);
-    const playerDeck = String(playerRow?.Deck || '').trim();
-    const sameDeckRows = eventRows.filter(row => String(row.Deck || '').trim() === playerDeck);
-    const averageRank = sameDeckRows.length > 0
-      ? sameDeckRows.reduce((sum, row) => sum + (Number(row.Rank) || 0), 0) / sameDeckRows.length
-      : Number.NaN;
-    const averageDeckWinRate = sameDeckRows.length > 0
-      ? sameDeckRows.reduce((sum, row) => sum + getRowWinRateValue(row), 0) / sameDeckRows.length
-      : Number.NaN;
-    const bestDeckPilot = sameDeckRows.length > 0 ? getBestDeckPilotRow(sameDeckRows) : null;
-    const bestDeckPilotRank = Number(bestDeckPilot?.Rank) || Number.NaN;
-    const bestDeckPilotWinRate = getRowWinRateValue(bestDeckPilot);
-    const playerRankTooltip = buildTooltipText([
-      describeFinishComparison('Finish', playerRank, 'deck average', averageRank),
-      describeFinishComparison('Finish', playerRank, 'best same-deck finish', bestDeckPilotRank)
-    ]);
-    const playerWinRateTooltip = buildTooltipText([
-      describeWinRateComparison('WR', playerWinRateValue, 'deck average WR', averageDeckWinRate),
-      describeWinRateComparison('WR', playerWinRateValue, 'best same-deck WR', bestDeckPilotWinRate)
-    ]);
-    const playerRankItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerRankTooltip);
-    const playerWinRateItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerWinRateTooltip);
-    const deckEventContextHtml = buildPlayerDeckEventContextHtml(eventRows, playerRow, selectedPlayerKey);
-    const top8Html = config.includeTop8
-      ? buildPlayerRankTop8Html(eventRows, playerRow, selectedPlayerKey)
-      : '';
+  return matchingRows
+    .map(playerRow => buildPlayerEventResultDrilldownHtml(playerRow, {
+      includeTop8: config.includeTop8,
+      selectedPlayerKey,
+      eventRowsByName
+    }))
+    .join('');
+}
 
-    return `
-      <article class="player-rank-drilldown-event">
-        <div class="player-rank-drilldown-event-header">
-          <div>
-            <div class="player-rank-drilldown-event-date">${escapeHtml(eventDate)}</div>
-            <h4 class="player-rank-drilldown-event-name">${escapeHtml(formattedEventName)}</h4>
-          </div>
-          <span class="player-rank-drilldown-rank-badge">#${escapeHtml(playerRow.Rank)}</span>
+function buildPlayerEventResultDrilldownHtml(
+  playerRow,
+  { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null } = {}
+) {
+  if (!playerRow) {
+    return '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
+  }
+
+  const formattedEventName = formatEventName(playerRow.Event) || playerRow.Event || 'Unknown Event';
+  const eventDate = playerRow.Date ? formatDate(playerRow.Date) : '--';
+  const resolvedEventRowsByName = eventRowsByName instanceof Map ? eventRowsByName : buildEventRowsByName([playerRow.Event]);
+  const eventRows = resolvedEventRowsByName.get(playerRow.Event) || [];
+  const playerRank = Number(playerRow?.Rank) || Number.NaN;
+  const playerWinRateValue = getRowWinRateValue(playerRow);
+  const playerDeck = String(playerRow?.Deck || '').trim();
+  const sameDeckRows = eventRows.filter(row => String(row.Deck || '').trim() === playerDeck);
+  const averageRank = sameDeckRows.length > 0
+    ? sameDeckRows.reduce((sum, row) => sum + (Number(row.Rank) || 0), 0) / sameDeckRows.length
+    : Number.NaN;
+  const averageDeckWinRate = sameDeckRows.length > 0
+    ? sameDeckRows.reduce((sum, row) => sum + getRowWinRateValue(row), 0) / sameDeckRows.length
+    : Number.NaN;
+  const bestDeckPilot = sameDeckRows.length > 0 ? getBestDeckPilotRow(sameDeckRows) : null;
+  const bestDeckPilotRank = Number(bestDeckPilot?.Rank) || Number.NaN;
+  const bestDeckPilotWinRate = getRowWinRateValue(bestDeckPilot);
+  const playerRankTooltip = buildTooltipText([
+    describeFinishComparison('Finish', playerRank, 'deck average', averageRank),
+    describeFinishComparison('Finish', playerRank, 'best same-deck finish', bestDeckPilotRank)
+  ]);
+  const playerWinRateTooltip = buildTooltipText([
+    describeWinRateComparison('WR', playerWinRateValue, 'deck average WR', averageDeckWinRate),
+    describeWinRateComparison('WR', playerWinRateValue, 'best same-deck WR', bestDeckPilotWinRate)
+  ]);
+  const playerRankItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerRankTooltip);
+  const playerWinRateItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerWinRateTooltip);
+  const deckEventContextHtml = buildPlayerDeckEventContextHtml(eventRows, playerRow, selectedPlayerKey);
+  const top8Html = includeTop8
+    ? buildPlayerRankTop8Html(eventRows, playerRow, selectedPlayerKey)
+    : '';
+
+  return `
+    <article class="player-rank-drilldown-event">
+      <div class="player-rank-drilldown-event-header">
+        <div>
+          <div class="player-rank-drilldown-event-date">${escapeHtml(eventDate)}</div>
+          <h4 class="player-rank-drilldown-event-name">${escapeHtml(formattedEventName)}</h4>
         </div>
-        <div class="player-rank-drilldown-summary-grid">
-          <div class="${playerRankItemClasses}">
-            <span class="player-rank-drilldown-summary-label">Finish</span>
-            <strong class="player-rank-drilldown-summary-value">#${escapeHtml(playerRow.Rank)}</strong>
-            ${buildDrilldownHoverNote(playerRankTooltip)}
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Deck Played</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Deck || '--')}</strong>
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Wins</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Wins ?? 0)}</strong>
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Losses</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Losses ?? 0)}</strong>
-          </div>
-          <div class="${playerWinRateItemClasses}">
-            <span class="player-rank-drilldown-summary-label">Win Rate</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(getRowWinRateText(playerRow))}</strong>
-            ${buildDrilldownHoverNote(playerWinRateTooltip)}
-          </div>
+        <span class="player-rank-drilldown-rank-badge">#${escapeHtml(playerRow.Rank)}</span>
+      </div>
+      <div class="player-rank-drilldown-summary-grid">
+        <div class="${playerRankItemClasses}">
+          <span class="player-rank-drilldown-summary-label">Finish</span>
+          <strong class="player-rank-drilldown-summary-value">#${escapeHtml(playerRow.Rank)}</strong>
+          ${buildDrilldownHoverNote(playerRankTooltip)}
         </div>
-        ${deckEventContextHtml}
-        ${top8Html}
-      </article>
-    `;
-  }).join('');
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Deck Played</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Deck || '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Wins</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Wins ?? 0)}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Losses</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(playerRow.Losses ?? 0)}</strong>
+        </div>
+        <div class="${playerWinRateItemClasses}">
+          <span class="player-rank-drilldown-summary-label">Win Rate</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(getRowWinRateText(playerRow))}</strong>
+          ${buildDrilldownHoverNote(playerWinRateTooltip)}
+        </div>
+      </div>
+      ${deckEventContextHtml}
+      ${top8Html}
+    </article>
+  `;
 }
 
 function buildPlayerSummaryEventListHtml(rows) {
@@ -866,10 +1052,14 @@ function buildPlayerDeckEventListHtml(rows, eventRowsByName = new Map()) {
       ${rows.map(row => {
         const formattedEventName = formatEventName(row.Event) || row.Event || 'Unknown Event';
         const eventDate = row.Date ? formatDate(row.Date) : '--';
-        const comparisonNote = buildSameDeckEventComparisonNote(
-          getSameDeckEventComparisonData(eventRowsByName.get(row.Event) || [], row)
+        const comparisonData = getSameDeckEventComparisonData(eventRowsByName.get(row.Event) || [], row);
+        const comparisonNote = buildSameDeckEventComparisonNote(comparisonData);
+        const comparisonTone = getPlayerDeckEventComparisonTone(comparisonData);
+        const comparisonToneLabel = getPlayerDeckEventComparisonToneLabel(comparisonTone);
+        const itemClasses = buildDrilldownTooltipClasses(
+          `player-drilldown-event-list-item player-drilldown-event-list-item-${comparisonTone}`,
+          comparisonNote
         );
-        const itemClasses = buildDrilldownTooltipClasses('player-drilldown-event-list-item', comparisonNote);
 
         return `
           <div class="${itemClasses}">
@@ -881,6 +1071,7 @@ function buildPlayerDeckEventListHtml(rows, eventRowsByName = new Map()) {
               <span>#${escapeHtml(row.Rank)}</span>
               <span>${escapeHtml(row.Wins ?? 0)}-${escapeHtml(row.Losses ?? 0)}</span>
               <span>${escapeHtml(getRowWinRateText(row))}</span>
+              <span class="player-drilldown-event-list-tone player-drilldown-event-list-tone-${comparisonTone}">${escapeHtml(comparisonToneLabel)}</span>
             </div>
             ${buildDrilldownHoverNote(comparisonNote)}
           </div>
@@ -895,7 +1086,7 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
     return '<div class="player-rank-drilldown-empty">No deck data found.</div>';
   }
 
-  return groups.map(group => {
+  return groups.map((group, index) => {
     const eventRowsByName = buildEventRowsByName(group.rows.map(row => row.Event));
 
     return `
@@ -938,7 +1129,10 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
           </div>
         </div>
         <div class="player-rank-drilldown-context">
-          <div class="player-rank-drilldown-context-title">Event Results</div>
+          <div class="player-rank-drilldown-context-header">
+            <div class="player-rank-drilldown-context-title">Event Results</div>
+            ${index === 0 ? buildPlayerDeckEventLegendHtml() : ''}
+          </div>
           ${buildPlayerDeckEventListHtml(group.rows, eventRowsByName)}
         </div>
       </article>
@@ -1006,6 +1200,28 @@ function updatePlayerSummaryDrilldownCardStates(data = currentPlayerAnalysisRows
   });
 }
 
+function updatePlayerSidebarDrilldownCardStates(data = currentPlayerAnalysisRows) {
+  Object.entries(PLAYER_SIDEBAR_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
+    const card = document.getElementById(config.cardId);
+    if (!card) {
+      return;
+    }
+
+    const itemCount = getPlayerSidebarDrilldownItems(categoryKey, data).length;
+    const isDisabled = itemCount === 0;
+
+    card.classList.add('drilldown-card');
+    card.classList.toggle('drilldown-disabled', isDisabled);
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+    card.tabIndex = isDisabled ? -1 : 0;
+    const cardTitle = getPlayerSidebarCardTitle(config.cardId, config.fallbackTitle);
+    card.title = isDisabled
+      ? config.emptyMessage
+      : `Open ${cardTitle.toLowerCase()} details`;
+  });
+}
+
 function renderPlayerRankDrilldown(categoryKey) {
   const elements = getPlayerRankDrilldownElements();
   const config = PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey];
@@ -1046,6 +1262,31 @@ function renderPlayerSummaryDrilldown(categoryKey) {
   elements.content.innerHTML = buildPlayerSummaryDrilldownHtml(categoryKey);
 }
 
+function getPlayerSidebarCardTitle(cardId, fallbackTitle = 'Details') {
+  return document.getElementById(cardId)?.querySelector('.stat-title')?.textContent?.trim() || fallbackTitle;
+}
+
+function renderPlayerSidebarDrilldown(categoryKey) {
+  const elements = getPlayerRankDrilldownElements();
+  const config = PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey];
+
+  if (!config || !elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const playerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'Selected Player';
+  const items = getPlayerSidebarDrilldownItems(categoryKey);
+  const itemLabel = `${items.length} deck ${items.length === 1 ? 'entry' : 'entries'}`;
+
+  elements.title.textContent = `${playerLabel} - ${getPlayerSidebarCardTitle(config.cardId, config.fallbackTitle)}`;
+  elements.subtitle.textContent = items.length > 0
+    ? `${itemLabel} in the current Player Analysis filters`
+    : config.emptyMessage;
+  elements.content.innerHTML = items.length > 0
+    ? buildPlayerDeckGroupDrilldownHtml(items)
+    : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+}
+
 function renderPlayerDrilldown(categoryKey) {
   if (PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) {
     renderPlayerRankDrilldown(categoryKey);
@@ -1054,17 +1295,80 @@ function renderPlayerDrilldown(categoryKey) {
 
   if (PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey]) {
     renderPlayerSummaryDrilldown(categoryKey);
+    return;
+  }
+
+  if (PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey]) {
+    renderPlayerSidebarDrilldown(categoryKey);
   }
 }
 
 function openPlayerDrilldown(categoryKey) {
   const elements = getPlayerRankDrilldownElements();
-  if (!elements.overlay || (!PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey] && !PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey])) {
+  const hasConfig =
+    Boolean(PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) ||
+    Boolean(PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey]) ||
+    Boolean(PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey]);
+
+  if (!elements.overlay || !hasConfig) {
     return;
   }
 
   activePlayerDrilldownCategory = categoryKey;
   renderPlayerDrilldown(categoryKey);
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+}
+
+function findPlayerEventHistoryRow({ eventName = '', eventDate = '', deckName = '', rank = '' } = {}) {
+  const normalizedEventName = String(eventName || '').trim();
+  const normalizedEventDate = String(eventDate || '').trim();
+  const normalizedDeckName = String(deckName || '').trim();
+  const normalizedRank = String(rank || '').trim();
+
+  return currentPlayerAnalysisRows.find(row => {
+    return (
+      String(row?.Event || '').trim() === normalizedEventName &&
+      String(row?.Date || '').trim() === normalizedEventDate &&
+      String(row?.Deck || '').trim() === normalizedDeckName &&
+      String(row?.Rank ?? '').trim() === normalizedRank
+    );
+  }) || currentPlayerAnalysisRows.find(row => {
+    return (
+      String(row?.Event || '').trim() === normalizedEventName &&
+      String(row?.Date || '').trim() === normalizedEventDate
+    );
+  }) || null;
+}
+
+function openPlayerEventHistoryDrilldown({ eventName = '', eventDate = '', deckName = '', rank = '' } = {}) {
+  const elements = getPlayerRankDrilldownElements();
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const playerRow = findPlayerEventHistoryRow({ eventName, eventDate, deckName, rank });
+  const playerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'Selected Player';
+
+  if (!playerRow) {
+    elements.title.textContent = `${playerLabel} - Event History`;
+    elements.subtitle.textContent = 'Event details are not available for the selected history entry.';
+    elements.content.innerHTML = '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
+    activePlayerDrilldownCategory = '';
+    elements.overlay.hidden = false;
+    document.body.classList.add('modal-open');
+    return;
+  }
+
+  const formattedEventName = formatEventName(playerRow.Event) || playerRow.Event || 'Unknown Event';
+  const eventDateLabel = playerRow.Date ? formatDate(playerRow.Date) : '--';
+  const deckLabel = String(playerRow.Deck || '').trim() || '--';
+  const rankLabel = playerRow.Rank ? `#${playerRow.Rank}` : '#--';
+
+  elements.title.textContent = `${playerLabel} - ${formattedEventName}`;
+  elements.subtitle.textContent = `${eventDateLabel} | ${deckLabel} | ${rankLabel} | ${getRowWinRateText(playerRow)} WR`;
+  elements.content.innerHTML = buildPlayerEventResultDrilldownHtml(playerRow, { includeTop8: true });
+  activePlayerDrilldownCategory = '';
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
 }
@@ -1130,8 +1434,57 @@ function setupPlayerRankDrilldownCards() {
   });
 }
 
+function setupPlayerEventHistoryInteractions() {
+  const eventHistoryList = document.getElementById('playerEventsDetails');
+  if (!eventHistoryList || eventHistoryList.dataset.drilldownBound === 'true') {
+    return;
+  }
+
+  eventHistoryList.dataset.drilldownBound = 'true';
+  eventHistoryList.addEventListener('click', event => {
+    const historyButton = event.target.closest('.player-event-history-item');
+    if (!historyButton) {
+      return;
+    }
+
+    openPlayerEventHistoryDrilldown({
+      eventName: historyButton.dataset.playerHistoryEvent,
+      eventDate: historyButton.dataset.playerHistoryDate,
+      deckName: historyButton.dataset.playerHistoryDeck,
+      rank: historyButton.dataset.playerHistoryRank
+    });
+  });
+}
+
 function setupPlayerSummaryDrilldownCards() {
   Object.entries(PLAYER_SUMMARY_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
+    const card = document.getElementById(config.cardId);
+    if (!card || card.dataset.drilldownBound === 'true') {
+      return;
+    }
+
+    card.dataset.drilldownBound = 'true';
+
+    const openIfEnabled = () => {
+      if (card.getAttribute('aria-disabled') === 'true') {
+        return;
+      }
+
+      openPlayerDrilldown(categoryKey);
+    };
+
+    card.addEventListener('click', openIfEnabled);
+    card.addEventListener('keydown', event => {
+      if ((event.key === 'Enter' || event.key === ' ') && card.getAttribute('aria-disabled') !== 'true') {
+        event.preventDefault();
+        openPlayerDrilldown(categoryKey);
+      }
+    });
+  });
+}
+
+function setupPlayerSidebarDrilldownCards() {
+  Object.entries(PLAYER_SIDEBAR_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card || card.dataset.drilldownBound === 'true') {
       return;
@@ -1416,9 +1769,12 @@ export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
+  setupPlayerEventHistoryInteractions();
   setupPlayerSummaryDrilldownCards();
+  setupPlayerSidebarDrilldownCards();
   updatePlayerRankDrilldownCardStates();
   updatePlayerSummaryDrilldownCardStates();
+  updatePlayerSidebarDrilldownCardStates();
   console.log('Player Analysis initialized');
 }
 
@@ -1458,9 +1814,10 @@ export function updatePlayerAnalytics() {
         );
       })
     : [];
+  const filteredData = applyPlayerEventGroupFilter(baseFilteredData);
 
   console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);
-  updatePlayerAnalysis(baseFilteredData);
+  updatePlayerAnalysis(filteredData);
 }
 
 export function populatePlayerAnalysisRawData(data) {
@@ -1649,6 +2006,7 @@ export function populatePlayerStats(data) {
   updatePlayerRankDrilldownCardStates(data);
   updatePlayerRankCardHoverNotes(data);
   updatePlayerSummaryDrilldownCardStates(data);
+  updatePlayerSidebarDrilldownCardStates(data);
 
   if (activePlayerDrilldownCategory) {
     renderPlayerDrilldown(activePlayerDrilldownCategory);

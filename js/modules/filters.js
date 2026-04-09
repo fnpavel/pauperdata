@@ -16,10 +16,12 @@ import {
   getLatestSetQuickViewPresetId,
   getQuickViewPresetDefinitionById,
   getQuickViewPresetYearOptions,
+  normalizeQuickViewPresetIds,
   getSetQuickViewPresetDefinitions,
   getStaticQuickViewPresetDefinitions,
   shiftDateByDays
 } from '../utils/quick-view-presets.js';
+import { formatGroupDisplayLabel, getEventGroupInfo } from '../utils/event-groups.js';
 import {
   renderEventFilterCalendar,
   resetEventFilterCalendarState,
@@ -33,6 +35,7 @@ import {
 } from '../utils/player-names.js';
 import {
   getPlayerAnalysisActivePreset,
+  getPlayerAnalysisActivePresetIds,
   getPlayerPresetEventTypes,
   getPlayerPresetRows,
   getPlayerPresetSuggestedRange
@@ -49,39 +52,9 @@ let multiEventGroupSelectionInitialized = false;
 let activeMultiEventGroupKeys = new Set();
 let activeMultiEventQuickViewYear = '';
 let activePlayerQuickViewYear = '';
-
-const EVENT_GROUPS = {
-  'MTGO Challenge': {
-    key: 'challenge',
-    label: 'Challenge',
-    order: 0,
-    shortLabel: 'Challenge'
-  },
-  'MTGO Challenge 64': {
-    key: 'challenge',
-    label: 'Challenge',
-    order: 0,
-    shortLabel: 'Challenge 64'
-  },
-  'MTGO Qualifier': {
-    key: 'qualifier',
-    label: 'Qualifier',
-    order: 1,
-    shortLabel: 'Qualifier'
-  },
-  'MTGO Showcase': {
-    key: 'showcase',
-    label: 'Showcase',
-    order: 2,
-    shortLabel: 'Showcase'
-  },
-  'MTGO Super': {
-    key: 'super',
-    label: 'Super',
-    order: 3,
-    shortLabel: 'Super'
-  }
-};
+let playerEventGroupSelectionInitialized = false;
+let activePlayerEventGroupKeys = new Set();
+let playerEventGroupSelectionContextKey = '';
 
 function getTopMode() {
   return document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';
@@ -109,11 +82,23 @@ function getActiveSectionEventTypes(sectionElement) {
     .map(button => button.dataset.type.toLowerCase());
 }
 
-function setDefaultSectionEventType(sectionElement, defaultType = 'online') {
+function setSectionEventType(sectionElement, nextType = 'online') {
   const buttons = getSectionEventTypeButtons(sectionElement);
+  const normalizedRequestedType = String(nextType || '').toLowerCase();
+  const hasRequestedType = buttons.some(button => button.dataset.type.toLowerCase() === normalizedRequestedType);
+  const resolvedType = hasRequestedType
+    ? normalizedRequestedType
+    : buttons.find(button => button.dataset.type.toLowerCase() === 'online')?.dataset.type.toLowerCase()
+      || buttons[0]?.dataset.type.toLowerCase()
+      || '';
+
   buttons.forEach(button => {
-    button.classList.toggle('active', button.dataset.type === defaultType);
+    button.classList.toggle('active', button.dataset.type.toLowerCase() === resolvedType);
   });
+}
+
+function setDefaultSectionEventType(sectionElement, defaultType = 'online') {
+  setSectionEventType(sectionElement, defaultType);
 }
 
 function clearSectionEventTypes(sectionElement) {
@@ -190,13 +175,26 @@ function createQuickViewYearButton(year, scope, isActive) {
   return button;
 }
 
-function getResolvedQuickViewYear(scope, activePresetId = '') {
+function getActiveQuickViewPresetIds(scope, activePresetValue = '') {
+  if (scope === 'player') {
+    return normalizeQuickViewPresetIds(activePresetValue || getPlayerAnalysisActivePreset());
+  }
+
+  return normalizeQuickViewPresetIds(activePresetValue);
+}
+
+function getResolvedQuickViewYear(scope, activePresetIds = []) {
   const yearOptions = getQuickViewPresetYearOptions(cleanedData);
   if (yearOptions.length === 0) {
     return '';
   }
 
-  const activePreset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  const resolvedPresetIds = Array.isArray(activePresetIds)
+    ? activePresetIds
+    : getActiveQuickViewPresetIds(scope, activePresetIds);
+  const activePreset = resolvedPresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true }))
+    .find(Boolean);
   const presetYear = activePreset?.releaseYear || '';
   const currentYear = getActiveQuickViewYear(scope) || getDefaultQuickViewYear(cleanedData);
 
@@ -218,12 +216,13 @@ function renderQuickViewButtons(scope) {
   }
 
   container.innerHTML = '';
-  const activePresetId = container.dataset.activePreset || '';
+  const activePresetValue = container.dataset.activePreset || '';
+  const activePresetIds = getActiveQuickViewPresetIds(scope, activePresetValue);
   const buttonClass = getQuickViewButtonClass(scope);
   const datasetKey = getQuickViewDatasetKey(scope);
   const staticPresets = getStaticQuickViewPresetDefinitions();
   const yearOptions = getQuickViewPresetYearOptions(cleanedData);
-  const resolvedYear = getResolvedQuickViewYear(scope, activePresetId);
+  const resolvedYear = getResolvedQuickViewYear(scope, activePresetIds);
   const yearPresets = getSetQuickViewPresetDefinitions(cleanedData).filter(preset => preset.releaseYear === resolvedYear);
 
   setActiveQuickViewYear(scope, resolvedYear);
@@ -234,7 +233,7 @@ function renderQuickViewButtons(scope) {
 
     staticPresets.forEach(preset => {
       const button = createQuickViewButton(preset, buttonClass, datasetKey);
-      button.classList.toggle('active', activePresetId === preset.id);
+      button.classList.toggle('active', activePresetIds.includes(preset.id));
       staticRow.appendChild(button);
     });
 
@@ -275,7 +274,7 @@ function renderQuickViewButtons(scope) {
 
   yearPresets.forEach(preset => {
     const button = createQuickViewButton(preset, buttonClass, datasetKey);
-    button.classList.toggle('active', activePresetId === preset.id);
+    button.classList.toggle('active', activePresetIds.includes(preset.id));
     setRow.appendChild(button);
   });
 
@@ -335,10 +334,8 @@ function setQuickViewYearSelection(scope, year) {
 }
 
 function setEventAnalysisEventTypes(nextTypes = []) {
-  const nextTypeSet = new Set(nextTypes.map(type => String(type).toLowerCase()));
-  getSectionEventTypeButtons(getEventAnalysisSection()).forEach(button => {
-    button.classList.toggle('active', nextTypeSet.has(button.dataset.type.toLowerCase()));
-  });
+  const requestedType = Array.isArray(nextTypes) ? nextTypes[0] : nextTypes;
+  setSectionEventType(getEventAnalysisSection(), requestedType || 'online');
 }
 
 function getScopedMultiEventRows(selectedEventTypes = getEventAnalysisSelectedTypes()) {
@@ -375,7 +372,8 @@ function applyActiveMultiEventPresetDateRange() {
 function applyMultiEventPreset(presetId) {
   const presetEventTypes = getMultiEventPresetEventTypes(presetId);
   if (presetEventTypes) {
-    setEventAnalysisEventTypes(presetEventTypes);
+    const nextType = resolvePresetEventTypeSelection(getEventAnalysisSelectedTypes(), presetEventTypes);
+    setEventAnalysisEventTypes([nextType]);
   }
 
   setMultiEventPresetButtonState(presetId);
@@ -392,13 +390,35 @@ function getPlayerAnalysisSelectedTypes() {
   return getActiveSectionEventTypes(getPlayerAnalysisSection());
 }
 
-function setPlayerPresetButtonState(activePresetId = '') {
-  const root = getPlayerQuickViewRoot();
-  if (root) {
-    root.dataset.activePreset = activePresetId;
+function syncPlayerEventGroupFilterDataset() {
+  const panels = document.getElementById('playerSelectionPanels');
+  if (!panels) {
+    return;
   }
 
-  const preset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  panels.dataset.groupFilterInitialized = playerEventGroupSelectionInitialized ? 'true' : 'false';
+  panels.dataset.activeGroupKeys = Array.from(activePlayerEventGroupKeys).join(',');
+}
+
+function resetPlayerEventGroupFilterState() {
+  playerEventGroupSelectionInitialized = false;
+  activePlayerEventGroupKeys = new Set();
+  playerEventGroupSelectionContextKey = '';
+  syncPlayerEventGroupFilterDataset();
+}
+
+function setPlayerPresetButtonState(activePresetId = '') {
+  const root = getPlayerQuickViewRoot();
+  const activePresetIds = normalizeQuickViewPresetIds(activePresetId);
+  const serializedPresetIds = activePresetIds.join(',');
+
+  if (root) {
+    root.dataset.activePreset = serializedPresetIds;
+  }
+
+  const preset = activePresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true }))
+    .find(candidate => candidate?.releaseYear);
   if (preset?.releaseYear) {
     setActiveQuickViewYear('player', preset.releaseYear);
   }
@@ -422,10 +442,25 @@ function ensureDefaultPlayerPreset() {
 }
 
 function setPlayerAnalysisEventTypes(nextTypes = []) {
-  const nextTypeSet = new Set(nextTypes.map(type => String(type).toLowerCase()));
-  getSectionEventTypeButtons(getPlayerAnalysisSection()).forEach(button => {
-    button.classList.toggle('active', nextTypeSet.has(button.dataset.type.toLowerCase()));
-  });
+  const requestedType = Array.isArray(nextTypes) ? nextTypes[0] : nextTypes;
+  setSectionEventType(getPlayerAnalysisSection(), requestedType || 'online');
+}
+
+function resolvePresetEventTypeSelection(currentTypes = [], presetEventTypes = [], defaultType = 'online') {
+  const normalizedCurrentType = currentTypes.map(type => String(type || '').toLowerCase()).find(Boolean) || '';
+  const normalizedPresetTypes = (Array.isArray(presetEventTypes) ? presetEventTypes : [presetEventTypes])
+    .map(type => String(type || '').toLowerCase())
+    .filter(Boolean);
+
+  if (normalizedPresetTypes.length === 0) {
+    return normalizedCurrentType || defaultType;
+  }
+
+  if (normalizedCurrentType && normalizedPresetTypes.includes(normalizedCurrentType)) {
+    return normalizedCurrentType;
+  }
+
+  return normalizedPresetTypes[0] || defaultType;
 }
 
 function getScopedPlayerAnalysisRows(selectedEventTypes = getPlayerAnalysisSelectedTypes()) {
@@ -462,12 +497,42 @@ function applyActivePlayerPresetDateRange() {
 }
 
 function applyPlayerAnalysisPreset(presetId) {
+  const preset = getQuickViewPresetDefinitionById(presetId, cleanedData, { includeFuture: true });
   const presetEventTypes = getPlayerPresetEventTypes(presetId);
   if (presetEventTypes) {
-    setPlayerAnalysisEventTypes(presetEventTypes);
+    const nextType = resolvePresetEventTypeSelection(getPlayerAnalysisSelectedTypes(), presetEventTypes);
+    setPlayerAnalysisEventTypes([nextType]);
   }
 
-  setPlayerPresetButtonState(presetId);
+  if (!preset) {
+    return;
+  }
+
+  const fallbackPresetId = getStaticQuickViewPresetDefinitions()[0]?.id || '';
+  let nextPresetIds = [];
+
+  if (preset.kind === 'static') {
+    nextPresetIds = [preset.id];
+  } else {
+    const activeSetWindowIds = getPlayerAnalysisActivePresetIds().filter(activePresetId => {
+      const activePreset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+      return activePreset?.kind === 'set-window' && activePreset.releaseYear === preset.releaseYear;
+    });
+    const nextPresetIdSet = new Set(activeSetWindowIds);
+
+    if (nextPresetIdSet.has(preset.id)) {
+      nextPresetIdSet.delete(preset.id);
+    } else {
+      nextPresetIdSet.add(preset.id);
+    }
+
+    nextPresetIds = Array.from(nextPresetIdSet);
+    if (nextPresetIds.length === 0 && fallbackPresetId) {
+      nextPresetIds = [fallbackPresetId];
+    }
+  }
+
+  setPlayerPresetButtonState(nextPresetIds);
   resetPlayerDateRange();
   updatePlayerDateOptions();
   applyActivePlayerPresetDateRange();
@@ -484,53 +549,6 @@ function getEventDate(eventName) {
   }
 
   return cleanedData.find(row => row.Event === eventName)?.Date || '';
-}
-
-function stripEventDate(eventName) {
-  return eventName.replace(/\s*\(\d{4}-\d{2}-\d{2}\)$/, '');
-}
-
-function slugify(value) {
-  return value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
-
-function toDisplayTitleCase(value) {
-  return value.replace(/\b([A-Za-z])([A-Za-z']*)\b/g, (_, firstChar, rest) => {
-    return `${firstChar.toUpperCase()}${rest.toLowerCase()}`;
-  });
-}
-
-function normalizeEventBaseName(value) {
-  return toDisplayTitleCase(value.trim().replace(/\s+/g, ' '));
-}
-
-function formatGroupDisplayLabel(label) {
-  return toDisplayTitleCase((label || '').replace(/^MTGO\s+/i, '').trim());
-}
-
-function getEventGroupInfo(eventName) {
-  const baseName = normalizeEventBaseName(stripEventDate(eventName));
-  const predefinedGroup = EVENT_GROUPS[baseName];
-
-  if (predefinedGroup) {
-    return {
-      ...predefinedGroup,
-      label: formatGroupDisplayLabel(predefinedGroup.label),
-      shortLabel: formatGroupDisplayLabel(predefinedGroup.shortLabel)
-    };
-  }
-
-  const label = formatGroupDisplayLabel(baseName);
-
-  return {
-    key: slugify(baseName),
-    label,
-    order: 100,
-    shortLabel: label
-  };
 }
 
 function buildSingleEventCalendarEntries(selectedEventType) {
@@ -644,6 +662,7 @@ function resetMultiDateRange() {
 function resetPlayerDateRange() {
   resetSelectValue('playerStartDateSelect');
   resetSelectValue('playerEndDateSelect');
+  resetPlayerEventGroupFilterState();
 }
 
 function setPlayerFilterPlaceholder(playerFilterMenu, message) {
@@ -733,7 +752,7 @@ function getPlayerSelectionSummaryElements() {
   };
 }
 
-function getFilteredPlayerAnalysisRows() {
+function getBasePlayerAnalysisRows() {
   const startDate = document.getElementById('playerStartDateSelect')?.value || '';
   const endDate = document.getElementById('playerEndDateSelect')?.value || '';
   const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
@@ -754,10 +773,10 @@ function getFilteredPlayerAnalysisRows() {
   });
 }
 
-function getPlayerSelectedEventEntries() {
+function getPlayerSelectedEventEntries(rows = getBasePlayerAnalysisRows()) {
   const events = new Map();
 
-  getFilteredPlayerAnalysisRows().forEach(row => {
+  rows.forEach(row => {
     const eventKey = `${row.Date || ''}::${row.Event || ''}`;
     if (events.has(eventKey)) {
       return;
@@ -767,6 +786,7 @@ function getPlayerSelectedEventEntries() {
     events.set(eventKey, {
       name: row.Event,
       date: row.Date || getEventDate(row.Event),
+      groupKey: groupInfo.key,
       groupLabel: groupInfo.label,
       groupOrder: groupInfo.order
     });
@@ -775,23 +795,93 @@ function getPlayerSelectedEventEntries() {
   return Array.from(events.values()).sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
 }
 
-function getPlayerEventGroupSummaries() {
+function getPlayerEventGroupSummaries(rows = getBasePlayerAnalysisRows()) {
   const groups = new Map();
 
-  getPlayerSelectedEventEntries().forEach(entry => {
-    const groupKey = `${entry.groupOrder}::${entry.groupLabel}`;
-    if (!groups.has(groupKey)) {
-      groups.set(groupKey, {
+  getPlayerSelectedEventEntries(rows).forEach(entry => {
+    if (!groups.has(entry.groupKey)) {
+      groups.set(entry.groupKey, {
+        key: entry.groupKey,
         label: entry.groupLabel,
         order: entry.groupOrder,
         count: 0
       });
     }
 
-    groups.get(groupKey).count += 1;
+    groups.get(entry.groupKey).count += 1;
   });
 
   return Array.from(groups.values()).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+}
+
+function getPlayerEventGroupContextKey(rows = getBasePlayerAnalysisRows()) {
+  const startDate = document.getElementById('playerStartDateSelect')?.value || '';
+  const endDate = document.getElementById('playerEndDateSelect')?.value || '';
+  const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
+  const selectedEventTypes = getPlayerAnalysisSelectedTypes().slice().sort().join(',');
+  const activePreset = getPlayerAnalysisActivePreset();
+  const eventKeys = getPlayerSelectedEventEntries(rows)
+    .map(entry => `${entry.date || ''}::${entry.name || ''}`)
+    .join('|');
+
+  return [selectedPlayer, startDate, endDate, selectedEventTypes, activePreset, eventKeys].join('@@');
+}
+
+function syncPlayerEventGroupFilterState(groupSummaries, contextKey = '') {
+  if (groupSummaries.length === 0) {
+    resetPlayerEventGroupFilterState();
+    return;
+  }
+
+  const availableKeys = new Set(groupSummaries.map(group => group.key));
+  const hasContextChanged = Boolean(contextKey) && contextKey !== playerEventGroupSelectionContextKey;
+
+  if (!playerEventGroupSelectionInitialized || hasContextChanged) {
+    activePlayerEventGroupKeys = new Set(availableKeys);
+    playerEventGroupSelectionInitialized = true;
+    playerEventGroupSelectionContextKey = contextKey;
+    syncPlayerEventGroupFilterDataset();
+    return;
+  }
+
+  activePlayerEventGroupKeys = new Set(
+    Array.from(activePlayerEventGroupKeys).filter(groupKey => availableKeys.has(groupKey))
+  );
+  playerEventGroupSelectionContextKey = contextKey || playerEventGroupSelectionContextKey;
+  syncPlayerEventGroupFilterDataset();
+}
+
+function getFilteredPlayerAnalysisRows() {
+  const baseRows = getBasePlayerAnalysisRows();
+  if (baseRows.length === 0) {
+    resetPlayerEventGroupFilterState();
+    return [];
+  }
+
+  const groupSummaries = getPlayerEventGroupSummaries(baseRows);
+  const contextKey = getPlayerEventGroupContextKey(baseRows);
+  syncPlayerEventGroupFilterState(groupSummaries, contextKey);
+
+  return baseRows.filter(row => activePlayerEventGroupKeys.has(getEventGroupInfo(row.Event).key));
+}
+
+function togglePlayerEventGroupFilter(groupKey) {
+  const baseRows = getBasePlayerAnalysisRows();
+  const groupSummaries = getPlayerEventGroupSummaries(baseRows);
+  const contextKey = getPlayerEventGroupContextKey(baseRows);
+  syncPlayerEventGroupFilterState(groupSummaries, contextKey);
+
+  if (activePlayerEventGroupKeys.has(groupKey)) {
+    activePlayerEventGroupKeys.delete(groupKey);
+  } else {
+    activePlayerEventGroupKeys.add(groupKey);
+  }
+
+  playerEventGroupSelectionInitialized = true;
+  playerEventGroupSelectionContextKey = contextKey;
+  syncPlayerEventGroupFilterDataset();
+  updatePlayerSelectionSummary();
+  updateAllCharts();
 }
 
 function updatePlayerSelectionSummary() {
@@ -807,8 +897,11 @@ function updatePlayerSelectionSummary() {
     return;
   }
 
+  const baseRows = getBasePlayerAnalysisRows();
+  const groupSummaries = getPlayerEventGroupSummaries(baseRows);
+  const contextKey = getPlayerEventGroupContextKey(baseRows);
+  syncPlayerEventGroupFilterState(groupSummaries, contextKey);
   const filteredRows = getFilteredPlayerAnalysisRows();
-  const groupSummaries = getPlayerEventGroupSummaries();
 
   if (groupSummaries.length === 0) {
     content.innerHTML = 'No events selected';
@@ -820,16 +913,30 @@ function updatePlayerSelectionSummary() {
 
   content.innerHTML = groupSummaries
     .map(group => {
+      const isActive = activePlayerEventGroupKeys.has(group.key);
+      const countLabel = formatGroupDisplayLabel(group.count === 1 ? group.label : `${group.label}s`);
+
       return `
-        <div class="player-event-summary-card">
-          <span class="player-event-summary-count">${group.count}</span>
-          <span class="player-event-summary-label">${group.label}</span>
-        </div>
+        <button type="button" class="multi-event-group-card ${isActive ? 'active' : ''}" data-group-key="${group.key}">
+          <span class="multi-event-group-card-count">${group.count}</span>
+          <span class="multi-event-group-card-label">${countLabel}</span>
+        </button>
       `;
     })
     .join('');
 
-  list.innerHTML = buildPlayerEventHistoryHTML(filteredRows);
+  content.querySelectorAll('.multi-event-group-card').forEach(button => {
+    button.addEventListener('click', () => togglePlayerEventGroupFilter(button.dataset.groupKey));
+  });
+
+  if (!groupSummaries.some(group => activePlayerEventGroupKeys.has(group.key))) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'multi-event-group-empty';
+    emptyState.textContent = 'No events selected';
+    content.appendChild(emptyState);
+  }
+
+  list.innerHTML = filteredRows.length > 0 ? buildPlayerEventHistoryHTML(filteredRows) : '<div>No events selected</div>';
   triggerUpdateAnimation('playerSelectionSummary');
   triggerUpdateAnimation('playerEventHistoryBox');
 }
@@ -1253,29 +1360,11 @@ export function getDeckEvolutionChartData() {
 }
 
 export function getPlayerDeckPerformanceChartData() {
-  const startDate = document.getElementById('playerStartDateSelect')?.value || '';
-  const endDate = document.getElementById('playerEndDateSelect')?.value || '';
-  const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
-  const selectedEventTypes = getPlayerAnalysisSelectedTypes();
-  const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
-
-  return selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? scopedRows.filter(row => {
-        return (
-          row.Date >= startDate &&
-          row.Date <= endDate &&
-          rowMatchesPlayerKey(row, selectedPlayer) &&
-          selectedEventTypes.includes(row.EventType.toLowerCase()) &&
-          row.Deck !== 'No Show'
-        );
-      })
-    : [];
+  return getFilteredPlayerAnalysisRows().filter(row => row.Deck !== 'No Show');
 }
 
 export function getPlayerWinRateChartData() {
-  const baseData = getPlayerDeckPerformanceChartData();
-  const selectedDeck = document.getElementById('playerDeckFilter')?.value || '';
-  return selectedDeck ? baseData.filter(row => row.Deck === selectedDeck) : baseData;
+  return getPlayerDeckPerformanceChartData();
 }
 
 export function setupTopModeListeners() {
@@ -1430,14 +1519,7 @@ export function setupEventTypeListeners() {
 
   eventAnalysisButtons.forEach(button => {
     button.addEventListener('click', () => {
-      clearMultiEventPresetButtonState();
-      if (getTopMode() === 'event' && getAnalysisMode() === 'single') {
-        eventAnalysisButtons.forEach(eventButton => {
-          eventButton.classList.toggle('active', eventButton === button);
-        });
-      } else {
-        button.classList.toggle('active');
-      }
+      setEventAnalysisEventTypes([button.dataset.type.toLowerCase()]);
 
       console.log(
         'After toggle - Event Analysis active Event Types:',
@@ -1458,6 +1540,9 @@ export function setupEventTypeListeners() {
 
       updateSingleEventFilterVisibility();
       updateDateOptions();
+      if (getAnalysisMode() === 'multi' && getActiveMultiEventPreset()) {
+        applyActiveMultiEventPresetDateRange();
+      }
       updateMultiEventSelectionSummary();
       if (getAnalysisMode() !== 'single' || hasSelectedSingleEvent()) {
         updateAllCharts();
@@ -1467,8 +1552,7 @@ export function setupEventTypeListeners() {
 
   playerAnalysisButtons.forEach(button => {
     button.addEventListener('click', () => {
-      clearPlayerPresetButtonState();
-      button.classList.toggle('active');
+      setPlayerAnalysisEventTypes([button.dataset.type.toLowerCase()]);
 
       console.log(
         'After toggle - Player Analysis active Event Types:',
@@ -1479,6 +1563,9 @@ export function setupEventTypeListeners() {
 
       resetPlayerDateRange();
       updatePlayerDateOptions();
+      if (getPlayerAnalysisActivePreset()) {
+        applyActivePlayerPresetDateRange();
+      }
 
       if (getTopMode() === 'player') {
         updateAllCharts();
@@ -1714,6 +1801,7 @@ export function updatePlayerDateOptions() {
 
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
+  const eventTypeRows = cleanedData.filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
   const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
 
   if (selectedEventTypes.length === 0) {
@@ -1733,10 +1821,7 @@ export function updatePlayerDateOptions() {
   }
 
   const defaultSelection = getLatestPlayerDefaultSelection(selectedEventTypes);
-
-  const playerOptions = buildPlayerFilterOptions(
-    scopedRows
-  );
+  const playerOptions = buildPlayerFilterOptions(eventTypeRows);
   const playerKeys = playerOptions.map(playerOption => playerOption.key);
 
   let currentPlayer = playerKeys.includes(selectedPlayer)
