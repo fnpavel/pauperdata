@@ -9,6 +9,7 @@
 
 # Keep the app entrypoint.
 !/index.html
+!/favicon.svg
 
 # Keep source folders.
 !/css/
