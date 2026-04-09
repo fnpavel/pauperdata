@@ -1,4 +1,4 @@
-import { cleanedData } from '../data.js';
+import { getAnalysisRows } from '../utils/analysis-data.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
@@ -1205,7 +1205,7 @@ export function updateEventAnalytics() {
   const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
-  const eventData = cleanedData.filter(row => row.EventType.toLowerCase() === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
+  const eventData = getAnalysisRows().filter(row => row.EventType.toLowerCase() === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
   updateSingleEventAnalysis(eventData, eventData.length);
 }
 
@@ -1215,7 +1215,7 @@ export function updateMultiEventAnalytics() {
   const endDate = document.getElementById("endDateSelect").value;
   const selectedEventTypes = getSelectedEventAnalysisTypes();
   const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-    ? cleanedData.filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType.toLowerCase()))
+    ? getAnalysisRows().filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType.toLowerCase()))
     : [];
   updateMultiEventAnalysis(filteredData);
 }

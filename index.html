@@ -77,10 +77,26 @@
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
         <button class="bubble-button" id="aboutButton">About</button>
-        <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
-          <span class="theme-toggle-indicator" aria-hidden="true"></span>
-          <span class="theme-toggle-label">Dark Mode</span>
-        </button>
+        <div class="header-utility-stack">
+          <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
+            <span class="theme-toggle-indicator" aria-hidden="true"></span>
+            <span class="theme-toggle-label">Dark Mode</span>
+          </button>
+          <button
+            class="bubble-button analysis-filter-toggle header-analysis-filter-toggle analysis-filter-tooltip"
+            type="button"
+            data-analysis-quality-toggle="unknown-heavy-below-top32"
+            aria-pressed="false"
+            data-tooltip="Ignore the events that are missing the data below top32"
+            aria-label="Ignore the events that are missing the data below top32"
+          >
+            <span class="analysis-filter-toggle-indicator" aria-hidden="true"></span>
+            <span class="analysis-filter-toggle-copy">
+              <span class="analysis-filter-toggle-label">Data Quality</span>
+              <span class="analysis-filter-toggle-state" data-analysis-quality-state>Off</span>
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   </header>

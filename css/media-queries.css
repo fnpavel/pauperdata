@@ -140,6 +140,11 @@
     gap: 6px;
   }
 
+  .header-utility-stack {
+    width: 100%;
+    max-width: 220px;
+  }
+
   .top-mode-button {
     flex: 0 1 auto;
     min-width: 80px;
