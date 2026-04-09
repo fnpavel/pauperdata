@@ -1,5 +1,5 @@
 // js/utils/data-cards.js
-import { formatEventName } from './format.js';
+import { formatDate, formatEventName } from './format.js';
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -158,7 +158,7 @@ export function buildPlayerEventHistoryHTML(data) {
       const eventDate = String(row?.Date || '').trim();
       const deckName = String(row?.Deck || '').trim();
       const rankValue = String(row?.Rank ?? '').trim();
-      const dateLabel = eventDate || '--';
+      const dateLabel = eventDate ? formatDate(eventDate) : '--';
       const deckLabel = deckName || '--';
       const rankLabel = rankValue ? `#${rankValue}` : '#--';
 
