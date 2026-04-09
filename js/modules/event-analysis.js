@@ -1317,28 +1317,33 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
 }
 
 export function updateMultiEventTables(filteredData, tableType = 'aggregate', deckName = '') {
+  const tableElement = document.getElementById("multiEventTable");
   const tableHead = document.getElementById("multiEventTableHead");
   const tableBody = document.getElementById("multiEventTableBody");
   const tableTitle = document.getElementById("multiEventTableTitle");
   const startDate = document.getElementById("startDateSelect")?.value;
   const endDate = document.getElementById("endDateSelect")?.value;
-  if (!tableHead || !tableBody || !tableTitle) {
+  if (!tableElement || !tableHead || !tableBody || !tableTitle) {
     console.error("Multi event table elements not found!");
     return;
   }
 
   const uniqueEvents = [...new Set(filteredData.map(row => row.Event))];
+  tableElement.dataset.view = tableType;
 
   if (tableType === 'aggregate') {
     updateElementHTML("multiEventTableHead", `
       <tr>
-        <th rowspan="2" data-sort="deck">Deck <span class="sort-arrow"></span></th>
-        <th rowspan="2" data-sort="metaShare">Aggregate Meta Share <span class="sort-arrow"></span></th>
-        <th rowspan="2" data-sort="winRate">Aggregate Win Rate <span class="sort-arrow"></span></th>
-        <th colspan="4" class="top-conversion-header">Top Conversion
-          <div class="bubble-menu display-toggle">
-            <button class="bubble-button display-toggle-btn raw-btn" data-display="raw">Raw</button>
-            <button class="bubble-button display-toggle-btn percent-btn active" data-display="percent">Percent</button>
+        <th rowspan="2" class="multi-table-col-deck" data-sort="deck">Deck <span class="sort-arrow"></span></th>
+        <th rowspan="2" class="multi-table-col-meta" data-sort="metaShare"><span class="multi-table-header-stack"><span>Agg.</span><span>Meta</span></span> <span class="sort-arrow"></span></th>
+        <th rowspan="2" class="multi-table-col-winrate" data-sort="winRate"><span class="multi-table-header-stack"><span>Agg.</span><span>WR</span></span> <span class="sort-arrow"></span></th>
+        <th colspan="4" class="top-conversion-header multi-table-col-conversion-group">
+          <div class="multi-table-group-header">
+            <span>Top Conversion</span>
+            <div class="bubble-menu display-toggle">
+              <button class="bubble-button display-toggle-btn raw-btn" data-display="raw">Raw</button>
+              <button class="bubble-button display-toggle-btn percent-btn active" data-display="percent">Percent</button>
+            </div>
           </div>
         </th>
       </tr>
@@ -1356,12 +1361,12 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
     const renderTableBody = () => updateElementHTML("multiEventTableBody", rows.length === 0 ? "<tr><td colspan='7'>No data available for the selected filters.</td></tr>" : rows.map(row => `
       <tr>
         <td>${row.deck}</td>
-        <td>${row.metaShare.toFixed(2)}%</td>
-        <td>${row.winRate.toFixed(2)}%</td>
-        <td>${displayMode === 'raw' ? row.top8 : row.top8Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.top16 : row.top16Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.top32 : row.top32Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.belowTop32 : row.belowTop32Percent.toFixed(2) + '%'}</td>
+        <td>${row.metaShare.toFixed(1)}%</td>
+        <td>${row.winRate.toFixed(1)}%</td>
+        <td>${displayMode === 'raw' ? row.top8 : row.top8Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.top16 : row.top16Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.top32 : row.top32Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.belowTop32 : row.belowTop32Percent.toFixed(1) + '%'}</td>
       </tr>
     `).join(""));
 
@@ -1374,14 +1379,17 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
   } else if (tableType === 'deck') {
     updateElementHTML("multiEventTableHead", `
       <tr>
-        <th rowspan="2" data-sort="date">Date <span class="sort-arrow"></span></th>
-        <th rowspan="2" data-sort="event">Event <span class="sort-arrow"></span></th>
-        <th rowspan="2" data-sort="metaShare">Meta Share <span class="sort-arrow"></span></th>
-        <th rowspan="2" data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
-        <th colspan="4" class="top-conversion-header">Top Conversion
-          <div class="bubble-menu display-toggle">
-            <button class="bubble-button display-toggle-btn raw-btn" data-display="raw">Raw</button>
-            <button class="bubble-button display-toggle-btn percent-btn active" data-display="percent">Percent</button>
+        <th rowspan="2" class="multi-table-col-date" data-sort="date">Date <span class="sort-arrow"></span></th>
+        <th rowspan="2" class="multi-table-col-event" data-sort="event">Event <span class="sort-arrow"></span></th>
+        <th rowspan="2" class="multi-table-col-meta" data-sort="metaShare"><span class="multi-table-header-stack"><span>Meta</span><span>Share</span></span> <span class="sort-arrow"></span></th>
+        <th rowspan="2" class="multi-table-col-winrate" data-sort="winRate"><span class="multi-table-header-stack"><span>Win</span><span>Rate</span></span> <span class="sort-arrow"></span></th>
+        <th colspan="4" class="top-conversion-header multi-table-col-conversion-group">
+          <div class="multi-table-group-header">
+            <span>Top Conversion</span>
+            <div class="bubble-menu display-toggle">
+              <button class="bubble-button display-toggle-btn raw-btn" data-display="raw">Raw</button>
+              <button class="bubble-button display-toggle-btn percent-btn active" data-display="percent">Percent</button>
+            </div>
           </div>
         </th>
       </tr>
@@ -1400,12 +1408,12 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
       <tr>
         <td>${formatDate(row.date)}</td>
         <td class="event-tooltip" data-tooltip="${formatEventName(row.event)} had ${row.totalPlayers} Players, won by ${row.winner} w/ ${row.winnerDeck}">${formatEventName(row.event)}</td>
-        <td>${row.metaShare.toFixed(2)}%</td>
-        <td>${row.winRate.toFixed(2)}%</td>
-        <td>${displayMode === 'raw' ? row.top8 : row.top8Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.top16 : row.top16Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.top32 : row.top32Percent.toFixed(2) + '%'}</td>
-        <td>${displayMode === 'raw' ? row.belowTop32 : row.belowTop32Percent.toFixed(2) + '%'}</td>
+        <td>${row.metaShare.toFixed(1)}%</td>
+        <td>${row.winRate.toFixed(1)}%</td>
+        <td>${displayMode === 'raw' ? row.top8 : row.top8Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.top16 : row.top16Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.top32 : row.top32Percent.toFixed(1) + '%'}</td>
+        <td>${displayMode === 'raw' ? row.belowTop32 : row.belowTop32Percent.toFixed(1) + '%'}</td>
       </tr>
     `).join(""));
 

@@ -17,6 +17,30 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.event-analysis-table-scroll {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: auto;
+  max-height: clamp(24rem, 60vh, 34rem);
+  scrollbar-gutter: stable both-edges;
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+
+.event-analysis-table-scroll::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+.event-analysis-table-scroll::-webkit-scrollbar-thumb {
+  background: rgba(217, 164, 65, 0.24);
+  border-radius: 999px;
+}
+
+.event-analysis-table-scroll::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+}
+
 .data-table {
   width: 100%;
   min-width: max-content;
@@ -169,4 +193,132 @@ th.asc .sort-arrow {
 
 .event-tooltip:hover::before {
   border-top-color: var(--tooltip-bg);
+}
+
+#multiEventTable {
+  min-width: 0;
+  table-layout: fixed;
+  font-size: 0.8rem;
+}
+
+#singleEventTable thead th,
+#multiEventTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
+#multiEventTable th,
+#multiEventTable td {
+  padding: 8px 6px;
+  font-size: 0.78rem;
+  line-height: 1.3;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  vertical-align: top;
+}
+
+#multiEventTable th {
+  padding-right: 12px;
+}
+
+#multiEventTable .multi-table-header-stack {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  line-height: 1.05;
+}
+
+#multiEventTable .top-conversion-header {
+  white-space: normal;
+}
+
+#multiEventTable th[rowspan="2"] {
+  vertical-align: middle;
+}
+
+#multiEventTable .multi-table-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-height: 0;
+}
+
+#multiEventTable .top-conversion-header .bubble-menu.display-toggle {
+  margin-top: 0;
+  flex-wrap: nowrap;
+}
+
+#multiEventTable .top-conversion-header .bubble-button.display-toggle-btn {
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
+#singleEventTable thead tr:first-child > th:first-child,
+#singleEventTable tbody td:first-child,
+#multiEventTable thead tr:first-child > th:first-child,
+#multiEventTable tbody td:first-child {
+  position: sticky;
+  left: 0;
+  box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
+}
+
+#singleEventTable thead tr:first-child > th:first-child,
+#multiEventTable thead tr:first-child > th:first-child {
+  z-index: 6;
+}
+
+#singleEventTable tbody td:first-child,
+#multiEventTable tbody td:first-child {
+  z-index: 2;
+  background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+}
+
+#singleEventTable tbody tr:hover td:first-child,
+#multiEventTable tbody tr:hover td:first-child {
+  background: rgba(217, 164, 65, 0.12);
+}
+
+#multiEventTable[data-view="aggregate"] .multi-table-col-deck {
+  width: 23%;
+}
+
+#multiEventTable[data-view="aggregate"] .multi-table-col-meta,
+#multiEventTable[data-view="aggregate"] .multi-table-col-winrate {
+  width: 11%;
+}
+
+#multiEventTable[data-view="aggregate"] .multi-table-col-conversion-group {
+  width: 55%;
+}
+
+#multiEventTable[data-view="deck"] .multi-table-col-date {
+  width: 14%;
+}
+
+#multiEventTable[data-view="deck"] .multi-table-col-event {
+  width: 24%;
+}
+
+#multiEventTable[data-view="deck"] .multi-table-col-meta,
+#multiEventTable[data-view="deck"] .multi-table-col-winrate {
+  width: 10%;
+}
+
+#multiEventTable[data-view="deck"] .multi-table-col-conversion-group {
+  width: 42%;
+}
+
+@media (max-width: 768px) {
+  .event-analysis-table-scroll {
+    max-height: min(56vh, 26rem);
+  }
+}
+
+@media (max-width: 600px) {
+  .event-analysis-table-scroll {
+    max-height: min(52vh, 22rem);
+  }
 }

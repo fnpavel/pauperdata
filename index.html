@@ -196,19 +196,21 @@
                 <button class="bubble-button table-toggle-btn active" data-table="raw">Raw Data</button>
                 <button class="bubble-button table-toggle-btn" data-table="aggregate">Aggregate Decks</button>
               </div>
-              <table class="data-table" id="singleEventTable">
-                <thead id="singleEventTableHead">
-                  <tr>
-                    <th>Rank</th>
-                    <th>Player</th>
-                    <th>Deck</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Win Rate</th>
-                  </tr>
-                </thead>
-                <tbody id="singleEventTableBody"></tbody>
-              </table>
+              <div class="data-table-scroll event-analysis-table-scroll">
+                <table class="data-table" id="singleEventTable">
+                  <thead id="singleEventTableHead">
+                    <tr>
+                      <th>Rank</th>
+                      <th>Player</th>
+                      <th>Deck</th>
+                      <th>Wins</th>
+                      <th>Losses</th>
+                      <th>Win Rate</th>
+                    </tr>
+                  </thead>
+                  <tbody id="singleEventTableBody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -247,21 +249,23 @@
                 <button class="bubble-button table-toggle-btn active" data-table="aggregate">Aggregate Data</button>
                 <button class="bubble-button table-toggle-btn" data-table="deck">Deck Evolution Data</button>
               </div>
-              <table class="data-table" id="multiEventTable">
-                <thead id="multiEventTableHead">
-                  <tr>
-                    <th data-sort="deck">Deck</th>
-                    <th data-sort="metaShare">Aggregate Meta Share</th>
-                    <th data-sort="winRate">Aggregate Win Rate</th>
-                    <th data-sort="top1">Top 1</th>
-                    <th data-sort="top8">Top 8</th>
-                    <th data-sort="top16">Top 16</th>
-                    <th data-sort="top32">Top 32</th>
-                    <th data-sort="belowTop32">Below Top 32</th>
-                  </tr>
-                </thead>
-                <tbody id="multiEventTableBody"></tbody>
-              </table>
+              <div class="data-table-scroll event-analysis-table-scroll">
+                <table class="data-table" id="multiEventTable">
+                  <thead id="multiEventTableHead">
+                    <tr>
+                      <th data-sort="deck">Deck</th>
+                      <th data-sort="metaShare">Aggregate Meta Share</th>
+                      <th data-sort="winRate">Aggregate Win Rate</th>
+                      <th data-sort="top1">Top 1</th>
+                      <th data-sort="top8">Top 8</th>
+                      <th data-sort="top16">Top 16</th>
+                      <th data-sort="top32">Top 32</th>
+                      <th data-sort="belowTop32">Below Top 32</th>
+                    </tr>
+                  </thead>
+                  <tbody id="multiEventTableBody"></tbody>
+                </table>
+              </div>
             </div>
           </div>
         </div>
