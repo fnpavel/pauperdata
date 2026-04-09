@@ -45,6 +45,7 @@ import {
   getMultiEventPresetRows,
   getMultiEventPresetSuggestedRange
 } from '../utils/multi-event-presets.js';
+import { formatDate, formatEventName } from '../utils/format.js';
 
 let filteredData = [];
 let lastSingleEventType = '';
@@ -55,6 +56,15 @@ let activePlayerQuickViewYear = '';
 let playerEventGroupSelectionInitialized = false;
 let activePlayerEventGroupKeys = new Set();
 let playerEventGroupSelectionContextKey = '';
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function getTopMode() {
   return document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';
@@ -752,6 +762,31 @@ function getPlayerSelectionSummaryElements() {
   };
 }
 
+function buildMultiEventSelectionListHTML(entries = []) {
+  if (!entries.length) {
+    return '<div>No events selected</div>';
+  }
+
+  return entries
+    .map(entry => {
+      const formattedEventName = formatEventName(entry.name) || entry.name || 'Unknown Event';
+      const dateLabel = entry.date ? formatDate(entry.date) : '--';
+      const metaLabel = entry.groupShortLabel || entry.groupLabel || '--';
+
+      return `
+        <div
+          class="player-event-history-item"
+          aria-label="${escapeHtml(`${formattedEventName} on ${dateLabel} in ${metaLabel}`)}"
+        >
+          <span class="player-event-history-item-date">${escapeHtml(dateLabel)}</span>
+          <span class="player-event-history-item-main">${escapeHtml(formattedEventName)}</span>
+          <span class="player-event-history-item-meta">${escapeHtml(metaLabel)}</span>
+        </div>
+      `;
+    })
+    .join('');
+}
+
 function getBasePlayerAnalysisRows() {
   const startDate = document.getElementById('playerStartDateSelect')?.value || '';
   const endDate = document.getElementById('playerEndDateSelect')?.value || '';
@@ -970,6 +1005,7 @@ function getMultiEventSelectedEventEntries() {
         date: eventDate,
         groupKey: groupInfo.key,
         groupLabel: groupInfo.label,
+        groupShortLabel: groupInfo.shortLabel,
         groupOrder: groupInfo.order
       };
     })
@@ -1037,18 +1073,8 @@ function getFilteredMultiEventRows() {
   });
 }
 
-function getExactSelectedMultiEvents() {
-  const events = new Map();
-
-  getFilteredMultiEventRows().forEach(row => {
-    if (!events.has(row.Event)) {
-      events.set(row.Event, row.Date || getEventDate(row.Event));
-    }
-  });
-
-  return Array.from(events.entries())
-    .sort((a, b) => b[1].localeCompare(a[1]) || a[0].localeCompare(b[0]))
-    .map(([eventName]) => eventName);
+function getFilteredMultiEventSelectedEventEntries() {
+  return getMultiEventSelectedEventEntries().filter(entry => activeMultiEventGroupKeys.has(entry.groupKey));
 }
 
 function toggleMultiEventGroupFilter(groupKey) {
@@ -1114,10 +1140,8 @@ function updateMultiEventSelectionSummary() {
     content.appendChild(emptyState);
   }
 
-  const exactSelectedEvents = getExactSelectedMultiEvents();
-  list.innerHTML = exactSelectedEvents.length > 0
-    ? exactSelectedEvents.map(eventName => `<div>${eventName}</div>`).join('')
-    : 'No events selected';
+  const selectedEntries = getFilteredMultiEventSelectedEventEntries();
+  list.innerHTML = buildMultiEventSelectionListHTML(selectedEntries);
 }
 
 function updateSingleEventFilterVisibility() {

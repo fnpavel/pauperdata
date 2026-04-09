@@ -551,6 +551,10 @@
   line-height: 1.35;
 }
 
+#multiEventSelectionList .player-event-history-item {
+  cursor: default;
+}
+
 .event-stat-drilldown-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -631,7 +635,8 @@
 }
 
 #playerEventDetails,
-#deckEvolutionEventDetails {
+#deckEvolutionEventDetails,
+#multiPlayerWinRateDetails {
   margin-top: 10px;
   padding: 0 !important;
   text-align: left !important;
