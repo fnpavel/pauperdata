@@ -1,6 +1,7 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getMultiEventChartData } from '../modules/filters.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
+import { focusMultiEventDeck } from './multi-deck-evolution.js';
 import { getChartTheme } from '../utils/theme.js';
 
 export let metaWinRateChart = null;
@@ -48,6 +49,7 @@ export function updateMultiMetaWinRateChart() {
       borderColor: '#DAA520',
       borderWidth: 1,
       pointRadius: 8,
+      pointHitRadius: 18,
       pointHoverRadius: 10
     }
   ];
@@ -254,6 +256,20 @@ export function updateMultiMetaWinRateChart() {
             }
           }
         },
+        onClick: (_, activeElements, chart) => {
+          if (activeElements.length === 0) {
+            return;
+          }
+
+          const clickedPoint = chart.data.datasets[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
+          const clickedDeckName = String(clickedPoint?.label || '').trim();
+          if (clickedDeckName) {
+            focusMultiEventDeck(clickedDeckName, { scrollIntoView: true });
+          }
+        },
+        onHover: (_, activeElements) => {
+          metaWinRateMultiCtx.style.cursor = activeElements.length > 0 ? 'pointer' : 'default';
+        },
         animation: { duration: 1000, easing: 'easeOutQuart' },
         elements: { point: { pointStyle: 'circle' } }
       }
@@ -263,6 +279,8 @@ export function updateMultiMetaWinRateChart() {
   } catch (error) {
     console.error("Error initializing Multi-Event Meta/Win Rate Chart:", error);
   }
+
+  metaWinRateMultiCtx.style.cursor = 'default';
 
   // Remove toggle buttons and sort options elements if they exist
   const existingToggleDiv = chartContainer.querySelector('.sort-toggle');

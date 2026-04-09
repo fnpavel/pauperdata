@@ -3,13 +3,288 @@ import { getDeckEvolutionChartData } from '../modules/filters.js';
 import { calculateDeckEvolutionStats } from "../utils/data-chart.js";
 import { updateMultiEventTables } from '../modules/event-analysis.js';
 import { getChartTheme } from '../utils/theme.js';
+import { formatDate, formatEventName } from '../utils/format.js';
 
 export let deckEvolutionChart = null;
+let pinnedDeckEvolutionPointKey = '';
+
+function setMultiEventTableToggleState(tableType = 'aggregate') {
+  const toggleButtons = document.querySelectorAll('#multiEventCharts .table-toggle-btn');
+  toggleButtons.forEach(button => {
+    button.classList.toggle('active', button.dataset.table === tableType);
+  });
+}
+
+function escapeHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+function setDeckEvolutionDetailsMarkup(markup) {
+  const detailsEl = document.getElementById('deckEvolutionEventDetails');
+  if (!detailsEl) {
+    return;
+  }
+
+  detailsEl.innerHTML = markup;
+}
+
+function renderDeckEvolutionDetailsPlaceholder(message) {
+  setDeckEvolutionDetailsMarkup(`
+    <div class="player-chart-event-placeholder">${escapeHtml(message)}</div>
+  `);
+}
+
+function getDeckEvolutionPointKey(point) {
+  return String(point?.date || '').trim();
+}
+
+function getDeckEvolutionPointByKey(pointDetails, pointKey) {
+  return pointDetails.find(point => getDeckEvolutionPointKey(point) === pointKey) || null;
+}
+
+function getPointRowWinRate(row) {
+  const wins = Number(row?.Wins) || 0;
+  const losses = Number(row?.Losses) || 0;
+  return (wins + losses) > 0 ? (wins / (wins + losses)) * 100 : 0;
+}
+
+function pickBestFinishRow(rows = []) {
+  if (!rows.length) {
+    return null;
+  }
+
+  return rows.reduce((bestRow, row) => {
+    const rowRank = Number(row?.Rank) || Number.POSITIVE_INFINITY;
+    const bestRank = Number(bestRow?.Rank) || Number.POSITIVE_INFINITY;
+    if (rowRank !== bestRank) {
+      return rowRank < bestRank ? row : bestRow;
+    }
+
+    const rowWinRate = getPointRowWinRate(row);
+    const bestWinRate = getPointRowWinRate(bestRow);
+    if (rowWinRate !== bestWinRate) {
+      return rowWinRate > bestWinRate ? row : bestRow;
+    }
+
+    return String(row?.Player || '').localeCompare(String(bestRow?.Player || '')) < 0 ? row : bestRow;
+  }, rows[0]);
+}
+
+function pickWorstFinishRow(rows = []) {
+  if (!rows.length) {
+    return null;
+  }
+
+  return rows.reduce((worstRow, row) => {
+    const rowRank = Number(row?.Rank) || Number.NEGATIVE_INFINITY;
+    const worstRank = Number(worstRow?.Rank) || Number.NEGATIVE_INFINITY;
+    if (rowRank !== worstRank) {
+      return rowRank > worstRank ? row : worstRow;
+    }
+
+    const rowWinRate = getPointRowWinRate(row);
+    const worstWinRate = getPointRowWinRate(worstRow);
+    if (rowWinRate !== worstWinRate) {
+      return rowWinRate < worstWinRate ? row : worstRow;
+    }
+
+    return String(row?.Player || '').localeCompare(String(worstRow?.Player || '')) < 0 ? row : worstRow;
+  }, rows[0]);
+}
+
+function formatAverageFinish(value) {
+  if (!Number.isFinite(value)) {
+    return '--';
+  }
+
+  const roundedValue = Math.round(value * 10) / 10;
+  return Number.isInteger(roundedValue) ? `#${roundedValue}` : `#${roundedValue.toFixed(1)}`;
+}
+
+function formatDeckPilotSummary(row) {
+  const wins = Number(row?.Wins) || 0;
+  const losses = Number(row?.Losses) || 0;
+  const winRate = (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : '0.0';
+  const formattedEventName = formatEventName(row?.Event) || row?.Event || '--';
+
+  return {
+    name: row?.Player || '--',
+    finish: Number.isFinite(Number(row?.Rank)) ? `#${row.Rank}` : '--',
+    event: formattedEventName,
+    record: `${wins}-${losses}`,
+    winRate: `${winRate}% WR`
+  };
+}
+
+function buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaShares, winRates) {
+  return dates.map((date, index) => {
+    const dateRows = filteredData.filter(row => row.Date === date);
+    const deckRows = dateRows.filter(row => String(row?.Deck || '').trim() === currentDeck);
+    const eventNames = [...new Set(dateRows.map(row => String(row?.Event || '').trim()).filter(Boolean))];
+    const totalPlayers = dateRows.length;
+    const deckCopies = deckRows.length;
+    const deckWins = deckRows.reduce((sum, row) => sum + (Number(row?.Wins) || 0), 0);
+    const deckLosses = deckRows.reduce((sum, row) => sum + (Number(row?.Losses) || 0), 0);
+    const averageFinish = deckRows.length > 0
+      ? deckRows.reduce((sum, row) => sum + (Number(row?.Rank) || 0), 0) / deckRows.length
+      : Number.NaN;
+    const bestFinishRow = pickBestFinishRow(deckRows);
+    const worstFinishRow = pickWorstFinishRow(deckRows);
+    const eventSummaries = eventNames.map(eventName => {
+      const eventRows = dateRows.filter(row => String(row?.Event || '').trim() === eventName);
+      const winnerRow = pickBestFinishRow(eventRows);
+
+      return {
+        eventName,
+        formattedEventName: formatEventName(eventName) || eventName || '--',
+        winnerRow
+      };
+    });
+
+    return {
+      date,
+      deck: currentDeck,
+      eventCount: eventNames.length,
+      totalPlayers,
+      deckCopies,
+      deckWins,
+      deckLosses,
+      metaShare: metaShares[index] || 0,
+      winRate: winRates[index] || 0,
+      averageFinish,
+      bestFinishRow,
+      worstFinishRow,
+      eventSummaries
+    };
+  });
+}
+
+function renderDeckEvolutionDetails(point, { pinned = false } = {}) {
+  if (!point?.date) {
+    renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+    return;
+  }
+
+  const bestPilotSummary = point.bestFinishRow ? formatDeckPilotSummary(point.bestFinishRow) : null;
+  const worstPilotSummary = point.worstFinishRow ? formatDeckPilotSummary(point.worstFinishRow) : null;
+  const deckRecord = `${point.deckWins}-${point.deckLosses}`;
+  const formattedDate = formatDate(point.date);
+  const title = point.eventCount === 1
+    ? point.eventSummaries[0]?.formattedEventName || 'Selected Event'
+    : `${point.eventCount} events on this date`;
+  const winnersPreview = point.eventSummaries
+    .filter(summary => summary.winnerRow)
+    .slice(0, 3)
+    .map(summary => {
+      const winnerRow = summary.winnerRow;
+      const wins = Number(winnerRow?.Wins) || 0;
+      const losses = Number(winnerRow?.Losses) || 0;
+      const winnerWinRate = (wins + losses) > 0 ? ((wins / (wins + losses)) * 100).toFixed(1) : '0.0';
+
+      return `${summary.formattedEventName}: ${winnerRow?.Player || '--'} (${winnerRow?.Deck || '--'} | ${wins}-${losses} | ${winnerWinRate}% WR)`;
+    });
+  const winnersOverflow = Math.max(0, point.eventSummaries.filter(summary => summary.winnerRow).length - winnersPreview.length);
+
+  setDeckEvolutionDetailsMarkup(`
+    <div class="player-chart-event-card${pinned ? ' player-chart-event-card-pinned' : ''}">
+      <div class="player-chart-event-header">
+        <div class="player-chart-event-date">${escapeHtml(formattedDate)}</div>
+        <div class="player-chart-event-title">${escapeHtml(title)}</div>
+      </div>
+      <div class="player-chart-event-grid">
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Deck</span>
+          <strong class="player-chart-event-value">${escapeHtml(point.deck)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Events</span>
+          <strong class="player-chart-event-value">${escapeHtml(point.eventCount)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Copies</span>
+          <strong class="player-chart-event-value">${escapeHtml(`${point.deckCopies}/${point.totalPlayers} pilots`)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Meta Share</span>
+          <strong class="player-chart-event-value">${escapeHtml(`${point.metaShare.toFixed(1)}%`)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Record</span>
+          <strong class="player-chart-event-value">${escapeHtml(deckRecord)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Deck WR</span>
+          <strong class="player-chart-event-value">${escapeHtml(`${point.winRate.toFixed(1)}%`)}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Average Finish</span>
+          <strong class="player-chart-event-value">${escapeHtml(formatAverageFinish(point.averageFinish))}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Best Finish</span>
+          <strong class="player-chart-event-value">${escapeHtml(point.bestFinishRow ? `${point.bestFinishRow.Player || '--'} (#${point.bestFinishRow.Rank ?? '--'})` : '--')}</strong>
+        </div>
+        <div class="player-chart-event-item">
+          <span class="player-chart-event-label">Worst Finish</span>
+          <strong class="player-chart-event-value">${escapeHtml(point.worstFinishRow ? `${point.worstFinishRow.Player || '--'} (#${point.worstFinishRow.Rank ?? '--'})` : '--')}</strong>
+        </div>
+      </div>
+      <div class="player-chart-event-standouts">
+        <div class="player-chart-event-standout-card">
+          <span class="player-chart-event-label">Best Deck Result</span>
+          <strong class="player-chart-event-value">${escapeHtml(bestPilotSummary?.name || '--')}</strong>
+          <span class="player-chart-event-standout-meta">${escapeHtml(bestPilotSummary ? `${bestPilotSummary.finish} | ${bestPilotSummary.event}` : '--')}</span>
+          <span class="player-chart-event-standout-meta">${escapeHtml(bestPilotSummary ? `${bestPilotSummary.record} | ${bestPilotSummary.winRate}` : '--')}</span>
+        </div>
+        <div class="player-chart-event-standout-card player-chart-event-standout-card-worst">
+          <span class="player-chart-event-label">Worst Deck Result</span>
+          <strong class="player-chart-event-value">${escapeHtml(worstPilotSummary?.name || '--')}</strong>
+          <span class="player-chart-event-standout-meta">${escapeHtml(worstPilotSummary ? `${worstPilotSummary.finish} | ${worstPilotSummary.event}` : '--')}</span>
+          <span class="player-chart-event-standout-meta">${escapeHtml(worstPilotSummary ? `${worstPilotSummary.record} | ${worstPilotSummary.winRate}` : '--')}</span>
+        </div>
+      </div>
+      <div class="player-chart-event-winner">
+        ${point.eventCount === 1
+          ? `Event Winner: <strong>${escapeHtml(point.eventSummaries[0]?.winnerRow?.Player || '--')}</strong> with <strong>${escapeHtml(point.eventSummaries[0]?.winnerRow?.Deck || '--')}</strong>`
+          : `Date Winners: <strong>${escapeHtml(winnersPreview.join(' | ') || '--')}</strong>${winnersOverflow > 0 ? escapeHtml(` | +${winnersOverflow} more`) : ''}`
+        }
+      </div>
+    </div>
+  `);
+}
+
+export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
+  const deckSelect = document.getElementById('deckEvolutionSelect');
+  const normalizedDeckName = String(deckName || '').trim();
+
+  if (!deckSelect || !normalizedDeckName) {
+    return false;
+  }
+
+  deckSelect.value = normalizedDeckName;
+  setMultiEventTableToggleState('deck');
+  updateDeckEvolutionChart();
+
+  if (scrollIntoView) {
+    deckSelect.closest('.chart-container')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  return true;
+}
 
 export function updateDeckEvolutionChart() {
   console.log("updateDeckEvolutionChart called...");
   setChartLoading("deckEvolutionChart", true);
   const theme = getChartTheme();
+  pinnedDeckEvolutionPointKey = '';
 
   const filteredData = getDeckEvolutionChartData();
   const deckSelect = document.getElementById("deckEvolutionSelect");
@@ -39,6 +314,7 @@ export function updateDeckEvolutionChart() {
   }
 
   if (filteredData.length === 0 || !currentDeck) {
+    renderDeckEvolutionDetailsPlaceholder('Choose a deck to inspect its date-by-date meta share and win rate.');
     deckEvolutionChart = new Chart(deckEvolutionCtx, {
       type: 'bar',
       data: {
@@ -58,8 +334,10 @@ export function updateDeckEvolutionChart() {
   }
 
   const { dates, metaShares, winRates } = calculateDeckEvolutionStats(filteredData, currentDeck);
+  const pointDetails = buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaShares, winRates);
   const maxMetaShare = Math.max(...metaShares, 1);
   const metaShareMax = Math.ceil(maxMetaShare / 10) * 10;
+  renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
 
   const datasets = [
     {
@@ -82,6 +360,7 @@ export function updateDeckEvolutionChart() {
       pointBorderColor: '#FFD700',
       pointRadius: 4,
       pointHoverRadius: 6,
+      pointHitRadius: 18,
       fill: false,
       tension: 0.2,
       yAxisID: 'y2'
@@ -125,47 +404,37 @@ export function updateDeckEvolutionChart() {
           tooltip: {
             mode: 'nearest',
             intersect: true,
+            displayColors: false,
             callbacks: {
-              title: tooltipItems => tooltipItems[0].label,
-              label: context => {
-                const date = context.chart.data.labels[context.dataIndex];
-                const metaShare = context.chart.data.datasets[0].data[context.dataIndex].toFixed(2);
-                const winRate = context.chart.data.datasets[1].data[context.dataIndex].toFixed(2);
-                const isMetaShare = context.datasetIndex === 0;
-
-                const eventData = filteredData.filter(row => row.Date === date);
-                const detailsEl = document.getElementById('deckEvolutionEventDetails');
-                if (eventData.length && detailsEl) {
-                  const winnerRow = eventData.reduce((prev, curr) => {
-                    const prevWinRate = (prev.Wins + prev.Losses) > 0 ? prev.Wins / (prev.Wins + prev.Losses) : 0;
-                    const currWinRate = (curr.Wins + curr.Losses) > 0 ? curr.Wins / (curr.Wins + curr.Losses) : 0;
-                    return currWinRate > prevWinRate ? curr : prev;
-                  }, eventData[0]);
-                  const winner = winnerRow.Player || "Unknown";
-                  const winnerDeck = winnerRow.Deck || "Unknown";
-                  const winnerDeckCount = eventData.filter(row => row.Deck === winnerDeck).length;
-                  const totalPlayers = eventData.length;
-                  const winnerMetaShare = ((winnerDeckCount / totalPlayers) * 100).toFixed(2);
-                  const totalWins = eventData.reduce((sum, row) => sum + row.Wins, 0);
-                  const totalLosses = eventData.reduce((sum, row) => sum + row.Losses, 0);
-                  const overallWinRate = (totalWins + totalLosses) > 0 ? ((totalWins / (totalWins + totalLosses)) * 100).toFixed(2) : "0.00";
-                  const eventName = eventData[0].Event || "Unnamed Event";
-                  detailsEl.innerHTML = `
-                    ${eventName} (${date})<br>
-                    Won by ${winner} w/ ${winnerDeck}<br>
-                    ${winnerMetaShare}% Meta, ${overallWinRate}% Win Rate
-                  `;
-                } else if (detailsEl) {
-                  detailsEl.innerHTML = "No Event Data available";
+              title: tooltipItems => formatDate(tooltipItems[0]?.label || ''),
+              beforeBody: tooltipItems => {
+                const point = pointDetails[tooltipItems[0]?.dataIndex];
+                if (!point) {
+                  return [];
                 }
 
-                return isMetaShare ? `Meta Share: ${metaShare}%` : `Win Rate: ${winRate}%`;
+                return [
+                  point.eventCount === 1
+                    ? (point.eventSummaries[0]?.formattedEventName || 'Selected Event')
+                    : `${point.eventCount} events on this date`
+                ];
               },
-              afterBody: function() {
-                const detailsEl = document.getElementById('deckEvolutionEventDetails');
-                if (detailsEl && this._active.length === 0) {
-                  detailsEl.innerHTML = "";
+              label: context => {
+                const point = pointDetails[context.dataIndex];
+                if (!point) {
+                  return '';
                 }
+
+                return context.datasetIndex === 0
+                  ? [`Deck: ${point.deck}`, `Meta Share: ${point.metaShare.toFixed(1)}%`, `Copies: ${point.deckCopies}/${point.totalPlayers}`]
+                  : [`Deck: ${point.deck}`, `Win Rate: ${point.winRate.toFixed(1)}%`, `Record: ${point.deckWins}-${point.deckLosses}`];
+              },
+              afterBody(context) {
+                const point = pointDetails[context[0]?.dataIndex];
+                if (!pinnedDeckEvolutionPointKey) {
+                  renderDeckEvolutionDetails(point);
+                }
+                return '';
               }
             },
             backgroundColor: theme.tooltipBg,
@@ -178,6 +447,57 @@ export function updateDeckEvolutionChart() {
             padding: 10
           },
           datalabels: {display: false}
+        },
+        onClick(event, activeElements) {
+          if (!activeElements?.length) {
+            if (pinnedDeckEvolutionPointKey) {
+              pinnedDeckEvolutionPointKey = '';
+              renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+            }
+            return;
+          }
+
+          const point = pointDetails[activeElements[0].index];
+          const pointKey = getDeckEvolutionPointKey(point);
+
+          if (pinnedDeckEvolutionPointKey === pointKey) {
+            pinnedDeckEvolutionPointKey = '';
+            renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+            return;
+          }
+
+          pinnedDeckEvolutionPointKey = pointKey;
+          renderDeckEvolutionDetails(point, { pinned: true });
+        },
+        onHover(event, activeElements) {
+          deckEvolutionCtx.style.cursor = activeElements?.length ? 'pointer' : 'default';
+
+          if (activeElements?.length) {
+            const hoveredPoint = pointDetails[activeElements[0].index];
+            const hoveredPointKey = getDeckEvolutionPointKey(hoveredPoint);
+
+            if (pinnedDeckEvolutionPointKey === hoveredPointKey) {
+              renderDeckEvolutionDetails(hoveredPoint, { pinned: true });
+              return;
+            }
+
+            renderDeckEvolutionDetails(hoveredPoint);
+            return;
+          }
+
+          if (pinnedDeckEvolutionPointKey) {
+            const pinnedPoint = getDeckEvolutionPointByKey(pointDetails, pinnedDeckEvolutionPointKey);
+            if (pinnedPoint) {
+              renderDeckEvolutionDetails(pinnedPoint, { pinned: true });
+              return;
+            }
+
+            pinnedDeckEvolutionPointKey = '';
+            renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+            return;
+          }
+
+          renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
         }
       }
     });
@@ -185,16 +505,18 @@ export function updateDeckEvolutionChart() {
     console.error("Error initializing Deck Evolution Chart:", error);
   }
 
+  deckEvolutionCtx.style.cursor = 'default';
+
   updateMultiEventTables(filteredData, 'deck', currentDeck);
 
   const toggleButtons = document.querySelectorAll('#multiEventCharts .table-toggle-btn');
   toggleButtons.forEach(button => {
-    button.addEventListener('click', () => {
+    button.onclick = () => {
       toggleButtons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
       const tableType = button.dataset.table;
       updateMultiEventTables(filteredData, tableType, currentDeck);
-    });
+    };
   });
 
   setChartLoading("deckEvolutionChart", false);
