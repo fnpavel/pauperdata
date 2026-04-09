@@ -4,7 +4,7 @@ import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
 import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
-import { toggleStatCardVisibility, updateElementText, updateElementHTML } from '../utils/dom.js';
+import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
@@ -15,6 +15,22 @@ function getSelectedEventAnalysisTypes() {
     button.dataset.type.toLowerCase()
   );
 }
+
+const singleEventStatCardIds = [
+  'singleEventInfoCard',
+  'singleTopPlayerCard',
+  'singleRunnerUpCard',
+  'singleTopDecksCard',
+  'singleMostCopiesCard'
+];
+
+const multiEventStatCardIds = [
+  'multiTotalEventsCard',
+  'multiMostPlayersCard',
+  'multiLeastPlayersCard',
+  'multiTopDecksCard',
+  'multiMostCopiesCard'
+];
 
 export function initEventAnalysis() {
   console.log('Event Analysis initialized');
@@ -296,6 +312,8 @@ export function populateSingleEventStats(filteredData) {
     })
     .filter(Boolean)
     .join("") || "No Data");
+
+  singleEventStatCardIds.forEach(triggerUpdateAnimation);
 }
 
 export function populateMultiEventStats(filteredData) {
@@ -336,6 +354,8 @@ export function populateMultiEventStats(filteredData) {
     })
     .filter(Boolean)
     .join("") || "--");
+
+  multiEventStatCardIds.forEach(triggerUpdateAnimation);
 }
 
 // Helper Functions

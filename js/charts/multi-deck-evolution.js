@@ -2,12 +2,14 @@ import { setChartLoading } from '../utils/dom.js';
 import { getDeckEvolutionChartData } from '../modules/filters.js';
 import { calculateDeckEvolutionStats } from "../utils/data-chart.js";
 import { updateMultiEventTables } from '../modules/event-analysis.js';
+import { getChartTheme } from '../utils/theme.js';
 
 export let deckEvolutionChart = null;
 
 export function updateDeckEvolutionChart() {
   console.log("updateDeckEvolutionChart called...");
   setChartLoading("deckEvolutionChart", true);
+  const theme = getChartTheme();
 
   const filteredData = getDeckEvolutionChartData();
   const deckSelect = document.getElementById("deckEvolutionSelect");
@@ -47,7 +49,7 @@ export function updateDeckEvolutionChart() {
         responsive: true,
         maintainAspectRatio: false,
         plugins: { legend: { display: false } },
-        scales: { y: { display: false }, x: { ticks: { color: '#fff' } } }
+        scales: { y: { display: false }, x: { ticks: { color: theme.text } } }
       }
     });
     updateMultiEventTables(filteredData, 'deck', currentDeck);
@@ -97,28 +99,28 @@ export function updateDeckEvolutionChart() {
           y: { 
             beginAtZero: true, 
             max: metaShareMax,
-            title: { display: true, text: "Meta Share %", color: '#fff' }, 
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-            ticks: { color: '#fff' } 
+            title: { display: true, text: "Meta Share %", color: theme.text },
+            grid: { color: theme.grid },
+            ticks: { color: theme.text } 
           },
           y2: { 
             position: 'right', 
             beginAtZero: true, 
             max: 100,
-            title: { display: true, text: "Win Rate %", color: '#fff' }, 
-            grid: { color: 'rgba(255, 255, 255, 0.1)' }, 
-            ticks: { color: '#fff' } 
+            title: { display: true, text: "Win Rate %", color: theme.text },
+            grid: { color: theme.grid },
+            ticks: { color: theme.text } 
           },
           x: { 
-            title: { display: true, text: "Date", color: '#fff' }, 
-            grid: { borderDash: [5, 5], color: 'rgba(255, 255, 255, 0.1)' }, 
-            ticks: { color: '#fff', autoSkip: true, maxRotation: 45, minRotation: 0 } 
+            title: { display: true, text: "Date", color: theme.text },
+            grid: { borderDash: [5, 5], color: theme.grid },
+            ticks: { color: theme.text, autoSkip: true, maxRotation: 45, minRotation: 0 } 
           }
         },
         plugins: {
           legend: { 
             position: 'top', 
-            labels: { color: '#e0e0e0', font: { size: 12 }, boxWidth: 20, padding: 10 } 
+            labels: { color: theme.mutedText, font: { size: 12 }, boxWidth: 20, padding: 10 } 
           },
           tooltip: {
             mode: 'nearest',
@@ -166,9 +168,13 @@ export function updateDeckEvolutionChart() {
                 }
               }
             },
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: theme.tooltipBg,
             titleFont: { size: 14, weight: 'bold' },
             bodyFont: { size: 12 },
+            titleColor: theme.tooltipText,
+            bodyColor: theme.tooltipText,
+            borderColor: theme.tooltipBorder,
+            borderWidth: 1,
             padding: 10
           },
           datalabels: {display: false}

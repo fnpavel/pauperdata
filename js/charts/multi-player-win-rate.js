@@ -1,12 +1,14 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getDeckEvolutionChartData } from '../modules/filters.js';
 import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
+import { getChartTheme } from '../utils/theme.js';
 
 export let multiPlayerWinRateChart = null;
 
 export function updateMultiPlayerWinRateChart() {
   console.log("updateMultiPlayerWinRateChart called...");
   setChartLoading("multiPlayerWinRateChart", true);
+  const theme = getChartTheme();
 
   const chartData = getDeckEvolutionChartData();
   if (chartData.length === 0) {
@@ -23,7 +25,7 @@ export function updateMultiPlayerWinRateChart() {
           responsive: true,
           maintainAspectRatio: false,
           plugins: { legend: { display: false } },
-          scales: { y: { display: false }, x: { ticks: { color: '#fff' } } }
+          scales: { y: { display: false }, x: { ticks: { color: theme.text } } }
         }
       });
     }
@@ -50,35 +52,15 @@ export function updateMultiPlayerWinRateChart() {
   let searchContainer = chartContainer.querySelector('.player-search-container');
   if (!searchContainer) {
     searchContainer = document.createElement('div');
-    searchContainer.className = 'player-search-container';
-    searchContainer.style.marginBottom = '15px';
-    searchContainer.style.position = 'relative';
+    searchContainer.className = 'player-search-container chart-search-container';
     
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = 'Search players...';
-    searchInput.className = 'player-search-input';
-    searchInput.style.width = '100%';
-    searchInput.style.padding = '8px';
-    searchInput.style.borderRadius = '4px';
-    searchInput.style.backgroundColor = '#2a2a2a';
-    searchInput.style.border = '1px solid #444';
-    searchInput.style.color = '#fff';
-    searchInput.style.fontFamily = "'Bitter', serif";
+    searchInput.className = 'player-search-input chart-search-input';
     
     const dropdown = document.createElement('div');
-    dropdown.className = 'player-dropdown';
-    dropdown.style.display = 'none';
-    dropdown.style.position = 'absolute';
-    dropdown.style.top = '100%';
-    dropdown.style.left = '0';
-    dropdown.style.right = '0';
-    dropdown.style.maxHeight = '200px';
-    dropdown.style.overflowY = 'auto';
-    dropdown.style.backgroundColor = '#2a2a2a';
-    dropdown.style.border = '1px solid #444';
-    dropdown.style.borderRadius = '4px';
-    dropdown.style.zIndex = '1000';
+    dropdown.className = 'player-dropdown chart-search-dropdown';
     
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(dropdown);
@@ -118,21 +100,8 @@ export function updateMultiPlayerWinRateChart() {
       
       filteredPlayers.forEach(player => {
         const playerDiv = document.createElement('div');
+        playerDiv.className = 'chart-search-option';
         playerDiv.textContent = player;
-        playerDiv.style.padding = '8px';
-        playerDiv.style.cursor = 'pointer';
-        playerDiv.style.color = '#fff';
-        playerDiv.style.fontFamily = "'Bitter', serif";
-        playerDiv.style.fontWeight = 'bold';
-        playerDiv.style.borderBottom = '1px solid #444';
-        
-        playerDiv.addEventListener('mouseover', () => {
-          playerDiv.style.backgroundColor = '#444';
-        });
-        
-        playerDiv.addEventListener('mouseout', () => {
-          playerDiv.style.backgroundColor = 'transparent';
-        });
         
         playerDiv.addEventListener('click', () => {
           searchInput.value = player;
@@ -218,15 +187,15 @@ export function updateMultiPlayerWinRateChart() {
             title: {
               display: true,
               text: "Events Played",
-              color: '#fff',
+              color: theme.text,
               font: { size: 14, weight: 'bold', family: "'Bitter', serif" }
             },
             ticks: {
-              color: '#fff',
+              color: theme.text,
               font: { size: 12, family: "'Bitter', serif" },
               stepSize: 1
             },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            grid: { color: theme.grid },
             min: 0,
             max: Math.max(...eventCounts) + 1
           },
@@ -235,16 +204,16 @@ export function updateMultiPlayerWinRateChart() {
             title: {
               display: true,
               text: "Win Rate %",
-              color: '#fff',
+              color: theme.text,
               font: { size: 14, weight: 'bold', family: "'Bitter', serif" }
             },
             ticks: {
-              color: '#fff',
+              color: theme.text,
               font: { size: 12, family: "'Bitter', serif" },
               callback: value => `${value}%`,
               stepSize: 10
             },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' },
+            grid: { color: theme.grid },
             min: 0,
             max: Math.min(100, Math.ceil(Math.max(...winRates) / 10) * 10 + 10)
           }
@@ -254,14 +223,14 @@ export function updateMultiPlayerWinRateChart() {
             display: true,
             position: 'top',
             labels: { 
-              color: '#e0e0e0', 
+              color: theme.mutedText,
               font: { size: 14, family: "'Bitter', serif" },
               boxWidth: 20,
               padding: 10
             }
           },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: theme.tooltipBg,
             titleFont: { 
               family: "'Bitter', serif", 
               size: 14, 
@@ -271,10 +240,10 @@ export function updateMultiPlayerWinRateChart() {
             bodyFont: { 
               family: "'Bitter', serif", 
               size: 12,
-              color: '#FFFFFF'
+              color: theme.tooltipText
             },
             titleColor: '#FFD700',
-            bodyColor: '#FFFFFF',
+            bodyColor: theme.tooltipText,
             callbacks: {
               label: context => {
                 if (!context.raw) return [];
@@ -285,14 +254,14 @@ export function updateMultiPlayerWinRateChart() {
                 ];
               }
             },
-            borderColor: '#FFD700',
+            borderColor: theme.tooltipBorder,
             borderWidth: 1,
             padding: 10,
             displayColors: true
           },
           datalabels: {
             display: true,
-            color: '#e0e0e0',
+            color: theme.mutedText,
             font: { size: 10, family: "'Bitter', serif" },
             formatter: (value) => value.label,
             align: 'top',

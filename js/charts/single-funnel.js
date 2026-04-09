@@ -1,12 +1,14 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getFunnelChartData } from '../modules/filters.js';
 import { calculateDeckConversionStats } from "../utils/data-chart.js";
+import { getChartTheme } from '../utils/theme.js';
 
 export let eventFunnelChart = null;
 
 export function updateEventFunnelChart() {
   console.log("updateEventFunnelChart called...");
   setChartLoading("eventFunnelChart", true);
+  const theme = getChartTheme();
 
   const chartData = getFunnelChartData();
   if (chartData.length === 0) {
@@ -74,18 +76,18 @@ export function updateEventFunnelChart() {
             title: {
               display: true,
               text: "Conversion Rate (%)",
-              color: '#FFFFFF',
+              color: theme.text,
               font: { size: 16, weight: 'bold', family: "'Bitter', serif" }
             },
             ticks: {
-              color: '#FFFFFF',
+              color: theme.text,
               font: { size: 12, family: "'Bitter', serif" },
               callback: value => `${value}%`
             },
             grid: {
-              color: 'rgba(255, 255, 255, 0.1)',
+              color: theme.grid,
               borderDash: [5, 5],
-              borderColor: '#FFFFFF'
+              borderColor: theme.text
             }
           },
           y: {
@@ -93,11 +95,11 @@ export function updateEventFunnelChart() {
             title: {
               display: true,
               text: "Decks",
-              color: '#FFFFFF',
+              color: theme.text,
               font: { size: 16, weight: 'bold', family: "'Bitter', serif" }
             },
             ticks: {
-              color: '#FFFFFF',
+              color: theme.text,
               font: { size: 12, family: "'Bitter', serif" }
             },
             grid: { display: false }
@@ -107,7 +109,7 @@ export function updateEventFunnelChart() {
           legend: {
             position: 'top',
             labels: {
-              color: '#e0e0e0',
+              color: theme.mutedText,
               font: { size: 12, family: "'Bitter', serif" },
               padding: 10,
               boxWidth: 20,
@@ -115,18 +117,18 @@ export function updateEventFunnelChart() {
             }
           },
           tooltip: {
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: theme.tooltipBg,
             titleFont: { family: "'Bitter', serif", size: 14, weight: 'bold' },
             bodyFont: { family: "'Bitter', serif", size: 12 },
-            titleColor: '#FFFFFF',
-            bodyColor: '#FFFFFF',
+            titleColor: theme.tooltipText,
+            bodyColor: theme.tooltipText,
             callbacks: {
               label: context => {
                 const value = context.raw.toFixed(2);
                 return `${context.dataset.label}: ${value}%`;
               }
             },
-            borderColor: '#FFD700',
+            borderColor: theme.tooltipBorder,
             borderWidth: 1,
             padding: 10
           },

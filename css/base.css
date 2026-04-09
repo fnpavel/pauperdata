@@ -1,9 +1,9 @@
 :root {
-  --primary: #8B008B; /* Magic purple (Dark Magenta) */
-  --secondary: #1C2526; /* Dark slate (MTG card background) */
-  --light: #D4C0A1; /* Parchment beige (MTG card text area) */
-  --dark: #0D0F0F; /* Deep black (MTG card border) */
-  --accent: #FFD700; /* Gold (MTG legendary border) */
+  --primary: #167a72;
+  --secondary: #122029;
+  --light: #f2e9d5;
+  --dark: #08141a;
+  --accent: #d9a441;
   --mana-red: #FF4500; /* Red mana */
   --mana-blue: #1E90FF; /* Blue mana */
   --mana-green: #228B22; /* Green mana */
@@ -11,6 +11,70 @@
   --daltonic-top16: #00CED1; /* Dark Turquoise (Top 16) */
   --daltonic-top32: #FF6347; /* Tomato (Top 32) */
   --daltonic-below32: #A9A9A9; /* Dark Gray (Below Top 32) */
+  --page-bg: #08141a;
+  --page-pattern-opacity: 0.08;
+  --page-pattern-color: #8f9079;
+  --surface-1: #122029;
+  --surface-2: #182932;
+  --surface-3: #223741;
+  --surface-hover: #28424d;
+  --text-primary: #f2e9d5;
+  --text-secondary: #d7ccb8;
+  --text-muted: #8fa0a6;
+  --border-subtle: rgba(217, 164, 65, 0.16);
+  --shadow-color: rgba(0, 0, 0, 0.28);
+  --header-glow: rgba(22, 122, 114, 0.26);
+  --header-shade: rgba(8, 20, 26, 0.92);
+  --chart-text: #f2e9d5;
+  --chart-muted-text: #d7ccb8;
+  --chart-grid: rgba(242, 233, 213, 0.12);
+  --tooltip-bg: rgba(8, 20, 26, 0.92);
+  --tooltip-text: #fff9ef;
+  --tooltip-border: rgba(217, 164, 65, 0.9);
+  --input-bg: rgba(12, 26, 33, 0.95);
+  --input-border: rgba(120, 145, 154, 0.38);
+  --input-text: #f2e9d5;
+  --input-hover-bg: #203540;
+  --dropdown-bg: rgba(18, 32, 41, 0.98);
+  --dropdown-border: rgba(120, 145, 154, 0.38);
+  --dropdown-item-border: rgba(120, 145, 154, 0.25);
+  --link-color: #6fa8ff;
+}
+
+html[data-theme="light"] {
+  --primary: #1e7b74;
+  --secondary: #f7efdf;
+  --light: #19292f;
+  --dark: #fffaf1;
+  --accent: #ba7f22;
+  --page-bg: #efe7d6;
+  --page-pattern-opacity: 0.06;
+  --page-pattern-color: #b9ab8e;
+  --surface-1: #fff9ef;
+  --surface-2: #f7efdf;
+  --surface-3: #ebdec3;
+  --surface-hover: #e1d0ac;
+  --text-primary: #19292f;
+  --text-secondary: #42575d;
+  --text-muted: #6f8085;
+  --border-subtle: rgba(137, 97, 34, 0.18);
+  --shadow-color: rgba(25, 41, 47, 0.12);
+  --header-glow: rgba(30, 123, 116, 0.12);
+  --header-shade: rgba(255, 249, 239, 0.92);
+  --chart-text: #22343a;
+  --chart-muted-text: #51646a;
+  --chart-grid: rgba(25, 41, 47, 0.14);
+  --tooltip-bg: rgba(34, 50, 56, 0.94);
+  --tooltip-text: #fffaf1;
+  --tooltip-border: rgba(186, 127, 34, 0.82);
+  --input-bg: rgba(255, 249, 239, 0.98);
+  --input-border: rgba(137, 97, 34, 0.24);
+  --input-text: #19292f;
+  --input-hover-bg: #f0e2c6;
+  --dropdown-bg: rgba(255, 249, 239, 0.98);
+  --dropdown-border: rgba(137, 97, 34, 0.22);
+  --dropdown-item-border: rgba(137, 97, 34, 0.16);
+  --link-color: #225fd6;
 }
 
 * {
@@ -21,8 +85,13 @@
 }
 
 body {
-  background-color: var(--dark);
+  background-color: var(--page-bg);
   background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="28" height="49" viewBox="0 0 28 49"%3E%3Cg fill-rule="evenodd"%3E%3Cg id="hexagons" fill="%239C92AC" fill-opacity="0.08" fill-rule="nonzero"%3E%3Cpath d="M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-  color: var(--light);
+  color: var(--text-primary);
   line-height: 1.6;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+html[data-theme="light"] body {
+  background-image: url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="28" height="49" viewBox="0 0 28 49"%3E%3Cg fill-rule="evenodd"%3E%3Cg id="hexagons" fill="%23B9AB8E" fill-opacity="0.06" fill-rule="nonzero"%3E%3Cpath d="M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
 }

@@ -209,3 +209,82 @@ canvas {
   color: var(--accent);
   font-weight: bold;
 }
+
+.chart-container {
+  background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
+  box-shadow: 0 14px 26px var(--shadow-color);
+}
+
+.chart-container:hover {
+  background: linear-gradient(155deg, var(--surface-3), var(--surface-2));
+}
+
+.chart-title,
+.chart-container div[id$="Loading"],
+.bar-sort-options,
+.custom-legend li {
+  color: var(--chart-text);
+}
+
+.custom-legend li span {
+  border-color: var(--input-border);
+}
+
+#deckEvolutionTooltip,
+#playerWinRateTooltip {
+  color: var(--tooltip-text);
+  background: var(--tooltip-bg);
+  border: 1px solid var(--tooltip-border);
+}
+
+.chart-search-container {
+  margin-bottom: 15px;
+  position: relative;
+}
+
+.chart-search-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  color: var(--input-text);
+  font-family: 'Bitter', serif;
+}
+
+.chart-search-input:focus {
+  outline: 1px solid rgba(217, 164, 65, 0.35);
+  border-color: var(--accent);
+}
+
+.chart-search-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: var(--dropdown-bg);
+  border: 1px solid var(--dropdown-border);
+  border-radius: 8px;
+  box-shadow: 0 10px 20px var(--shadow-color);
+  z-index: 1000;
+}
+
+.chart-search-option {
+  padding: 8px 10px;
+  cursor: pointer;
+  color: var(--input-text);
+  font-family: 'Bitter', serif;
+  font-weight: bold;
+  border-bottom: 1px solid var(--dropdown-item-border);
+}
+
+.chart-search-option:last-child {
+  border-bottom: none;
+}
+
+.chart-search-option:hover {
+  background-color: var(--input-hover-bg);
+}

@@ -161,28 +161,50 @@ export function calculatePlayerWinRateStats(data) {
   
   const eventStats = filteredData.reduce((acc, row) => {
     if (!acc[row.Event]) {
-      acc[row.Event] = { date: row.Date, winRate: 0, wins: 0, losses: 0, deck: row.Deck };
+      acc[row.Event] = {
+        event: row.Event,
+        date: row.Date,
+        wins: 0,
+        losses: 0,
+        deck: row.Deck,
+        rank: Number(row.Rank)
+      };
     }
-    acc[row.Event].wins += row.Wins;
-    acc[row.Event].losses += row.Losses;
+    acc[row.Event].wins += Number(row.Wins) || 0;
+    acc[row.Event].losses += Number(row.Losses) || 0;
     return acc;
   }, {});
 
-  const events = Object.keys(eventStats);
-  const dates = events.map(event => eventStats[event].date).sort((a, b) => new Date(a) - new Date(b));
+  const pointDetails = Object.values(eventStats)
+    .map(stats => ({
+      event: stats.event,
+      date: stats.date,
+      deck: stats.deck || "N/A",
+      wins: stats.wins,
+      losses: stats.losses,
+      rank: Number.isFinite(stats.rank) ? stats.rank : null,
+      winRate: (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : 0
+    }))
+    .sort((a, b) => {
+      const dateComparison = String(a.date || '').localeCompare(String(b.date || ''));
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      return String(a.event || '').localeCompare(String(b.event || ''));
+    });
+
+  const dates = pointDetails.map(point => point.date);
   const eventByDate = {};
-  events.forEach(event => {
-    eventByDate[eventStats[event].date] = event;
+  pointDetails.forEach(point => {
+    eventByDate[point.date] = point.event;
   });
 
   return {
     dates,
-    winRates: dates.map(date => {
-      const event = eventByDate[date];
-      const stats = eventStats[event];
-      return (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : 0;
-    }),
-    decks: dates.map(date => eventStats[eventByDate[date]].deck || "N/A"),
-    eventByDate
+    winRates: pointDetails.map(point => point.winRate),
+    decks: pointDetails.map(point => point.deck),
+    eventByDate,
+    pointDetails
   };
 }

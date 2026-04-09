@@ -1,4 +1,9 @@
+a {
+  color: var(--link-color);
+  transition: color 0.2s ease;
+}
+
 a:hover {
-  color: #5151f8;
+  color: var(--accent);
   text-decoration: underline; 
 }

@@ -124,6 +124,33 @@ export function calculateMultiEventStats(filteredData) {
   };
 }
 
+export function buildPlayerEventHistoryHTML(data) {
+  if (!data || data.length === 0) {
+    return "<div>No events selected</div>";
+  }
+
+  const eventsByDate = data.reduce((acc, row) => {
+    if (!acc[row.Date]) {
+      acc[row.Date] = [];
+    }
+
+    acc[row.Date].push({
+      event: row.Event,
+      deck: row.Deck,
+      rank: row.Rank
+    });
+    return acc;
+  }, {});
+
+  return Object.keys(eventsByDate)
+    .sort()
+    .map(date => {
+      const eventDeckPairs = eventsByDate[date].map(item => `${item.event} (${item.deck}, Rank: ${item.rank})`);
+      return `<div><span class="label">${date}:</span> <span class="value">${eventDeckPairs.join(", ")}</span></div>`;
+    })
+    .join("");
+}
+
 // Player Stat Cards
 export function calculatePlayerStats(data) {
   const totalEvents = data.length > 0 ? [...new Set(data.map(row => row.Event))].length : 0;
@@ -309,18 +336,7 @@ export function calculatePlayerStats(data) {
   } : { name: "--", events: "0", winRate: "0%", bestWinRate: "-- (Event: --)", worstWinRate: "-- (Event: --)" };
 
   // Event History with Rank
-  const eventHistoryHTML = !data || data.length === 0 ? "<div>No events selected</div>" : (() => {
-    const eventsByDate = data.reduce((acc, row) => {
-      if (!acc[row.Date]) acc[row.Date] = [];
-      acc[row.Date].push({ event: row.Event, deck: row.Deck, rank: row.Rank });
-      return acc;
-    }, {});
-    const sortedDates = Object.keys(eventsByDate).sort();
-    return sortedDates.map(date => {
-      const eventDeckPairs = eventsByDate[date].map(item => `${item.event} (${item.deck}, Rank: ${item.rank})`);
-      return `<div><span class="label">${date}:</span> <span class="value">${eventDeckPairs.join(", ")}</span></div>`;
-    }).join("");
-  })();
+  const eventHistoryHTML = buildPlayerEventHistoryHTML(data);
 
   return {
     totalEvents: totalEvents.toString(),

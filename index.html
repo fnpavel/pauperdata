@@ -4,6 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MTG Pauper Analytics Dashboard</title>
+  <script>
+    (function() {
+      const storageKey = 'mtg-tracker-theme';
+      try {
+        const savedTheme = window.localStorage.getItem(storageKey);
+        const preferredTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+          ? 'light'
+          : 'dark';
+        const initialTheme = savedTheme || preferredTheme;
+        document.documentElement.dataset.theme = initialTheme;
+        document.documentElement.style.colorScheme = initialTheme;
+      } catch (error) {
+        document.documentElement.dataset.theme = 'dark';
+        document.documentElement.style.colorScheme = 'dark';
+      }
+    })();
+  </script>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
@@ -41,6 +58,10 @@
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
         <button class="bubble-button" id="aboutButton">About</button>
+        <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
+          <span class="theme-toggle-indicator" aria-hidden="true"></span>
+          <span class="theme-toggle-label">Dark Mode</span>
+        </button>
       </div>
     </div>
   </header>
@@ -129,10 +150,23 @@
               <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
               <button class="bubble-button event-type-filter" data-type="online">Online</button>
             </div>
-            <div id="multiEventSelectionSummary" class="event-calendar-summary event-calendar-summary-list" style="display: none;">
-              <div class="event-calendar-summary-label">Current Events Selected</div>
-              <div id="multiEventSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
-              <div id="multiEventSelectionList" class="multi-event-selection-list">No events selected</div>
+            <div id="multiEventPresetSection" class="event-multi-preset-section" style="display: none;">
+              <div class="event-calendar-summary-label">Quick Views</div>
+              <div id="multiEventQuickViewButtons" class="quick-view-control"></div>
+            </div>
+            <div id="multiEventSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+              <div id="multiEventSelectionSummary" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Current Events Selected</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="multiEventSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+                </div>
+              </div>
+              <div id="multiEventSelectionListBox" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Selected Event List</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="multiEventSelectionList" class="multi-event-selection-list">No events selected</div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="filter-section" id="eventFilterSection">
@@ -314,6 +348,24 @@
               </select>
             </div>
           </div>
+          <div class="filter-section">
+            <h4>Quick Views</h4>
+            <div id="playerQuickViewButtons" class="quick-view-control"></div>
+          </div>
+          <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+            <div id="playerSelectionSummary" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Current Events Selected</div>
+              <div class="multi-event-selection-scroll">
+                <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+              </div>
+            </div>
+            <div id="playerEventHistoryBox" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Event History</div>
+              <div class="multi-event-selection-scroll">
+                <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div class="charts-and-tables">
@@ -408,13 +460,21 @@
             </div>
             <div class="stat-icon">☠️</div>
           </div>
-          <div class="stat-card combined" id="playerEventsHistory">
-            <div class="stat-title">Event History</div>
-            <div class="stat-details" id="playerEventsDetails">
-              <div>No events selected</div>
+        </div>
+      </div>
+
+      <div id="playerRankDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
+        <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="playerRankDrilldownTitle">
+          <div class="player-rank-drilldown-header">
+            <div class="player-rank-drilldown-heading">
+              <h3 id="playerRankDrilldownTitle">Player Finish Details</h3>
+              <p id="playerRankDrilldownSubtitle">Select a finish card to inspect the matching events.</p>
             </div>
-            <div class="stat-icon">📅</div>
+            <button type="button" class="bubble-button player-rank-drilldown-close" id="playerRankDrilldownClose" aria-label="Close finish details">
+              Close
+            </button>
           </div>
+          <div id="playerRankDrilldownContent" class="player-rank-drilldown-content"></div>
         </div>
       </div>
     </div>
@@ -423,39 +483,37 @@
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
-        <p>Project work is active again, and I am rebuilding the update flow so new MTGO data can be published faster and with fewer manual steps.</p>
-        <p>Version 1.3 | Updated 2026-04-08 | Made by <a href="https://twitter.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from the AIs: Grok3, Claude and Gemini</p>
+        <p class="about-lead">Project is active again and data is up to date. <br>Almost everything can be clicked now. <b>Give it a try!</p>
+        <p class="about-meta">Updated 2026-04-08 | Made by <a href="https://twitter.com/PyotrPavel" target="_blank">PyotrPavel</a> with help from the AIs: Claude and Grok3 (original project) and then Codex for the overhaul</p>
         <p>MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a></p>
         <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</a></p>
         <p>Upstate NY data by <a href="https://m.facebook.com/profile.php?id=61558575774196" target="_blank">Upstate NY Pauper</a> <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">(Bluesky)</a></p>
 
         <p>Contact (for bugs or to send data): <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
+
+        <h3>Recent Improvements</h3>
+        <p>Event Analysis and Player Analysis overhaul: Improved filtering (including the ability to filter the recent sets), few bug fixes and more ways to see the data. The dataset/archive workflow was also improved. Theme was changed and now we have light and dark modes.</p>
+
         <h3>Known Issues</h3>
         <ul>
-          <li>The dashboard is not <b>yet</b> optimized for mobile devices.</li>
-          <li>Dropdown menus do not default to an empty selection.</li>
-          <li>Filter buttons occasionally fail to register their state and may need to be clicked again.</li>
-          <b><li>Some decks are classified as UNKNOWN because they could not be correctly labeled. In MTGO events this is due to the deactivation of the replays which prevent data collection beyond the Top 32.</li></b>
+          <li>The dashboard still needs more work for smaller screens and full mobile optimization.</li>
+          <li>Some decks are still classified as <b>UNKNOWN</b> because they could not be labeled cleanly from the source data. In MTGO this is either due to replays being unavailable because of a bug in MTGO or Kirb couldn't watch the replays for whatever other reason.</li>
+          <li>We do not have a real database pipeline yet but the data refresh flow was improved.</li>
         </ul>
 
-        <h3>Future Updates</h3>
+        <h3>Next Up in Priority Order</h3>
         <ul>
-          <li><s>Version 1.0: Improve the Top Conversion + Aggregate Player Win Rates chart.</s></li>
-          <li><s>Version 1.1: Add scatter charts for the Event and Player Analysis and split styles.css into multiple files</s></li>
-          <li><s>Version 1.2: Add dropdown menus to filter all the Charts</s></li>
-          <li>Version 1.3: Implement Matchup Matrix for Decks and Players</li> 
-          <li>TBD: Improve the website for smaller screens</li>
-          <li>TBD: Organize and fix the filtering problems in the dropdown menu</li>
-          <li>TBD: Make the buttons properly record their state</li>
-          <li>TBD: Establish a database connection</li>
-          <li>TBD: Add data from other formats</li>
+          <li>Implement matchup matrix views for decks and players.</li>
+          <li>Improve the mobile and small-screen layout.</li>
+          <li>Continue the move from one large frontend dataset file toward a cleaner JSON or database-backed pipeline.</li>
+          <li>Add more formats beyond Pauper.</li>
         </ul>
 
-        <h3>Events added</h3>
+        <h3>Recent Data Additions</h3>
         <ul>
           <li>2023 Paupergeddon Pisa</li>
           <li>2025 Upstate New York Open</li>
-          <li>Ongoing MTGO archive rebuild from the Google Drive workbook collection</li>
+          <li>Ongoing MTGO archive rebuild from Kirb's Google Drive workbook collection</li>
         </ul>
         <p><a href="#" id="backToApp">Back to Dashboard</a></p>
       </div>

@@ -1,12 +1,14 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getMultiEventChartData } from '../modules/filters.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
+import { getChartTheme } from '../utils/theme.js';
 
 export let metaWinRateChart = null;
 
 export function updateMultiMetaWinRateChart() {
   console.log("updateMultiMetaWinRateChart called...");
   setChartLoading("metaWinRateChart", true);
+  const theme = getChartTheme();
 
   const filteredData = getMultiEventChartData();
   if (filteredData.length === 0) {
@@ -55,16 +57,16 @@ export function updateMultiMetaWinRateChart() {
     maintainAspectRatio: false,
     scales: {
       x: {
-        title: { display: true, text: "Meta %", color: '#fff' },
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-        ticks: { color: '#fff', stepSize: metaMax > 0 ? Math.ceil(metaMax / 10) : 1 },
+        title: { display: true, text: "Meta %", color: theme.text },
+        grid: { color: theme.grid },
+        ticks: { color: theme.text, stepSize: metaMax > 0 ? Math.ceil(metaMax / 10) : 1 },
         min: 0,
         max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10
       },
       y: {
-        title: { display: true, text: "Win Rate %", color: '#fff' },
-        grid: { color: 'rgba(255, 255, 255, 0.1)' },
-        ticks: { color: '#fff', stepSize: 10 },
+        title: { display: true, text: "Win Rate %", color: theme.text },
+        grid: { color: theme.grid },
+        ticks: { color: theme.text, stepSize: 10 },
         min: 0,
         max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100
       }
@@ -81,7 +83,7 @@ export function updateMultiMetaWinRateChart() {
       },
       datalabels: {
         display: true,
-        color: '#e0e0e0',
+        color: theme.mutedText,
         font: { size: 10, family: "'Bitter', serif" },
         formatter: (value) => value.label,
         align: 'top',
@@ -105,35 +107,15 @@ export function updateMultiMetaWinRateChart() {
   let searchContainer = chartContainer.querySelector('.deck-search-container');
   if (!searchContainer) {
     searchContainer = document.createElement('div');
-    searchContainer.className = 'deck-search-container';
-    searchContainer.style.marginBottom = '15px';
-    searchContainer.style.position = 'relative';
+    searchContainer.className = 'deck-search-container chart-search-container';
     
     const searchInput = document.createElement('input');
     searchInput.type = 'text';
     searchInput.placeholder = 'Search decks...';
-    searchInput.className = 'deck-search-input';
-    searchInput.style.width = '100%';
-    searchInput.style.padding = '8px';
-    searchInput.style.borderRadius = '4px';
-    searchInput.style.backgroundColor = '#2a2a2a';
-    searchInput.style.border = '1px solid #444';
-    searchInput.style.color = '#fff';
-    searchInput.style.fontFamily = "'Bitter', serif";
+    searchInput.className = 'deck-search-input chart-search-input';
     
     const dropdown = document.createElement('div');
-    dropdown.className = 'deck-dropdown';
-    dropdown.style.display = 'none';
-    dropdown.style.position = 'absolute';
-    dropdown.style.top = '100%';
-    dropdown.style.left = '0';
-    dropdown.style.right = '0';
-    dropdown.style.maxHeight = '200px';
-    dropdown.style.overflowY = 'auto';
-    dropdown.style.backgroundColor = '#2a2a2a';
-    dropdown.style.border = '1px solid #444';
-    dropdown.style.borderRadius = '4px';
-    dropdown.style.zIndex = '1000';
+    dropdown.className = 'deck-dropdown chart-search-dropdown';
     
     searchContainer.appendChild(searchInput);
     searchContainer.appendChild(dropdown);
@@ -176,21 +158,8 @@ export function updateMultiMetaWinRateChart() {
       
       filteredDecks.forEach(deck => {
         const deckDiv = document.createElement('div');
+        deckDiv.className = 'chart-search-option';
         deckDiv.textContent = deck;
-        deckDiv.style.padding = '8px';
-        deckDiv.style.cursor = 'pointer';
-        deckDiv.style.color = '#fff';
-        deckDiv.style.fontFamily = "'Bitter', serif";
-        deckDiv.style.fontWeight = 'bold';
-        deckDiv.style.borderBottom = '1px solid #444';
-        
-        deckDiv.addEventListener('mouseover', () => {
-          deckDiv.style.backgroundColor = '#444';
-        });
-        
-        deckDiv.addEventListener('mouseout', () => {
-          deckDiv.style.backgroundColor = 'transparent';
-        });
         
         deckDiv.addEventListener('click', () => {
           if (!metaWinRateChart) return; // Ensure chart exists
@@ -254,7 +223,7 @@ export function updateMultiMetaWinRateChart() {
             display: true,
             position: 'top',
             labels: { 
-              color: '#e0e0e0', 
+              color: theme.mutedText,
               font: { size: 14, family: "'Bitter', serif" },
               boxWidth: 20,
               padding: 10
@@ -262,12 +231,12 @@ export function updateMultiMetaWinRateChart() {
           },
           tooltip: {
             ...options.plugins?.tooltip,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: theme.tooltipBg,
             titleFont: { family: "'Bitter', serif", size: 14, weight: 'bold' },
             bodyFont: { family: "'Bitter', serif", size: 12 },
-            titleColor: '#FFFFFF',
-            bodyColor: '#FFFFFF',
-            borderColor: '#FFD700',
+            titleColor: theme.tooltipText,
+            bodyColor: theme.tooltipText,
+            borderColor: theme.tooltipBorder,
             borderWidth: 1,
             padding: 10
           },

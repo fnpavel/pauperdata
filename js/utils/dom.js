@@ -32,3 +32,21 @@ export function updateElementHTML(elementId, html) {
     console.warn(`Element with ID '${elementId}' not found`);
   }
 }
+
+export function triggerUpdateAnimation(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  element.classList.remove('updated');
+  void element.offsetWidth;
+  element.classList.add('updated');
+
+  if (element.updateAnimationTimeoutId) {
+    clearTimeout(element.updateAnimationTimeoutId);
+  }
+
+  element.updateAnimationTimeoutId = window.setTimeout(() => {
+    element.classList.remove('updated');
+    element.updateAnimationTimeoutId = null;
+  }, 500);
+}

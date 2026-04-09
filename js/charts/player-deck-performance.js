@@ -1,6 +1,8 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getPlayerDeckPerformanceChartData } from '../modules/filters.js';
 import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
+import { getSelectedPlayerLabel } from '../utils/player-names.js';
+import { getChartTheme } from '../utils/theme.js';
 
 export let playerDeckPerformanceChart = null;
 
@@ -12,6 +14,7 @@ function getSelectedPlayerEventTypeCount() {
 export function updatePlayerDeckPerformanceChart() {
   console.log("updatePlayerDeckPerformanceChart called...");
   setChartLoading("playerDeckPerformanceChart", true);
+  const theme = getChartTheme();
 
   const filteredData = getPlayerDeckPerformanceChartData();
   if (!filteredData.length) {
@@ -21,10 +24,11 @@ export function updatePlayerDeckPerformanceChart() {
     if (ctx) {
       const playerFilterMenu = document.getElementById("playerFilterMenu");
       const selectedPlayer = playerFilterMenu ? playerFilterMenu.value : null;
+      const selectedPlayerLabel = getSelectedPlayerLabel(playerFilterMenu);
       const selectedEventTypes = getSelectedPlayerEventTypeCount();
       const label = !selectedPlayer ? "No Player Selected" : 
                     selectedEventTypes === 0 ? "No Event Type Selected" : 
-                    "No Data Available";
+                    `${selectedPlayerLabel || "Player"} - No Data Available`;
       playerDeckPerformanceChart = new Chart(ctx, {
         type: "scatter",
         data: {
@@ -42,21 +46,21 @@ export function updatePlayerDeckPerformanceChart() {
           maintainAspectRatio: false,
           scales: {
             x: { 
-              type: 'linear', 
-              title: { display: true, text: "Number of Events", color: '#fff' }, 
-              ticks: { color: '#fff' },
+              type: 'linear',
+              title: { display: true, text: "Number of Events", color: theme.text },
+              ticks: { color: theme.text },
               min: 0,
               max: 1
             },
             y: { 
               beginAtZero: true, 
               max: 100, 
-              title: { display: true, text: "Overall Win Rate %", color: '#fff' }, 
-              ticks: { color: '#fff' } 
+              title: { display: true, text: "Overall Win Rate %", color: theme.text },
+              ticks: { color: theme.text } 
             }
           },
           plugins: {
-            legend: { position: 'top', labels: { color: '#e0e0e0', font: { size: 14 } } },
+            legend: { position: 'top', labels: { color: theme.mutedText, font: { size: 14 } } },
             tooltip: { enabled: false },
             datalabels: { display: true },
             zoom: { zoom: { enabled: false }, pan: { enabled: false } }
@@ -116,25 +120,25 @@ export function updatePlayerDeckPerformanceChart() {
         scales: {
           x: {
             type: 'linear',
-            title: { display: true, text: "Number of Events", color: '#fff' },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-            ticks: { color: '#fff', stepSize: 1, beginAtZero: true },
+            title: { display: true, text: "Number of Events", color: theme.text },
+            grid: { color: theme.grid },
+            ticks: { color: theme.text, stepSize: 1, beginAtZero: true },
             min: 0,
             max: xAxisMax
           },
           y: {
             beginAtZero: true,
             max: 100,
-            title: { display: true, text: "Overall Win Rate %", color: '#fff' },
-            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-            ticks: { color: '#fff' }
+            title: { display: true, text: "Overall Win Rate %", color: theme.text },
+            grid: { color: theme.grid },
+            ticks: { color: theme.text }
           }
         },
         plugins: {
           legend: {
             position: 'top',
             labels: { 
-              color: '#e0e0e0', 
+              color: theme.mutedText,
               font: { size: 14 },
               usePointStyle: true
             },
@@ -150,12 +154,12 @@ export function updatePlayerDeckPerformanceChart() {
             enabled: true,
             mode: 'nearest',
             intersect: true,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backgroundColor: theme.tooltipBg,
             titleFont: { size: 14, weight: 'bold' },
             bodyFont: { size: 12 },
-            titleColor: '#FFFFFF',
-            bodyColor: '#FFFFFF',
-            borderColor: '#FFD700',
+            titleColor: theme.tooltipText,
+            bodyColor: theme.tooltipText,
+            borderColor: theme.tooltipBorder,
             borderWidth: 1,
             padding: 10,
             callbacks: {
@@ -175,7 +179,7 @@ export function updatePlayerDeckPerformanceChart() {
           },
           datalabels: {
             display: true,
-            color: '#fff',
+            color: theme.text,
             font: { size: 12, weight: 'bold' },
             formatter: (value) => value.deck,
             align: 'top',

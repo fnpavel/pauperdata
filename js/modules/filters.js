@@ -9,17 +9,46 @@ import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { hideAboutSection } from './about.js';
+import { buildPlayerEventHistoryHTML } from '../utils/data-cards.js';
+import { triggerUpdateAnimation } from '../utils/dom.js';
+import {
+  getDefaultQuickViewYear,
+  getLatestSetQuickViewPresetId,
+  getQuickViewPresetDefinitionById,
+  getQuickViewPresetYearOptions,
+  getSetQuickViewPresetDefinitions,
+  getStaticQuickViewPresetDefinitions,
+  shiftDateByDays
+} from '../utils/quick-view-presets.js';
 import {
   renderEventFilterCalendar,
   resetEventFilterCalendarState,
   primeEventFilterCalendarSelection
 } from './event-filter-calendar.js';
 import { renderMultiEventDateRangeCalendar, renderPlayerDateRangeCalendar } from './date-range-calendar.js';
+import {
+  buildPlayerFilterOptions,
+  getPlayerIdentityKey,
+  rowMatchesPlayerKey
+} from '../utils/player-names.js';
+import {
+  getPlayerAnalysisActivePreset,
+  getPlayerPresetEventTypes,
+  getPlayerPresetRows,
+  getPlayerPresetSuggestedRange
+} from '../utils/player-analysis-presets.js';
+import {
+  getMultiEventPresetEventTypes,
+  getMultiEventPresetRows,
+  getMultiEventPresetSuggestedRange
+} from '../utils/multi-event-presets.js';
 
 let filteredData = [];
 let lastSingleEventType = '';
 let multiEventGroupSelectionInitialized = false;
 let activeMultiEventGroupKeys = new Set();
+let activeMultiEventQuickViewYear = '';
+let activePlayerQuickViewYear = '';
 
 const EVENT_GROUPS = {
   'MTGO Challenge': {
@@ -102,8 +131,350 @@ function getEventAnalysisSelectedTypes() {
   return getActiveSectionEventTypes(getEventAnalysisSection());
 }
 
+function getMultiEventQuickViewRoot() {
+  return document.getElementById('multiEventQuickViewButtons');
+}
+
+function getPlayerQuickViewRoot() {
+  return document.getElementById('playerQuickViewButtons');
+}
+
+function getQuickViewRoot(scope) {
+  return scope === 'multi' ? getMultiEventQuickViewRoot() : getPlayerQuickViewRoot();
+}
+
+function getActiveQuickViewYear(scope) {
+  return scope === 'multi' ? activeMultiEventQuickViewYear : activePlayerQuickViewYear;
+}
+
+function setActiveQuickViewYear(scope, year) {
+  if (scope === 'multi') {
+    activeMultiEventQuickViewYear = year;
+  } else {
+    activePlayerQuickViewYear = year;
+  }
+}
+
+function getQuickViewButtonClass(scope) {
+  return scope === 'multi' ? 'multi-event-preset-button' : 'player-preset-button';
+}
+
+function getQuickViewDatasetKey(scope) {
+  return scope === 'multi' ? 'multiEventPreset' : 'playerPreset';
+}
+
+function createQuickViewButton(preset, buttonClass, datasetKey) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `bubble-button ${buttonClass}`;
+  button.dataset[datasetKey] = preset.id;
+  button.textContent = preset.buttonLabel || preset.label;
+
+  if (preset.kind === 'set-window') {
+    const displayEndDate = preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : 'Present';
+    button.title = `${preset.label}: ${preset.releaseDate} to ${displayEndDate}`;
+  } else {
+    button.title = preset.label;
+  }
+
+  return button;
+}
+
+function createQuickViewYearButton(year, scope, isActive) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `bubble-button quick-view-year-button${isActive ? ' active' : ''}`;
+  button.dataset.quickViewYear = year;
+  button.dataset.quickViewScope = scope;
+  button.textContent = year;
+  return button;
+}
+
+function getResolvedQuickViewYear(scope, activePresetId = '') {
+  const yearOptions = getQuickViewPresetYearOptions(cleanedData);
+  if (yearOptions.length === 0) {
+    return '';
+  }
+
+  const activePreset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  const presetYear = activePreset?.releaseYear || '';
+  const currentYear = getActiveQuickViewYear(scope) || getDefaultQuickViewYear(cleanedData);
+
+  if (currentYear && yearOptions.includes(currentYear)) {
+    return currentYear;
+  }
+
+  if (presetYear && yearOptions.includes(presetYear)) {
+    return presetYear;
+  }
+
+  return yearOptions[0];
+}
+
+function renderQuickViewButtons(scope) {
+  const container = getQuickViewRoot(scope);
+  if (!container) {
+    return;
+  }
+
+  container.innerHTML = '';
+  const activePresetId = container.dataset.activePreset || '';
+  const buttonClass = getQuickViewButtonClass(scope);
+  const datasetKey = getQuickViewDatasetKey(scope);
+  const staticPresets = getStaticQuickViewPresetDefinitions();
+  const yearOptions = getQuickViewPresetYearOptions(cleanedData);
+  const resolvedYear = getResolvedQuickViewYear(scope, activePresetId);
+  const yearPresets = getSetQuickViewPresetDefinitions(cleanedData).filter(preset => preset.releaseYear === resolvedYear);
+
+  setActiveQuickViewYear(scope, resolvedYear);
+
+  if (staticPresets.length > 0) {
+    const staticRow = document.createElement('div');
+    staticRow.className = 'bubble-menu quick-view-static-list';
+
+    staticPresets.forEach(preset => {
+      const button = createQuickViewButton(preset, buttonClass, datasetKey);
+      button.classList.toggle('active', activePresetId === preset.id);
+      staticRow.appendChild(button);
+    });
+
+    container.appendChild(staticRow);
+  }
+
+  if (yearOptions.length > 0) {
+    const yearSection = document.createElement('div');
+    yearSection.className = 'quick-view-year-section';
+
+    const yearLabel = document.createElement('div');
+    yearLabel.className = 'event-calendar-summary-label';
+    yearLabel.textContent = 'Set Year';
+    yearSection.appendChild(yearLabel);
+
+    const yearRow = document.createElement('div');
+    yearRow.className = 'bubble-menu quick-view-year-list';
+    yearOptions.forEach(year => {
+      yearRow.appendChild(createQuickViewYearButton(year, scope, year === resolvedYear));
+    });
+
+    yearSection.appendChild(yearRow);
+    container.appendChild(yearSection);
+  }
+
+  const setSection = document.createElement('div');
+  setSection.className = 'quick-view-set-section';
+
+  if (resolvedYear) {
+    const setLabel = document.createElement('div');
+    setLabel.className = 'event-calendar-summary-label';
+    setLabel.textContent = `${resolvedYear} Sets`;
+    setSection.appendChild(setLabel);
+  }
+
+  const setRow = document.createElement('div');
+  setRow.className = 'bubble-menu quick-view-set-list';
+
+  yearPresets.forEach(preset => {
+    const button = createQuickViewButton(preset, buttonClass, datasetKey);
+    button.classList.toggle('active', activePresetId === preset.id);
+    setRow.appendChild(button);
+  });
+
+  if (yearPresets.length === 0) {
+    const emptyState = document.createElement('div');
+    emptyState.className = 'quick-view-empty';
+    emptyState.textContent = 'No set windows available.';
+    setRow.appendChild(emptyState);
+  }
+
+  setSection.appendChild(setRow);
+  container.appendChild(setSection);
+}
+
+function getActiveMultiEventPreset() {
+  return getMultiEventQuickViewRoot()?.dataset.activePreset
+    || document.querySelector('.multi-event-preset-button.active')?.dataset.multiEventPreset
+    || '';
+}
+
+function setMultiEventPresetButtonState(activePresetId = '') {
+  const root = getMultiEventQuickViewRoot();
+  if (root) {
+    root.dataset.activePreset = activePresetId;
+  }
+
+  const preset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  if (preset?.releaseYear) {
+    setActiveQuickViewYear('multi', preset.releaseYear);
+  }
+
+  renderQuickViewButtons('multi');
+}
+
+function clearMultiEventPresetButtonState() {
+  setMultiEventPresetButtonState('');
+}
+
+function getDefaultSetQuickViewPresetId() {
+  return getLatestSetQuickViewPresetId(cleanedData);
+}
+
+function ensureDefaultMultiEventPreset() {
+  const activePresetId = getActiveMultiEventPreset();
+  if (activePresetId) {
+    return activePresetId;
+  }
+
+  const defaultPresetId = getDefaultSetQuickViewPresetId();
+  setMultiEventPresetButtonState(defaultPresetId);
+  return defaultPresetId;
+}
+
+function setQuickViewYearSelection(scope, year) {
+  setActiveQuickViewYear(scope, year);
+  renderQuickViewButtons(scope);
+}
+
+function setEventAnalysisEventTypes(nextTypes = []) {
+  const nextTypeSet = new Set(nextTypes.map(type => String(type).toLowerCase()));
+  getSectionEventTypeButtons(getEventAnalysisSection()).forEach(button => {
+    button.classList.toggle('active', nextTypeSet.has(button.dataset.type.toLowerCase()));
+  });
+}
+
+function getScopedMultiEventRows(selectedEventTypes = getEventAnalysisSelectedTypes()) {
+  return getMultiEventPresetRows(selectedEventTypes, getActiveMultiEventPreset());
+}
+
+function applyActiveMultiEventPresetDateRange() {
+  const activePreset = getActiveMultiEventPreset();
+  const startDateSelect = document.getElementById('startDateSelect');
+  const endDateSelect = document.getElementById('endDateSelect');
+
+  if (!activePreset || !startDateSelect || !endDateSelect) {
+    return false;
+  }
+
+  const range = getMultiEventPresetSuggestedRange({
+    selectedEventTypes: getEventAnalysisSelectedTypes(),
+    presetId: activePreset
+  });
+
+  if (!range.startDate || !range.endDate) {
+    startDateSelect.value = '';
+    endDateSelect.value = '';
+    updateDateOptions();
+    return false;
+  }
+
+  startDateSelect.value = range.startDate;
+  endDateSelect.value = range.endDate;
+  updateDateOptions();
+  return true;
+}
+
+function applyMultiEventPreset(presetId) {
+  const presetEventTypes = getMultiEventPresetEventTypes(presetId);
+  if (presetEventTypes) {
+    setEventAnalysisEventTypes(presetEventTypes);
+  }
+
+  setMultiEventPresetButtonState(presetId);
+  resetMultiDateRange();
+  updateDateOptions();
+  applyActiveMultiEventPresetDateRange();
+
+  if (getTopMode() === 'event' && getAnalysisMode() === 'multi') {
+    updateAllCharts();
+  }
+}
+
 function getPlayerAnalysisSelectedTypes() {
   return getActiveSectionEventTypes(getPlayerAnalysisSection());
+}
+
+function setPlayerPresetButtonState(activePresetId = '') {
+  const root = getPlayerQuickViewRoot();
+  if (root) {
+    root.dataset.activePreset = activePresetId;
+  }
+
+  const preset = getQuickViewPresetDefinitionById(activePresetId, cleanedData, { includeFuture: true });
+  if (preset?.releaseYear) {
+    setActiveQuickViewYear('player', preset.releaseYear);
+  }
+
+  renderQuickViewButtons('player');
+}
+
+function clearPlayerPresetButtonState() {
+  setPlayerPresetButtonState('');
+}
+
+function ensureDefaultPlayerPreset() {
+  const activePresetId = getPlayerAnalysisActivePreset();
+  if (activePresetId) {
+    return activePresetId;
+  }
+
+  const defaultPresetId = getDefaultSetQuickViewPresetId();
+  setPlayerPresetButtonState(defaultPresetId);
+  return defaultPresetId;
+}
+
+function setPlayerAnalysisEventTypes(nextTypes = []) {
+  const nextTypeSet = new Set(nextTypes.map(type => String(type).toLowerCase()));
+  getSectionEventTypeButtons(getPlayerAnalysisSection()).forEach(button => {
+    button.classList.toggle('active', nextTypeSet.has(button.dataset.type.toLowerCase()));
+  });
+}
+
+function getScopedPlayerAnalysisRows(selectedEventTypes = getPlayerAnalysisSelectedTypes()) {
+  return getPlayerPresetRows(selectedEventTypes, getPlayerAnalysisActivePreset());
+}
+
+function applyActivePlayerPresetDateRange() {
+  const activePreset = getPlayerAnalysisActivePreset();
+  const playerFilterMenu = document.getElementById('playerFilterMenu');
+  const startDateSelect = document.getElementById('playerStartDateSelect');
+  const endDateSelect = document.getElementById('playerEndDateSelect');
+
+  if (!activePreset || !playerFilterMenu || !startDateSelect || !endDateSelect) {
+    return false;
+  }
+
+  const range = getPlayerPresetSuggestedRange({
+    selectedEventTypes: getPlayerAnalysisSelectedTypes(),
+    presetId: activePreset,
+    playerKey: playerFilterMenu.value
+  });
+
+  if (!range.startDate || !range.endDate) {
+    startDateSelect.value = '';
+    endDateSelect.value = '';
+    updatePlayerDateOptions();
+    return false;
+  }
+
+  startDateSelect.value = range.startDate;
+  endDateSelect.value = range.endDate;
+  updatePlayerDateOptions();
+  return true;
+}
+
+function applyPlayerAnalysisPreset(presetId) {
+  const presetEventTypes = getPlayerPresetEventTypes(presetId);
+  if (presetEventTypes) {
+    setPlayerAnalysisEventTypes(presetEventTypes);
+  }
+
+  setPlayerPresetButtonState(presetId);
+  resetPlayerDateRange();
+  updatePlayerDateOptions();
+  applyActivePlayerPresetDateRange();
+
+  if (getTopMode() === 'player') {
+    updateAllCharts();
+  }
 }
 
 function getEventDate(eventName) {
@@ -275,13 +646,44 @@ function resetPlayerDateRange() {
   resetSelectValue('playerEndDateSelect');
 }
 
+function setPlayerFilterPlaceholder(playerFilterMenu, message) {
+  if (!playerFilterMenu) {
+    return;
+  }
+
+  playerFilterMenu.innerHTML = '';
+  const option = document.createElement('option');
+  option.value = '';
+  option.textContent = message;
+  playerFilterMenu.appendChild(option);
+  playerFilterMenu.value = '';
+}
+
+function populatePlayerFilterMenu(playerFilterMenu, playerOptions, selectedPlayerKey) {
+  if (!playerFilterMenu) {
+    return;
+  }
+
+  playerFilterMenu.innerHTML = '';
+
+  playerOptions.forEach(playerOption => {
+    const option = document.createElement('option');
+    option.value = playerOption.key;
+    option.textContent = playerOption.label;
+    option.selected = playerOption.key === selectedPlayerKey;
+    playerFilterMenu.appendChild(option);
+  });
+
+  playerFilterMenu.value = selectedPlayerKey;
+}
+
 function getLatestPlayerDefaultSelection(selectedEventTypes = ['online']) {
   const normalizedEventTypes =
     selectedEventTypes.length > 0 ? selectedEventTypes : ['online'];
 
-  const latestWinner = cleanedData
+  const latestWinner = getScopedPlayerAnalysisRows(normalizedEventTypes)
     .filter(row => {
-      return normalizedEventTypes.includes(row.EventType.toLowerCase()) && Number(row.Rank) === 1;
+      return Number(row.Rank) === 1;
     })
     .sort((a, b) => b.Date.localeCompare(a.Date) || a.Event.localeCompare(b.Event))[0];
 
@@ -294,7 +696,7 @@ function getLatestPlayerDefaultSelection(selectedEventTypes = ['online']) {
   }
 
   return {
-    player: latestWinner.Player,
+    player: getPlayerIdentityKey(latestWinner.Player),
     startDate: latestWinner.Date,
     endDate: latestWinner.Date
   };
@@ -313,10 +715,123 @@ function getDefaultMultiEventRange(dates) {
 
 function getMultiEventSelectionSummaryElements() {
   return {
-    container: document.getElementById('multiEventSelectionSummary'),
+    panels: document.getElementById('multiEventSelectionPanels'),
+    summaryBox: document.getElementById('multiEventSelectionSummary'),
+    listBox: document.getElementById('multiEventSelectionListBox'),
     content: document.getElementById('multiEventSelectionSummaryContent'),
     list: document.getElementById('multiEventSelectionList')
   };
+}
+
+function getPlayerSelectionSummaryElements() {
+  return {
+    panels: document.getElementById('playerSelectionPanels'),
+    summaryBox: document.getElementById('playerSelectionSummary'),
+    listBox: document.getElementById('playerEventHistoryBox'),
+    content: document.getElementById('playerSelectionSummaryContent'),
+    list: document.getElementById('playerEventsDetails')
+  };
+}
+
+function getFilteredPlayerAnalysisRows() {
+  const startDate = document.getElementById('playerStartDateSelect')?.value || '';
+  const endDate = document.getElementById('playerEndDateSelect')?.value || '';
+  const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
+  const selectedEventTypes = getPlayerAnalysisSelectedTypes();
+  const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
+
+  if (!selectedPlayer || !startDate || !endDate || selectedEventTypes.length === 0) {
+    return [];
+  }
+
+  return scopedRows.filter(row => {
+    return (
+      row.Date >= startDate &&
+      row.Date <= endDate &&
+      rowMatchesPlayerKey(row, selectedPlayer) &&
+      selectedEventTypes.includes(row.EventType.toLowerCase())
+    );
+  });
+}
+
+function getPlayerSelectedEventEntries() {
+  const events = new Map();
+
+  getFilteredPlayerAnalysisRows().forEach(row => {
+    const eventKey = `${row.Date || ''}::${row.Event || ''}`;
+    if (events.has(eventKey)) {
+      return;
+    }
+
+    const groupInfo = getEventGroupInfo(row.Event);
+    events.set(eventKey, {
+      name: row.Event,
+      date: row.Date || getEventDate(row.Event),
+      groupLabel: groupInfo.label,
+      groupOrder: groupInfo.order
+    });
+  });
+
+  return Array.from(events.values()).sort((a, b) => b.date.localeCompare(a.date) || a.name.localeCompare(b.name));
+}
+
+function getPlayerEventGroupSummaries() {
+  const groups = new Map();
+
+  getPlayerSelectedEventEntries().forEach(entry => {
+    const groupKey = `${entry.groupOrder}::${entry.groupLabel}`;
+    if (!groups.has(groupKey)) {
+      groups.set(groupKey, {
+        label: entry.groupLabel,
+        order: entry.groupOrder,
+        count: 0
+      });
+    }
+
+    groups.get(groupKey).count += 1;
+  });
+
+  return Array.from(groups.values()).sort((a, b) => a.order - b.order || a.label.localeCompare(b.label));
+}
+
+function updatePlayerSelectionSummary() {
+  const { panels, summaryBox, listBox, content, list } = getPlayerSelectionSummaryElements();
+  if (!panels || !summaryBox || !listBox || !content || !list) {
+    return;
+  }
+
+  const shouldShow = getTopMode() === 'player';
+  panels.style.display = shouldShow ? 'flex' : 'none';
+
+  if (!shouldShow) {
+    return;
+  }
+
+  const filteredRows = getFilteredPlayerAnalysisRows();
+  const groupSummaries = getPlayerEventGroupSummaries();
+
+  if (groupSummaries.length === 0) {
+    content.innerHTML = 'No events selected';
+    list.innerHTML = '<div>No events selected</div>';
+    triggerUpdateAnimation('playerSelectionSummary');
+    triggerUpdateAnimation('playerEventHistoryBox');
+    return;
+  }
+
+  content.innerHTML = groupSummaries
+    .map(group => {
+      return `
+        <div class="player-event-summary-card">
+          <span class="player-event-summary-count">${group.count}</span>
+          <span class="player-event-summary-label">${group.label}</span>
+        </div>
+      `;
+    })
+    .join('');
+
+  list.innerHTML = buildPlayerEventHistoryHTML(filteredRows);
+  triggerUpdateAnimation('playerSelectionSummary');
+  triggerUpdateAnimation('playerEventHistoryBox');
 }
 
 function getMultiEventSelectedEventEntries() {
@@ -330,11 +845,10 @@ function getMultiEventSelectedEventEntries() {
 
   const events = new Map();
 
-  cleanedData.forEach(row => {
+  getScopedMultiEventRows(selectedEventTypes).forEach(row => {
     if (
       row.Date >= startDate &&
       row.Date <= endDate &&
-      selectedEventTypes.includes(row.EventType.toLowerCase()) &&
       !events.has(row.Event)
     ) {
       events.set(row.Event, row.Date || getEventDate(row.Event));
@@ -398,6 +912,7 @@ function getFilteredMultiEventRows() {
   const startDate = document.getElementById('startDateSelect')?.value || '';
   const endDate = document.getElementById('endDateSelect')?.value || '';
   const selectedEventTypes = getEventAnalysisSelectedTypes();
+  const scopedRows = getScopedMultiEventRows(selectedEventTypes);
 
   if (!startDate || !endDate || selectedEventTypes.length === 0) {
     return [];
@@ -406,11 +921,10 @@ function getFilteredMultiEventRows() {
   const groupSummaries = getMultiEventGroupSummaries();
   syncMultiEventGroupFilterState(groupSummaries);
 
-  return cleanedData.filter(row => {
+  return scopedRows.filter(row => {
     return (
       row.Date >= startDate &&
       row.Date <= endDate &&
-      selectedEventTypes.includes(row.EventType.toLowerCase()) &&
       activeMultiEventGroupKeys.has(getEventGroupInfo(row.Event).key)
     );
   });
@@ -431,6 +945,7 @@ function getExactSelectedMultiEvents() {
 }
 
 function toggleMultiEventGroupFilter(groupKey) {
+  clearMultiEventPresetButtonState();
   const groupSummaries = getMultiEventGroupSummaries();
   syncMultiEventGroupFilterState(groupSummaries);
 
@@ -446,13 +961,13 @@ function toggleMultiEventGroupFilter(groupKey) {
 }
 
 function updateMultiEventSelectionSummary() {
-  const { container, content, list } = getMultiEventSelectionSummaryElements();
-  if (!container || !content || !list) {
+  const { panels, summaryBox, listBox, content, list } = getMultiEventSelectionSummaryElements();
+  if (!panels || !summaryBox || !listBox || !content || !list) {
     return;
   }
 
   const shouldShow = getTopMode() === 'event' && getAnalysisMode() === 'multi';
-  container.style.display = shouldShow ? 'flex' : 'none';
+  panels.style.display = shouldShow ? 'flex' : 'none';
 
   if (!shouldShow) {
     return;
@@ -501,6 +1016,7 @@ function updateMultiEventSelectionSummary() {
 function updateSingleEventFilterVisibility() {
   const eventTypeSection = document.getElementById('eventTypeFilterSection');
   const eventFilterSection = document.getElementById('eventFilterSection');
+  const multiEventPresetSection = document.getElementById('multiEventPresetSection');
   const isSingleMode = getAnalysisMode() === 'single';
 
   if (eventTypeSection) {
@@ -509,6 +1025,10 @@ function updateSingleEventFilterVisibility() {
 
   if (eventFilterSection) {
     eventFilterSection.style.display = isSingleMode ? 'block' : 'none';
+  }
+
+  if (multiEventPresetSection) {
+    multiEventPresetSection.style.display = isSingleMode ? 'none' : 'block';
   }
 
   updateMultiEventSelectionSummary();
@@ -538,12 +1058,17 @@ function applyLatestSingleEventSelection() {
   updateEventFilter(latestEntry.name, true);
 }
 
-function setMultiEventDateSelection(type, value) {
+function setMultiEventDateSelection(type, value, options = {}) {
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');
+  const { clearPreset = false } = options;
 
   if (!startDateSelect || !endDateSelect) {
     return;
+  }
+
+  if (clearPreset) {
+    clearMultiEventPresetButtonState();
   }
 
   if (type === 'start') {
@@ -556,12 +1081,17 @@ function setMultiEventDateSelection(type, value) {
   updateAllCharts();
 }
 
-function setPlayerDateSelection(type, value) {
+function setPlayerDateSelection(type, value, options = {}) {
   const startDateSelect = document.getElementById('playerStartDateSelect');
   const endDateSelect = document.getElementById('playerEndDateSelect');
+  const { clearPreset = false } = options;
 
   if (!startDateSelect || !endDateSelect) {
     return;
+  }
+
+  if (clearPreset) {
+    clearPlayerPresetButtonState();
   }
 
   if (type === 'start') {
@@ -577,7 +1107,13 @@ function setPlayerDateSelection(type, value) {
 export function setupFilters() {
   console.log('Setting up filters...');
 
+  setActiveQuickViewYear('multi', getDefaultQuickViewYear(cleanedData));
+  setActiveQuickViewYear('player', getDefaultQuickViewYear(cleanedData));
+  renderQuickViewButtons('multi');
+  renderQuickViewButtons('player');
   setDefaultSectionEventType(getPlayerAnalysisSection());
+  setMultiEventPresetButtonState(getDefaultSetQuickViewPresetId());
+  setPlayerPresetButtonState(getDefaultSetQuickViewPresetId());
   console.log(`Initial mode is ${getTopMode()}: Event Analysis loads the latest registered event by default`);
 
   applyLatestSingleEventSelection();
@@ -672,27 +1208,14 @@ export function updateAllCharts() {
       updateMultiEventAnalytics();
     }
   } else if (activeTopMode === 'player') {
-    const startDate = document.getElementById('playerStartDateSelect')?.value || '';
-    const endDate = document.getElementById('playerEndDateSelect')?.value || '';
-    const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
-    const selectedEventTypes = getPlayerAnalysisSelectedTypes();
-
-    filteredData =
-      selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-        ? cleanedData.filter(row => {
-            return (
-              row.Date >= startDate &&
-              row.Date <= endDate &&
-              row.Player === selectedPlayer &&
-              selectedEventTypes.includes(row.EventType.toLowerCase())
-            );
-          })
-        : [];
+    filteredData = getFilteredPlayerAnalysisRows();
 
     updatePlayerAnalytics();
     updatePlayerDeckPerformanceChart();
     updatePlayerWinRateChart();
   }
+
+  updatePlayerSelectionSummary();
 }
 
 export function getFunnelChartData() {
@@ -734,13 +1257,14 @@ export function getPlayerDeckPerformanceChartData() {
   const endDate = document.getElementById('playerEndDateSelect')?.value || '';
   const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
+  const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
 
   return selectedPlayer && startDate && endDate && selectedEventTypes.length > 0
-    ? cleanedData.filter(row => {
+    ? scopedRows.filter(row => {
         return (
           row.Date >= startDate &&
           row.Date <= endDate &&
-          row.Player === selectedPlayer &&
+          rowMatchesPlayerKey(row, selectedPlayer) &&
           selectedEventTypes.includes(row.EventType.toLowerCase()) &&
           row.Deck !== 'No Show'
         );
@@ -809,6 +1333,10 @@ export function setupTopModeListeners() {
 
         updateSingleEventFilterVisibility();
         updateDateOptions();
+        if (activeAnalysisMode === 'multi') {
+          ensureDefaultMultiEventPreset();
+          applyActiveMultiEventPresetDateRange();
+        }
         updateMultiEventSelectionSummary();
         updateAllCharts();
       } else if (mode === 'player') {
@@ -821,11 +1349,12 @@ export function setupTopModeListeners() {
         if (playerStats) {
           playerStats.style.display = 'grid';
         }
-        if (playerCharts) {
+      if (playerCharts) {
           playerCharts.style.display = 'block';
         }
 
         setDefaultSectionEventType(getPlayerAnalysisSection());
+        ensureDefaultPlayerPreset();
         console.log(
           "Player Analytics: Event type filters set to 'online'. Active types:",
           getPlayerAnalysisSelectedTypes()
@@ -837,6 +1366,7 @@ export function setupTopModeListeners() {
           playerFilterMenu.value = '';
         }
         updatePlayerDateOptions();
+        applyActivePlayerPresetDateRange();
         updatePlayerAnalytics();
       }
     });
@@ -878,11 +1408,15 @@ export function setupAnalysisModeListeners() {
       if (mode === 'single') {
         applyLatestSingleEventSelection();
       } else {
+        ensureDefaultMultiEventPreset();
         resetMultiDateRange();
       }
 
       updateSingleEventFilterVisibility();
       updateDateOptions();
+      if (mode === 'multi') {
+        applyActiveMultiEventPresetDateRange();
+      }
       updatePlayerDateOptions();
       updateMultiEventSelectionSummary();
       updateAllCharts();
@@ -896,6 +1430,7 @@ export function setupEventTypeListeners() {
 
   eventAnalysisButtons.forEach(button => {
     button.addEventListener('click', () => {
+      clearMultiEventPresetButtonState();
       if (getTopMode() === 'event' && getAnalysisMode() === 'single') {
         eventAnalysisButtons.forEach(eventButton => {
           eventButton.classList.toggle('active', eventButton === button);
@@ -932,6 +1467,7 @@ export function setupEventTypeListeners() {
 
   playerAnalysisButtons.forEach(button => {
     button.addEventListener('click', () => {
+      clearPlayerPresetButtonState();
       button.classList.toggle('active');
 
       console.log(
@@ -962,16 +1498,19 @@ export function setupPlayerFilterListeners() {
   const playerFilterMenu = document.getElementById('playerFilterMenu');
   const playerStartDateSelect = document.getElementById('playerStartDateSelect');
   const playerEndDateSelect = document.getElementById('playerEndDateSelect');
+  const playerQuickViewRoot = getPlayerQuickViewRoot();
 
   if (playerFilterMenu) {
     playerFilterMenu.addEventListener('change', () => {
       updatePlayerDateOptions();
+      applyActivePlayerPresetDateRange();
       updatePlayerAnalytics();
     });
   }
 
   if (playerStartDateSelect) {
     playerStartDateSelect.addEventListener('change', () => {
+      clearPlayerPresetButtonState();
       updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
@@ -979,10 +1518,46 @@ export function setupPlayerFilterListeners() {
 
   if (playerEndDateSelect) {
     playerEndDateSelect.addEventListener('change', () => {
+      clearPlayerPresetButtonState();
       updatePlayerDateOptions();
       updatePlayerAnalytics();
     });
   }
+
+  if (playerQuickViewRoot) {
+    playerQuickViewRoot.addEventListener('click', event => {
+      const yearButton = event.target.closest('.quick-view-year-button');
+      if (yearButton) {
+        setQuickViewYearSelection('player', yearButton.dataset.quickViewYear || '');
+        return;
+      }
+
+      const presetButton = event.target.closest('.player-preset-button');
+      if (presetButton) {
+        applyPlayerAnalysisPreset(presetButton.dataset.playerPreset);
+      }
+    });
+  }
+}
+
+export function setupMultiEventPresetListeners() {
+  const multiEventQuickViewRoot = getMultiEventQuickViewRoot();
+  if (!multiEventQuickViewRoot) {
+    return;
+  }
+
+  multiEventQuickViewRoot.addEventListener('click', event => {
+    const yearButton = event.target.closest('.quick-view-year-button');
+    if (yearButton) {
+      setQuickViewYearSelection('multi', yearButton.dataset.quickViewYear || '');
+      return;
+    }
+
+    const presetButton = event.target.closest('.multi-event-preset-button');
+    if (presetButton) {
+      applyMultiEventPreset(presetButton.dataset.multiEventPreset);
+    }
+  });
 }
 
 export function updateEventFilter(preferredEvent = '', expandPreferredEvent = false) {
@@ -1042,13 +1617,12 @@ export function updateDateOptions() {
   }
 
   const selectedEventTypes = getEventAnalysisSelectedTypes();
+  const scopedRows = getScopedMultiEventRows(selectedEventTypes);
   const dates =
     selectedEventTypes.length > 0
       ? [
           ...new Set(
-            cleanedData
-              .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-              .map(row => row.Date)
+            scopedRows.map(row => row.Date)
           )
         ].sort((a, b) => new Date(a) - new Date(b))
       : [];
@@ -1062,8 +1636,8 @@ export function updateDateOptions() {
       dates: [],
       startDate: '',
       endDate: '',
-      onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString),
-      onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString)
+      onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
+      onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
     });
     return;
   }
@@ -1122,8 +1696,8 @@ export function updateDateOptions() {
     dates,
     startDate: currentStartDate,
     endDate: currentEndDate,
-    onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString),
-    onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString)
+    onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
+    onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
   });
 
   updateMultiEventSelectionSummary();
@@ -1140,10 +1714,10 @@ export function updatePlayerDateOptions() {
 
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
+  const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
 
   if (selectedEventTypes.length === 0) {
-    playerFilterMenu.innerHTML = '<option value="">No Players Available</option>';
-    playerFilterMenu.value = '';
+    setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
     startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     renderPlayerDateRangeCalendar({
@@ -1154,28 +1728,25 @@ export function updatePlayerDateOptions() {
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
+    updatePlayerSelectionSummary();
     return;
   }
 
   const defaultSelection = getLatestPlayerDefaultSelection(selectedEventTypes);
 
-  const players = [
-    ...new Set(
-      cleanedData
-        .filter(row => selectedEventTypes.includes(row.EventType.toLowerCase()))
-      .map(row => row.Player)
-    )
-  ].sort((a, b) => a.localeCompare(b));
+  const playerOptions = buildPlayerFilterOptions(
+    scopedRows
+  );
+  const playerKeys = playerOptions.map(playerOption => playerOption.key);
 
-  let currentPlayer = players.includes(selectedPlayer)
+  let currentPlayer = playerKeys.includes(selectedPlayer)
     ? selectedPlayer
-    : players.includes(defaultSelection.player)
+    : playerKeys.includes(defaultSelection.player)
       ? defaultSelection.player
-      : players[0] || '';
+      : playerKeys[0] || '';
 
-  if (players.length === 0) {
-    playerFilterMenu.innerHTML = '<option value="">No Players Available</option>';
-    playerFilterMenu.value = '';
+  if (playerOptions.length === 0) {
+    setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
     startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     endDateSelect.innerHTML = '<option value="">No Dates Available</option>';
     renderPlayerDateRangeCalendar({
@@ -1186,21 +1757,17 @@ export function updatePlayerDateOptions() {
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
+    updatePlayerSelectionSummary();
     return;
   }
 
-  playerFilterMenu.innerHTML = players
-    .map(player => {
-      return `<option value="${player}" ${player === currentPlayer ? 'selected' : ''}>${player}</option>`;
-    })
-    .join('');
-  playerFilterMenu.value = currentPlayer;
+  populatePlayerFilterMenu(playerFilterMenu, playerOptions, currentPlayer);
 
   const dates = [
     ...new Set(
-      cleanedData
+      scopedRows
         .filter(row => {
-          return row.Player === currentPlayer && selectedEventTypes.includes(row.EventType.toLowerCase());
+          return rowMatchesPlayerKey(row, currentPlayer);
         })
         .map(row => row.Date)
     )
@@ -1219,6 +1786,7 @@ export function updatePlayerDateOptions() {
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
+    updatePlayerSelectionSummary();
     return;
   }
 
@@ -1280,9 +1848,11 @@ export function updatePlayerDateOptions() {
     dates,
     startDate: currentStartDate,
     endDate: currentEndDate,
-    onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
-    onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
+    onSelectStartDate: dateString => setPlayerDateSelection('start', dateString, { clearPreset: true }),
+    onSelectEndDate: dateString => setPlayerDateSelection('end', dateString, { clearPreset: true })
   });
+
+  updatePlayerSelectionSummary();
 }
 
 export function populateDateDropdowns(eventType) {

@@ -8,9 +8,12 @@ import {
   setupAnalysisModeListeners, 
   setupEventTypeListeners, 
   setupEventFilterListeners, 
-  setupPlayerFilterListeners 
+  setupPlayerFilterListeners,
+  setupMultiEventPresetListeners,
+  updateAllCharts
 } from './modules/filters.js';
 import { setupAboutListeners } from './modules/about.js';
+import { setupThemeToggle } from './utils/theme.js';
 
 // Expose global functions for HTML event handlers
 window.updateMultiEventAnalytics = updateMultiEventAnalytics;
@@ -46,6 +49,10 @@ document.addEventListener('DOMContentLoaded', () => {
   setupEventTypeListeners();
   setupEventFilterListeners();
   setupPlayerFilterListeners();
+  setupMultiEventPresetListeners();
+  setupThemeToggle(() => {
+    updateAllCharts();
+  });
   
   // Initial updates based on default mode
   const defaultTopMode = document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';

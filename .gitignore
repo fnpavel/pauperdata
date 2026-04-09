@@ -18,6 +18,10 @@
 !/data/
 !/data/**
 
+# Ignore non-runtime data metadata/docs.
+/data/README.md
+/data/import-summary.json
+
 # Ignore generated staging outputs inside the tracked data folder.
 /data/staging/
 /data/staging/**

@@ -1,0 +1,126 @@
+import { cleanedData } from '../data.js';
+import { setReleaseWindows } from '../config/set-release-windows.js';
+
+const STATIC_QUICK_VIEW_PRESETS = [
+  {
+    id: 'all-period',
+    label: 'All Period',
+    buttonLabel: 'All Period',
+    kind: 'static',
+    eventTypes: ['online', 'offline']
+  }
+];
+
+function getLatestRowDate(rows = cleanedData) {
+  return rows.reduce((latestDate, row) => {
+    return row.Date > latestDate ? row.Date : latestDate;
+  }, '');
+}
+
+function buildSetWindowPresets(rows = cleanedData, { includeFuture = false } = {}) {
+  const sortedWindows = [...setReleaseWindows].sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
+  const latestRowDate = getLatestRowDate(rows);
+
+  return sortedWindows
+    .map((window, index) => {
+      const nextWindow = sortedWindows[index + 1];
+
+      return {
+        id: `set-window-${window.slug}`,
+        label: window.label,
+        buttonLabel: window.buttonLabel || window.label,
+        kind: 'set-window',
+        eventTypes: ['online', 'offline'],
+        releaseDate: window.releaseDate,
+        releaseYear: String(window.releaseDate).slice(0, 4),
+        nextReleaseDate: nextWindow?.releaseDate || ''
+      };
+    })
+    .filter(preset => includeFuture || !latestRowDate || preset.releaseDate <= latestRowDate);
+}
+
+export function shiftDateByDays(dateString, dayDelta) {
+  if (!dateString) {
+    return '';
+  }
+
+  const date = new Date(`${dateString}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) {
+    return '';
+  }
+
+  date.setUTCDate(date.getUTCDate() + dayDelta);
+  return date.toISOString().slice(0, 10);
+}
+
+export function getStaticQuickViewPresetDefinitions() {
+  return [...STATIC_QUICK_VIEW_PRESETS];
+}
+
+export function getSetQuickViewPresetDefinitions(rows = cleanedData, { includeFuture = false } = {}) {
+  return buildSetWindowPresets(rows, { includeFuture }).reverse();
+}
+
+export function getQuickViewPresetDefinitions(rows = cleanedData, { includeFuture = false } = {}) {
+  return [...getStaticQuickViewPresetDefinitions(), ...getSetQuickViewPresetDefinitions(rows, { includeFuture })];
+}
+
+export function getQuickViewPresetDefinitionById(presetId, rows = cleanedData, { includeFuture = true } = {}) {
+  return getQuickViewPresetDefinitions(rows, { includeFuture }).find(preset => preset.id === presetId) || null;
+}
+
+export function getQuickViewPresetYearOptions(rows = cleanedData, { includeFuture = false } = {}) {
+  return [...new Set(getSetQuickViewPresetDefinitions(rows, { includeFuture }).map(preset => preset.releaseYear))]
+    .sort((a, b) => Number(b) - Number(a));
+}
+
+export function getDefaultQuickViewYear(rows = cleanedData, { includeFuture = false } = {}) {
+  const yearOptions = getQuickViewPresetYearOptions(rows, { includeFuture });
+  const currentYear = String(new Date().getFullYear());
+
+  if (yearOptions.includes(currentYear)) {
+    return currentYear;
+  }
+
+  return yearOptions[0] || '';
+}
+
+export function getLatestSetQuickViewPresetId(rows = cleanedData, { includeFuture = false } = {}) {
+  return getSetQuickViewPresetDefinitions(rows, { includeFuture })[0]?.id || 'all-period';
+}
+
+export function getQuickViewPresetEventTypes(presetId, rows = cleanedData) {
+  return getQuickViewPresetDefinitionById(presetId, rows)?.eventTypes || null;
+}
+
+export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', rows = cleanedData) {
+  if (selectedEventTypes.length === 0) {
+    return [];
+  }
+
+  const baseRows = rows.filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
+  const preset = getQuickViewPresetDefinitionById(presetId, rows);
+
+  if (!preset || preset.kind === 'static') {
+    return baseRows;
+  }
+
+  if (preset.kind === 'set-window') {
+    return baseRows.filter(row => {
+      return row.Date >= preset.releaseDate && (!preset.nextReleaseDate || row.Date < preset.nextReleaseDate);
+    });
+  }
+
+  return baseRows;
+}
+
+export function getQuickViewPresetSuggestedRange({ selectedEventTypes = [], presetId = '', rows = cleanedData } = {}) {
+  const scopedRows = getQuickViewPresetRows(selectedEventTypes, presetId, rows);
+  const dates = [...new Set(scopedRows.map(row => row.Date))].sort((a, b) => new Date(a) - new Date(b));
+
+  return {
+    startDate: dates[0] || '',
+    endDate: dates[dates.length - 1] || '',
+    dateCount: dates.length
+  };
+}

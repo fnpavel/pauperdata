@@ -132,3 +132,41 @@ th.desc .sort-arrow {
   gap: 10px;
   justify-content: center;
 }
+
+.data-table-container {
+  background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
+  box-shadow: 0 14px 26px var(--shadow-color);
+}
+
+.data-table th,
+.data-table td {
+  border-bottom-color: var(--border-subtle);
+  color: var(--text-primary);
+}
+
+.data-table th {
+  background-color: var(--primary);
+  color: #fffaf1;
+}
+
+.data-table tbody tr:hover {
+  background-color: rgba(217, 164, 65, 0.12);
+}
+
+.data-table th:hover {
+  background-color: var(--surface-hover);
+}
+
+th.asc .sort-arrow {
+  color: var(--accent);
+}
+
+.event-tooltip:hover::after {
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-text);
+  border: 1px solid var(--tooltip-border);
+}
+
+.event-tooltip:hover::before {
+  border-top-color: var(--tooltip-bg);
+}
