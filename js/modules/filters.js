@@ -61,6 +61,8 @@ let activePlayerQuickViewYear = '';
 let playerEventGroupSelectionInitialized = false;
 let activePlayerEventGroupKeys = new Set();
 let playerEventGroupSelectionContextKey = '';
+let playerSelectionInitialized = false;
+let playerSelectionKey = '';
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -1807,6 +1809,8 @@ export function setupPlayerFilterListeners() {
 
   if (playerFilterMenu) {
     playerFilterMenu.addEventListener('change', () => {
+      playerSelectionInitialized = true;
+      playerSelectionKey = playerFilterMenu.value || '';
       updatePlayerDateOptions();
       applyActivePlayerPresetDateRange();
       updatePlayerAnalytics();
@@ -2060,11 +2064,17 @@ export function updatePlayerDateOptions() {
   const playerOptions = buildPlayerFilterOptions(eventTypeRows);
   const playerKeys = playerOptions.map(playerOption => playerOption.key);
 
+  const savedPlayer = playerSelectionInitialized && playerSelectionKey && playerKeys.includes(playerSelectionKey)
+    ? playerSelectionKey
+    : '';
+
   let currentPlayer = playerKeys.includes(selectedPlayer)
     ? selectedPlayer
-    : playerKeys.includes(defaultSelection.player)
-      ? defaultSelection.player
-      : playerKeys[0] || '';
+    : savedPlayer
+      ? savedPlayer
+      : !playerSelectionInitialized && playerKeys.includes(defaultSelection.player)
+        ? defaultSelection.player
+        : playerKeys[0] || '';
 
   if (playerOptions.length === 0) {
     setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
