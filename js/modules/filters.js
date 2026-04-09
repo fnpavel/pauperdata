@@ -237,6 +237,8 @@ function createQuickViewButton(preset, buttonClass, datasetKey) {
   if (preset.kind === 'set-window') {
     const displayEndDate = preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : 'Present';
     button.title = `${preset.label}: ${preset.releaseDate} to ${displayEndDate}`;
+  } else if (preset.kind === 'calendar-year') {
+    button.title = `${preset.label}: ${preset.startDate} to ${preset.endDate}`;
   } else {
     button.title = preset.label;
   }
@@ -299,12 +301,43 @@ function renderQuickViewButtons(scope) {
   const analysisRows = getAnalysisRows();
   const activePresetValue = container.dataset.activePreset || '';
   const activePresetIds = getActiveQuickViewPresetIds(scope, activePresetValue);
+  const activePresets = activePresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true }))
+    .filter(Boolean);
   const buttonClass = getQuickViewButtonClass(scope);
   const datasetKey = getQuickViewDatasetKey(scope);
   const staticPresets = getStaticQuickViewPresetDefinitions();
+  const setPresetDefinitions = getSetQuickViewPresetDefinitions(analysisRows);
   const yearOptions = getQuickViewPresetYearOptions(analysisRows);
   const resolvedYear = getResolvedQuickViewYear(scope, activePresetIds);
-  const yearPresets = getSetQuickViewPresetDefinitions(analysisRows).filter(preset => preset.releaseYear === resolvedYear);
+  const yearPresets = setPresetDefinitions.filter(preset => preset.releaseYear === resolvedYear);
+  const hasAllPeriodPreset = activePresets.some(preset => preset.kind === 'static');
+  const activeCalendarYearPresets = activePresets.filter(preset => preset.kind === 'calendar-year');
+  const activeSetWindowPresets = activePresets.filter(preset => preset.kind === 'set-window');
+  const highlightedYears = new Set();
+  const highlightedSetWindowIds = new Set();
+
+  if (!hasAllPeriodPreset) {
+    if (activeCalendarYearPresets.length > 0) {
+      activeCalendarYearPresets.forEach(preset => {
+        if (preset.releaseYear) {
+          highlightedYears.add(preset.releaseYear);
+          setPresetDefinitions.forEach(setPreset => {
+            if (setPreset.releaseYear === preset.releaseYear) {
+              highlightedSetWindowIds.add(setPreset.id);
+            }
+          });
+        }
+      });
+    } else {
+      activeSetWindowPresets.forEach(preset => {
+        if (preset.releaseYear) {
+          highlightedYears.add(preset.releaseYear);
+        }
+        highlightedSetWindowIds.add(preset.id);
+      });
+    }
+  }
 
   setActiveQuickViewYear(scope, resolvedYear);
 
@@ -322,18 +355,41 @@ function renderQuickViewButtons(scope) {
   }
 
   if (yearOptions.length > 0) {
+    const divider = document.createElement('div');
+    divider.className = 'quick-view-divider';
+
+    const dividerLineBefore = document.createElement('span');
+    dividerLineBefore.className = 'quick-view-divider-line';
+    divider.appendChild(dividerLineBefore);
+
+    const dividerLabel = document.createElement('span');
+    dividerLabel.className = 'quick-view-divider-label';
+    dividerLabel.textContent = 'Specific Sets';
+    divider.appendChild(dividerLabel);
+
+    const dividerLineAfter = document.createElement('span');
+    dividerLineAfter.className = 'quick-view-divider-line';
+    divider.appendChild(dividerLineAfter);
+
+    container.appendChild(divider);
+
+    const setHelper = document.createElement('div');
+    setHelper.className = 'quick-view-set-helper';
+    setHelper.textContent = 'Choose a set year, then select the set windows below.';
+    container.appendChild(setHelper);
+
     const yearSection = document.createElement('div');
     yearSection.className = 'quick-view-year-section';
 
     const yearLabel = document.createElement('div');
     yearLabel.className = 'event-calendar-summary-label';
-    yearLabel.textContent = 'Set Year';
+    yearLabel.textContent = 'Choose Set Year';
     yearSection.appendChild(yearLabel);
 
     const yearRow = document.createElement('div');
     yearRow.className = 'bubble-menu quick-view-year-list';
     yearOptions.forEach(year => {
-      yearRow.appendChild(createQuickViewYearButton(year, scope, year === resolvedYear));
+      yearRow.appendChild(createQuickViewYearButton(year, scope, highlightedYears.has(year)));
     });
 
     yearSection.appendChild(yearRow);
@@ -346,7 +402,7 @@ function renderQuickViewButtons(scope) {
   if (resolvedYear) {
     const setLabel = document.createElement('div');
     setLabel.className = 'event-calendar-summary-label';
-    setLabel.textContent = `${resolvedYear} Sets`;
+    setLabel.textContent = `${resolvedYear} Set Windows`;
     setSection.appendChild(setLabel);
   }
 
@@ -355,7 +411,7 @@ function renderQuickViewButtons(scope) {
 
   yearPresets.forEach(preset => {
     const button = createQuickViewButton(preset, buttonClass, datasetKey);
-    button.classList.toggle('active', activePresetIds.includes(preset.id));
+    button.classList.toggle('active', highlightedSetWindowIds.has(preset.id));
     setRow.appendChild(button);
   });
 
@@ -372,17 +428,29 @@ function renderQuickViewButtons(scope) {
 
 function getActiveMultiEventPreset() {
   return getMultiEventQuickViewRoot()?.dataset.activePreset
-    || document.querySelector('.multi-event-preset-button.active')?.dataset.multiEventPreset
+    || Array.from(document.querySelectorAll('.multi-event-preset-button.active'))
+      .map(button => button.dataset.multiEventPreset)
+      .filter(Boolean)
+      .join(',')
     || '';
+}
+
+function getActiveMultiEventPresetIds() {
+  return normalizeQuickViewPresetIds(getActiveMultiEventPreset());
 }
 
 function setMultiEventPresetButtonState(activePresetId = '') {
   const root = getMultiEventQuickViewRoot();
+  const activePresetIds = normalizeQuickViewPresetIds(activePresetId);
+  const serializedPresetIds = activePresetIds.join(',');
+
   if (root) {
-    root.dataset.activePreset = activePresetId;
+    root.dataset.activePreset = serializedPresetIds;
   }
 
-  const preset = getQuickViewPresetDefinitionById(activePresetId, getAnalysisRows(), { includeFuture: true });
+  const preset = activePresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, getAnalysisRows(), { includeFuture: true }))
+    .find(candidate => candidate?.releaseYear);
   if (preset?.releaseYear) {
     setActiveQuickViewYear('multi', preset.releaseYear);
   }
@@ -451,13 +519,43 @@ function applyActiveMultiEventPresetDateRange() {
 }
 
 function applyMultiEventPreset(presetId) {
+  const analysisRows = getAnalysisRows();
+  const preset = getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true });
   const presetEventTypes = getMultiEventPresetEventTypes(presetId);
   if (presetEventTypes) {
     const nextType = resolvePresetEventTypeSelection(getEventAnalysisSelectedTypes(), presetEventTypes);
     setEventAnalysisEventTypes([nextType]);
   }
 
-  setMultiEventPresetButtonState(presetId);
+  if (!preset) {
+    return;
+  }
+
+  const fallbackPresetId = getStaticQuickViewPresetDefinitions()[0]?.id || '';
+  let nextPresetIds = [];
+
+  if (preset.kind !== 'set-window') {
+    nextPresetIds = [preset.id];
+  } else {
+    const activeSetWindowIds = getActiveMultiEventPresetIds().filter(activePresetId => {
+      const activePreset = getQuickViewPresetDefinitionById(activePresetId, analysisRows, { includeFuture: true });
+      return activePreset?.kind === 'set-window' && activePreset.releaseYear === preset.releaseYear;
+    });
+    const nextPresetIdSet = new Set(activeSetWindowIds);
+
+    if (nextPresetIdSet.has(preset.id)) {
+      nextPresetIdSet.delete(preset.id);
+    } else {
+      nextPresetIdSet.add(preset.id);
+    }
+
+    nextPresetIds = Array.from(nextPresetIdSet);
+    if (nextPresetIds.length === 0 && fallbackPresetId) {
+      nextPresetIds = [fallbackPresetId];
+    }
+  }
+
+  setMultiEventPresetButtonState(nextPresetIds);
   resetMultiDateRange();
   updateDateOptions();
   applyActiveMultiEventPresetDateRange();
@@ -593,7 +691,7 @@ function applyPlayerAnalysisPreset(presetId) {
   const fallbackPresetId = getStaticQuickViewPresetDefinitions()[0]?.id || '';
   let nextPresetIds = [];
 
-  if (preset.kind === 'static') {
+  if (preset.kind !== 'set-window') {
     nextPresetIds = [preset.id];
   } else {
     const activeSetWindowIds = getPlayerAnalysisActivePresetIds().filter(activePresetId => {
@@ -1802,17 +1900,18 @@ export function updateDateOptions() {
   }
 
   const selectedEventTypes = getEventAnalysisSelectedTypes();
-  const scopedRows = getScopedMultiEventRows(selectedEventTypes);
+  const activePreset = getActiveMultiEventPreset();
+  const eventTypeRows = getAnalysisRows().filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
   const dates =
     selectedEventTypes.length > 0
       ? [
           ...new Set(
-            scopedRows.map(row => row.Date)
+            eventTypeRows.map(row => row.Date)
           )
         ].sort((a, b) => new Date(a) - new Date(b))
       : [];
 
-  console.log('Filtered dates for Multi-Event:', dates);
+  console.log('Available dates for Multi-Event:', dates, 'Active preset:', activePreset);
 
   if (dates.length === 0) {
     startDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
@@ -1831,9 +1930,26 @@ export function updateDateOptions() {
   let currentEndDate = dates.includes(endDateSelect.value) ? endDateSelect.value : '';
 
   if (!currentStartDate && !currentEndDate) {
-    const defaultRange = getDefaultMultiEventRange(dates);
-    currentStartDate = defaultRange.startDate;
-    currentEndDate = defaultRange.endDate;
+    const presetRange = activePreset
+      ? getMultiEventPresetSuggestedRange({
+          selectedEventTypes,
+          presetId: activePreset
+        })
+      : null;
+
+    if (
+      presetRange?.startDate &&
+      presetRange?.endDate &&
+      dates.includes(presetRange.startDate) &&
+      dates.includes(presetRange.endDate)
+    ) {
+      currentStartDate = presetRange.startDate;
+      currentEndDate = presetRange.endDate;
+    } else {
+      const defaultRange = getDefaultMultiEventRange(dates);
+      currentStartDate = defaultRange.startDate;
+      currentEndDate = defaultRange.endDate;
+    }
   }
 
   if (currentStartDate) {
@@ -1899,8 +2015,8 @@ export function updatePlayerDateOptions() {
 
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
+  const activePreset = getPlayerAnalysisActivePreset();
   const eventTypeRows = getAnalysisRows().filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
-  const scopedRows = getScopedPlayerAnalysisRows(selectedEventTypes);
 
   if (selectedEventTypes.length === 0) {
     setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
@@ -1948,7 +2064,7 @@ export function updatePlayerDateOptions() {
 
   const dates = [
     ...new Set(
-      scopedRows
+      eventTypeRows
         .filter(row => {
           return rowMatchesPlayerKey(row, currentPlayer);
         })
@@ -1956,7 +2072,7 @@ export function updatePlayerDateOptions() {
     )
   ].sort((a, b) => new Date(a) - new Date(b));
 
-  console.log('Filtered dates for Player Analysis:', dates, 'Selected Player:', currentPlayer);
+  console.log('Available dates for Player Analysis:', dates, 'Selected Player:', currentPlayer, 'Active preset:', activePreset);
 
   if (dates.length === 0) {
     startDateSelect.innerHTML = '<option value="">No Dates Available</option>';
@@ -1984,8 +2100,26 @@ export function updatePlayerDateOptions() {
   let currentEndDate = selectedEndDate;
 
   if (!currentStartDate && !currentEndDate) {
-    currentStartDate = fallbackDate;
-    currentEndDate = fallbackDate;
+    const presetRange = activePreset
+      ? getPlayerPresetSuggestedRange({
+          selectedEventTypes,
+          presetId: activePreset,
+          playerKey: currentPlayer
+        })
+      : null;
+
+    if (
+      presetRange?.startDate &&
+      presetRange?.endDate &&
+      dates.includes(presetRange.startDate) &&
+      dates.includes(presetRange.endDate)
+    ) {
+      currentStartDate = presetRange.startDate;
+      currentEndDate = presetRange.endDate;
+    } else {
+      currentStartDate = fallbackDate;
+      currentEndDate = fallbackDate;
+    }
   } else if (!currentStartDate) {
     currentStartDate = currentEndDate;
   } else if (!currentEndDate) {

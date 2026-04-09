@@ -102,6 +102,35 @@
   gap: 8px;
 }
 
+.quick-view-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+  padding-top: 10px;
+}
+
+.quick-view-divider-line {
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 215, 0, 0.3), rgba(255, 255, 255, 0.06));
+}
+
+.quick-view-divider-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 250, 241, 0.82);
+  white-space: nowrap;
+}
+
+.quick-view-set-helper {
+  font-size: 0.8rem;
+  color: #bbb;
+  margin-top: -2px;
+}
+
 .quick-view-static-list,
 .quick-view-year-list {
   gap: 8px;

@@ -30,6 +30,25 @@ export function normalizeQuickViewPresetIds(presetIds = []) {
   return Array.from(uniqueIds);
 }
 
+function buildCalendarYearPresets() {
+  const releaseYears = [...new Set(
+    setReleaseWindows
+      .map(window => String(window.releaseDate || '').slice(0, 4))
+      .filter(Boolean)
+  )].sort((a, b) => Number(b) - Number(a));
+
+  return releaseYears.map(year => ({
+    id: `all-${year}`,
+    label: `All ${year}`,
+    buttonLabel: `All ${year}`,
+    kind: 'calendar-year',
+    eventTypes: ['online', 'offline'],
+    releaseYear: year,
+    startDate: `${year}-01-01`,
+    endDate: `${year}-12-31`
+  }));
+}
+
 function buildSetWindowPresets(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const sortedWindows = [...setReleaseWindows].sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
   const latestRowDate = getLatestRowDate(rows);
@@ -67,7 +86,7 @@ export function shiftDateByDays(dateString, dayDelta) {
 }
 
 export function getStaticQuickViewPresetDefinitions() {
-  return [...STATIC_QUICK_VIEW_PRESETS];
+  return [...STATIC_QUICK_VIEW_PRESETS, ...buildCalendarYearPresets()];
 }
 
 export function getSetQuickViewPresetDefinitions(rows = getAnalysisRows(), { includeFuture = false } = {}) {
@@ -131,6 +150,14 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
 
   if (presets.length === 0 || presets.some(preset => preset.kind === 'static')) {
     return baseRows;
+  }
+
+  const calendarYearPresets = presets.filter(preset => preset.kind === 'calendar-year');
+
+  if (calendarYearPresets.length > 0) {
+    return baseRows.filter(row => {
+      return calendarYearPresets.some(preset => row.Date >= preset.startDate && row.Date <= preset.endDate);
+    });
   }
 
   const setWindowPresets = presets.filter(preset => preset.kind === 'set-window');
