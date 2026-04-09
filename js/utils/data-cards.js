@@ -268,7 +268,6 @@ export function calculatePlayerStats(data) {
   data.forEach(row => {
     if (row.Rank === 1) {
       rankStats.top1 += 1;
-      rankStats.top1_8 += 1;
     } else if (row.Rank >= 2 && row.Rank <= 8) {
       rankStats.top1_8 += 1;
     } else if (row.Rank >= 9 && row.Rank <= 16) {

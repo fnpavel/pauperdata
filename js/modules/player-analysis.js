@@ -61,11 +61,11 @@ const PLAYER_RANK_DRILLDOWN_CONFIG = {
   },
   top1_8: {
     cardId: 'playerTop1_8Card',
-    title: 'Top 1-8 Finishes',
-    emptyMessage: 'No Top 1-8 finishes in the current Player Analysis filters.',
+    title: 'Top 2-8 Finishes',
+    emptyMessage: 'No Top 2-8 finishes in the current Player Analysis filters.',
     predicate: row => {
       const rank = Number(row.Rank);
-      return rank >= 1 && rank <= 8;
+      return rank >= 2 && rank <= 8;
     },
     includeTop8: true
   },
