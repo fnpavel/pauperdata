@@ -657,9 +657,19 @@ function getSameDeckEventComparisonData(eventRows, playerRow, selectedPlayerKey 
   };
 }
 
+function isOnlyCopyDeckEventComparison(comparisonData) {
+  return Array.isArray(comparisonData?.sameDeckRows) && comparisonData.sameDeckRows.length === 1;
+}
+
 function buildSameDeckEventComparisonNote(comparisonData) {
   if (!comparisonData) {
     return '';
+  }
+
+  if (isOnlyCopyDeckEventComparison(comparisonData)) {
+    return buildTooltipText([
+      'Only copy of this deck in this event.'
+    ]);
   }
 
   return buildTooltipText([
@@ -714,7 +724,11 @@ function getPlayerDeckEventComparisonTone(comparisonData) {
   return 'mixed-average';
 }
 
-function getPlayerDeckEventComparisonToneLabel(comparisonTone) {
+function getPlayerDeckEventComparisonToneLabel(comparisonTone, comparisonData) {
+  if (isOnlyCopyDeckEventComparison(comparisonData)) {
+    return 'Only Copy';
+  }
+
   switch (comparisonTone) {
     case 'above-average':
       return 'Above Avg';
@@ -729,7 +743,7 @@ function buildPlayerDeckEventLegendHtml() {
   return `
     <div class="player-drilldown-event-legend">
       <div class="player-drilldown-event-legend-note">
-        Colors compare each result against the same deck's average finish and win rate in that event.
+        Colors compare each result against the same deck's average finish and win rate in that event. Single-pilot deck entries are labeled Only Copy.
       </div>
       <div class="player-drilldown-event-legend-items">
         <span class="player-drilldown-event-legend-chip player-drilldown-event-legend-chip-above-average">Above average</span>
@@ -1055,7 +1069,7 @@ function buildPlayerDeckEventListHtml(rows, eventRowsByName = new Map()) {
         const comparisonData = getSameDeckEventComparisonData(eventRowsByName.get(row.Event) || [], row);
         const comparisonNote = buildSameDeckEventComparisonNote(comparisonData);
         const comparisonTone = getPlayerDeckEventComparisonTone(comparisonData);
-        const comparisonToneLabel = getPlayerDeckEventComparisonToneLabel(comparisonTone);
+        const comparisonToneLabel = getPlayerDeckEventComparisonToneLabel(comparisonTone, comparisonData);
         const itemClasses = buildDrilldownTooltipClasses(
           `player-drilldown-event-list-item player-drilldown-event-list-item-${comparisonTone}`,
           comparisonNote

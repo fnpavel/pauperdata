@@ -17,7 +17,8 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.event-analysis-table-scroll {
+.event-analysis-table-scroll,
+.player-data-table-scroll {
   position: relative;
   overflow-x: auto;
   overflow-y: auto;
@@ -26,17 +27,20 @@
   box-shadow: inset 0 0 0 1px var(--border-subtle);
 }
 
-.event-analysis-table-scroll::-webkit-scrollbar {
+.event-analysis-table-scroll::-webkit-scrollbar,
+.player-data-table-scroll::-webkit-scrollbar {
   width: 10px;
   height: 10px;
 }
 
-.event-analysis-table-scroll::-webkit-scrollbar-thumb {
+.event-analysis-table-scroll::-webkit-scrollbar-thumb,
+.player-data-table-scroll::-webkit-scrollbar-thumb {
   background: rgba(217, 164, 65, 0.24);
   border-radius: 999px;
 }
 
-.event-analysis-table-scroll::-webkit-scrollbar-track {
+.event-analysis-table-scroll::-webkit-scrollbar-track,
+.player-data-table-scroll::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.04);
   border-radius: 999px;
 }
@@ -208,6 +212,12 @@ th.asc .sort-arrow {
   z-index: 4;
 }
 
+#playerRawTable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 4;
+}
+
 #multiEventTable th,
 #multiEventTable td {
   padding: 8px 6px;
@@ -265,8 +275,19 @@ th.asc .sort-arrow {
   box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
 }
 
+#playerRawTable thead tr:first-child > th:first-child,
+#playerRawTable tbody td:first-child:not([colspan]) {
+  position: sticky;
+  left: 0;
+  box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
+}
+
 #singleEventTable thead tr:first-child > th:first-child,
 #multiEventTable thead tr:first-child > th:first-child {
+  z-index: 6;
+}
+
+#playerRawTable thead tr:first-child > th:first-child {
   z-index: 6;
 }
 
@@ -276,8 +297,17 @@ th.asc .sort-arrow {
   background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
 }
 
+#playerRawTable tbody td:first-child:not([colspan]) {
+  z-index: 2;
+  background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+}
+
 #singleEventTable tbody tr:hover td:first-child,
 #multiEventTable tbody tr:hover td:first-child {
+  background: rgba(217, 164, 65, 0.12);
+}
+
+#playerRawTable tbody tr:hover td:first-child:not([colspan]) {
   background: rgba(217, 164, 65, 0.12);
 }
 
@@ -312,13 +342,15 @@ th.asc .sort-arrow {
 }
 
 @media (max-width: 768px) {
-  .event-analysis-table-scroll {
+  .event-analysis-table-scroll,
+  .player-data-table-scroll {
     max-height: min(56vh, 26rem);
   }
 }
 
 @media (max-width: 600px) {
-  .event-analysis-table-scroll {
+  .event-analysis-table-scroll,
+  .player-data-table-scroll {
     max-height: min(52vh, 22rem);
   }
 }
