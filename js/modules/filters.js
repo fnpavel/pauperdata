@@ -804,7 +804,7 @@ function populateEventFilterMenu(entries) {
   return eventFilterMenu;
 }
 
-function setSelectedSingleEvent(eventName, dispatchChange = false) {
+export function setSelectedSingleEvent(eventName, dispatchChange = false) {
   const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (!eventFilterMenu) {
     return;
@@ -819,7 +819,7 @@ function setSelectedSingleEvent(eventName, dispatchChange = false) {
   }
 }
 
-function setSingleEventType(eventType) {
+export function setSingleEventType(eventType) {
   const buttons = getSectionEventTypeButtons(getEventAnalysisSection());
   buttons.forEach(button => {
     button.classList.toggle('active', button.dataset.type === eventType);

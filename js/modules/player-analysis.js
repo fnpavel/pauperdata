@@ -8,6 +8,7 @@ import { formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 import { getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
+import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters.js';
 
 function getSelectedPlayerEventTypes() {
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
@@ -1385,6 +1386,42 @@ function openPlayerEventHistoryDrilldown({ eventName = '', eventDate = '', deckN
   activePlayerDrilldownCategory = '';
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
+
+  // Add the "Open in Event Analysis" button
+  const openBtn = document.createElement('button');
+  openBtn.type = 'button';
+  openBtn.className = 'bubble-button';
+  openBtn.textContent = 'Open in Event Analysis';
+  openBtn.style.marginLeft = '10px';
+  elements.title.appendChild(openBtn);
+
+  openBtn.addEventListener('click', () => {
+    // Switch to Event Analysis
+    const eventBtn = document.querySelector('.top-mode-button[data-top-mode="event"]');
+    if (eventBtn) eventBtn.click();
+
+    // Set to single mode
+    const singleBtn = document.querySelector('.analysis-mode[data-mode="single"]');
+    if (singleBtn) singleBtn.click();
+
+    // Set event type
+    setSingleEventType(playerRow.EventType.toLowerCase());
+
+    // Update the event filter to populate the menu with the correct events
+    updateEventFilter(playerRow.Event, true);
+
+    // Trigger the change event to update the charts
+    const eventFilterMenu = document.getElementById('eventFilterMenu');
+    if (eventFilterMenu) {
+      eventFilterMenu.dispatchEvent(new Event('change'));
+    }
+
+    // Close the modal
+    closePlayerRankDrilldown();
+
+    // Scroll to top
+    window.scrollTo(0, 0);
+  });
 }
 
 function closePlayerRankDrilldown() {
