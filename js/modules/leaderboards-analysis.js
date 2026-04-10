@@ -18,7 +18,7 @@ import { setChartLoading, triggerUpdateAnimation, updateElementHTML, updateEleme
 import { formatDate, formatDateRange, formatEventName } from '../utils/format.js';
 import { formatGroupDisplayLabel, getEventGroupInfo } from '../utils/event-groups.js';
 import { buildPlayerFilterOptions, getPlayerIdentityKey, normalizePlayerName } from '../utils/player-names.js';
-import { renderLeaderboardOverviewChart } from './leaderboards-chart.js';
+import { renderLeaderboardOverviewChart } from '../charts/leaderboards-chart.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const LEADERBOARD_SCORING = {
