@@ -34,16 +34,46 @@ const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardMostTrophiesCard',
   'leaderboardMostMatchWinsCard'
 ];
+const LEADERBOARD_DRILLDOWN_CONFIG = {
+  totalEvents: {
+    cardId: 'leaderboardTotalEventsCard',
+    title: 'Selected Events',
+    emptyMessage: 'No events are available for the current Leaderboards filters.'
+  },
+  trackedPlayers: {
+    cardId: 'leaderboardTrackedPlayersCard',
+    title: 'Tracked Players',
+    emptyMessage: 'No players are available for the current Leaderboards filters.'
+  },
+  leader: {
+    cardId: 'leaderboardLeaderCard',
+    title: 'Current Leader',
+    emptyMessage: 'No leaderboard leader is available for the current filters.'
+  },
+  mostTrophies: {
+    cardId: 'leaderboardMostTrophiesCard',
+    title: 'Most Trophies',
+    emptyMessage: 'No trophy leaders are available for the current Leaderboards filters.'
+  },
+  mostMatchWins: {
+    cardId: 'leaderboardMostMatchWinsCard',
+    title: 'Most Match Wins',
+    emptyMessage: 'No match-win leaders are available for the current Leaderboards filters.'
+  }
+};
 
 let activeQuickViewYear = '';
 let leaderboardGroupSelectionInitialized = false;
 let activeLeaderboardGroupKeys = new Set();
 let leaderboardGroupSelectionContextKey = '';
 let currentLeaderboardRows = [];
+let currentLeaderboardSourceRows = [];
 let leaderboardTableSort = {
   key: 'score',
   direction: 'desc'
 };
+let activeLeaderboardDrilldownCategory = '';
+let leaderboardDeckResultsSort = 'events';
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -60,6 +90,16 @@ function getTopMode() {
 
 function getLeaderboardsSection() {
   return document.getElementById('leaderboardsSection');
+}
+
+function getLeaderboardDrilldownElements() {
+  return {
+    overlay: document.getElementById('leaderboardStatDrilldownOverlay'),
+    title: document.getElementById('leaderboardStatDrilldownTitle'),
+    subtitle: document.getElementById('leaderboardStatDrilldownSubtitle'),
+    content: document.getElementById('leaderboardStatDrilldownContent'),
+    closeButton: document.getElementById('leaderboardStatDrilldownClose')
+  };
 }
 
 function getLeaderboardQuickViewRoot() {
@@ -884,6 +924,7 @@ function calculateLeaderboardRows(rows = []) {
       totalRank: 0,
       resultCount: 0,
       bestFinish: Number.POSITIVE_INFINITY,
+      worstFinish: 0,
       latestDate: ''
     };
 
@@ -898,6 +939,7 @@ function calculateLeaderboardRows(rows = []) {
       entry.resultCount += 1;
       entry.totalRank += rank;
       entry.bestFinish = Math.min(entry.bestFinish, rank);
+      entry.worstFinish = Math.max(entry.worstFinish, rank);
 
       if (rank === 1) {
         entry.top1 += 1;
@@ -947,7 +989,9 @@ function calculateLeaderboardRows(rows = []) {
         score,
         winRate,
         averageFinish,
+        resultCount: entry.resultCount,
         bestFinish: Number.isFinite(entry.bestFinish) ? entry.bestFinish : Number.POSITIVE_INFINITY,
+        worstFinish: entry.resultCount > 0 ? entry.worstFinish : Number.POSITIVE_INFINITY,
         latestDate: entry.latestDate
       };
     })
@@ -969,6 +1013,19 @@ function formatDisplayNames(names = [], limit = 2) {
   }
 
   return `${normalizedNames.slice(0, limit).join(', ')} +${normalizedNames.length - limit} more`;
+}
+
+function formatDisplayNamesWithAndMore(names = [], limit = 2) {
+  const normalizedNames = [...new Set(names.filter(Boolean))];
+  if (normalizedNames.length === 0) {
+    return '--';
+  }
+
+  if (normalizedNames.length <= limit) {
+    return normalizedNames.join(', ');
+  }
+
+  return `${normalizedNames.slice(0, limit).join(', ')} and ${normalizedNames.length - limit} more`;
 }
 
 function getRowsAtMaxValue(rows = [], metricKey) {
@@ -997,6 +1054,650 @@ function formatLeaderboardPercentage(value) {
   return `${Number(value).toFixed(2)}%`;
 }
 
+function formatLeaderboardAverageFinish(value) {
+  if (!Number.isFinite(value) || value === Number.POSITIVE_INFINITY) {
+    return '--';
+  }
+
+  const rounded = Math.round(value * 10) / 10;
+  return Number.isInteger(rounded) ? `#${rounded}` : `#${rounded.toFixed(1)}`;
+}
+
+function getLeaderboardPlayerRows(playerKey, rows = currentLeaderboardSourceRows) {
+  return (rows || [])
+    .filter(row => getPlayerIdentityKey(row.Player) === playerKey)
+    .sort((a, b) => {
+      const dateComparison = String(b.Date || '').localeCompare(String(a.Date || ''));
+      if (dateComparison !== 0) {
+        return dateComparison;
+      }
+
+      const rankComparison = Number(a.Rank) - Number(b.Rank);
+      if (rankComparison !== 0) {
+        return rankComparison;
+      }
+
+      return String(a.Event || '').localeCompare(String(b.Event || ''));
+    });
+}
+
+function getLeaderboardPlayerDeckGroups(rows = []) {
+  const deckGroups = new Map();
+
+  (rows || []).forEach(row => {
+    const deckName = String(row?.Deck || '').trim();
+    if (!deckName || deckName === 'No Show') {
+      return;
+    }
+
+    if (!deckGroups.has(deckName)) {
+      deckGroups.set(deckName, []);
+    }
+
+    deckGroups.get(deckName).push(row);
+  });
+
+  return Array.from(deckGroups.entries())
+    .map(([deck, deckRows]) => {
+      const sortedRows = [...deckRows].sort((a, b) => {
+        const dateComparison = String(b.Date || '').localeCompare(String(a.Date || ''));
+        if (dateComparison !== 0) {
+          return dateComparison;
+        }
+
+        const rankComparison = Number(a.Rank) - Number(b.Rank);
+        if (rankComparison !== 0) {
+          return rankComparison;
+        }
+
+        return String(a.Event || '').localeCompare(String(b.Event || ''));
+      });
+      const wins = sortedRows.reduce((sum, row) => sum + (Number(row.Wins) || 0), 0);
+      const losses = sortedRows.reduce((sum, row) => sum + (Number(row.Losses) || 0), 0);
+      const events = new Set(sortedRows.map(row => `${row.Date || ''}::${row.Event || ''}`)).size;
+      const validRanks = sortedRows
+        .map(row => Number(row.Rank))
+        .filter(rank => Number.isFinite(rank) && rank > 0);
+      const averageFinish = validRanks.length > 0
+        ? validRanks.reduce((sum, rank) => sum + rank, 0) / validRanks.length
+        : Number.POSITIVE_INFINITY;
+      const bestFinish = validRanks.length > 0 ? Math.min(...validRanks) : Number.POSITIVE_INFINITY;
+      const worstFinish = validRanks.length > 0 ? Math.max(...validRanks) : Number.POSITIVE_INFINITY;
+      const totalMatches = wins + losses;
+      const winRate = totalMatches > 0 ? (wins / totalMatches) * 100 : 0;
+      const top1 = validRanks.filter(rank => rank === 1).length;
+      const top8 = validRanks.filter(rank => rank >= 1 && rank <= 8).length;
+      const latestDate = sortedRows[0]?.Date || '';
+      const deckLeadCount = sortedRows.filter(row => {
+        const deckName = String(row?.Deck || '').trim();
+        const eventName = String(row?.Event || '').trim();
+        const eventDate = String(row?.Date || '').trim();
+        const playerKey = getPlayerIdentityKey(row?.Player);
+        const rank = Number(row?.Rank);
+
+        if (!deckName || !eventName || !eventDate || !playerKey || !Number.isFinite(rank) || rank <= 0) {
+          return false;
+        }
+
+        const matchingDeckRows = currentLeaderboardSourceRows.filter(sourceRow => {
+          const sourceDeckName = String(sourceRow?.Deck || '').trim();
+          const sourceEventName = String(sourceRow?.Event || '').trim();
+          const sourceEventDate = String(sourceRow?.Date || '').trim();
+          const sourceRank = Number(sourceRow?.Rank);
+
+          return (
+            sourceDeckName === deckName &&
+            sourceEventName === eventName &&
+            sourceEventDate === eventDate &&
+            Number.isFinite(sourceRank) &&
+            sourceRank > 0
+          );
+        });
+
+        if (matchingDeckRows.length === 0) {
+          return false;
+        }
+
+        const bestDeckRank = Math.min(...matchingDeckRows.map(sourceRow => Number(sourceRow.Rank)));
+        return rank === bestDeckRank;
+      }).length;
+
+      return {
+        deck,
+        rows: sortedRows,
+        events,
+        wins,
+        losses,
+        winRate,
+        averageFinish,
+        bestFinish,
+        worstFinish,
+        top1,
+        top8,
+        deckLeadCount,
+        deckLeadRate: events > 0 ? (deckLeadCount / events) * 100 : 0,
+        latestDate
+      };
+    });
+}
+
+function sortLeaderboardDeckGroups(deckGroups = [], sortKey = leaderboardDeckResultsSort) {
+  const normalizedSortKey = String(sortKey || 'events');
+  const sortedGroups = [...deckGroups];
+
+  sortedGroups.sort((a, b) => {
+    switch (normalizedSortKey) {
+      case 'top1':
+        return (
+          b.top1 - a.top1 ||
+          b.events - a.events ||
+          b.top8 - a.top8 ||
+          b.winRate - a.winRate ||
+          a.averageFinish - b.averageFinish ||
+          a.deck.localeCompare(b.deck)
+        );
+      case 'top8':
+        return (
+          b.top8 - a.top8 ||
+          b.top1 - a.top1 ||
+          b.events - a.events ||
+          b.winRate - a.winRate ||
+          a.averageFinish - b.averageFinish ||
+          a.deck.localeCompare(b.deck)
+        );
+      case 'winRate':
+        return (
+          b.winRate - a.winRate ||
+          b.events - a.events ||
+          b.top1 - a.top1 ||
+          b.top8 - a.top8 ||
+          a.averageFinish - b.averageFinish ||
+          a.deck.localeCompare(b.deck)
+        );
+      case 'averageFinish':
+        return (
+          a.averageFinish - b.averageFinish ||
+          b.events - a.events ||
+          b.top1 - a.top1 ||
+          b.top8 - a.top8 ||
+          b.winRate - a.winRate ||
+          a.deck.localeCompare(b.deck)
+        );
+      case 'events':
+      default:
+        return (
+          b.events - a.events ||
+          b.top1 - a.top1 ||
+          b.top8 - a.top8 ||
+          b.winRate - a.winRate ||
+          a.averageFinish - b.averageFinish ||
+          a.deck.localeCompare(b.deck)
+        );
+    }
+  });
+
+  return sortedGroups;
+}
+
+function buildLeaderboardEventListHtml(entries = []) {
+  if (!entries.length) {
+    return '<div class="player-rank-drilldown-empty">No events found.</div>';
+  }
+
+  return `
+    <div class="player-drilldown-event-list">
+      ${entries.map(entry => {
+        const formattedEventName = formatEventName(entry.name) || entry.name || 'Unknown Event';
+        const dateLabel = entry.date ? formatDate(entry.date) : '--';
+        const metaLabel = entry.groupShortLabel || entry.groupLabel || '--';
+
+        return `
+          <div class="player-drilldown-event-list-item">
+            <div class="player-drilldown-event-list-main">
+              <strong>${escapeHtml(formattedEventName)}</strong>
+              <span>${escapeHtml(dateLabel)}</span>
+            </div>
+            <div class="player-drilldown-event-list-topics">
+              <div class="player-drilldown-event-list-topic">${escapeHtml(`Group: ${metaLabel}`)}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function buildLeaderboardPlayerEventListHtml(rows = []) {
+  if (!rows.length) {
+    return '<div class="player-rank-drilldown-empty">No event results found.</div>';
+  }
+
+  return `
+    <div class="player-drilldown-event-list">
+      ${rows.map(row => {
+        const eventLabel = formatEventName(row.Event) || row.Event || 'Unknown Event';
+        const dateLabel = row.Date ? formatDate(row.Date) : '--';
+        const deckLabel = String(row.Deck || '').trim() || '--';
+        const wins = Number(row.Wins) || 0;
+        const losses = Number(row.Losses) || 0;
+
+        return `
+          <div class="player-drilldown-event-list-item">
+            <div class="player-drilldown-event-list-main">
+              <strong>${escapeHtml(eventLabel)}</strong>
+              <span>${escapeHtml(dateLabel)}</span>
+            </div>
+            <div class="player-drilldown-event-list-topics">
+              <div class="player-drilldown-event-list-topic">${escapeHtml(`Finish: #${row.Rank || '--'}`)}</div>
+              <div class="player-drilldown-event-list-topic">${escapeHtml(`Record: ${wins}-${losses}`)}</div>
+              <div class="player-drilldown-event-list-topic">${escapeHtml(`Deck: ${deckLabel}`)}</div>
+              <div class="player-drilldown-event-list-topic">${escapeHtml(`Event Type: ${row.EventType || '--'}`)}</div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function buildLeaderboardDeckResultsHtml(deckGroups = []) {
+  if (!deckGroups.length) {
+    return '<div class="player-rank-drilldown-empty">No deck results found.</div>';
+  }
+
+  const sortedDeckGroups = sortLeaderboardDeckGroups(deckGroups);
+  const shouldShowSortControls = deckGroups.length > 1;
+
+  return `
+    ${shouldShowSortControls ? `
+      <div class="leaderboard-deck-results-sort">
+        <span class="player-rank-drilldown-summary-label leaderboard-deck-results-sort-label">Sort Deck Results By</span>
+        <div class="bubble-menu leaderboard-deck-results-sort-controls">
+          <button type="button" class="bubble-button table-toggle-btn${leaderboardDeckResultsSort === 'events' ? ' active' : ''}" data-leaderboard-deck-sort="events">Events</button>
+          <button type="button" class="bubble-button table-toggle-btn${leaderboardDeckResultsSort === 'top1' ? ' active' : ''}" data-leaderboard-deck-sort="top1">Top 1</button>
+          <button type="button" class="bubble-button table-toggle-btn${leaderboardDeckResultsSort === 'top8' ? ' active' : ''}" data-leaderboard-deck-sort="top8">Top 8</button>
+          <button type="button" class="bubble-button table-toggle-btn${leaderboardDeckResultsSort === 'winRate' ? ' active' : ''}" data-leaderboard-deck-sort="winRate">Win Rate</button>
+          <button type="button" class="bubble-button table-toggle-btn${leaderboardDeckResultsSort === 'averageFinish' ? ' active' : ''}" data-leaderboard-deck-sort="averageFinish">Avg Finish</button>
+        </div>
+      </div>
+    ` : ''}
+    <div class="leaderboard-deck-results-grid">
+      ${sortedDeckGroups.map(group => `
+        <article class="leaderboard-deck-result-card">
+          <div class="leaderboard-deck-result-header">
+            <div>
+              <div class="player-rank-drilldown-event-date">${escapeHtml(group.latestDate ? formatDate(group.latestDate) : 'No recent event')}</div>
+              <h5 class="leaderboard-deck-result-name">${escapeHtml(group.deck)}</h5>
+            </div>
+            <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${group.events} event${group.events === 1 ? '' : 's'}`)}</span>
+          </div>
+          <div class="leaderboard-deck-result-stats">
+            <div class="player-rank-drilldown-summary-item updated">
+              <span class="player-rank-drilldown-summary-label">Wins / Losses</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(`${group.wins} / ${group.losses}`)}</strong>
+            </div>
+            <div class="player-rank-drilldown-summary-item updated">
+              <span class="player-rank-drilldown-summary-label">Win Rate</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatLeaderboardPercentage(group.winRate))}</strong>
+            </div>
+            <div class="player-rank-drilldown-summary-item updated">
+              <span class="player-rank-drilldown-summary-label">Avg Finish</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatLeaderboardAverageFinish(group.averageFinish))}</strong>
+            </div>
+            <div class="player-rank-drilldown-summary-item updated">
+              <span class="player-rank-drilldown-summary-label">Best / Worst Finish</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(
+                `${group.bestFinish === Number.POSITIVE_INFINITY ? '--' : `#${group.bestFinish}`} / ${group.worstFinish === Number.POSITIVE_INFINITY ? '--' : `#${group.worstFinish}`}`
+              )}</strong>
+            </div>
+            <div class="player-rank-drilldown-summary-item updated">
+              <span class="player-rank-drilldown-summary-label">Top 1 / Top 8</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(`${group.top1} / ${group.top8}`)}</strong>
+            </div>
+            <div
+              class="player-rank-drilldown-summary-item updated analysis-filter-tooltip"
+              data-tooltip="Counts events where this player had the best finish among all pilots of this same deck in the selected leaderboard filters."
+            >
+              <span class="player-rank-drilldown-summary-label">Deck Lead Finishes</span>
+              <strong class="player-rank-drilldown-summary-value">${escapeHtml(`${group.deckLeadCount} (${formatLeaderboardPercentage(group.deckLeadRate)})`)}</strong>
+            </div>
+          </div>
+        </article>
+      `).join('')}
+    </div>
+  `;
+}
+
+function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true } = {}) {
+  if (!rows.length) {
+    return '<div class="player-rank-drilldown-empty">No leaderboard players found.</div>';
+  }
+
+  return rows.map(row => {
+    const playerRows = getLeaderboardPlayerRows(row.playerKey);
+    const deckGroups = getLeaderboardPlayerDeckGroups(playerRows);
+    const recentRows = playerRows.slice(0, 8);
+    const playerBodyId = `leaderboardPlayerBody-${String(row.playerKey || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+    const recentResultsId = `leaderboardRecentResults-${String(row.playerKey || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+
+    return `
+      <article class="player-rank-drilldown-event">
+        <div class="player-rank-drilldown-event-header leaderboard-player-card-header${collapsePlayers ? ' leaderboard-player-card-header-collapsible' : ''}">
+          <div>
+            <div class="player-rank-drilldown-event-date">${escapeHtml(row.latestDate ? formatDate(row.latestDate) : 'No recent event')}</div>
+            <h4 class="player-rank-drilldown-event-name">${escapeHtml(row.player || '--')}</h4>
+          </div>
+          <div class="leaderboard-player-card-header-actions">
+            <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${row.score} pts`)}</span>
+            ${collapsePlayers ? `
+              <button
+                type="button"
+                class="bubble-button leaderboard-results-toggle leaderboard-player-card-toggle"
+                data-leaderboard-player-toggle="${escapeHtml(playerBodyId)}"
+                aria-expanded="false"
+                aria-controls="${escapeHtml(playerBodyId)}"
+                title="Show player details"
+              >
+                +
+              </button>
+            ` : ''}
+          </div>
+        </div>
+        <div id="${escapeHtml(playerBodyId)}" class="leaderboard-player-card-body"${collapsePlayers ? ' hidden' : ''}>
+        <div class="player-rank-drilldown-summary-grid leaderboard-player-summary-grid">
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Events</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.events)}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Wins</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.wins)}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Losses</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.losses)}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Win Rate</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatLeaderboardPercentage(row.winRate))}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Top 1 / Top 8</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(`${row.top1} / ${row.top8}`)}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Avg Finish</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatLeaderboardAverageFinish(row.averageFinish))}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Best / Worst Finish</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(
+              `${row.bestFinish === Number.POSITIVE_INFINITY ? '--' : `#${row.bestFinish}`} / ${row.worstFinish === Number.POSITIVE_INFINITY ? '--' : `#${row.worstFinish}`}`
+            )}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Unique Decks</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.uniqueDecks)}</strong>
+          </div>
+        </div>
+        <div class="player-rank-drilldown-context">
+          <div class="player-rank-drilldown-context-title">Deck Results</div>
+          ${buildLeaderboardDeckResultsHtml(deckGroups)}
+        </div>
+        <div class="player-rank-drilldown-context">
+          <div class="player-rank-drilldown-context-header leaderboard-player-results-header">
+            <div class="player-rank-drilldown-context-title">Recent Results</div>
+            <button
+              type="button"
+              class="bubble-button leaderboard-results-toggle"
+              data-leaderboard-results-toggle="${escapeHtml(recentResultsId)}"
+              aria-expanded="false"
+              aria-controls="${escapeHtml(recentResultsId)}"
+              title="Show recent results"
+            >
+              +
+            </button>
+          </div>
+          <div id="${escapeHtml(recentResultsId)}" class="leaderboard-player-results-body" hidden>
+            ${buildLeaderboardPlayerEventListHtml(recentRows)}
+          </div>
+        </div>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+function getLeaderboardDrilldownItems(categoryKey) {
+  switch (categoryKey) {
+    case 'totalEvents':
+      return getLeaderboardSelectedEventEntries(currentLeaderboardSourceRows);
+    case 'trackedPlayers':
+      return [...currentLeaderboardRows].sort(compareLeaderboardRows);
+    case 'leader': {
+      const topRows = getRowsAtMaxValue(currentLeaderboardRows, 'score');
+      return topRows.filter(row => Number.isFinite(row.score));
+    }
+    case 'mostTrophies': {
+      const topRows = getRowsAtMaxValue(currentLeaderboardRows, 'top1');
+      const maxValue = topRows[0]?.top1 || 0;
+      return maxValue > 0 ? topRows : [];
+    }
+    case 'mostMatchWins': {
+      const topRows = getRowsAtMaxValue(currentLeaderboardRows, 'wins');
+      const maxValue = topRows[0]?.wins || 0;
+      return maxValue > 0 ? topRows : [];
+    }
+    default:
+      return [];
+  }
+}
+
+function updateLeaderboardDrilldownCardStates() {
+  Object.entries(LEADERBOARD_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
+    const card = document.getElementById(config.cardId);
+    if (!card) {
+      return;
+    }
+
+    const itemCount = getLeaderboardDrilldownItems(categoryKey).length;
+    const isDisabled = itemCount === 0;
+
+    card.classList.add('drilldown-card');
+    card.classList.toggle('drilldown-disabled', isDisabled);
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+    card.tabIndex = isDisabled ? -1 : 0;
+    card.title = isDisabled
+      ? config.emptyMessage
+      : `Open ${config.title.toLowerCase()} details`;
+  });
+}
+
+function renderLeaderboardDrilldown(categoryKey) {
+  const elements = getLeaderboardDrilldownElements();
+  const config = LEADERBOARD_DRILLDOWN_CONFIG[categoryKey];
+  if (!config || !elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const items = getLeaderboardDrilldownItems(categoryKey);
+  elements.title.textContent = config.title;
+
+  if (categoryKey === 'totalEvents') {
+    const eventCount = items.length;
+    elements.subtitle.textContent = eventCount > 0
+      ? `${eventCount} event${eventCount === 1 ? '' : 's'} in the current Leaderboards filters`
+      : config.emptyMessage;
+    elements.content.innerHTML = eventCount > 0
+      ? buildLeaderboardEventListHtml(items)
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+    return;
+  }
+
+  if (categoryKey === 'trackedPlayers') {
+    const playerCount = items.length;
+    elements.subtitle.textContent = playerCount > 0
+      ? `${playerCount} tracked player${playerCount === 1 ? '' : 's'} in the current Leaderboards filters`
+      : config.emptyMessage;
+    elements.content.innerHTML = playerCount > 0
+      ? buildLeaderboardPlayerSummaryHtml(items, { collapsePlayers: true })
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+    return;
+  }
+
+  if (categoryKey === 'leader') {
+    const leaderCount = items.length;
+    const topScore = items[0]?.score || 0;
+    elements.subtitle.textContent = leaderCount > 0
+      ? `${leaderCount} player${leaderCount === 1 ? '' : 's'} tied at ${topScore} point${topScore === 1 ? '' : 's'}`
+      : config.emptyMessage;
+    elements.content.innerHTML = leaderCount > 0
+      ? buildLeaderboardPlayerSummaryHtml(items, { collapsePlayers: true })
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+    return;
+  }
+
+  if (categoryKey === 'mostTrophies') {
+    const playerCount = items.length;
+    const trophyCount = items[0]?.top1 || 0;
+    elements.subtitle.textContent = playerCount > 0
+      ? `${playerCount} player${playerCount === 1 ? '' : 's'} with ${trophyCount} Top 1 finish${trophyCount === 1 ? '' : 'es'}`
+      : config.emptyMessage;
+    elements.content.innerHTML = playerCount > 0
+      ? buildLeaderboardPlayerSummaryHtml(items, { collapsePlayers: true })
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+    return;
+  }
+
+  const playerCount = items.length;
+  const winCount = items[0]?.wins || 0;
+  elements.subtitle.textContent = playerCount > 0
+    ? `${playerCount} player${playerCount === 1 ? '' : 's'} with ${winCount} match win${winCount === 1 ? '' : 's'}`
+    : config.emptyMessage;
+  elements.content.innerHTML = playerCount > 0
+    ? buildLeaderboardPlayerSummaryHtml(items, { collapsePlayers: true })
+    : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+}
+
+function openLeaderboardDrilldown(categoryKey) {
+  const elements = getLeaderboardDrilldownElements();
+  if (!elements.overlay || !LEADERBOARD_DRILLDOWN_CONFIG[categoryKey]) {
+    return;
+  }
+
+  activeLeaderboardDrilldownCategory = categoryKey;
+  renderLeaderboardDrilldown(categoryKey);
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+}
+
+function closeLeaderboardDrilldown() {
+  const { overlay } = getLeaderboardDrilldownElements();
+  if (!overlay) {
+    return;
+  }
+
+  overlay.hidden = true;
+  activeLeaderboardDrilldownCategory = '';
+  document.body.classList.remove('modal-open');
+}
+
+function setupLeaderboardDrilldownModal() {
+  const { overlay, closeButton, content } = getLeaderboardDrilldownElements();
+  if (!overlay || overlay.dataset.initialized === 'true') {
+    return;
+  }
+
+  overlay.dataset.initialized = 'true';
+
+  closeButton?.addEventListener('click', closeLeaderboardDrilldown);
+
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) {
+      closeLeaderboardDrilldown();
+    }
+  });
+
+  content?.addEventListener('click', event => {
+    const playerToggleButton = event.target.closest('[data-leaderboard-player-toggle]');
+    if (playerToggleButton) {
+      const targetId = playerToggleButton.dataset.leaderboardPlayerToggle || '';
+      const target = targetId ? document.getElementById(targetId) : null;
+      if (!target) {
+        return;
+      }
+
+      const shouldExpand = playerToggleButton.getAttribute('aria-expanded') !== 'true';
+      playerToggleButton.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      playerToggleButton.textContent = shouldExpand ? '-' : '+';
+      playerToggleButton.title = shouldExpand ? 'Hide player details' : 'Show player details';
+      target.hidden = !shouldExpand;
+      return;
+    }
+
+    const deckSortButton = event.target.closest('[data-leaderboard-deck-sort]');
+    if (deckSortButton) {
+      const nextSort = deckSortButton.dataset.leaderboardDeckSort || 'events';
+      leaderboardDeckResultsSort = nextSort;
+      if (activeLeaderboardDrilldownCategory) {
+        renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
+      }
+      return;
+    }
+
+    const toggleButton = event.target.closest('[data-leaderboard-results-toggle]');
+    if (!toggleButton) {
+      return;
+    }
+
+    const targetId = toggleButton.dataset.leaderboardResultsToggle || '';
+    const target = targetId ? document.getElementById(targetId) : null;
+    if (!target) {
+      return;
+    }
+
+    const shouldExpand = toggleButton.getAttribute('aria-expanded') !== 'true';
+    toggleButton.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+    toggleButton.textContent = shouldExpand ? '-' : '+';
+    toggleButton.title = shouldExpand ? 'Hide recent results' : 'Show recent results';
+    target.hidden = !shouldExpand;
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !overlay.hidden) {
+      closeLeaderboardDrilldown();
+    }
+  });
+}
+
+function setupLeaderboardDrilldownCards() {
+  Object.entries(LEADERBOARD_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
+    const card = document.getElementById(config.cardId);
+    if (!card || card.dataset.drilldownBound === 'true') {
+      return;
+    }
+
+    card.dataset.drilldownBound = 'true';
+
+    const openIfEnabled = () => {
+      if (card.getAttribute('aria-disabled') === 'true') {
+        return;
+      }
+
+      openLeaderboardDrilldown(categoryKey);
+    };
+
+    card.addEventListener('click', openIfEnabled);
+    card.addEventListener('keydown', event => {
+      if ((event.key === 'Enter' || event.key === ' ') && card.getAttribute('aria-disabled') !== 'true') {
+        event.preventDefault();
+        openLeaderboardDrilldown(categoryKey);
+      }
+    });
+  });
+}
+
 function getLeaderboardStats(leaderboardRows = [], filteredRows = []) {
   const uniqueEvents = new Set(filteredRows.map(row => String(row.Event || '').trim()).filter(Boolean));
   const leader = leaderboardRows[0] || null;
@@ -1018,6 +1719,9 @@ function populateLeaderboardStats(leaderboardRows = [], filteredRows = []) {
   const endDate = getLeaderboardEndDateSelect()?.value || '';
   const activeLabel = getActivePresetDisplayLabel();
   const leader = stats.leader;
+  const tiedLeaders = getRowsAtMaxValue(leaderboardRows, 'score').filter(row => Number.isFinite(row.score));
+  const leaderNames = tiedLeaders.map(row => row.player).filter(Boolean);
+  const leaderHoverLabel = leaderNames.join(', ');
   const trophyLeaders = stats.mostTrophiesRows;
   const matchWinLeaders = stats.mostMatchWinsRows;
   const topTrophyValue = trophyLeaders[0]?.top1 || 0;
@@ -1033,25 +1737,61 @@ function populateLeaderboardStats(leaderboardRows = [], filteredRows = []) {
     'leaderboardTrackedPlayersDetails',
     `${activeLabel}${stats.totalEvents ? ` / ${stats.totalEvents} event${stats.totalEvents === 1 ? '' : 's'}` : ''}`
   );
-  updateElementText('leaderboardLeaderName', leader?.player || '--');
+  updateElementText(
+    'leaderboardLeaderName',
+    tiedLeaders.length > 1 ? `${tiedLeaders.length} Players Tied` : (leader?.player || '--')
+  );
   updateElementText(
     'leaderboardLeaderDetails',
-    leader
-      ? `${leader.score} pts / ${leader.top1} Top 1 / ${formatLeaderboardPercentage(leader.winRate)} WR`
-      : '0 pts / --'
+    tiedLeaders.length > 1
+      ? formatDisplayNamesWithAndMore(leaderNames)
+      : (
+        leader
+          ? `${leader.score} pts / ${leader.top1} Top 1 / ${formatLeaderboardPercentage(leader.winRate)} WR`
+          : '0 pts / --'
+      )
   );
-  updateElementText('leaderboardMostTrophiesName', formatDisplayNames(trophyLeaders.map(row => row.player)));
+  const leaderCard = document.getElementById('leaderboardLeaderCard');
+  const leaderNameElement = document.getElementById('leaderboardLeaderName');
+  const leaderDetailsElement = document.getElementById('leaderboardLeaderDetails');
+  const leaderTooltip = tiedLeaders.length > 1 && leaderHoverLabel
+    ? `Tied leaders: ${leaderHoverLabel}`
+    : (leader?.player || '');
+  if (leaderCard) {
+    leaderCard.title = leaderTooltip;
+  }
+  if (leaderNameElement) {
+    leaderNameElement.title = leaderTooltip;
+  }
+  if (leaderDetailsElement) {
+    leaderDetailsElement.title = leaderTooltip;
+  }
+  updateElementText(
+    'leaderboardMostTrophiesName',
+    trophyLeaders.length > 1 ? `${trophyLeaders.length} Players Tied` : formatDisplayNames(trophyLeaders.map(row => row.player))
+  );
   updateElementText(
     'leaderboardMostTrophiesDetails',
     topTrophyValue > 0
-      ? `${topTrophyValue} win${topTrophyValue === 1 ? '' : 's'} / ${trophyLeaders[0]?.top8 || 0} Top 8`
+      ? (
+        trophyLeaders.length > 1
+          ? formatDisplayNamesWithAndMore(trophyLeaders.map(row => row.player))
+          : `${topTrophyValue} win${topTrophyValue === 1 ? '' : 's'} / ${trophyLeaders[0]?.top8 || 0} Top 8`
+      )
       : '0 wins'
   );
-  updateElementText('leaderboardMostMatchWinsName', formatDisplayNames(matchWinLeaders.map(row => row.player)));
+  updateElementText(
+    'leaderboardMostMatchWinsName',
+    matchWinLeaders.length > 1 ? `${matchWinLeaders.length} Players Tied` : formatDisplayNames(matchWinLeaders.map(row => row.player))
+  );
   updateElementText(
     'leaderboardMostMatchWinsDetails',
     topMatchWinValue > 0
-      ? `${topMatchWinValue} wins / ${formatLeaderboardPercentage(matchWinLeaders[0]?.winRate || 0)} WR`
+      ? (
+        matchWinLeaders.length > 1
+          ? formatDisplayNamesWithAndMore(matchWinLeaders.map(row => row.player))
+          : `${topMatchWinValue} wins / ${formatLeaderboardPercentage(matchWinLeaders[0]?.winRate || 0)} WR`
+      )
       : '0 wins / 0.00% WR'
   );
 
@@ -1221,6 +1961,8 @@ export function initLeaderboards() {
   applyActiveLeaderboardPresetDateRange();
   setupLeaderboardTableSorting();
   setupLeaderboardFilterListeners();
+  setupLeaderboardDrilldownModal();
+  setupLeaderboardDrilldownCards();
   updateLeaderboardSelectionSummary();
   console.log('Leaderboards initialized');
 }
@@ -1230,12 +1972,18 @@ export function updateLeaderboardAnalytics() {
   updateLeaderboardDateOptions();
 
   const filteredRows = getFilteredLeaderboardRows();
+  currentLeaderboardSourceRows = Array.isArray(filteredRows) ? [...filteredRows] : [];
   currentLeaderboardRows = calculateLeaderboardRows(filteredRows);
   populateLeaderboardStats(currentLeaderboardRows, filteredRows);
+  updateLeaderboardDrilldownCardStates();
   const startDate = getLeaderboardStartDateSelect()?.value || '';
   const endDate = getLeaderboardEndDateSelect()?.value || '';
   const activeWindowLabel = getActivePresetDisplayLabel();
   renderLeaderboardOverviewChart(currentLeaderboardRows, filteredRows, startDate, endDate, activeWindowLabel);
   renderLeaderboardTable();
   updateLeaderboardSelectionSummary();
+
+  if (activeLeaderboardDrilldownCategory) {
+    renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
+  }
 }

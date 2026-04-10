@@ -1096,6 +1096,24 @@ body.modal-open {
   line-height: 1.35;
 }
 
+.player-rank-drilldown-summary-item.updated {
+  animation: leaderboardDrilldownSummaryItemPulse 0.45s ease;
+}
+
+@keyframes leaderboardDrilldownSummaryItemPulse {
+  0% {
+    border-color: rgba(217, 164, 65, 0.65);
+    background: rgba(217, 164, 65, 0.12);
+    transform: translateY(-1px);
+  }
+
+  100% {
+    border-color: var(--border-subtle);
+    background: rgba(255, 255, 255, 0.03);
+    transform: translateY(0);
+  }
+}
+
 .player-rank-drilldown-summary-value-stack {
   display: flex;
   flex-wrap: wrap;
@@ -1121,6 +1139,98 @@ body.modal-open {
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text-muted);
+}
+
+.leaderboard-player-summary-grid {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+}
+
+.leaderboard-player-card-header-collapsible {
+  align-items: center;
+}
+
+.leaderboard-player-card-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-player-card-body[hidden] {
+  display: none;
+}
+
+.leaderboard-player-results-header {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.leaderboard-results-toggle {
+  min-width: 38px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.leaderboard-player-results-body[hidden] {
+  display: none;
+}
+
+.leaderboard-deck-results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 12px;
+}
+
+.leaderboard-deck-results-sort {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.leaderboard-deck-results-sort-label {
+  display: block;
+}
+
+.leaderboard-deck-results-sort-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.leaderboard-deck-result-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.leaderboard-deck-result-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.leaderboard-deck-result-name {
+  margin: 2px 0 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.leaderboard-deck-result-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .player-drilldown-event-legend {
