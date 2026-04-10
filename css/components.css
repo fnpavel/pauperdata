@@ -1078,6 +1078,7 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 0;
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--border-subtle);
@@ -1094,6 +1095,9 @@ body.modal-open {
 .player-rank-drilldown-summary-value {
   color: var(--text-primary);
   line-height: 1.35;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .player-rank-drilldown-summary-item.updated {
@@ -1120,6 +1124,7 @@ body.modal-open {
   align-items: center;
   gap: 6px;
   font-weight: 700;
+  min-width: 0;
 }
 
 .player-rank-drilldown-context {
