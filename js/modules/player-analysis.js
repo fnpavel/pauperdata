@@ -245,6 +245,20 @@ function highlightDrilldownText(text, tone = 'reference') {
   return `<span class="player-rank-drilldown-emphasis player-rank-drilldown-emphasis-${tone}">${escapeHtml(text)}</span>`;
 }
 
+function highlightDrilldownLabel(text, tone = 'reference') {
+  const normalizedText = String(text ?? '');
+  if (/^Your\b/i.test(normalizedText)) {
+    const suffix = normalizedText.replace(/^Your\b\s*/i, '');
+    return `
+      <span class="player-rank-drilldown-emphasis player-rank-drilldown-emphasis-${tone}">
+        <strong>Your</strong>${suffix ? ` ${escapeHtml(suffix)}` : ''}
+      </span>
+    `;
+  }
+
+  return highlightDrilldownText(normalizedText, tone);
+}
+
 function describeWinRateComparison(subjectLabel, subjectValue, referenceLabel, referenceValue) {
   if (!Number.isFinite(subjectValue) || !Number.isFinite(referenceValue)) {
     return '';
@@ -252,12 +266,12 @@ function describeWinRateComparison(subjectLabel, subjectValue, referenceLabel, r
 
   const difference = subjectValue - referenceValue;
   if (Math.abs(difference) < 0.05) {
-    return `${highlightDrilldownText(subjectLabel)} matches ${highlightDrilldownText(referenceLabel)}`;
+    return `${highlightDrilldownLabel(subjectLabel)} matches ${highlightDrilldownLabel(referenceLabel)}`;
   }
 
   const direction = difference > 0 ? 'above' : 'below';
   const directionTone = difference > 0 ? 'positive' : 'negative';
-  return `${highlightDrilldownText(subjectLabel)} is ${highlightDrilldownText(`${Math.abs(difference).toFixed(1)} pp`, 'number')} ${highlightDrilldownText(direction, directionTone)} ${highlightDrilldownText(referenceLabel)}`;
+  return `${highlightDrilldownLabel(subjectLabel)} is ${highlightDrilldownText(`${Math.abs(difference).toFixed(1)} pp`, 'number')} ${highlightDrilldownText(direction, directionTone)} ${highlightDrilldownLabel(referenceLabel)}`;
 }
 
 function describeFinishComparison(subjectLabel, subjectRank, referenceLabel, referenceRank) {
@@ -267,12 +281,12 @@ function describeFinishComparison(subjectLabel, subjectRank, referenceLabel, ref
 
   const difference = referenceRank - subjectRank;
   if (Math.abs(difference) < 0.05) {
-    return `${highlightDrilldownText(subjectLabel)} matches ${highlightDrilldownText(referenceLabel)}`;
+    return `${highlightDrilldownLabel(subjectLabel)} matches ${highlightDrilldownLabel(referenceLabel)}`;
   }
 
   const direction = difference > 0 ? 'better' : 'worse';
   const directionTone = difference > 0 ? 'positive' : 'negative';
-  return `${highlightDrilldownText(subjectLabel)} is ${highlightDrilldownText(`${Math.abs(difference).toFixed(1)} places`, 'number')} ${highlightDrilldownText(direction, directionTone)} than ${highlightDrilldownText(referenceLabel)}`;
+  return `${highlightDrilldownLabel(subjectLabel)} is ${highlightDrilldownText(`${Math.abs(difference).toFixed(1)} places`, 'number')} ${highlightDrilldownText(direction, directionTone)} than ${highlightDrilldownLabel(referenceLabel)}`;
 }
 
 function buildTooltipText(parts) {
@@ -674,10 +688,10 @@ function buildSameDeckEventComparisonNote(comparisonData) {
   }
 
   return buildTooltipText([
-    describeFinishComparison('Finish', comparisonData.playerRank, 'deck average', comparisonData.averageRank),
-    describeFinishComparison('Finish', comparisonData.playerRank, 'best same-deck finish', comparisonData.bestDeckPilotRank),
-    describeWinRateComparison('WR', comparisonData.playerWinRateValue, 'deck average WR', comparisonData.averageDeckWinRate),
-    describeWinRateComparison('WR', comparisonData.playerWinRateValue, 'best same-deck WR', comparisonData.bestDeckPilotWinRate)
+    describeFinishComparison('Your Finish', comparisonData.playerRank, 'deck average finish', comparisonData.averageRank),
+    describeFinishComparison('Your Finish', comparisonData.playerRank, 'best same-deck finish', comparisonData.bestDeckPilotRank),
+    describeWinRateComparison('Your WR', comparisonData.playerWinRateValue, 'deck average WR', comparisonData.averageDeckWinRate),
+    describeWinRateComparison('Your WR', comparisonData.playerWinRateValue, 'best same-deck WR', comparisonData.bestDeckPilotWinRate)
   ]);
 }
 
@@ -786,14 +800,14 @@ function buildPlayerDeckEventContextHtml(eventRows, playerRow, selectedPlayerKey
   } = comparisonData;
   const deckPilotsTooltip = buildDeckPilotsTooltipItems(sameDeckRows, selectedPlayerKey);
   const averageRankTooltip = buildTooltipText([
-    describeFinishComparison('Deck average', averageRank, 'finish', playerRank)
+    describeFinishComparison('Deck average finish', averageRank, 'Your Finish', playerRank)
   ]);
   const averageDeckWinRateTooltip = buildTooltipText([
-    describeWinRateComparison('Deck average WR', averageDeckWinRate, 'WR', playerWinRateValue)
+    describeWinRateComparison('Deck average WR', averageDeckWinRate, 'Your WR', playerWinRateValue)
   ]);
   const bestDeckResultTooltip = buildTooltipText([
-    describeFinishComparison('Best same-deck finish', bestDeckPilotRank, 'finish', playerRank),
-    describeWinRateComparison('Best same-deck WR', bestDeckPilotWinRate, 'WR', playerWinRateValue)
+    describeFinishComparison('Best same-deck finish', bestDeckPilotRank, 'Your Finish', playerRank),
+    describeWinRateComparison('Best same-deck WR', bestDeckPilotWinRate, 'Your WR', playerWinRateValue)
   ]);
   const deckPilotsItemClasses = buildDrilldownTooltipClasses(
     'player-rank-drilldown-summary-item',
@@ -928,18 +942,93 @@ function buildPlayerRankDrilldownHtml(categoryKey) {
   const selectedPlayerKey = document.getElementById('playerFilterMenu')?.value || '';
   const eventRowsByName = buildEventRowsByName(matchingRows.map(row => row.Event));
 
+  if (matchingRows.length > 1) {
+    return buildPlayerEventAccordionListHtml(matchingRows, {
+      includeTop8: config.includeTop8,
+      selectedPlayerKey,
+      eventRowsByName
+    });
+  }
+
   return matchingRows
     .map(playerRow => buildPlayerEventResultDrilldownHtml(playerRow, {
       includeTop8: config.includeTop8,
       selectedPlayerKey,
-      eventRowsByName
+      eventRowsByName,
+      actionButtonHtml: buildPlayerOpenEventAnalysisButtonHtml(playerRow)
     }))
     .join('');
 }
 
+function buildPlayerEventAccordionListHtml(
+  rows,
+  { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null } = {}
+) {
+  if (!rows || rows.length === 0) {
+    return '<div class="player-rank-drilldown-empty">No events found.</div>';
+  }
+
+  return `
+    <div class="event-stat-drilldown-toolbar">
+      <div class="event-stat-drilldown-toolbar-note">Expand an event to inspect the full challenge details, same-deck context, and Top 8.</div>
+    </div>
+    <div class="event-stat-drilldown-list player-summary-event-list">
+      ${rows.map(row => {
+        const formattedEventName = formatEventName(row.Event) || row.Event || 'Unknown Event';
+        const eventDate = row.Date ? formatDate(row.Date) : '--';
+        const eventBodyId = `playerBucketEvent-${String(row.Date || '').replace(/[^a-zA-Z0-9_-]/g, '-')}-${String(row.Event || '').replace(/[^a-zA-Z0-9_-]/g, '-')}-${String(row.Rank || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+
+        return `
+          <article class="player-summary-event-item">
+            <button
+              type="button"
+              class="event-stat-drilldown-list-item player-summary-event-toggle"
+              data-player-summary-event-toggle="${escapeHtml(eventBodyId)}"
+              aria-expanded="false"
+              aria-controls="${escapeHtml(eventBodyId)}"
+            >
+              <span class="event-stat-drilldown-list-item-date">${escapeHtml(eventDate)}</span>
+              <span class="event-stat-drilldown-list-item-main">${escapeHtml(formattedEventName)}</span>
+              <span class="event-stat-drilldown-list-item-meta">${escapeHtml(`Finish: #${row.Rank || '--'} | Deck: ${row.Deck || '--'} | ${row.Wins ?? 0}-${row.Losses ?? 0} | ${getRowWinRateText(row)} WR`)}</span>
+              <span class="player-summary-event-toggle-indicator drilldown-toggle-indicator" aria-hidden="true">+</span>
+            </button>
+            <div id="${escapeHtml(eventBodyId)}" class="leaderboard-event-drilldown-body" hidden>
+              ${buildPlayerEventResultDrilldownHtml(row, {
+                includeTop8,
+                selectedPlayerKey,
+                eventRowsByName,
+                actionButtonHtml: buildPlayerOpenEventAnalysisButtonHtml(row)
+              })}
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function buildPlayerOpenEventAnalysisButtonHtml(playerRow) {
+  if (!playerRow) {
+    return '';
+  }
+
+  return `
+    <div class="event-stat-drilldown-toolbar">
+      <button
+        type="button"
+        class="bubble-button"
+        data-player-open-event-analysis="${escapeHtml(String(playerRow.Event || '').trim())}"
+        data-player-open-event-type="${escapeHtml(String(playerRow.EventType || '').toLowerCase())}"
+      >
+        Open in Event Analysis
+      </button>
+    </div>
+  `;
+}
+
 function buildPlayerEventResultDrilldownHtml(
   playerRow,
-  { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null } = {}
+  { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null, actionButtonHtml = '' } = {}
 ) {
   if (!playerRow) {
     return '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
@@ -963,12 +1052,12 @@ function buildPlayerEventResultDrilldownHtml(
   const bestDeckPilotRank = Number(bestDeckPilot?.Rank) || Number.NaN;
   const bestDeckPilotWinRate = getRowWinRateValue(bestDeckPilot);
   const playerRankTooltip = buildTooltipText([
-    describeFinishComparison('Finish', playerRank, 'deck average', averageRank),
-    describeFinishComparison('Finish', playerRank, 'best same-deck finish', bestDeckPilotRank)
+    describeFinishComparison('Your Finish', playerRank, 'deck average finish', averageRank),
+    describeFinishComparison('Your Finish', playerRank, 'best same-deck finish', bestDeckPilotRank)
   ]);
   const playerWinRateTooltip = buildTooltipText([
-    describeWinRateComparison('WR', playerWinRateValue, 'deck average WR', averageDeckWinRate),
-    describeWinRateComparison('WR', playerWinRateValue, 'best same-deck WR', bestDeckPilotWinRate)
+    describeWinRateComparison('Your WR', playerWinRateValue, 'deck average WR', averageDeckWinRate),
+    describeWinRateComparison('Your WR', playerWinRateValue, 'best same-deck WR', bestDeckPilotWinRate)
   ]);
   const playerRankItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerRankTooltip);
   const playerWinRateItemClasses = buildDrilldownTooltipClasses('player-rank-drilldown-summary-item', playerWinRateTooltip);
@@ -1011,6 +1100,7 @@ function buildPlayerEventResultDrilldownHtml(
         </div>
       </div>
       ${deckEventContextHtml}
+      ${actionButtonHtml}
       ${top8Html}
     </article>
   `;
@@ -1021,40 +1111,46 @@ function buildPlayerSummaryEventListHtml(rows) {
     return '<div class="player-rank-drilldown-empty">No events found.</div>';
   }
 
-  return rows.map(row => {
-    const formattedEventName = formatEventName(row.Event) || row.Event || 'Unknown Event';
-    const eventDate = row.Date ? formatDate(row.Date) : '--';
+  const selectedPlayerKey = document.getElementById('playerFilterMenu')?.value || '';
+  const eventRowsByName = buildEventRowsByName(rows.map(row => row.Event));
 
-    return `
-      <article class="player-rank-drilldown-event">
-        <div class="player-rank-drilldown-event-header">
-          <div>
-            <div class="player-rank-drilldown-event-date">${escapeHtml(eventDate)}</div>
-            <h4 class="player-rank-drilldown-event-name">${escapeHtml(formattedEventName)}</h4>
-          </div>
-          <span class="player-rank-drilldown-rank-badge">#${escapeHtml(row.Rank)}</span>
-        </div>
-        <div class="player-rank-drilldown-summary-grid">
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Deck Played</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.Deck || '--')}</strong>
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Wins</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.Wins ?? 0)}</strong>
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Losses</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(row.Losses ?? 0)}</strong>
-          </div>
-          <div class="player-rank-drilldown-summary-item">
-            <span class="player-rank-drilldown-summary-label">Win Rate</span>
-            <strong class="player-rank-drilldown-summary-value">${escapeHtml(getRowWinRateText(row))}</strong>
-          </div>
-        </div>
-      </article>
-    `;
-  }).join('');
+  return `
+    <div class="event-stat-drilldown-toolbar">
+      <div class="event-stat-drilldown-toolbar-note">Expand a challenge to inspect the event details, same-deck context, full Top 8, and open it in Event Analysis.</div>
+    </div>
+    <div class="event-stat-drilldown-list player-summary-event-list">
+      ${rows.map(row => {
+        const formattedEventName = formatEventName(row.Event) || row.Event || 'Unknown Event';
+        const eventDate = row.Date ? formatDate(row.Date) : '--';
+        const eventBodyId = `playerSummaryEvent-${String(row.Date || '').replace(/[^a-zA-Z0-9_-]/g, '-')}-${String(row.Event || '').replace(/[^a-zA-Z0-9_-]/g, '-')}-${String(row.Rank || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+
+        return `
+          <article class="player-summary-event-item">
+            <button
+              type="button"
+              class="event-stat-drilldown-list-item player-summary-event-toggle"
+              data-player-summary-event-toggle="${escapeHtml(eventBodyId)}"
+              aria-expanded="false"
+              aria-controls="${escapeHtml(eventBodyId)}"
+            >
+              <span class="event-stat-drilldown-list-item-date">${escapeHtml(eventDate)}</span>
+              <span class="event-stat-drilldown-list-item-main">${escapeHtml(formattedEventName)}</span>
+              <span class="event-stat-drilldown-list-item-meta">${escapeHtml(`#${row.Rank || '--'} | ${row.Deck || '--'} | ${getRowWinRateText(row)} WR`)}</span>
+              <span class="player-summary-event-toggle-indicator drilldown-toggle-indicator" aria-hidden="true">+</span>
+            </button>
+            <div id="${escapeHtml(eventBodyId)}" class="leaderboard-event-drilldown-body" hidden>
+              ${buildPlayerEventResultDrilldownHtml(row, {
+                includeTop8: true,
+                selectedPlayerKey,
+                eventRowsByName,
+                actionButtonHtml: buildPlayerOpenEventAnalysisButtonHtml(row)
+              })}
+            </div>
+          </article>
+        `;
+      }).join('')}
+    </div>
+  `;
 }
 
 function buildPlayerDeckEventListHtml(rows, eventRowsByName = new Map()) {
@@ -1435,8 +1531,40 @@ function closePlayerRankDrilldown() {
   document.body.classList.remove('modal-open');
 }
 
+function openPlayerEventInAnalysis(eventName = '', eventType = '') {
+  const normalizedEventName = String(eventName || '').trim();
+  const normalizedEventType = String(eventType || '').trim().toLowerCase();
+  if (!normalizedEventName) {
+    return;
+  }
+
+  const eventBtn = document.querySelector('.top-mode-button[data-top-mode="event"]');
+  if (eventBtn) {
+    eventBtn.click();
+  }
+
+  const singleBtn = document.querySelector('.analysis-mode[data-mode="single"]');
+  if (singleBtn) {
+    singleBtn.click();
+  }
+
+  if (normalizedEventType) {
+    setSingleEventType(normalizedEventType);
+  }
+
+  updateEventFilter(normalizedEventName, true);
+
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
+  if (eventFilterMenu) {
+    eventFilterMenu.dispatchEvent(new Event('change'));
+  }
+
+  closePlayerRankDrilldown();
+  window.scrollTo(0, 0);
+}
+
 function setupPlayerRankDrilldownModal() {
-  const { overlay, closeButton } = getPlayerRankDrilldownElements();
+  const { overlay, closeButton, content } = getPlayerRankDrilldownElements();
   if (!overlay || overlay.dataset.initialized === 'true') {
     return;
   }
@@ -1448,6 +1576,35 @@ function setupPlayerRankDrilldownModal() {
   overlay.addEventListener('click', event => {
     if (event.target === overlay) {
       closePlayerRankDrilldown();
+    }
+  });
+
+  content?.addEventListener('click', event => {
+    const summaryToggleButton = event.target.closest('[data-player-summary-event-toggle]');
+    if (summaryToggleButton) {
+      const targetId = summaryToggleButton.dataset.playerSummaryEventToggle || '';
+      const target = targetId ? document.getElementById(targetId) : null;
+      if (!target) {
+        return;
+      }
+
+      const shouldExpand = summaryToggleButton.getAttribute('aria-expanded') !== 'true';
+      summaryToggleButton.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      const indicator = summaryToggleButton.querySelector('.player-summary-event-toggle-indicator');
+      if (indicator) {
+        indicator.textContent = shouldExpand ? '-' : '+';
+      }
+      target.hidden = !shouldExpand;
+      return;
+    }
+
+    const openEventAnalysisButton = event.target.closest('[data-player-open-event-analysis]');
+    if (openEventAnalysisButton) {
+      openPlayerEventInAnalysis(
+        openEventAnalysisButton.dataset.playerOpenEventAnalysis,
+        openEventAnalysisButton.dataset.playerOpenEventType
+      );
+      return;
     }
   });
 
