@@ -1722,7 +1722,7 @@ function buildLeaderboardDeckResultsHtml(deckGroups = []) {
         ${(() => {
           const eventShare = totalEvents > 0 ? (group.events / totalEvents) * 100 : 0;
           const eventCountLabel = `${group.events} Events`;
-          const shouldShowEventShare = !(totalEvents === 1 && group.events === 1);
+          const shouldShowEventShare = deckGroups.length > 1;
           return `
         <article class="leaderboard-deck-result-card">
           <div class="leaderboard-deck-result-header">
