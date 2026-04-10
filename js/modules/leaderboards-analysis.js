@@ -1363,6 +1363,8 @@ function buildLeaderboardEventListHtml(entries = []) {
     return '<div class="player-rank-drilldown-empty">No events found.</div>';
   }
 
+  const shouldCollapseEvents = entries.length > 1;
+
   return `
     <div class="event-stat-drilldown-toolbar">
       <div class="event-stat-drilldown-toolbar-note">Expand a challenge to inspect its winner, popular deck, leaderboard badges, and full Top 8.</div>
@@ -1380,14 +1382,14 @@ function buildLeaderboardEventListHtml(entries = []) {
               type="button"
               class="event-stat-drilldown-list-item leaderboard-event-drilldown-toggle"
               data-leaderboard-event-toggle="${escapeHtml(eventBodyId)}"
-              aria-expanded="false"
+              aria-expanded="${shouldCollapseEvents ? 'false' : 'true'}"
               aria-controls="${escapeHtml(eventBodyId)}"
             >
               <span class="event-stat-drilldown-list-item-date">${escapeHtml(dateLabel)}</span>
               <span class="event-stat-drilldown-list-item-main">${escapeHtml(formattedEventName)}</span>
               <span class="event-stat-drilldown-list-item-meta">${escapeHtml(metaLabel)}</span>
             </button>
-            <div id="${escapeHtml(eventBodyId)}" class="leaderboard-event-drilldown-body" hidden>
+            <div id="${escapeHtml(eventBodyId)}" class="leaderboard-event-drilldown-body"${shouldCollapseEvents ? ' hidden' : ''}>
               ${buildLeaderboardSelectedEventOverviewHtml(entry)}
             </div>
           </article>
@@ -1746,6 +1748,8 @@ function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true }
     return '<div class="player-rank-drilldown-empty">No leaderboard players found.</div>';
   }
 
+  const shouldCollapsePlayers = collapsePlayers && rows.length > 1;
+
   return rows.map(row => {
     const playerRows = getLeaderboardPlayerRows(row.playerKey);
     const deckGroups = getLeaderboardPlayerDeckGroups(playerRows);
@@ -1755,17 +1759,17 @@ function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true }
 
     return `
       <article class="player-rank-drilldown-event">
-        <div class="player-rank-drilldown-event-header leaderboard-player-card-header${collapsePlayers ? ' leaderboard-player-card-header-collapsible' : ''}">
+        <div class="player-rank-drilldown-event-header leaderboard-player-card-header${shouldCollapsePlayers ? ' leaderboard-player-card-header-collapsible' : ''}">
           <div>
             <div class="player-rank-drilldown-event-date">${escapeHtml(row.latestDate ? formatDate(row.latestDate) : 'No recent event')}</div>
             <h4 class="player-rank-drilldown-event-name">${escapeHtml(row.player || '--')}</h4>
           </div>
           <div class="leaderboard-player-card-header-actions">
             <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${row.score} pts`)}</span>
-            ${collapsePlayers ? `
+            ${shouldCollapsePlayers ? `
               <button
                 type="button"
-                class="bubble-button leaderboard-results-toggle leaderboard-player-card-toggle"
+                class="leaderboard-results-toggle leaderboard-player-card-toggle drilldown-toggle-indicator"
                 data-leaderboard-player-toggle="${escapeHtml(playerBodyId)}"
                 aria-expanded="false"
                 aria-controls="${escapeHtml(playerBodyId)}"
@@ -1776,7 +1780,7 @@ function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true }
             ` : ''}
           </div>
         </div>
-        <div id="${escapeHtml(playerBodyId)}" class="leaderboard-player-card-body"${collapsePlayers ? ' hidden' : ''}>
+        <div id="${escapeHtml(playerBodyId)}" class="leaderboard-player-card-body"${shouldCollapsePlayers ? ' hidden' : ''}>
         <div class="player-rank-drilldown-summary-grid leaderboard-player-summary-grid">
           <div class="player-rank-drilldown-summary-item">
             <span class="player-rank-drilldown-summary-label">Events</span>
@@ -1822,7 +1826,7 @@ function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true }
             <div class="player-rank-drilldown-context-title">Recent Results</div>
             <button
               type="button"
-              class="bubble-button leaderboard-results-toggle"
+              class="leaderboard-results-toggle drilldown-toggle-indicator"
               data-leaderboard-results-toggle="${escapeHtml(recentResultsId)}"
               aria-expanded="false"
               aria-controls="${escapeHtml(recentResultsId)}"
