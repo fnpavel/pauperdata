@@ -28,7 +28,14 @@ function formatAverageFinish(value) {
   return Number.isInteger(rounded) ? `#${rounded}` : `#${rounded.toFixed(1)}`;
 }
 
-export function renderLeaderboardOverviewChart(leaderboardRows = [], filteredRows = [], startDate = '', endDate = '', activeWindowLabel = '') {
+export function renderLeaderboardOverviewChart(
+  leaderboardRows = [],
+  filteredRows = [],
+  startDate = '',
+  endDate = '',
+  activeWindowLabel = '',
+  onBarClick = null
+) {
   setChartLoading('leaderboardOverviewChart', true);
   const chartCanvas = document.getElementById('leaderboardOverviewChart');
   const chartDetails = document.getElementById('leaderboardChartDetails');
@@ -83,6 +90,16 @@ export function renderLeaderboardOverviewChart(leaderboardRows = [], filteredRow
       indexAxis: 'y',
       responsive: true,
       maintainAspectRatio: false,
+      onClick: (_event, elements) => {
+        if (!Array.isArray(elements) || elements.length === 0 || typeof onBarClick !== 'function') {
+          return;
+        }
+
+        const row = topRows[elements[0].index];
+        if (row) {
+          onBarClick(row);
+        }
+      },
       plugins: {
         title: {
           display: true,

@@ -1993,6 +1993,30 @@ function openLeaderboardDrilldown(categoryKey) {
   document.body.classList.add('modal-open');
 }
 
+function openLeaderboardPlayerStatsDrilldown(playerKey = '') {
+  const normalizedPlayerKey = String(playerKey || '').trim();
+  if (!normalizedPlayerKey) {
+    return;
+  }
+
+  const elements = getLeaderboardDrilldownElements();
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const matchingRow = currentLeaderboardRows.find(row => row.playerKey === normalizedPlayerKey);
+  if (!matchingRow) {
+    return;
+  }
+
+  elements.title.textContent = matchingRow.player || 'Leaderboard Player';
+  elements.subtitle.textContent = `${matchingRow.score} pts | ${matchingRow.events} event${matchingRow.events === 1 ? '' : 's'} | ${formatLeaderboardPercentage(matchingRow.winRate)} WR`;
+  elements.content.innerHTML = buildLeaderboardPlayerSummaryHtml([matchingRow], { collapsePlayers: false });
+  activeLeaderboardDrilldownCategory = '';
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+}
+
 function openLeaderboardEventHistoryDrilldown({ eventName = '', eventDate = '', deckName = '', rank = '' } = {}) {
   const elements = getLeaderboardDrilldownElements();
   if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
@@ -2534,7 +2558,14 @@ export function updateLeaderboardAnalytics() {
   const startDate = getLeaderboardStartDateSelect()?.value || '';
   const endDate = getLeaderboardEndDateSelect()?.value || '';
   const activeWindowLabel = getActivePresetDisplayLabel();
-  renderLeaderboardOverviewChart(currentLeaderboardRows, filteredRows, startDate, endDate, activeWindowLabel);
+  renderLeaderboardOverviewChart(
+    currentLeaderboardRows,
+    filteredRows,
+    startDate,
+    endDate,
+    activeWindowLabel,
+    row => openLeaderboardPlayerStatsDrilldown(row.playerKey)
+  );
   renderLeaderboardTable();
   updateLeaderboardSelectionSummary();
 
