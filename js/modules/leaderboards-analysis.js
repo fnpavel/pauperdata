@@ -73,6 +73,7 @@ let leaderboardTableSort = {
   direction: 'desc'
 };
 let activeLeaderboardDrilldownCategory = '';
+let activeLeaderboardPlayerDrilldownKey = '';
 let leaderboardDeckResultsSort = 'events';
 
 function escapeHtml(value) {
@@ -1701,6 +1702,7 @@ function buildLeaderboardDeckResultsHtml(deckGroups = []) {
 
   const sortedDeckGroups = sortLeaderboardDeckGroups(deckGroups);
   const shouldShowSortControls = deckGroups.length > 1;
+  const totalEvents = deckGroups.reduce((sum, group) => sum + (Number(group?.events) || 0), 0);
 
   return `
     ${shouldShowSortControls ? `
@@ -1717,13 +1719,21 @@ function buildLeaderboardDeckResultsHtml(deckGroups = []) {
     ` : ''}
     <div class="leaderboard-deck-results-grid">
       ${sortedDeckGroups.map(group => `
+        ${(() => {
+          const eventShare = totalEvents > 0 ? (group.events / totalEvents) * 100 : 0;
+          const eventCountLabel = `${group.events} Events`;
+          const shouldShowEventShare = !(totalEvents === 1 && group.events === 1);
+          return `
         <article class="leaderboard-deck-result-card">
           <div class="leaderboard-deck-result-header">
-            <div>
+            <div class="leaderboard-deck-result-heading">
               <div class="player-rank-drilldown-event-date">${escapeHtml(group.latestDate ? formatDate(group.latestDate) : 'No recent event')}</div>
               <h5 class="leaderboard-deck-result-name">${escapeHtml(group.deck)}</h5>
             </div>
-            <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${group.events} event${group.events === 1 ? '' : 's'}`)}</span>
+            <span class="player-rank-drilldown-rank-badge leaderboard-deck-result-badge">
+              <span>${escapeHtml(eventCountLabel)}</span>
+              ${shouldShowEventShare ? `<span>${escapeHtml(`(${formatLeaderboardPercentage(eventShare)})`)}</span>` : ''}
+            </span>
           </div>
           <div class="leaderboard-deck-result-stats">
             <div class="player-rank-drilldown-summary-item updated">
@@ -1757,6 +1767,8 @@ function buildLeaderboardDeckResultsHtml(deckGroups = []) {
             </div>
           </div>
         </article>
+          `;
+        })()}
       `).join('')}
     </div>
   `;
@@ -2013,6 +2025,7 @@ function openLeaderboardPlayerStatsDrilldown(playerKey = '') {
   elements.subtitle.textContent = `${matchingRow.score} pts | ${matchingRow.events} event${matchingRow.events === 1 ? '' : 's'} | ${formatLeaderboardPercentage(matchingRow.winRate)} WR`;
   elements.content.innerHTML = buildLeaderboardPlayerSummaryHtml([matchingRow], { collapsePlayers: false });
   activeLeaderboardDrilldownCategory = '';
+  activeLeaderboardPlayerDrilldownKey = normalizedPlayerKey;
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
 }
@@ -2029,6 +2042,7 @@ function openLeaderboardEventHistoryDrilldown({ eventName = '', eventDate = '', 
     elements.subtitle.textContent = 'Event details are not available for the selected history entry.';
     elements.content.innerHTML = '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
     activeLeaderboardDrilldownCategory = '';
+    activeLeaderboardPlayerDrilldownKey = '';
     elements.overlay.hidden = false;
     document.body.classList.add('modal-open');
     return;
@@ -2043,6 +2057,7 @@ function openLeaderboardEventHistoryDrilldown({ eventName = '', eventDate = '', 
   elements.subtitle.textContent = `${eventDateLabel} | ${deckLabel} | ${rankLabel} | ${getLeaderboardRowWinRateText(playerRow)} WR`;
   elements.content.innerHTML = buildLeaderboardEventResultDrilldownHtml(playerRow);
   activeLeaderboardDrilldownCategory = '';
+  activeLeaderboardPlayerDrilldownKey = '';
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
 
@@ -2122,6 +2137,7 @@ function closeLeaderboardDrilldown() {
 
   overlay.hidden = true;
   activeLeaderboardDrilldownCategory = '';
+  activeLeaderboardPlayerDrilldownKey = '';
   document.body.classList.remove('modal-open');
 }
 
@@ -2204,6 +2220,8 @@ function setupLeaderboardDrilldownModal() {
       leaderboardDeckResultsSort = nextSort;
       if (activeLeaderboardDrilldownCategory) {
         renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
+      } else if (activeLeaderboardPlayerDrilldownKey) {
+        openLeaderboardPlayerStatsDrilldown(activeLeaderboardPlayerDrilldownKey);
       }
       return;
     }
