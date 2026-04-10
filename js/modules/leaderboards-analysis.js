@@ -1031,6 +1031,15 @@ function formatDisplayNamesWithAndMore(names = [], limit = 2) {
   return `${normalizedNames.slice(0, limit).join(', ')} and ${normalizedNames.length - limit} more`;
 }
 
+function formatPlayerDeckHeaderLabel(deckGroups = []) {
+  const deckNames = deckGroups.map(group => group.deck).filter(Boolean);
+  if (deckNames.length === 0) {
+    return '';
+  }
+
+  return ` (${formatDisplayNamesWithAndMore(deckNames)})`;
+}
+
 function getRowsAtMaxValue(rows = [], metricKey) {
   if (!rows.length) {
     return [];
@@ -1374,20 +1383,30 @@ function buildLeaderboardEventListHtml(entries = []) {
         const formattedEventName = formatEventName(entry.name) || entry.name || 'Unknown Event';
         const dateLabel = entry.date ? formatDate(entry.date) : '--';
         const metaLabel = entry.groupShortLabel || entry.groupLabel || '--';
+        const eventRows = getLeaderboardEventRows(entry.name, entry.date);
+        const winnerRow = getLeaderboardWinnerRow(eventRows);
+        const runnerUpRow = getLeaderboardRunnerUpRow(eventRows);
+        const summaryLabel = [
+          `Winner: ${winnerRow?.Player || '--'}`,
+          `Winner Deck: ${winnerRow?.Deck || '--'}`,
+          `Runner-up: ${runnerUpRow?.Player || '--'}`,
+          `Runner-up Deck: ${runnerUpRow?.Deck || '--'}`
+        ].join(' | ');
         const eventBodyId = `leaderboardEventDetails-${String(entry.date || '').replace(/[^a-zA-Z0-9_-]/g, '-')}-${String(entry.name || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
 
         return `
           <article class="leaderboard-event-drilldown-item">
             <button
               type="button"
-              class="event-stat-drilldown-list-item leaderboard-event-drilldown-toggle"
+              class="event-stat-drilldown-list-item leaderboard-event-drilldown-toggle player-summary-event-toggle"
               data-leaderboard-event-toggle="${escapeHtml(eventBodyId)}"
               aria-expanded="${shouldCollapseEvents ? 'false' : 'true'}"
               aria-controls="${escapeHtml(eventBodyId)}"
             >
               <span class="event-stat-drilldown-list-item-date">${escapeHtml(dateLabel)}</span>
               <span class="event-stat-drilldown-list-item-main">${escapeHtml(formattedEventName)}</span>
-              <span class="event-stat-drilldown-list-item-meta">${escapeHtml(metaLabel)}</span>
+              <span class="event-stat-drilldown-list-item-meta">${escapeHtml(`${metaLabel} | ${summaryLabel}`)}</span>
+              <span class="player-summary-event-toggle-indicator drilldown-toggle-indicator" aria-hidden="true">${shouldCollapseEvents ? '+' : '-'}</span>
             </button>
             <div id="${escapeHtml(eventBodyId)}" class="leaderboard-event-drilldown-body"${shouldCollapseEvents ? ' hidden' : ''}>
               ${buildLeaderboardSelectedEventOverviewHtml(entry)}
@@ -1756,30 +1775,35 @@ function buildLeaderboardPlayerSummaryHtml(rows = [], { collapsePlayers = true }
     const recentRows = playerRows.slice(0, 8);
     const playerBodyId = `leaderboardPlayerBody-${String(row.playerKey || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
     const recentResultsId = `leaderboardRecentResults-${String(row.playerKey || '').replace(/[^a-zA-Z0-9_-]/g, '-')}`;
+    const playerMeta = `${row.score} pts | ${row.top1} Top 1 | ${formatLeaderboardPercentage(row.winRate)} WR`;
+    const playerHeaderLabel = `${row.player || '--'}${formatPlayerDeckHeaderLabel(deckGroups)}`;
 
     return `
       <article class="player-rank-drilldown-event">
-        <div class="player-rank-drilldown-event-header leaderboard-player-card-header${shouldCollapsePlayers ? ' leaderboard-player-card-header-collapsible' : ''}">
-          <div>
-            <div class="player-rank-drilldown-event-date">${escapeHtml(row.latestDate ? formatDate(row.latestDate) : 'No recent event')}</div>
-            <h4 class="player-rank-drilldown-event-name">${escapeHtml(row.player || '--')}</h4>
+        ${shouldCollapsePlayers ? `
+          <button
+            type="button"
+              class="event-stat-drilldown-list-item player-summary-event-toggle leaderboard-player-card-toggle-row"
+              data-leaderboard-player-toggle="${escapeHtml(playerBodyId)}"
+              aria-expanded="false"
+              aria-controls="${escapeHtml(playerBodyId)}"
+            >
+              <span class="event-stat-drilldown-list-item-date">${escapeHtml(row.latestDate ? formatDate(row.latestDate) : 'No recent event')}</span>
+              <span class="event-stat-drilldown-list-item-main">${escapeHtml(playerHeaderLabel)}</span>
+              <span class="event-stat-drilldown-list-item-meta">${escapeHtml(playerMeta)}</span>
+              <span class="player-summary-event-toggle-indicator drilldown-toggle-indicator" aria-hidden="true">+</span>
+            </button>
+        ` : `
+          <div class="player-rank-drilldown-event-header leaderboard-player-card-header">
+            <div>
+              <div class="player-rank-drilldown-event-date">${escapeHtml(row.latestDate ? formatDate(row.latestDate) : 'No recent event')}</div>
+              <h4 class="player-rank-drilldown-event-name">${escapeHtml(playerHeaderLabel)}</h4>
+            </div>
+            <div class="leaderboard-player-card-header-actions">
+              <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${row.score} pts`)}</span>
+            </div>
           </div>
-          <div class="leaderboard-player-card-header-actions">
-            <span class="player-rank-drilldown-rank-badge">${escapeHtml(`${row.score} pts`)}</span>
-            ${shouldCollapsePlayers ? `
-              <button
-                type="button"
-                class="leaderboard-results-toggle leaderboard-player-card-toggle drilldown-toggle-indicator"
-                data-leaderboard-player-toggle="${escapeHtml(playerBodyId)}"
-                aria-expanded="false"
-                aria-controls="${escapeHtml(playerBodyId)}"
-                title="Show player details"
-              >
-                +
-              </button>
-            ` : ''}
-          </div>
-        </div>
+        `}
         <div id="${escapeHtml(playerBodyId)}" class="leaderboard-player-card-body"${shouldCollapsePlayers ? ' hidden' : ''}>
         <div class="player-rank-drilldown-summary-grid leaderboard-player-summary-grid">
           <div class="player-rank-drilldown-summary-item">
@@ -2104,6 +2128,10 @@ function setupLeaderboardDrilldownModal() {
 
       const shouldExpand = eventToggleButton.getAttribute('aria-expanded') !== 'true';
       eventToggleButton.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
+      const indicator = eventToggleButton.querySelector('.player-summary-event-toggle-indicator');
+      if (indicator) {
+        indicator.textContent = shouldExpand ? '-' : '+';
+      }
       target.hidden = !shouldExpand;
       return;
     }
@@ -2127,8 +2155,10 @@ function setupLeaderboardDrilldownModal() {
 
       const shouldExpand = playerToggleButton.getAttribute('aria-expanded') !== 'true';
       playerToggleButton.setAttribute('aria-expanded', shouldExpand ? 'true' : 'false');
-      playerToggleButton.textContent = shouldExpand ? '-' : '+';
-      playerToggleButton.title = shouldExpand ? 'Hide player details' : 'Show player details';
+      const indicator = playerToggleButton.querySelector('.player-summary-event-toggle-indicator');
+      if (indicator) {
+        indicator.textContent = shouldExpand ? '-' : '+';
+      }
       target.hidden = !shouldExpand;
       return;
     }
