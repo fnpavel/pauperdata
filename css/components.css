@@ -668,6 +668,31 @@
   line-height: 1.35;
 }
 
+.player-summary-event-toggle {
+  position: relative;
+  padding-right: 42px;
+}
+
+.drilldown-toggle-indicator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: transparent;
+  border: 0;
+  padding: 0;
+  line-height: 1;
+}
+
+.player-summary-event-toggle-indicator {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+}
+
 .player-event-history-list .label {
   font-weight: bold;
   color: var(--accent);
@@ -1172,15 +1197,8 @@ body.modal-open {
 }
 
 .leaderboard-results-toggle {
-  min-width: 38px;
-  width: 38px;
-  height: 38px;
-  padding: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  line-height: 1;
+  align-self: flex-start;
+  cursor: pointer;
 }
 
 .leaderboard-player-results-body[hidden] {
