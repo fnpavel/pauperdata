@@ -3,7 +3,7 @@ import {
   renderEventFilterCalendar,
   resetEventFilterCalendarState,
   primeEventFilterCalendarSelection
-} from '../event-filter-calendar.js';
+} from './single-event-picker.js';
 import { getEventGroupInfo } from '../../utils/event-groups.js';
 import { getAnalysisRows } from '../../utils/analysis-data.js';
 import { filterState } from './state.js';

@@ -10,7 +10,7 @@ import { updateDeckEvolutionChart } from '../../charts/multi-deck-evolution.js';
 import { updatePlayerDeckPerformanceChart } from '../../charts/player-deck-performance.js';
 import { updatePlayerWinRateChart } from '../../charts/player-win-rate.js';
 import { hideAboutSection } from '../about.js';
-import { renderMultiEventDateRangeCalendar, renderPlayerDateRangeCalendar } from '../date-range-calendar.js';
+import { renderMultiEventDateRangeCalendar, renderPlayerDateRangeCalendar } from './calendar-range-picker.js';
 import {
   buildPlayerFilterOptions,
   getPlayerIdentityKey,
