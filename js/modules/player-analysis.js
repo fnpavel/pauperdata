@@ -8,7 +8,7 @@ import { formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 import { getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
-import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters.js';
+import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters/filter-index.js';
 
 function getSelectedPlayerEventTypes() {
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
