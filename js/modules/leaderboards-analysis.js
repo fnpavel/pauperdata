@@ -13,7 +13,7 @@ import {
   normalizeQuickViewPresetIds,
   shiftDateByDays
 } from '../utils/quick-view-presets.js';
-import { renderDateRangeCalendar } from './date-range-calendar.js';
+import { renderDateRangeCalendar } from './filters/calendar-range-picker.js';
 import { setChartLoading, triggerUpdateAnimation, updateElementHTML, updateElementText } from '../utils/dom.js';
 import { formatDate, formatDateRange, formatEventName } from '../utils/format.js';
 import { formatGroupDisplayLabel, getEventGroupInfo } from '../utils/event-groups.js';
@@ -2079,7 +2079,7 @@ function openLeaderboardEventHistoryDrilldown({ eventName = '', eventDate = '', 
       singleBtn.click();
     }
 
-    import('./filters.js').then(module => {
+    import('./filters/filter-index.js').then(module => {
       if (playerRow.EventType) {
         module.setSingleEventType(String(playerRow.EventType).toLowerCase());
       }
@@ -2113,7 +2113,7 @@ function openLeaderboardEventInAnalysis(eventName = '', eventType = '') {
     singleBtn.click();
   }
 
-  import('./filters.js').then(module => {
+  import('./filters/filter-index.js').then(module => {
     if (normalizedEventType) {
       module.setSingleEventType(normalizedEventType);
     }
