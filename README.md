@@ -20,10 +20,7 @@ A browser-based dashboard for exploring Pauper tournament data with focused view
 
 ## Running Locally
 
-This project is a static front-end app.
-
-1. Open `index.html` directly in your browser, or
-2. Serve the folder with any simple local static server
+This project is a static front-end app thus serve the folder with any simple local static server
 
 Note: the dashboard loads some assets from external CDNs, including Chart.js, plugins, Google Fonts, and Google Analytics. If those files are not already cached by your browser or available locally on your machine, an internet connection will be needed.
 
