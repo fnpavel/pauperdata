@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getMultiEventChartData } from '../modules/filters.js';
+import { getMultiEventChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 import { focusMultiEventDeck } from './multi-deck-evolution.js';
 import { getChartTheme } from '../utils/theme.js';

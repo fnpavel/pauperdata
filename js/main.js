@@ -12,7 +12,7 @@ import {
   setupPlayerFilterListeners,
   setupMultiEventPresetListeners,
   updateAllCharts
-} from './modules/filters.js';
+} from './modules/filters/filter-index.js';
 import { setupAboutListeners } from './modules/about.js';
 import { setupThemeToggle } from './utils/theme.js';
 

@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getDeckEvolutionChartData } from '../modules/filters.js';
+import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckEvolutionStats } from "../utils/data-chart.js";
 import { updateMultiEventTables } from '../modules/event-analysis.js';
 import { getChartTheme } from '../utils/theme.js';

@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getPlayerDeckPerformanceChartData } from '../modules/filters.js';
+import { getPlayerDeckPerformanceChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
 import { getSelectedPlayerLabel } from '../utils/player-names.js';
 import { getChartTheme } from '../utils/theme.js';

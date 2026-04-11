@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getDeckEvolutionChartData } from '../modules/filters.js';
+import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';

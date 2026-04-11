@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getMetaWinRateChartData } from '../modules/filters.js';
+import { getMetaWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 import { openSingleEventDeckDrilldown, updateSingleEventTables } from '../modules/event-analysis.js';
 import { getChartTheme } from '../utils/theme.js';
