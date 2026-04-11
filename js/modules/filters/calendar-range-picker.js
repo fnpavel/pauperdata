@@ -1,3 +1,4 @@
+// Renders the interactive calendar UI used to choose start and end dates across range-based analysis views.
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = [
   'January',

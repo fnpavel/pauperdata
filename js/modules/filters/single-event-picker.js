@@ -1,3 +1,4 @@
+// Renders the single-event picker used by the event filter and keeps its local selection state in sync.
 const MONTH_NAMES = [
   'January',
   'February',
