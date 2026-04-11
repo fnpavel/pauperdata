@@ -16,7 +16,6 @@ A browser-based dashboard for exploring Pauper tournament data with focused view
 - `css/` - layout, components, charts, tables, and responsive styles
 - `js/` - chart logic, filters, analytics modules, and utilities
 - `data/` - local dataset files
-- `dataGoogleDrive/` - Google Drive related data/assets
 
 ## Running Locally
 
