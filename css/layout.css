@@ -114,3 +114,10 @@ header::before {
 .logo h2 {
   color: var(--text-secondary);
 }
+
+.logo .header-credit {
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.35;
+  margin-top: 0.2rem;
+}
