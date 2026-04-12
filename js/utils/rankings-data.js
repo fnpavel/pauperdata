@@ -1,5 +1,5 @@
 import { buildYearlyEloRatings } from './elo-rating.js';
-import { getMatchupMatches, filterMatchupRecords } from './matchup-data.js';
+import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-data.js';
 
 export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
   startingRating: 1500,
@@ -64,22 +64,30 @@ function compareSeasonRows(a, b) {
   );
 }
 
+function getMatchYear(match) {
+  const dateValue = normalizeText(match?.date || match?.Date);
+  return /^\d{4}-\d{2}-\d{2}$/.test(dateValue) ? dateValue.slice(0, 4) : '';
+}
+
+function getYearRangeLabel(years = []) {
+  const normalizedYears = [...new Set((Array.isArray(years) ? years : []).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+  if (normalizedYears.length === 0) {
+    return '';
+  }
+
+  if (normalizedYears.length === 1) {
+    return normalizedYears[0];
+  }
+
+  return `${normalizedYears[0]}-${normalizedYears[normalizedYears.length - 1]}`;
+}
+
 export function getRankingsEventTypes() {
-  return [...new Set(
-    getMatchupMatches()
-      .map(match => normalizeText(match?.event_type || match?.EventType).toLowerCase())
-      .filter(Boolean)
-  )].sort();
+  return getEloEventTypes();
 }
 
 export function getRankingsAvailableDates(eventTypes = [DEFAULT_EVENT_TYPE]) {
-  const normalizedEventTypes = normalizeEventTypes(eventTypes);
-
-  return [...new Set(
-    filterMatchupRecords(getMatchupMatches(), { eventTypes: normalizedEventTypes })
-      .map(match => normalizeText(match?.date || match?.Date))
-      .filter(Boolean)
-  )].sort((a, b) => a.localeCompare(b));
+  return getEloAvailableDates(normalizeEventTypes(eventTypes));
 }
 
 export function getDefaultRankingsRange(dates = []) {
@@ -102,7 +110,7 @@ export function getDefaultRankingsRange(dates = []) {
   };
 }
 
-export function buildRankingsDataset(
+export async function buildRankingsDataset(
   {
     eventTypes = [DEFAULT_EVENT_TYPE],
     startDate = '',
@@ -118,19 +126,60 @@ export function buildRankingsDataset(
   const resolvedEndDate =
     availableDates.includes(endDate) ? endDate : defaultRange.endDate;
 
-  const filteredMatches = dedupeMatches(
-    filterMatchupRecords(getMatchupMatches(), {
+  if (availableDates.length === 0) {
+    const eloResults = buildYearlyEloRatings([], {
+      ...DEFAULT_RANKINGS_OPTIONS,
+      ...options
+    });
+
+    return {
+      ...eloResults,
+      availableDates,
+      defaultRange,
       eventTypes: normalizedEventTypes,
       startDate: resolvedStartDate,
-      endDate: resolvedEndDate
-    })
-  );
+      endDate: resolvedEndDate,
+      filteredMatches: [],
+      seasonRows: [],
+      summary: {
+        leader: null,
+        mostActiveSeason: null,
+        uniquePlayers: 0,
+        seasonEntries: 0,
+        ratedMatches: 0,
+        selectedMatches: 0,
+        skippedMatches: 0,
+        latestProcessedMatch: null,
+        selectedYears: [],
+        selectedYearRangeLabel: ''
+      }
+    };
+  }
+
+  const filteredMatches = dedupeMatches(await getEloMatches({
+    eventTypes: normalizedEventTypes,
+    startDate: resolvedStartDate,
+    endDate: resolvedEndDate
+  }));
 
   const eloResults = buildYearlyEloRatings(filteredMatches, {
     ...DEFAULT_RANKINGS_OPTIONS,
     ...options
   });
-  const seasonRows = [...eloResults.seasonRows].sort(compareSeasonRows);
+  const selectedYears = [...new Set(
+    filteredMatches
+      .map(getMatchYear)
+      .filter(Boolean)
+  )].sort();
+  const selectedYearRangeLabel = getYearRangeLabel(selectedYears);
+  const seasonRows = [...eloResults.seasonRows]
+    .map(row => ({
+      ...row,
+      displaySeasonYear: eloResults.resetByYear
+        ? row.seasonYear
+        : (selectedYearRangeLabel || row.seasonYear || 'Selected Range')
+    }))
+    .sort(compareSeasonRows);
   const leader = seasonRows[0] || null;
   const mostActiveSeason = [...seasonRows].sort((a, b) => {
     return (
@@ -142,11 +191,6 @@ export function buildRankingsDataset(
   })[0] || null;
   const uniquePlayers = new Set(seasonRows.map(row => row.playerKey)).size;
   const latestProcessedMatch = eloResults.processedMatches[eloResults.processedMatches.length - 1] || null;
-  const selectedYears = [...new Set(
-    seasonRows
-      .map(row => row.seasonYear)
-      .filter(Boolean)
-  )].sort();
 
   return {
     ...eloResults,
@@ -166,7 +210,8 @@ export function buildRankingsDataset(
       selectedMatches: filteredMatches.length,
       skippedMatches: eloResults.skippedMatchCount,
       latestProcessedMatch,
-      selectedYears
+      selectedYears,
+      selectedYearRangeLabel
     }
   };
 }
