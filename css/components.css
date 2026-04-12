@@ -1899,7 +1899,9 @@ body.modal-open {
 
 #singleEventStats.stats-container,
 #multiEventStats.stats-container,
-#leaderboardStats.stats-container {
+#leaderboardStats.stats-container,
+#matchupStats.stats-container,
+#rankingsStats.stats-container {
   width: calc(110% + 10px);
   margin-left: 0px;
   margin-right: 0;
@@ -1919,6 +1921,35 @@ body.modal-open {
   text-align: center;
   font-size: 0.92rem;
   line-height: 1.5;
+}
+
+.matchup-chart-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.matchup-chart-header .chart-title {
+  margin-bottom: 0;
+}
+
+.matchup-matrix-toolbar {
+  align-items: center;
+  gap: 8px;
+}
+
+.matchup-matrix-toolbar select {
+  min-width: 120px;
+}
+
+.matchup-matrix-summary {
+  margin-top: 6px;
+}
+
+.matchup-matrix-summary strong {
+  color: var(--text-primary);
 }
 
 .leaderboard-table-helper {

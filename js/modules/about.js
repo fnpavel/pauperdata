@@ -2,7 +2,10 @@ function getDashboardSections() {
   return {
     event: document.getElementById('eventAnalysisSection'),
     player: document.getElementById('playerAnalysisSection'),
-    leaderboard: document.getElementById('leaderboardsSection')
+    'deck-matchup': document.getElementById('matchupSection'),
+    'player-matchup': document.getElementById('matchupSection'),
+    leaderboard: document.getElementById('leaderboardsSection'),
+    rankings: document.getElementById('rankingsSection')
   };
 }
 

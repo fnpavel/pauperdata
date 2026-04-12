@@ -70,13 +70,16 @@
     <div class="container header-content">
       <div class="logo">
         <h1>Pauper MTG Analytics</h1>
-        <h2>Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a></h2>
+        <h2 class="header-credit">Made by <a href="https://x.com/PyotrPavel" target="_blank">PyotrPavel</a> <br> MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a></h2>
         <h2 id="lastUpdatedDate">Last updated: --</h2>
       </div>
       <div class="mode-buttons">
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
+        <button class="bubble-button top-mode-button" data-top-mode="deck-matchup">Deck Matchup</button>
+        <button class="bubble-button top-mode-button" data-top-mode="player-matchup">Player Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards</button>
+        <button class="bubble-button top-mode-button" data-top-mode="rankings">Rankings</button>
         <button class="bubble-button" id="aboutButton">About</button>
         <div class="header-utility-stack">
           <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
@@ -536,6 +539,169 @@
       </div>
     </div>
 
+    <!-- Matchup Section -->
+    <div id="matchupSection" style="display: none;">
+      <div class="stats-container" id="matchupStats">
+        <div class="stat-card" id="matchupTotalEventsCard">
+          <div class="stat-title">Total Events</div>
+          <div class="stat-value" id="matchupTotalEvents">0</div>
+          <div class="stat-change" id="matchupTotalEventsDetails">Select a set window</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="matchupTotalMatchesCard">
+          <div class="stat-title">Resolved Matches</div>
+          <div class="stat-value" id="matchupTotalMatches">0</div>
+          <div class="stat-change" id="matchupTotalMatchesDetails">Deck vs deck results</div>
+          <div class="stat-icon">⚔️</div>
+        </div>
+        <div class="stat-card" id="matchupTrackedDecksCard">
+          <div class="stat-title" id="matchupTrackedEntitiesLabel">Decks In Range</div>
+          <div class="stat-value" id="matchupTrackedDecks">0</div>
+          <div class="stat-change" id="matchupTrackedDecksDetails">No decks available</div>
+          <div class="stat-icon">🃏</div>
+        </div>
+        <div class="stat-card" id="matchupMostPlayedDeckCard">
+          <div class="stat-title" id="matchupMostSampledEntityLabel">Most Sampled Deck</div>
+          <div class="stat-value" id="matchupMostPlayedDeckName">--</div>
+          <div class="stat-change" id="matchupMostPlayedDeckDetails">No deck samples</div>
+          <div class="stat-icon">📈</div>
+        </div>
+        <div class="stat-card" id="matchupMostCommonPairCard">
+          <div class="stat-title">Most Common Pairing</div>
+          <div class="stat-value" id="matchupMostCommonPairName">--</div>
+          <div class="stat-change" id="matchupMostCommonPairDetails">No sampled pairings</div>
+          <div class="stat-icon">🔄</div>
+        </div>
+        <div class="stat-card" id="matchupLeastCommonPairCard">
+          <div class="stat-title">Least Common Pairing</div>
+          <div class="stat-value" id="matchupLeastCommonPairName">--</div>
+          <div class="stat-change" id="matchupLeastCommonPairDetails">No sampled pairings</div>
+          <div class="stat-icon">🪶</div>
+        </div>
+        <div class="stat-card" id="matchupBestWinRateCard">
+          <div class="stat-title">Best Win Rate</div>
+          <div class="stat-value" id="matchupBestWinRateName">--</div>
+          <div class="stat-change" id="matchupBestWinRateDetails">No deck samples</div>
+          <div class="stat-icon">🥇</div>
+        </div>
+      </div>
+
+      <div class="dashboard matchup-dashboard" id="matchupDashboard">
+        <div class="filters">
+          <h3>Filter Options</h3>
+          <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button matchup-event-type-filter" data-type="offline">Offline</button>
+              <button class="bubble-button matchup-event-type-filter" data-type="online">Online</button>
+            </div>
+          </div>
+          <div class="filter-section" id="matchupPlayerFocusSection" style="display: none;">
+            <h4>Player Search</h4>
+            <div class="bubble-menu">
+              <select id="matchupPlayerFocusSelect">
+                <option value="">Search for a player</option>
+              </select>
+            </div>
+            <div class="event-calendar-summary-label" id="matchupPlayerFocusStatus">Search for a player to inspect matchup results.</div>
+          </div>
+          <div class="filter-section">
+            <h4>Quick Views</h4>
+            <div id="matchupQuickViewButtons" class="quick-view-control"></div>
+          </div>
+          <div id="matchupSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+            <div id="matchupSelectionSummary" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Current Events Selected</div>
+              <div class="multi-event-selection-scroll">
+                <div id="matchupSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+              </div>
+            </div>
+            <div id="matchupSelectionListBox" class="event-calendar-summary">
+              <div class="event-calendar-summary-label">Selected Event List</div>
+              <div class="multi-event-selection-scroll">
+                <div id="matchupSelectionList" class="multi-event-selection-list player-event-history-list">No events selected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="charts-and-tables">
+          <div class="chart-container">
+            <div class="matchup-chart-header">
+              <h2 class="chart-title" id="matchupPrimaryTitle">Deck vs Deck Matchup Matrix</h2>
+              <div class="bubble-menu matchup-matrix-toolbar" id="matchupMatrixToolbar">
+                <label for="matchupDeckLimitSelect" id="matchupScopeLabel">Deck Scope</label>
+                <select id="matchupDeckLimitSelect">
+                  <option value="12">Top 12</option>
+                  <option value="16">Top 16</option>
+                  <option value="20" selected>Top 20</option>
+                  <option value="24">Top 24</option>
+                  <option value="all">All Decks</option>
+                </select>
+              </div>
+            </div>
+            <div id="matchupDateRangeCalendar" class="range-calendar-container"></div>
+            <select id="matchupStartDateSelect" hidden aria-hidden="true"></select>
+            <select id="matchupEndDateSelect" hidden aria-hidden="true"></select>
+            <div id="matchupMatrixSummary" class="leaderboard-chart-details matchup-matrix-summary">
+              Choose an event type and a date window to build the deck matchup matrix.
+            </div>
+          </div>
+
+          <div class="data-table-container matchup-matrix-table-container" id="matchupPrimaryTableContainer">
+            <div class="matchup-table-header">
+              <h2 class="chart-title" id="matchupTableTitle">Deck Matchup Matrix</h2>
+              <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadPrimaryCsv" style="display: none;" disabled>
+                Download CSV
+              </button>
+            </div>
+            <div class="leaderboard-table-helper" id="matchupTableHelper">
+              Each cell shows the row deck's match win rate against the column deck. Diagonal cells count mirrors.
+            </div>
+            <div class="data-table-scroll matchup-matrix-scroll">
+              <table class="data-table matchup-matrix-table" id="matchupMatrixTable">
+                <thead id="matchupMatrixTableHead"></thead>
+                <tbody id="matchupMatrixTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="data-table-container matchup-matrix-table-container" id="matchupSecondaryTableContainer" style="display: none;">
+            <div class="matchup-table-header">
+              <h2 class="chart-title" id="matchupSecondaryTableTitle">Player Deck vs Opposing Decks</h2>
+              <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadSecondaryCsv" style="display: none;" disabled>
+                Download CSV
+              </button>
+            </div>
+            <div class="leaderboard-table-helper" id="matchupSecondaryTableHelper">
+              Search for a player to populate the second matchup table.
+            </div>
+            <div class="data-table-scroll matchup-matrix-scroll">
+              <table class="data-table matchup-matrix-table" id="matchupSecondaryMatrixTable">
+                <thead id="matchupSecondaryMatrixTableHead"></thead>
+                <tbody id="matchupSecondaryMatrixTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="matchupStatDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
+        <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="matchupStatDrilldownTitle">
+          <div class="player-rank-drilldown-header">
+            <div class="player-rank-drilldown-heading">
+              <h3 id="matchupStatDrilldownTitle">Matchup Details</h3>
+              <p id="matchupStatDrilldownSubtitle">Select a matchup stat card to inspect the filtered matrix details.</p>
+            </div>
+            <button type="button" class="bubble-button player-rank-drilldown-close" id="matchupStatDrilldownClose" aria-label="Close matchup details">
+              Close
+            </button>
+          </div>
+          <div id="matchupStatDrilldownContent" class="player-rank-drilldown-content"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Leaderboards Section -->
     <div id="leaderboardsSection" style="display: none;">
       <div class="stats-container" id="leaderboardStats">
@@ -659,6 +825,98 @@
       </div>
     </div>
 
+    <!-- Rankings Section -->
+    <div id="rankingsSection" style="display: none;">
+      <div class="stats-container" id="rankingsStats">
+        <div class="stat-card" id="rankingsWindowCard">
+          <div class="stat-title">Selected Window</div>
+          <div class="stat-value" id="rankingsWindowValue">Season Window</div>
+          <div class="stat-change" id="rankingsWindowDetails">Choose a date window</div>
+          <div class="stat-icon">📅</div>
+        </div>
+        <div class="stat-card" id="rankingsRatedMatchesCard">
+          <div class="stat-title">Rated Matches</div>
+          <div class="stat-value" id="rankingsRatedMatches">0</div>
+          <div class="stat-change" id="rankingsRatedMatchesDetails">No selected pairings</div>
+          <div class="stat-icon">⚔️</div>
+        </div>
+        <div class="stat-card" id="rankingsTrackedPlayersCard">
+          <div class="stat-title">Tracked Players</div>
+          <div class="stat-value" id="rankingsTrackedPlayers">0</div>
+          <div class="stat-change" id="rankingsTrackedPlayersDetails">0 season entries</div>
+          <div class="stat-icon">👥</div>
+        </div>
+        <div class="stat-card" id="rankingsLeaderCard">
+          <div class="stat-title">Top Elo</div>
+          <div class="stat-value" id="rankingsLeaderName">--</div>
+          <div class="stat-change" id="rankingsLeaderDetails">No leader yet</div>
+          <div class="stat-icon">🏆</div>
+        </div>
+        <div class="stat-card" id="rankingsMostActiveCard">
+          <div class="stat-title">Most Active Season</div>
+          <div class="stat-value" id="rankingsMostActiveName">--</div>
+          <div class="stat-change" id="rankingsMostActiveDetails">No active player yet</div>
+          <div class="stat-icon">📈</div>
+        </div>
+      </div>
+
+      <div class="dashboard rankings-dashboard" id="rankingsDashboard">
+        <div class="filters">
+          <h3>Filter Options</h3>
+          <div class="filter-section">
+            <h4>Event Type</h4>
+            <div class="bubble-menu">
+              <button class="bubble-button rankings-event-type-filter" data-type="offline">Offline</button>
+              <button class="bubble-button rankings-event-type-filter" data-type="online">Online</button>
+            </div>
+            <div class="event-calendar-summary-label">Elo rankings use matchup records. Right now the matchup archive is online-only.</div>
+          </div>
+          <div class="filter-section">
+            <h4>Period</h4>
+            <div id="rankingsPeriodButtons" class="quick-view-control"></div>
+          </div>
+          <div class="filter-section">
+            <h4>System</h4>
+            <div class="event-calendar-summary-label" id="rankingsSystemSummary">Starting rating 1500, K-factor 16, yearly reset on January 1.</div>
+          </div>
+        </div>
+
+        <div class="charts-and-tables">
+          <div class="chart-container">
+            <h2 class="chart-title">Player Elo Rankings</h2>
+            <div id="rankingsSummary" class="leaderboard-chart-details">
+              Choose a period to build seasonal Elo rankings from the matchup archive.
+            </div>
+          </div>
+
+          <div class="data-table-container">
+            <h2 class="chart-title" id="rankingsTableTitle">Player Elo Rankings</h2>
+            <div class="leaderboard-table-helper" id="rankingsTableHelper">
+              Ratings are computed from matchup matches in chronological order and reset to 1500 on January 1.
+            </div>
+            <div class="data-table-scroll player-data-table-scroll">
+              <table class="data-table" id="rankingsTable">
+                <thead id="rankingsTableHead">
+                  <tr>
+                    <th data-sort="displayRank">Rank <span class="sort-arrow"></span></th>
+                    <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
+                    <th data-sort="seasonYear">Season <span class="sort-arrow"></span></th>
+                    <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
+                    <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
+                    <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
+                    <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
+                    <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
+                    <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
+                  </tr>
+                </thead>
+                <tbody id="rankingsTableBody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- About Section -->
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
@@ -683,7 +941,7 @@
 
         <h3>Next Up in Priority Order</h3>
         <ul>
-          <li>Implement matchup matrix views for decks and players.</li>
+          <li>Add the player vs player matchup matrix and keep expanding matchup tooling.</li>
           <li>Improve the mobile and small-screen layout.</li>
           <li>Continue the move from one large frontend dataset file toward a cleaner JSON or database-backed pipeline.</li>
           <li>Add more formats beyond Pauper.</li>
@@ -717,6 +975,7 @@
   <script src="js/charts/player-deck-performance.js" type="module"></script>
   <script src="js/modules/event-analysis.js" type="module"></script>
   <script src="js/modules/player-analysis.js" type="module"></script>
+  <script src="js/modules/matchup-analysis.js" type="module"></script>
   <script src="js/modules/leaderboards-analysis.js" type="module"></script>
   <script src="js/modules/leaderboards-chart.js" type="module"></script>
   <script src="js/modules/filters.js" type="module"></script>

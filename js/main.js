@@ -2,7 +2,9 @@
 import { lastUpdatedDate } from './data.js'; // the date is stored in data.js because weekly I'm pushing only changes there.
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
+import { initMatchupAnalysis, updateMatchupAnalytics } from './modules/matchup-analysis.js';
 import { initLeaderboards, updateLeaderboardAnalytics } from './modules/leaderboards-analysis.js';
+import { initRankings, updateRankingsAnalytics } from './modules/rankings-analysis.js';
 import { 
   setupFilters, 
   setupTopModeListeners, 
@@ -40,7 +42,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize analysis modules
   initEventAnalysis();
   initPlayerAnalysis();
+  initMatchupAnalysis();
   initLeaderboards();
+  initRankings();
 
   setupAboutListeners();
   
@@ -63,8 +67,12 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (defaultTopMode === 'player') {
     updatePlayerAnalytics();
     window.updatePlayerDeckPerformanceChart(); // Initial call for Player Analysis
+  } else if (defaultTopMode === 'deck-matchup' || defaultTopMode === 'player-matchup') {
+    updateMatchupAnalytics();
   } else if (defaultTopMode === 'leaderboard') {
     updateLeaderboardAnalytics();
+  } else if (defaultTopMode === 'rankings') {
+    updateRankingsAnalytics();
   }
 
   // Add event listener for playerDeckPerformanceSelect
