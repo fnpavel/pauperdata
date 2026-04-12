@@ -27,6 +27,10 @@
   box-shadow: inset 0 0 0 1px var(--border-subtle);
 }
 
+#leaderboardsSection .player-data-table-scroll {
+  min-height: clamp(20rem, 52vh, 30rem);
+}
+
 .event-analysis-table-scroll::-webkit-scrollbar,
 .player-data-table-scroll::-webkit-scrollbar {
   width: 10px;
@@ -483,6 +487,32 @@ th.asc .sort-arrow {
   background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
 }
 
+#leaderboardTable tbody tr.leaderboard-player-row {
+  cursor: pointer;
+}
+
+#leaderboardTable tbody tr.leaderboard-player-row:focus-visible {
+  outline: 2px solid rgba(217, 164, 65, 0.78);
+  outline-offset: -2px;
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match td {
+  background: linear-gradient(135deg, rgba(22, 122, 114, 0.16), rgba(217, 164, 65, 0.14));
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match td:first-child:not([colspan]),
+#leaderboardTable tbody tr.leaderboard-search-match td:nth-child(2):not([colspan]) {
+  background: linear-gradient(135deg, rgba(22, 122, 114, 0.24), rgba(217, 164, 65, 0.18));
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match-primary {
+  scroll-margin-block: 96px;
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match-primary td {
+  box-shadow: inset 0 0 0 1px rgba(217, 164, 65, 0.42);
+}
+
 #singleEventTable tbody tr:hover td:first-child,
 #multiEventTable tbody tr:hover td:first-child {
   background: rgba(217, 164, 65, 0.12);
@@ -495,6 +525,15 @@ th.asc .sort-arrow {
 #leaderboardTable tbody tr:hover td:first-child:not([colspan]),
 #leaderboardTable tbody tr:hover td:nth-child(2):not([colspan]) {
   background: rgba(217, 164, 65, 0.12);
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match:hover td {
+  background: linear-gradient(135deg, rgba(22, 122, 114, 0.2), rgba(217, 164, 65, 0.18));
+}
+
+#leaderboardTable tbody tr.leaderboard-search-match:hover td:first-child:not([colspan]),
+#leaderboardTable tbody tr.leaderboard-search-match:hover td:nth-child(2):not([colspan]) {
+  background: linear-gradient(135deg, rgba(22, 122, 114, 0.28), rgba(217, 164, 65, 0.22));
 }
 
 #multiEventTable[data-view="aggregate"] .multi-table-col-deck {

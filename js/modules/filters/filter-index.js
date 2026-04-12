@@ -3,7 +3,6 @@ import { updateEventAnalytics, updateMultiEventAnalytics } from '../event-analys
 import { updatePlayerAnalytics } from '../player-analysis.js';
 import { updateMatchupAnalytics } from '../matchup-analysis.js';
 import { updateLeaderboardAnalytics } from '../leaderboards-analysis.js';
-import { updateRankingsAnalytics } from '../rankings-analysis.js';
 import { updateEventMetaWinRateChart } from '../../charts/single-meta-win-rate.js';
 import { updateMultiMetaWinRateChart } from '../../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../../charts/multi-player-win-rate.js';
@@ -394,8 +393,6 @@ export function updateAllCharts() {
     updateMatchupAnalytics();
   } else if (activeTopMode === 'leaderboard') {
     updateLeaderboardAnalytics();
-  } else if (activeTopMode === 'rankings') {
-    updateRankingsAnalytics();
   }
 
   updatePlayerSelectionSummary();
@@ -449,7 +446,6 @@ export function setupTopModeListeners() {
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
   const matchupSection = document.getElementById('matchupSection');
   const leaderboardsSection = document.getElementById('leaderboardsSection');
-  const rankingsSection = document.getElementById('rankingsSection');
   const singleEventStats = document.getElementById('singleEventStats');
   const multiEventStats = document.getElementById('multiEventStats');
   const playerStats = document.getElementById('playerStats');
@@ -479,9 +475,6 @@ export function setupTopModeListeners() {
         }
         if (leaderboardsSection) {
           leaderboardsSection.style.display = 'none';
-        }
-        if (rankingsSection) {
-          rankingsSection.style.display = 'none';
         }
 
         setDefaultSectionEventType(getEventAnalysisSection());
@@ -529,9 +522,6 @@ export function setupTopModeListeners() {
         if (leaderboardsSection) {
           leaderboardsSection.style.display = 'none';
         }
-        if (rankingsSection) {
-          rankingsSection.style.display = 'none';
-        }
         if (playerStats) {
           playerStats.style.display = 'grid';
         }
@@ -567,9 +557,6 @@ export function setupTopModeListeners() {
         if (leaderboardsSection) {
           leaderboardsSection.style.display = 'none';
         }
-        if (rankingsSection) {
-          rankingsSection.style.display = 'none';
-        }
 
         updateMatchupAnalytics();
       } else if (mode === 'leaderboard') {
@@ -585,29 +572,8 @@ export function setupTopModeListeners() {
         if (leaderboardsSection) {
           leaderboardsSection.style.display = 'block';
         }
-        if (rankingsSection) {
-          rankingsSection.style.display = 'none';
-        }
 
         updateLeaderboardAnalytics();
-      } else if (mode === 'rankings') {
-        if (eventAnalysisSection) {
-          eventAnalysisSection.style.display = 'none';
-        }
-        if (playerAnalysisSection) {
-          playerAnalysisSection.style.display = 'none';
-        }
-        if (matchupSection) {
-          matchupSection.style.display = 'none';
-        }
-        if (leaderboardsSection) {
-          leaderboardsSection.style.display = 'none';
-        }
-        if (rankingsSection) {
-          rankingsSection.style.display = 'block';
-        }
-
-        updateRankingsAnalytics();
       }
     });
   });

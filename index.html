@@ -79,7 +79,6 @@
         <button class="bubble-button top-mode-button" data-top-mode="deck-matchup">Deck Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="player-matchup">Player Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards</button>
-        <button class="bubble-button top-mode-button" data-top-mode="rankings">Rankings</button>
         <button class="bubble-button" id="aboutButton">About</button>
         <div class="header-utility-stack">
           <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
@@ -705,35 +704,41 @@
     <!-- Leaderboards Section -->
     <div id="leaderboardsSection" style="display: none;">
       <div class="stats-container" id="leaderboardStats">
-        <div class="stat-card" id="leaderboardTotalEventsCard">
-          <div class="stat-title">Total Events</div>
-          <div class="stat-value" id="leaderboardTotalEvents">0</div>
-          <div class="stat-change" id="leaderboardTotalEventsDetails">Select a set window</div>
-          <div class="stat-icon">📅</div>
+        <div class="stat-card" id="leaderboardRatedMatchesCard">
+          <div class="stat-title">Rated Matches</div>
+          <div class="stat-value" id="leaderboardRatedMatches">0</div>
+          <div class="stat-change" id="leaderboardRatedMatchesDetails">No selected pairings</div>
+          <div class="stat-icon">⚔️</div>
         </div>
         <div class="stat-card" id="leaderboardTrackedPlayersCard">
           <div class="stat-title">Tracked Players</div>
           <div class="stat-value" id="leaderboardTrackedPlayers">0</div>
-          <div class="stat-change" id="leaderboardTrackedPlayersDetails">Across the selected events</div>
+          <div class="stat-change" id="leaderboardTrackedPlayersDetails">0 season entries</div>
           <div class="stat-icon">👥</div>
         </div>
-        <div class="stat-card" id="leaderboardLeaderCard">
-          <div class="stat-title">Current Leader</div>
-          <div class="stat-value" id="leaderboardLeaderName">--</div>
-          <div class="stat-change" id="leaderboardLeaderDetails">0 pts / --</div>
+        <div class="stat-card" id="leaderboardTopEloCard">
+          <div class="stat-title">Top Elo</div>
+          <div class="stat-value" id="leaderboardTopEloName">--</div>
+          <div class="stat-change" id="leaderboardTopEloDetails">No leader yet</div>
           <div class="stat-icon">🏆</div>
         </div>
-        <div class="stat-card" id="leaderboardMostTrophiesCard">
-          <div class="stat-title">Most Trophies</div>
-          <div class="stat-value" id="leaderboardMostTrophiesName">--</div>
-          <div class="stat-change" id="leaderboardMostTrophiesDetails">0 wins</div>
-          <div class="stat-icon">🥇</div>
+        <div class="stat-card" id="leaderboardPeakEloCard">
+          <div class="stat-title">Peak Elo</div>
+          <div class="stat-value" id="leaderboardPeakEloName">--</div>
+          <div class="stat-change" id="leaderboardPeakEloDetails">No peak yet</div>
+          <div class="stat-icon">🌟</div>
         </div>
-        <div class="stat-card" id="leaderboardMostMatchWinsCard">
-          <div class="stat-title">Most Match Wins</div>
-          <div class="stat-value" id="leaderboardMostMatchWinsName">--</div>
-          <div class="stat-change" id="leaderboardMostMatchWinsDetails">0 wins / 0.0% WR</div>
+        <div class="stat-card" id="leaderboardMostActiveCard">
+          <div class="stat-title">Most Active</div>
+          <div class="stat-value" id="leaderboardMostActiveName">--</div>
+          <div class="stat-change" id="leaderboardMostActiveDetails">No active player yet</div>
           <div class="stat-icon">📈</div>
+        </div>
+        <div class="stat-card" id="leaderboardBiggestSwingCard">
+          <div class="stat-title">Biggest Elo Gain / Loss</div>
+          <div class="stat-value" id="leaderboardBiggestSwingName">--</div>
+          <div class="stat-change" id="leaderboardBiggestSwingDetails">No swings yet</div>
+          <div class="stat-icon">↕️</div>
         </div>
       </div>
 
@@ -746,60 +751,99 @@
               <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
               <button class="bubble-button event-type-filter" data-type="online">Online</button>
             </div>
+            <div class="event-calendar-summary-label">Elo leaderboards use matchup records. Right now the matchup archive is online-only.</div>
           </div>
           <div class="filter-section">
-            <h4>Quick Views</h4>
-            <div id="leaderboardQuickViewButtons" class="quick-view-control"></div>
+            <h4>Window Type</h4>
+            <div class="bubble-menu" id="leaderboardWindowModeButtons">
+              <button type="button" class="bubble-button leaderboard-window-mode-button" data-leaderboard-window-mode="seasonal">Seasonal</button>
+              <button type="button" class="bubble-button leaderboard-window-mode-button" data-leaderboard-window-mode="range">Multi-Year</button>
+            </div>
+            <div class="event-calendar-summary-label" id="leaderboardWindowModeSummary">
+              Seasonal view isolates one year at a time. Multi-Year lets you span several years and choose whether Elo resets or carries.
+            </div>
           </div>
-          <div id="leaderboardSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
-            <div id="leaderboardSelectionSummary" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Current Events Selected</div>
-              <div class="multi-event-selection-scroll">
-                <div id="leaderboardSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+          <div class="filter-section" id="leaderboardSeasonControlsSection">
+            <h4>Season Year</h4>
+            <div id="leaderboardSeasonYearButtons" class="quick-view-control"></div>
+          </div>
+          <div class="filter-section hidden" id="leaderboardRangeControlsSection">
+            <h4>Multi-Year Range</h4>
+            <div class="bubble-menu leaderboard-range-controls">
+              <div class="leaderboard-range-field">
+                <span>Start Year</span>
+                <div class="bubble-menu quick-view-static-list" id="leaderboardRangeStartYearButtons" aria-label="Select Elo range start year"></div>
+              </div>
+              <div class="leaderboard-range-field">
+                <span>End Year</span>
+                <div class="bubble-menu quick-view-static-list" id="leaderboardRangeEndYearButtons" aria-label="Select Elo range end year"></div>
               </div>
             </div>
-            <div id="leaderboardSelectionListBox" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Selected Event List</div>
-              <div class="multi-event-selection-scroll">
-                <div id="leaderboardSelectionList" class="multi-event-selection-list player-event-history-list">No events selected</div>
-              </div>
+            <div class="event-calendar-summary-label" id="leaderboardRangeSummary">
+              Pick the first and last year included in the Elo window.
             </div>
+          </div>
+          <div class="filter-section hidden" id="leaderboardResetModeSection">
+            <h4>Rating Continuity</h4>
+            <div class="bubble-menu" id="leaderboardResetModeButtons">
+              <button type="button" class="bubble-button leaderboard-reset-mode-button" data-leaderboard-reset-mode="continuous">Carry Across Range</button>
+              <button type="button" class="bubble-button leaderboard-reset-mode-button" data-leaderboard-reset-mode="yearly">Reset Each Year</button>
+            </div>
+            <div class="event-calendar-summary-label" id="leaderboardResetModeSummary">
+              Reset each year creates separate player-season entries. Carry across range keeps one continuous ladder through the selected years.
+            </div>
+          </div>
+          <div class="filter-section">
+            <h4>System</h4>
+            <div class="event-calendar-summary-label" id="leaderboardSystemSummary">Starting rating 1500, K-factor 16. Seasonal Elo resets on January 1.</div>
           </div>
         </div>
 
         <div class="charts-and-tables">
           <div class="chart-container">
-            <h2 class="chart-title">Set Leaderboard Overview</h2>
-            <div id="leaderboardDateRangeCalendar" class="range-calendar-container"></div>
-            <select id="leaderboardStartDateSelect" hidden aria-hidden="true"></select>
-            <select id="leaderboardEndDateSelect" hidden aria-hidden="true"></select>
-            <div id="leaderboardOverviewChartLoading">Loading...</div>
-            <canvas id="leaderboardOverviewChart" style="height: 420px;"></canvas>
-            <div id="leaderboardChartDetails" class="leaderboard-chart-details"></div>
+            <h2 class="chart-title">Elo Leaderboard Overview</h2>
+            <div id="leaderboardChartDetails" class="leaderboard-chart-details">
+              Choose Seasonal or Multi-Year to build Elo leaderboards from the matchup archive.
+            </div>
           </div>
 
           <div class="data-table-container">
-            <h2 class="chart-title" id="leaderboardTableTitle">Set Leaderboard</h2>
-            <div class="leaderboard-table-helper" id="leaderboardTableHelper">
-              Scoring: Top 1 = 10 pts, Top 2-8 = 6 pts, Top 9-16 = 3 pts, Top 17-32 = 1 pt.
+            <h2 class="chart-title" id="leaderboardTableTitle">Seasonal Elo Leaderboard</h2>
+            <div class="leaderboard-table-toolbar" id="leaderboardTableToolbar">
+              <div class="player-search-select leaderboard-table-search">
+                <input
+                  type="search"
+                  class="player-search-input"
+                  id="leaderboardPlayerSearchInput"
+                  placeholder="Find a player in the Elo table"
+                  aria-label="Find a player in the Elo table"
+                  autocomplete="off"
+                />
+              </div>
+              <button type="button" class="bubble-button" id="leaderboardSearchButton">
+                Find Player
+              </button>
+              <button type="button" class="bubble-button" id="leaderboardDownloadCsv">
+                Export CSV
+              </button>
             </div>
+            <div class="leaderboard-table-helper" id="leaderboardTableHelper">
+              Ratings are computed from matchup matches in chronological order. Use the filter panel to switch between seasonal resets and continuous multi-year ladders.
+            </div>
+            <div class="leaderboard-table-search-status" id="leaderboardTableSearchStatus" aria-live="polite"></div>
             <div class="data-table-scroll player-data-table-scroll">
               <table class="data-table" id="leaderboardTable">
                 <thead id="leaderboardTableHead">
                   <tr>
                     <th data-sort="displayRank">Rank <span class="sort-arrow"></span></th>
-                    <th data-sort="player">Player <span class="sort-arrow"></span></th>
-                    <th data-sort="score">Score <span class="sort-arrow"></span></th>
-                    <th data-sort="events">Events <span class="sort-arrow"></span></th>
-                    <th data-sort="top1">Top 1 <span class="sort-arrow"></span></th>
-                    <th data-sort="top8">Top 8 <span class="sort-arrow"></span></th>
-                    <th data-sort="top9_16">Top 9-16 <span class="sort-arrow"></span></th>
-                    <th data-sort="top17_32">Top 17-32 <span class="sort-arrow"></span></th>
+                    <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
+                    <th data-sort="seasonYear"><span id="leaderboardEntryColumnLabel">Season</span> <span class="sort-arrow"></span></th>
+                    <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
+                    <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
                     <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
                     <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
                     <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
-                    <th data-sort="averageFinish">Avg Finish <span class="sort-arrow"></span></th>
-                    <th data-sort="bestFinish">Best Finish <span class="sort-arrow"></span></th>
+                    <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
                   </tr>
                 </thead>
                 <tbody id="leaderboardTableBody"></tbody>
@@ -814,105 +858,13 @@
           <div class="player-rank-drilldown-header">
             <div class="player-rank-drilldown-heading">
               <h3 id="leaderboardStatDrilldownTitle">Leaderboard Details</h3>
-              <p id="leaderboardStatDrilldownSubtitle">Select a leaderboard stat card to inspect the matching details.</p>
+              <p id="leaderboardStatDrilldownSubtitle">Select a leaderboard stat card to inspect the matching Elo details.</p>
             </div>
             <button type="button" class="bubble-button player-rank-drilldown-close" id="leaderboardStatDrilldownClose" aria-label="Close leaderboard details">
               Close
             </button>
           </div>
           <div id="leaderboardStatDrilldownContent" class="player-rank-drilldown-content"></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Rankings Section -->
-    <div id="rankingsSection" style="display: none;">
-      <div class="stats-container" id="rankingsStats">
-        <div class="stat-card" id="rankingsWindowCard">
-          <div class="stat-title">Selected Window</div>
-          <div class="stat-value" id="rankingsWindowValue">Season Window</div>
-          <div class="stat-change" id="rankingsWindowDetails">Choose a date window</div>
-          <div class="stat-icon">📅</div>
-        </div>
-        <div class="stat-card" id="rankingsRatedMatchesCard">
-          <div class="stat-title">Rated Matches</div>
-          <div class="stat-value" id="rankingsRatedMatches">0</div>
-          <div class="stat-change" id="rankingsRatedMatchesDetails">No selected pairings</div>
-          <div class="stat-icon">⚔️</div>
-        </div>
-        <div class="stat-card" id="rankingsTrackedPlayersCard">
-          <div class="stat-title">Tracked Players</div>
-          <div class="stat-value" id="rankingsTrackedPlayers">0</div>
-          <div class="stat-change" id="rankingsTrackedPlayersDetails">0 season entries</div>
-          <div class="stat-icon">👥</div>
-        </div>
-        <div class="stat-card" id="rankingsLeaderCard">
-          <div class="stat-title">Top Elo</div>
-          <div class="stat-value" id="rankingsLeaderName">--</div>
-          <div class="stat-change" id="rankingsLeaderDetails">No leader yet</div>
-          <div class="stat-icon">🏆</div>
-        </div>
-        <div class="stat-card" id="rankingsMostActiveCard">
-          <div class="stat-title">Most Active Season</div>
-          <div class="stat-value" id="rankingsMostActiveName">--</div>
-          <div class="stat-change" id="rankingsMostActiveDetails">No active player yet</div>
-          <div class="stat-icon">📈</div>
-        </div>
-      </div>
-
-      <div class="dashboard rankings-dashboard" id="rankingsDashboard">
-        <div class="filters">
-          <h3>Filter Options</h3>
-          <div class="filter-section">
-            <h4>Event Type</h4>
-            <div class="bubble-menu">
-              <button class="bubble-button rankings-event-type-filter" data-type="offline">Offline</button>
-              <button class="bubble-button rankings-event-type-filter" data-type="online">Online</button>
-            </div>
-            <div class="event-calendar-summary-label">Elo rankings use matchup records. Right now the matchup archive is online-only.</div>
-          </div>
-          <div class="filter-section">
-            <h4>Period</h4>
-            <div id="rankingsPeriodButtons" class="quick-view-control"></div>
-          </div>
-          <div class="filter-section">
-            <h4>System</h4>
-            <div class="event-calendar-summary-label" id="rankingsSystemSummary">Starting rating 1500, K-factor 16, yearly reset on January 1.</div>
-          </div>
-        </div>
-
-        <div class="charts-and-tables">
-          <div class="chart-container">
-            <h2 class="chart-title">Player Elo Rankings</h2>
-            <div id="rankingsSummary" class="leaderboard-chart-details">
-              Choose a period to build seasonal Elo rankings from the matchup archive.
-            </div>
-          </div>
-
-          <div class="data-table-container">
-            <h2 class="chart-title" id="rankingsTableTitle">Player Elo Rankings</h2>
-            <div class="leaderboard-table-helper" id="rankingsTableHelper">
-              Ratings are computed from matchup matches in chronological order and reset to 1500 on January 1.
-            </div>
-            <div class="data-table-scroll player-data-table-scroll">
-              <table class="data-table" id="rankingsTable">
-                <thead id="rankingsTableHead">
-                  <tr>
-                    <th data-sort="displayRank">Rank <span class="sort-arrow"></span></th>
-                    <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
-                    <th data-sort="seasonYear">Season <span class="sort-arrow"></span></th>
-                    <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
-                    <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
-                    <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
-                    <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
-                    <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
-                    <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
-                  </tr>
-                </thead>
-                <tbody id="rankingsTableBody"></tbody>
-              </table>
-            </div>
-          </div>
         </div>
       </div>
     </div>
@@ -977,8 +929,6 @@
   <script src="js/modules/player-analysis.js" type="module"></script>
   <script src="js/modules/matchup-analysis.js" type="module"></script>
   <script src="js/modules/leaderboards-analysis.js" type="module"></script>
-  <script src="js/modules/leaderboards-chart.js" type="module"></script>
-  <script src="js/modules/filters.js" type="module"></script>
   <script src="js/main.js" type="module"></script>
 
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'92398868fe17bad7',t:'MTc0MjUxOTA0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'923f9daab8534c1f',t:'MTc0MjU4MjgyNi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9264525b1ce4456a',t:'MTc0Mjk2NzcxNS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>

@@ -52,6 +52,46 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
   return rows.join('\r\n');
 }
 
+export function buildStructuredTableCsv(columnDefinitions = [], rows = [], metadataRows = []) {
+  if (!Array.isArray(columnDefinitions) || columnDefinitions.length === 0) {
+    return '';
+  }
+
+  const csvRows = [];
+
+  if (Array.isArray(metadataRows) && metadataRows.length > 0) {
+    metadataRows.forEach(metadataRow => {
+      csvRows.push((metadataRow || []).map(escapeCsvValue).join(','));
+    });
+    csvRows.push('');
+  }
+
+  csvRows.push(
+    columnDefinitions
+      .map(column => column?.header || column?.label || column?.key || '')
+      .map(escapeCsvValue)
+      .join(',')
+  );
+
+  (Array.isArray(rows) ? rows : []).forEach((row, index) => {
+    const values = columnDefinitions.map(column => {
+      if (typeof column?.value === 'function') {
+        return column.value(row, index);
+      }
+
+      if (column?.key && row && typeof row === 'object') {
+        return row[column.key];
+      }
+
+      return '';
+    });
+
+    csvRows.push(values.map(escapeCsvValue).join(','));
+  });
+
+  return csvRows.join('\r\n');
+}
+
 export function downloadCsvFile(filename, csvText) {
   const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);

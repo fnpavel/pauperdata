@@ -4,8 +4,7 @@ function getDashboardSections() {
     player: document.getElementById('playerAnalysisSection'),
     'deck-matchup': document.getElementById('matchupSection'),
     'player-matchup': document.getElementById('matchupSection'),
-    leaderboard: document.getElementById('leaderboardsSection'),
-    rankings: document.getElementById('rankingsSection')
+    leaderboard: document.getElementById('leaderboardsSection')
   };
 }
 

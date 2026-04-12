@@ -4,7 +4,6 @@ import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } fr
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
 import { initMatchupAnalysis, updateMatchupAnalytics } from './modules/matchup-analysis.js';
 import { initLeaderboards, updateLeaderboardAnalytics } from './modules/leaderboards-analysis.js';
-import { initRankings, updateRankingsAnalytics } from './modules/rankings-analysis.js';
 import { 
   setupFilters, 
   setupTopModeListeners, 
@@ -44,7 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initPlayerAnalysis();
   initMatchupAnalysis();
   initLeaderboards();
-  initRankings();
 
   setupAboutListeners();
   
@@ -71,8 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
     updateMatchupAnalytics();
   } else if (defaultTopMode === 'leaderboard') {
     updateLeaderboardAnalytics();
-  } else if (defaultTopMode === 'rankings') {
-    updateRankingsAnalytics();
   }
 
   // Add event listener for playerDeckPerformanceSelect
