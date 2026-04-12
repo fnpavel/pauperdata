@@ -11,7 +11,13 @@ import {
   normalizeQuickViewPresetIds,
   shiftDateByDays
 } from '../utils/quick-view-presets.js';
-import { getMatchupEvents, getMatchupMatches, filterMatchupRecords } from '../utils/matchup-data.js';
+import {
+  ensureMatchupCatalogLoaded,
+  ensureMatchupWindowLoaded,
+  getMatchupEvents,
+  getMatchupMatches,
+  filterMatchupRecords
+} from '../utils/matchup-data.js';
 import {
   getUnknownHeavyBelowTop32ExcludedEventNames,
   isUnknownHeavyBelowTop32FilterEnabled
@@ -46,6 +52,8 @@ let currentMatchupPlayerFocus = null;
 let activeMatchupDrilldownCategory = '';
 let activeMatchupPlayerFocusKey = '';
 let activeMatchupPlayerFocusLabel = '';
+let matchupAnalyticsRequestId = 0;
+let matchupCatalogUiPromise = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -228,6 +236,84 @@ function getMatchupDrilldownConfig() {
         : `No decisive ${viewConfig.entitySingular} samples are available for the current ${viewConfig.viewTitle} filters.`
     }
   };
+}
+
+function renderMatchupLoadingState(message = 'Loading matchup archive...') {
+  updateElementText('matchupMatrixSummary', message);
+  updateElementText('matchupTableTitle', 'Matchup Matrix');
+  updateElementText('matchupTableHelper', message);
+  updateElementText('matchupTotalEvents', '--');
+  updateElementText('matchupTotalMatches', '--');
+  updateElementText('matchupTrackedDecks', '--');
+  updateElementText('matchupMostPlayedDeck', '--');
+  updateElementText('matchupMostCommonPair', '--');
+  updateElementText('matchupLeastCommonPair', '--');
+  updateElementText('matchupBestWinRate', '--');
+  const tableHead = document.getElementById('matchupMatrixTableHead');
+  const tableBody = document.getElementById('matchupMatrixTableBody');
+
+  if (tableHead) {
+    tableHead.innerHTML = `
+      <tr>
+        <th class="matchup-axis-corner">Matchup</th>
+        <th>Loading</th>
+      </tr>
+    `;
+  }
+
+  if (tableBody) {
+    tableBody.innerHTML = "<tr><td colspan='2'>Loading matchup data...</td></tr>";
+  }
+}
+
+function renderMatchupErrorState(message = 'Unable to load matchup data.') {
+  updateElementText('matchupMatrixSummary', message);
+  updateElementText('matchupTableHelper', message);
+  updateElementText('matchupTotalEvents', '--');
+  updateElementText('matchupTotalMatches', '--');
+  updateElementText('matchupTrackedDecks', '--');
+  updateElementText('matchupMostPlayedDeck', '--');
+  updateElementText('matchupMostCommonPair', '--');
+  updateElementText('matchupLeastCommonPair', '--');
+  updateElementText('matchupBestWinRate', '--');
+  const tableHead = document.getElementById('matchupMatrixTableHead');
+  const tableBody = document.getElementById('matchupMatrixTableBody');
+
+  if (tableHead) {
+    tableHead.innerHTML = `
+      <tr>
+        <th class="matchup-axis-corner">Matchup</th>
+        <th>Error</th>
+      </tr>
+    `;
+  }
+
+  if (tableBody) {
+    tableBody.innerHTML = `<tr><td colspan='2'>${escapeHtml(message)}</td></tr>`;
+  }
+}
+
+async function ensureMatchupCatalogUiReady() {
+  if (!matchupCatalogUiPromise) {
+    matchupCatalogUiPromise = ensureMatchupCatalogLoaded()
+      .then(() => {
+        const quickViewRows = getMatchupQuickViewRows();
+        updateMatchupViewCopy();
+        activeQuickViewYear = getDefaultQuickViewYear(quickViewRows);
+        setMatchupEventType(DEFAULT_EVENT_TYPE);
+        renderQuickViewButtons();
+        setMatchupPresetButtonState(getLatestSetQuickViewPresetId(quickViewRows));
+        ensureDefaultMatchupPreset();
+        updateMatchupDateOptions();
+        applyActiveMatchupPresetDateRange();
+      })
+      .catch(error => {
+        matchupCatalogUiPromise = null;
+        throw error;
+      });
+  }
+
+  return matchupCatalogUiPromise;
 }
 
 function getMatchupSection() {
@@ -3650,31 +3736,60 @@ function setupMatchupFilterListeners() {
 }
 
 export function initMatchupAnalysis() {
-  const quickViewRows = getMatchupQuickViewRows();
-
   initMatchupPlayerSearchDropdown();
+  renderMatchupLoadingState();
   updateMatchupViewCopy();
-  activeQuickViewYear = getDefaultQuickViewYear(quickViewRows);
-  setMatchupEventType(DEFAULT_EVENT_TYPE);
-  renderQuickViewButtons();
-  setMatchupPresetButtonState(getLatestSetQuickViewPresetId(quickViewRows));
-  ensureDefaultMatchupPreset();
-  updateMatchupDateOptions();
-  applyActiveMatchupPresetDateRange();
   setupMatchupFilterListeners();
   setupMatchupCsvExportListeners();
   setupMatchupDrilldownModal();
   setupMatchupDrilldownCards();
   updateMatchupDrilldownCardStates();
+  ensureMatchupCatalogUiReady()
+    .catch(error => {
+      console.error('Failed to load matchup catalog.', error);
+      renderMatchupErrorState('Unable to load matchup catalog.');
+    });
   console.log('Matchup Analysis initialized');
 }
 
-export function updateMatchupAnalytics() {
-  renderQuickViewButtons();
-  if (getActiveMatchupPreset()) {
-    applyActiveMatchupPresetDateRange();
-  } else {
-    updateMatchupDateOptions();
+export async function updateMatchupAnalytics() {
+  const requestId = matchupAnalyticsRequestId + 1;
+  matchupAnalyticsRequestId = requestId;
+  renderMatchupLoadingState();
+
+  try {
+    await ensureMatchupCatalogUiReady();
+
+    renderQuickViewButtons();
+    if (getActiveMatchupPreset()) {
+      applyActiveMatchupPresetDateRange();
+    } else {
+      updateMatchupDateOptions();
+    }
+
+    await ensureMatchupWindowLoaded({
+      startDate: getMatchupStartDateSelect()?.value || '',
+      endDate: getMatchupEndDateSelect()?.value || '',
+      includeMatches: true,
+      includeRounds: false
+    });
+  } catch (error) {
+    if (requestId !== matchupAnalyticsRequestId) {
+      return;
+    }
+
+    console.error('Failed to load matchup window data.', error);
+    currentMatchupSnapshot = null;
+    currentMatchupMatrix = null;
+    currentResolvedMatchupMatches = [];
+    currentMatchupPlayerFocus = null;
+    updateMatchupDrilldownCardStates();
+    renderMatchupErrorState('Unable to load matchup data for the selected filters.');
+    return;
+  }
+
+  if (requestId !== matchupAnalyticsRequestId) {
+    return;
   }
 
   const selectionSnapshot = buildMatchupSelectionSnapshot();

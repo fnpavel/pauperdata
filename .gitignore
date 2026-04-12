@@ -4,6 +4,10 @@
 # Explicitly ignore raw source archives/workbooks.
 /data/staging
 
+# Explicitly ignoring the scrips
+/scripts
+/oldPython
+
 # Keep this file itself.
 !/.gitignore
 
@@ -29,3 +33,8 @@
 # Ignore generated staging outputs inside the tracked data folder.
 /data/staging/
 /data/staging/**
+
+# Ignore legacy full matchup data files
+/data/matchups.json
+/js/matchups-data.js
+
