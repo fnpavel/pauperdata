@@ -1,4 +1,4 @@
-import { eloManifest } from '../elo-data/manifest.js';
+import { eloManifest } from '../../data/elo-data/manifest.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const yearModuleCache = new Map();
@@ -53,7 +53,7 @@ async function loadYearMatches(year = '') {
   if (!yearModuleCache.has(normalizedYear)) {
     yearModuleCache.set(
       normalizedYear,
-      import(`../elo-data/${normalizedYear}.js`)
+      import(`../../data/elo-data/${normalizedYear}.js`)
         .then(module => Array.isArray(module.eloMatches) ? module.eloMatches : [])
         .catch(() => [])
     );
