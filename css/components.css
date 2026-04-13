@@ -904,6 +904,14 @@ body.modal-open {
   align-self: flex-start;
 }
 
+.leaderboard-drilldown-header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: 12px;
+}
+
 .drilldown-tooltip {
   cursor: help;
 }
@@ -1039,6 +1047,16 @@ body.modal-open {
   flex-direction: column;
   gap: 14px;
   padding-right: 4px;
+}
+
+.player-elo-drilldown-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 10px;
+}
+
+.player-elo-drilldown-cards .stat-card {
+  min-height: 86px;
 }
 
 .player-rank-drilldown-content::-webkit-scrollbar {
@@ -1217,6 +1235,27 @@ body.modal-open {
 
 .leaderboard-player-results-body[hidden] {
   display: none;
+}
+
+.leaderboard-player-elo-chart-context {
+  gap: 12px;
+}
+
+.leaderboard-player-elo-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(145deg, var(--surface-2), var(--surface-1));
+  padding: 10px 4px 4px;
+  box-sizing: border-box;
+}
+
+.leaderboard-player-elo-chart {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 .leaderboard-deck-results-grid {
@@ -1939,6 +1978,14 @@ body.modal-open {
   line-height: 1.5;
 }
 
+.leaderboard-table-click-hint {
+  margin-top: -4px;
+  margin-bottom: 12px;
+  color: var(--accent);
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
 .leaderboard-history-item-static {
   cursor: default;
 }
@@ -2042,6 +2089,44 @@ body.modal-open {
   flex-shrink: 0;
 }
 
+.matchup-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.matchup-matrix-table-container:fullscreen {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  padding: 20px;
+  background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
+}
+
+.matchup-matrix-table-container:fullscreen .matchup-matrix-scroll {
+  height: calc(100vh - 180px);
+  max-height: none;
+}
+
+.data-table-container:fullscreen {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  margin: 0;
+  border-radius: 0;
+  padding: 20px;
+  background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
+}
+
+.data-table-container:fullscreen .player-data-table-scroll {
+  height: calc(100vh - 180px);
+  max-height: none;
+}
+
 #leaderboardTableBody .leaderboard-rank-cell {
   font-weight: 700;
   color: var(--accent);
@@ -2069,7 +2154,7 @@ body.modal-open {
 }
 
 #playerStats.stats-container .player-stats-row-primary {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 #playerStats.stats-container .player-stats-row-secondary {
@@ -2922,4 +3007,17 @@ html[data-theme="light"] .range-calendar-day.active {
   background: linear-gradient(135deg, rgba(30, 123, 116, 0.95), rgba(23, 96, 90, 0.95));
   border-color: rgba(255, 255, 255, 0.78);
   color: #fffaf1;
+}
+
+/*this needs to be improved, the search and the whole leaderboard-chart is unpolished! 
+For now at least the search is also visually working */
+
+.leaderboard-chart-toolbar,
+.player-search-select {
+  position: relative;
+  z-index: 20;
+}
+
+.player-search-dropdown {
+  z-index: 30;
 }

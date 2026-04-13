@@ -489,6 +489,12 @@ th.asc .sort-arrow {
 
 #leaderboardTable tbody tr.leaderboard-player-row {
   cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+#leaderboardTable tbody tr.leaderboard-player-row:hover {
+  transform: translateY(-1px);
+  box-shadow: inset 4px 0 0 var(--accent);
 }
 
 #leaderboardTable tbody tr.leaderboard-player-row:focus-visible {
