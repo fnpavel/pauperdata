@@ -1,3 +1,5 @@
+import { formatDate, formatEventName } from '../utils/format.js';
+
 export function escapeCsvValue(value) {
   const text = String(value ?? '');
   if (/[",\r\n]/.test(text)) {
@@ -102,4 +104,110 @@ export function downloadCsvFile(filename, csvText) {
   anchor.click();
   document.body.removeChild(anchor);
   URL.revokeObjectURL(url);
+}
+
+function buildTableMetadata(title = '') {
+  return title ? [['Table', title]] : [];
+}
+
+export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-analysis-table') {
+  const {
+    tableType = 'raw',
+    title = fallbackName,
+    rows = [],
+    displayMode = 'percent',
+    group = 'single'
+  } = tableState || {};
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return false;
+  }
+
+  let columnDefinitions = [];
+
+  if (group === 'single' && tableType === 'raw') {
+    columnDefinitions = [
+      { header: 'Rank', key: 'rank' },
+      { header: 'Player', key: 'player' },
+      { header: 'Deck', key: 'deck' },
+      { header: 'Wins', key: 'wins' },
+      { header: 'Losses', key: 'losses' },
+      { header: 'Win Rate', value: row => `${Number(row.winRate || 0).toFixed(2)}%` }
+    ];
+  } else if ((group === 'single' && tableType === 'aggregate') || (group === 'multi' && tableType === 'aggregate')) {
+    columnDefinitions = [
+      { header: 'Deck', key: 'deck' },
+      { header: group === 'single' ? 'Number of Players' : 'Aggregate Meta', value: row => (
+        group === 'single' ? row.count : `${Number(row.metaShare || 0).toFixed(1)}%`
+      ) },
+      ...(group === 'single'
+        ? [{ header: '% of Meta', value: row => `${Number(row.metaShare || 0).toFixed(1)}%` }]
+        : []),
+      { header: group === 'single' ? 'Win Rate %' : 'Aggregate Win Rate', value: row => `${Number(row.winRate || 0).toFixed(1)}%` },
+      { header: 'Top 8', value: row => displayMode === 'raw' ? row.top8 : `${Number(row.top8Percent || 0).toFixed(1)}%` },
+      { header: 'Top 9-16', value: row => displayMode === 'raw' ? row.top16 : `${Number(row.top16Percent || 0).toFixed(1)}%` },
+      { header: 'Top 17-32', value: row => displayMode === 'raw' ? row.top32 : `${Number(row.top32Percent || 0).toFixed(1)}%` },
+      { header: 'Below Top 32', value: row => displayMode === 'raw' ? row.belowTop32 : `${Number(row.belowTop32Percent || 0).toFixed(1)}%` }
+    ];
+  } else if (group === 'multi' && tableType === 'deck') {
+    columnDefinitions = [
+      { header: 'Date', value: row => formatDate(row.date) },
+      { header: 'Event', value: row => formatEventName(row.event) || row.event || '--' },
+      { header: 'Meta Share', value: row => `${Number(row.metaShare || 0).toFixed(1)}%` },
+      { header: 'Win Rate', value: row => `${Number(row.winRate || 0).toFixed(1)}%` },
+      { header: 'Top 8', value: row => displayMode === 'raw' ? row.top8 : `${Number(row.top8Percent || 0).toFixed(1)}%` },
+      { header: 'Top 9-16', value: row => displayMode === 'raw' ? row.top16 : `${Number(row.top16Percent || 0).toFixed(1)}%` },
+      { header: 'Top 17-32', value: row => displayMode === 'raw' ? row.top32 : `${Number(row.top32Percent || 0).toFixed(1)}%` },
+      { header: 'Below Top 32', value: row => displayMode === 'raw' ? row.belowTop32 : `${Number(row.belowTop32Percent || 0).toFixed(1)}%` }
+    ];
+  }
+
+  if (columnDefinitions.length === 0) {
+    return false;
+  }
+
+  const csvText = buildStructuredTableCsv(columnDefinitions, rows, buildTableMetadata(title));
+  downloadCsvFile(`${sanitizeCsvFilename(title || fallbackName)}.csv`, csvText);
+  return true;
+}
+
+export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'player-analysis-table') {
+  const {
+    tableType = 'event',
+    title = fallbackName,
+    rows = []
+  } = tableState || {};
+
+  if (!Array.isArray(rows) || rows.length === 0) {
+    return false;
+  }
+
+  const columnDefinitions = tableType === 'event'
+    ? [
+      { header: 'Date', key: 'date' },
+      { header: 'Event', key: 'event' },
+      { header: 'Number of Players', key: 'players' },
+      { header: 'Rank', key: 'rank' },
+      { header: 'Deck', key: 'deck' },
+      { header: 'Wins', key: 'wins' },
+      { header: 'Losses', key: 'losses' },
+      { header: 'Player Win Rate', value: row => `${Number(row.winRate || 0).toFixed(1)}%` },
+      { header: "Deck's Overall Win Rate", value: row => `${Number(row.deckWinRate || 0).toFixed(1)}%` },
+      { header: "Deck's Meta", value: row => `${Number(row.deckMeta || 0).toFixed(1)}%` }
+    ]
+    : [
+      { header: 'Deck', key: 'deck' },
+      { header: 'Number of Events', key: 'events' },
+      { header: 'Wins', key: 'wins' },
+      { header: 'Losses', key: 'losses' },
+      { header: 'Overall Win Rate', value: row => `${Number(row.overallWinRate || 0).toFixed(2)}%` },
+      { header: 'Best Win Rate', value: row => `${Number(row.bestWinRate || 0).toFixed(2)}%` },
+      { header: 'Best Event', value: row => `${row.bestDate || '--'} - ${row.bestEvent || '--'}` },
+      { header: 'Worst Win Rate', value: row => `${Number(row.worstWinRate || 0).toFixed(2)}%` },
+      { header: 'Worst Event', value: row => `${row.worstDate || '--'} - ${row.worstEvent || '--'}` }
+    ];
+
+  const csvText = buildStructuredTableCsv(columnDefinitions, rows, buildTableMetadata(title));
+  downloadCsvFile(`${sanitizeCsvFilename(title || fallbackName)}.csv`, csvText);
+  return true;
 }
