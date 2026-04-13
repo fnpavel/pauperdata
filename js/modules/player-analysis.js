@@ -6,9 +6,11 @@ import { calculatePlayerStats } from '../utils/data-cards.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
-import { getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
+import { buildRankingsDataset } from '../utils/rankings-data.js';
+import { getPlayerIdentityKey, getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
-import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters.js';
+import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters/filter-index.js';
+import { downloadPlayerAnalysisCsv } from './export-table-csv.js';
 
 function getSelectedPlayerEventTypes() {
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
@@ -104,6 +106,16 @@ const PLAYER_SUMMARY_DRILLDOWN_CONFIG = {
     title: 'Event History',
     emptyMessage: 'No events in the current Player Analysis filters.'
   },
+  eloForPeriod: {
+    cardId: 'playerPeriodEloCard',
+    title: 'Elo for the Period',
+    emptyMessage: 'No Elo results are available for the current Player Analysis filters.'
+  },
+  peakElo: {
+    cardId: 'playerPeakEloCard',
+    title: 'Peak Elo',
+    emptyMessage: 'No Elo peaks are available for the current Player Analysis filters.'
+  },
   uniqueDecks: {
     cardId: 'playerUniqueDecksCard',
     title: 'Unique Decks Used',
@@ -151,12 +163,47 @@ const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {
 
 let currentPlayerAnalysisRows = [];
 let activePlayerDrilldownCategory = '';
+let currentPlayerEloInsights = createEmptyPlayerEloInsights();
+let playerAnalyticsRequestId = 0;
+let currentPlayerRawTableState = {
+  tableType: 'event',
+  title: 'player-event-data',
+  rows: []
+};
+
+function createEmptyPlayerEloInsights() {
+  return {
+    dataset: null,
+    periodRow: null,
+    historyEntries: [],
+    deckGroups: [],
+    peakEntries: []
+  };
+}
 
 function createPlayerSearchEmptyState(message) {
   const emptyState = document.createElement('div');
   emptyState.className = 'player-search-empty';
   emptyState.textContent = message;
   return emptyState;
+}
+
+function getPlayerRawTableDownloadButton() {
+  return document.getElementById('playerRawTableDownloadCsv');
+}
+
+function exportPlayerRawTableCsv() {
+  downloadPlayerAnalysisCsv(currentPlayerRawTableState, 'player-analysis-table');
+}
+
+function setupPlayerRawTableExportAction() {
+  const downloadButton = getPlayerRawTableDownloadButton();
+  if (!downloadButton || downloadButton.dataset.listenerAdded === 'true') {
+    return;
+  }
+
+  downloadButton.addEventListener('click', exportPlayerRawTableCsv);
+  downloadButton.dataset.listenerAdded = 'true';
 }
 
 function escapeHtml(value) {
@@ -239,6 +286,36 @@ function formatWinRatePercentage(value) {
   }
 
   return `${value.toFixed(1)}%`;
+}
+
+function formatEloRating(value) {
+  return Number.isFinite(Number(value)) ? String(Math.round(Number(value))) : '--';
+}
+
+function formatEloDelta(value) {
+  if (!Number.isFinite(Number(value))) {
+    return '--';
+  }
+
+  const roundedValue = Math.round(Number(value));
+  return roundedValue > 0 ? `+${roundedValue}` : String(roundedValue);
+}
+
+function getPlayerEventDeckLookup(rows = []) {
+  const deckLookup = new Map();
+
+  (Array.isArray(rows) ? rows : []).forEach(row => {
+    const eventName = String(row?.Event || '').trim();
+    const eventDate = String(row?.Date || '').trim();
+    const deckName = String(row?.Deck || '').trim();
+    if (!eventName || !eventDate || !deckName) {
+      return;
+    }
+
+    deckLookup.set(`${eventDate}|||${eventName}`, deckName);
+  });
+
+  return deckLookup;
 }
 
 function highlightDrilldownText(text, tone = 'reference') {
@@ -490,6 +567,10 @@ function getPlayerSummaryDrilldownItems(categoryKey, data = currentPlayerAnalysi
   switch (categoryKey) {
     case 'totalEvents':
       return sortPlayerAnalysisRows(data);
+    case 'eloForPeriod':
+      return currentPlayerEloInsights.periodRow ? [currentPlayerEloInsights.periodRow] : [];
+    case 'peakElo':
+      return currentPlayerEloInsights.peakEntries || [];
     case 'uniqueDecks':
       return buildPlayerDeckGroups(data);
     case 'mostPlayedDecks': {
@@ -532,6 +613,344 @@ function getPlayerSidebarDrilldownItems(categoryKey, data = currentPlayerAnalysi
     default:
       return [];
   }
+}
+
+function getPlayerEloMatchView(match, selectedPlayerKey = '', eventDeckLookup = new Map()) {
+  const normalizedPlayerKey = String(selectedPlayerKey || '').trim();
+  if (!normalizedPlayerKey || !match) {
+    return null;
+  }
+
+  const playerAKey = String(match.player_a_key || match.player_key || '').trim();
+  const playerBKey = String(match.player_b_key || match.opponent_key || '').trim();
+  const eventDate = String(match.date || match.Date || '').trim();
+  const eventName = String(match.event || match.Event || '').trim();
+  const fallbackDeck = eventDeckLookup.get(`${eventDate}|||${eventName}`) || '';
+
+  if (normalizedPlayerKey === playerAKey) {
+    return {
+      seasonKey: String(match.seasonKey || '').trim(),
+      date: eventDate,
+      event: eventName,
+      round: Number.isFinite(Number(match.round)) ? Number(match.round) : null,
+      deck: String(match.deck_a || match.deck || fallbackDeck).trim(),
+      opponent: String(match.player_b || match.opponent || '').trim(),
+      opponentDeck: String(match.deck_b || match.opponent_deck || '').trim(),
+      resultType: String(match.outcome || '').trim() === 'player_a_win' ? 'win' : String(match.outcome || '').trim() === 'player_b_win' ? 'loss' : String(match.result_type || '').trim(),
+      ratingBefore: Number(match.playerRatingBefore),
+      ratingAfter: Number(match.playerRatingAfter),
+      delta: Number(match.playerDelta)
+    };
+  }
+
+  if (normalizedPlayerKey === playerBKey) {
+    return {
+      seasonKey: String(match.seasonKey || '').trim(),
+      date: eventDate,
+      event: eventName,
+      round: Number.isFinite(Number(match.round)) ? Number(match.round) : null,
+      deck: String(match.deck_b || match.opponent_deck || fallbackDeck).trim(),
+      opponent: String(match.player_a || match.player || '').trim(),
+      opponentDeck: String(match.deck_a || match.deck || '').trim(),
+      resultType: String(match.outcome || '').trim() === 'player_b_win' ? 'win' : String(match.outcome || '').trim() === 'player_a_win' ? 'loss' : String(match.result_type || '').trim(),
+      ratingBefore: Number(match.opponentRatingBefore),
+      ratingAfter: Number(match.opponentRatingAfter),
+      delta: Number(match.opponentDelta)
+    };
+  }
+
+  return null;
+}
+
+function buildPlayerEloDeckGroups(matchViews = []) {
+  const deckGroups = new Map();
+
+  matchViews.forEach(matchView => {
+    const deckName = String(matchView?.deck || '').trim();
+    if (!deckName) {
+      return;
+    }
+
+    if (!deckGroups.has(deckName)) {
+      deckGroups.set(deckName, {
+        deck: deckName,
+        peakElo: Number.NEGATIVE_INFINITY,
+        latestElo: Number.NaN,
+        bestMatch: null,
+        matches: 0,
+        wins: 0,
+        losses: 0,
+        rows: []
+      });
+    }
+
+    const group = deckGroups.get(deckName);
+    group.matches += 1;
+    if (matchView.resultType === 'win') {
+      group.wins += 1;
+    } else if (matchView.resultType === 'loss') {
+      group.losses += 1;
+    }
+    group.rows.push(matchView);
+
+    if (Number.isFinite(matchView.ratingAfter) && matchView.ratingAfter > group.peakElo) {
+      group.peakElo = matchView.ratingAfter;
+      group.bestMatch = matchView;
+    }
+
+    if (!Number.isFinite(group.latestElo) || String(matchView.date || '').localeCompare(String(group.bestMatch?.date || '')) >= 0) {
+      group.latestElo = Number.isFinite(matchView.ratingAfter) ? matchView.ratingAfter : group.latestElo;
+    }
+  });
+
+  return Array.from(deckGroups.values()).sort((a, b) => {
+    return (
+      Number(b.peakElo) - Number(a.peakElo) ||
+      b.matches - a.matches ||
+      a.deck.localeCompare(b.deck)
+    );
+  });
+}
+
+async function buildPlayerEloInsights({
+  selectedPlayer = '',
+  selectedEventTypes = [],
+  startDate = '',
+  endDate = '',
+  playerRows = []
+} = {}) {
+  if (!selectedPlayer || !startDate || !endDate || !Array.isArray(selectedEventTypes) || selectedEventTypes.length === 0) {
+    return createEmptyPlayerEloInsights();
+  }
+
+  const dataset = await buildRankingsDataset({
+    eventTypes: selectedEventTypes,
+    startDate,
+    endDate
+  }, {
+    resetByYear: false
+  });
+  const periodRow = (dataset?.seasonRows || []).find(row => String(row.playerKey || '').trim() === String(selectedPlayer || '').trim()) || null;
+  const historyEntries = periodRow
+    ? [...(dataset?.historyByPlayer?.get(selectedPlayer) || [])]
+        .filter(entry => String(entry.seasonKey || '').trim() === String(periodRow.seasonKey || '').trim())
+        .sort((a, b) => {
+          return (
+            String(b.date || '').localeCompare(String(a.date || '')) ||
+            Number(b.round || 0) - Number(a.round || 0) ||
+            String(b.eventId || '').localeCompare(String(a.eventId || ''))
+          );
+        })
+    : [];
+  const eventDeckLookup = getPlayerEventDeckLookup(playerRows);
+  const matchViews = (dataset?.processedMatches || [])
+    .map(match => getPlayerEloMatchView(match, selectedPlayer, eventDeckLookup))
+    .filter(Boolean);
+  const deckGroups = buildPlayerEloDeckGroups(matchViews);
+  const peakRating = historyEntries.length > 0
+    ? Math.max(...historyEntries.map(entry => Number(entry.ratingAfter)).filter(Number.isFinite))
+    : Number.NEGATIVE_INFINITY;
+  const peakEntries = historyEntries.filter(entry => Number(entry.ratingAfter) === peakRating);
+
+  return {
+    dataset,
+    periodRow,
+    historyEntries,
+    deckGroups,
+    peakEntries
+  };
+}
+
+function buildPlayerEloMatchListHtml(rows = []) {
+  if (!rows.length) {
+    return '<div class="player-rank-drilldown-empty">No rated Elo matches found for this period.</div>';
+  }
+
+  return `
+    <div class="player-drilldown-event-list">
+      ${rows.map(row => {
+        const formattedEventName = formatEventName(row.event) || row.event || 'Unknown Event';
+        const eventDate = row.date ? formatDate(row.date) : '--';
+        const roundLabel = Number.isFinite(Number(row.round)) ? `R${Number(row.round)}` : 'Round --';
+        const deckLabel = row.deck || '--';
+        const opponentLabel = row.opponent || 'Unknown Opponent';
+        const resultLabel = String(row.resultType || '--').toUpperCase();
+
+        return `
+          <div class="player-drilldown-event-list-item player-drilldown-event-list-item-mixed-average">
+            <div class="player-drilldown-event-list-main">
+              <strong>${escapeHtml(formattedEventName)}</strong>
+              <span>${escapeHtml(`${eventDate} | ${roundLabel} | ${deckLabel} vs ${opponentLabel}`)}</span>
+            </div>
+            <div class="player-drilldown-event-list-meta">
+              <span>${escapeHtml(resultLabel)}</span>
+              <span>${escapeHtml(formatEloRating(row.ratingBefore))} -> ${escapeHtml(formatEloRating(row.ratingAfter))}</span>
+              <span>${escapeHtml(formatEloDelta(row.delta))} Elo</span>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function buildPlayerPeriodEloDrilldownHtml() {
+  const { periodRow, historyEntries } = currentPlayerEloInsights;
+  if (!periodRow) {
+    return '<div class="player-rank-drilldown-empty">No Elo results are available for the current Player Analysis filters.</div>';
+  }
+
+  const firstMatch = historyEntries[historyEntries.length - 1] || null;
+  const latestMatch = historyEntries[0] || null;
+  const yearGroups = historyEntries.reduce((acc, entry) => {
+    const yearKey = String(entry?.date || '').slice(0, 4);
+    if (!yearKey) {
+      return acc;
+    }
+
+    if (!acc.has(yearKey)) {
+      acc.set(yearKey, {
+        year: yearKey,
+        peakElo: Number.NEGATIVE_INFINITY,
+        lastElo: Number.NaN,
+        matches: 0
+      });
+    }
+
+    const group = acc.get(yearKey);
+    group.matches += 1;
+    if (Number.isFinite(Number(entry.ratingAfter))) {
+      group.peakElo = Math.max(group.peakElo, Number(entry.ratingAfter));
+      if (!Number.isFinite(group.lastElo) || String(entry.date || '').localeCompare(String(group.lastDate || '')) >= 0) {
+        group.lastElo = Number(entry.ratingAfter);
+        group.lastDate = String(entry.date || '');
+      }
+    }
+
+    return acc;
+  }, new Map());
+  const yearCards = Array.from(yearGroups.values())
+    .sort((a, b) => String(a.year).localeCompare(String(b.year)))
+    .map(group => buildStatCardHtml({
+      title: `Elo ${group.year}`,
+      value: formatEloRating(group.lastElo),
+      change: `${group.matches} rated matches | Peak ${formatEloRating(group.peakElo)}`,
+      icon: '\u{1F4C6}'
+    }));
+  const uniqueDeckCards = (currentPlayerEloInsights.deckGroups || [])
+    .map(group => buildStatCardHtml({
+      title: group.deck,
+      value: `${formatEloRating(group.peakElo)} Elo`,
+      change: `${group.matches} rated matches | ${group.wins}-${group.losses}`,
+      icon: '\u{1F0CF}'
+    }))
+    .join('');
+  const peakElo = historyEntries.reduce((maxRating, entry) => {
+    return Math.max(maxRating, Number(entry.ratingAfter) || Number.NEGATIVE_INFINITY);
+  }, Number(periodRow.rating) || Number.NEGATIVE_INFINITY);
+
+  return `
+    <article class="player-rank-drilldown-event">
+      <div class="player-rank-drilldown-event-header">
+        <div>
+          <div class="player-rank-drilldown-event-date">Current Filter Window</div>
+          <h4 class="player-rank-drilldown-event-name">${escapeHtml(periodRow.displayName || periodRow.playerKey || 'Selected Player')}</h4>
+        </div>
+        <span class="player-rank-drilldown-rank-badge">${escapeHtml(formatEloRating(periodRow.rating))} Elo</span>
+      </div>
+      <div class="player-rank-drilldown-summary-grid">
+        <div class="player-rank-drilldown-summary-item updated">
+          <span class="player-rank-drilldown-summary-label">Current Elo</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatEloRating(periodRow.rating))}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Peak Elo</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(peakElo) ? formatEloRating(peakElo) : '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Rated Matches</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(periodRow.matches || 0)}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Wins</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(periodRow.wins || 0)}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Losses</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(periodRow.losses || 0)}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Win Rate</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatWinRatePercentage((Number(periodRow.winRate) || 0) * 100))}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Period Window</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(firstMatch?.date && latestMatch?.date ? `${formatDate(firstMatch.date)} to ${formatDate(latestMatch.date)}` : '--')}</strong>
+        </div>
+      </div>
+    </article>
+    <div class="player-elo-drilldown-cards">
+      ${yearCards.join('')}
+      ${uniqueDeckCards}
+    </div>
+    <div class="player-rank-drilldown-context">
+      <div class="player-rank-drilldown-context-header">
+        <div class="player-rank-drilldown-context-title">Rated Elo Match History</div>
+      </div>
+      ${buildPlayerEloMatchListHtml(historyEntries)}
+    </div>
+  `;
+}
+
+function buildPlayerPeakEloDrilldownHtml() {
+  const peakEntries = currentPlayerEloInsights.peakEntries || [];
+  if (!peakEntries.length) {
+    return '<div class="player-rank-drilldown-empty">No Elo peaks are available for the current Player Analysis filters.</div>';
+  }
+
+  return peakEntries.map(entry => `
+    <article class="player-rank-drilldown-event">
+      <div class="player-rank-drilldown-event-header">
+        <div>
+          <div class="player-rank-drilldown-event-date">Peak Elo Moment</div>
+          <h4 class="player-rank-drilldown-event-name">${escapeHtml(formatEventName(entry.event) || entry.event || 'Unknown Event')}</h4>
+        </div>
+        <span class="player-rank-drilldown-rank-badge">${escapeHtml(formatEloRating(entry.ratingAfter))} Elo</span>
+      </div>
+      <div class="player-rank-drilldown-summary-grid">
+        <div class="player-rank-drilldown-summary-item updated">
+          <span class="player-rank-drilldown-summary-label">Peak Elo</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatEloRating(entry.ratingAfter))}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Event</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatEventName(entry.event) || entry.event || '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Round</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(Number(entry.round)) ? `Round ${Number(entry.round)}` : '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Date</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(entry.date ? formatDate(entry.date) : '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Deck</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(entry.deck || '--')}</strong>
+        </div>
+        <div class="player-rank-drilldown-summary-item">
+          <span class="player-rank-drilldown-summary-label">Peak Change</span>
+          <strong class="player-rank-drilldown-summary-value">${escapeHtml(`${formatEloDelta(entry.delta)} vs ${entry.opponent || 'Unknown Opponent'}`)}</strong>
+        </div>
+      </div>
+      <div class="player-rank-drilldown-context">
+        <div class="player-rank-drilldown-context-header">
+          <div class="player-rank-drilldown-context-title">Peak Match Context</div>
+        </div>
+        ${buildPlayerEloMatchListHtml([entry])}
+      </div>
+    </article>
+  `).join('');
 }
 
 function getMostCommonDeckStats(rows = []) {
@@ -1257,6 +1676,14 @@ function buildPlayerSummaryDrilldownHtml(categoryKey) {
     return '';
   }
 
+  if (categoryKey === 'eloForPeriod') {
+    return buildPlayerPeriodEloDrilldownHtml();
+  }
+
+  if (categoryKey === 'peakElo') {
+    return buildPlayerPeakEloDrilldownHtml();
+  }
+
   const items = getPlayerSummaryDrilldownItems(categoryKey);
   if (items.length === 0) {
     return `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
@@ -1364,6 +1791,10 @@ function renderPlayerSummaryDrilldown(categoryKey) {
   const items = getPlayerSummaryDrilldownItems(categoryKey);
   const itemLabel = categoryKey === 'totalEvents'
     ? `${items.length} event${items.length === 1 ? '' : 's'}`
+    : categoryKey === 'eloForPeriod'
+      ? `${currentPlayerEloInsights.historyEntries.length} rated match${currentPlayerEloInsights.historyEntries.length === 1 ? '' : 'es'} in the current period`
+      : categoryKey === 'peakElo'
+        ? `${items.length} Elo peak${items.length === 1 ? '' : 's'} in the current period`
     : `${items.length} ${items.length === 1 ? 'entry' : 'entries'}`;
 
   elements.title.textContent = `${playerLabel} - ${config.title}`;
@@ -1986,15 +2417,18 @@ export function initPlayerAnalysis() {
   console.log('Player Analysis initialized');
 }
 
-export function updatePlayerAnalysis(data) {
+export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsights) {
   currentPlayerAnalysisRows = Array.isArray(data) ? [...data] : [];
+  currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
   updatePlayerWinRateChart();
   updatePlayerDeckPerformanceChart();
   populatePlayerAnalysisRawData(data);
-  populatePlayerStats(data);
+  populatePlayerStats(data, currentPlayerEloInsights);
 }
 
-export function updatePlayerAnalytics() {
+export async function updatePlayerAnalytics() {
+  const requestId = playerAnalyticsRequestId + 1;
+  playerAnalyticsRequestId = requestId;
   console.log("Updating player analytics...");
   const startDate = document.getElementById("playerStartDateSelect").value;
   const endDate = document.getElementById("playerEndDateSelect").value;
@@ -2023,9 +2457,29 @@ export function updatePlayerAnalytics() {
       })
     : [];
   const filteredData = applyPlayerEventGroupFilter(baseFilteredData);
+  const selectedPlayerKey = selectedPlayer ? getPlayerIdentityKey(selectedPlayerLabel || selectedPlayer) : '';
+  let eloInsights = createEmptyPlayerEloInsights();
+
+  if (selectedPlayerKey && startDate && endDate && selectedEventTypes.length > 0) {
+    try {
+      eloInsights = await buildPlayerEloInsights({
+        selectedPlayer: selectedPlayerKey,
+        selectedEventTypes,
+        startDate,
+        endDate,
+        playerRows: filteredData
+      });
+    } catch (error) {
+      console.error('Failed to build player Elo insights.', error);
+    }
+  }
+
+  if (requestId !== playerAnalyticsRequestId) {
+    return;
+  }
 
   console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);
-  updatePlayerAnalysis(filteredData);
+  updatePlayerAnalysis(filteredData, eloInsights);
 }
 
 export function populatePlayerAnalysisRawData(data) {
@@ -2084,6 +2538,11 @@ export function populatePlayerAnalysisRawData(data) {
         </tr>
       `).join(""));
 
+      currentPlayerRawTableState = {
+        tableType,
+        title: rawTableTitle.textContent || 'player-event-data',
+        rows
+      };
       setupTableSorting(rawTableHead, rawTableBody, rows);
     } else if (tableType === 'deck') {
       rawTableTitle.textContent = `${selectedPlayer} - Deck Data`;
@@ -2112,11 +2571,17 @@ export function populatePlayerAnalysisRawData(data) {
         </tr>
       `).join(""));
 
+      currentPlayerRawTableState = {
+        tableType,
+        title: rawTableTitle.textContent || 'player-deck-data',
+        rows
+      };
       setupTableSorting(rawTableHead, rawTableBody, rows);
     }
   };
 
   updateTable('event');
+  setupPlayerRawTableExportAction();
   const toggleButtons = toggleContainer.querySelectorAll('.table-toggle-btn');
   toggleButtons.forEach(button => button.addEventListener('click', () => {
     console.log(`Toggle clicked: ${button.dataset.table}`);
@@ -2126,7 +2591,7 @@ export function populatePlayerAnalysisRawData(data) {
   }));
 }
 
-export function populatePlayerStats(data) {
+export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights) {
   console.log("populatePlayerStats called with data:", data);
   const stats = calculatePlayerStats(data);
 
@@ -2157,6 +2622,28 @@ export function populatePlayerStats(data) {
   // Simple Cards
   updateQueryElement("playerEventsCard", ".stat-value", stats.totalEvents);
   updateQueryElement("playerEventsCard", ".stat-change", stats.eventsDetails);
+  updateQueryElement("playerPeriodEloCard", ".stat-value", eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--');
+  updateQueryElement(
+    "playerPeriodEloCard",
+    ".stat-change",
+    eloInsights?.periodRow
+      ? `${eloInsights.periodRow.matches || 0} rated matches | ${formatWinRatePercentage((Number(eloInsights.periodRow.winRate) || 0) * 100)} WR`
+      : 'No rated Elo matches yet'
+  );
+  updateQueryElement(
+    "playerPeakEloCard",
+    ".stat-value",
+    eloInsights?.peakEntries?.length
+      ? formatEloRating(eloInsights.peakEntries[0].ratingAfter)
+      : '--'
+  );
+  updateQueryElement(
+    "playerPeakEloCard",
+    ".stat-change",
+    eloInsights?.peakEntries?.length
+      ? `${formatEventName(eloInsights.peakEntries[0].event) || eloInsights.peakEntries[0].event || '--'} | ${Number.isFinite(Number(eloInsights.peakEntries[0].round)) ? `Round ${Number(eloInsights.peakEntries[0].round)}` : '--'}`
+      : 'No Elo peak yet'
+  );
   updateQueryElement("playerUniqueDecksCard", ".stat-value", stats.uniqueDecks);
   updateQueryElement("playerMostPlayedCard", ".stat-value", stats.mostPlayedDecks);
   updateQueryElement("playerMostPlayedCard", ".stat-change", stats.mostPlayedCount);
@@ -2235,7 +2722,7 @@ function setupTableSorting(tableHead, tableBody, rows) {
       return isAscending ? (aVal > bVal ? -1 : 1) : (aVal < bVal ? -1 : 1);
     });
     header.classList.add(isAscending ? 'desc' : 'asc');
-    header.querySelector('.sort-arrow').textContent = isAscending ? '↓' : '↑';
+    header.querySelector('.sort-arrow').textContent = isAscending ? '\u2193' : '\u2191';
     updateElementHTML("playerRawTableBody", rows.map(row => row.hasOwnProperty('players') ? `
       <tr>
         <td>${row.date}</td>
@@ -2262,3 +2749,4 @@ function setupTableSorting(tableHead, tableBody, rows) {
     `).join(""));
   }));
 }
+

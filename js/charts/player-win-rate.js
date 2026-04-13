@@ -1,5 +1,5 @@
 import { setChartLoading, triggerUpdateAnimation } from '../utils/dom.js';
-import { getPlayerWinRateChartData } from '../modules/filters.js';
+import { getPlayerWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
 import { getAnalysisRows } from '../utils/analysis-data.js';
 import { getSelectedPlayerLabel } from '../utils/player-names.js';

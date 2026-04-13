@@ -2,6 +2,7 @@
 import { lastUpdatedDate } from './data.js'; // the date is stored in data.js because weekly I'm pushing only changes there.
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
+import { initMatchupAnalysis, updateMatchupAnalytics } from './modules/matchup-analysis.js';
 import { initLeaderboards, updateLeaderboardAnalytics } from './modules/leaderboards-analysis.js';
 import { 
   setupFilters, 
@@ -12,7 +13,7 @@ import {
   setupPlayerFilterListeners,
   setupMultiEventPresetListeners,
   updateAllCharts
-} from './modules/filters.js';
+} from './modules/filters/filter-index.js';
 import { setupAboutListeners } from './modules/about.js';
 import { setupThemeToggle } from './utils/theme.js';
 
@@ -40,6 +41,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize analysis modules
   initEventAnalysis();
   initPlayerAnalysis();
+  initMatchupAnalysis();
   initLeaderboards();
 
   setupAboutListeners();
@@ -63,6 +65,8 @@ document.addEventListener('DOMContentLoaded', () => {
   } else if (defaultTopMode === 'player') {
     updatePlayerAnalytics();
     window.updatePlayerDeckPerformanceChart(); // Initial call for Player Analysis
+  } else if (defaultTopMode === 'deck-matchup' || defaultTopMode === 'player-matchup') {
+    updateMatchupAnalytics();
   } else if (defaultTopMode === 'leaderboard') {
     updateLeaderboardAnalytics();
   }

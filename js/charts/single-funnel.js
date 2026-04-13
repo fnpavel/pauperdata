@@ -1,5 +1,5 @@
 import { setChartLoading } from '../utils/dom.js';
-import { getFunnelChartData } from '../modules/filters.js';
+import { getFunnelChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from "../utils/data-chart.js";
 import { getChartTheme } from '../utils/theme.js';
 

@@ -76,6 +76,10 @@ header::before {
   grid-template-columns: 280px minmax(0, 1fr);
 }
 
+.matchup-dashboard {
+  grid-template-columns: 280px minmax(0, 1fr);
+}
+
 .player-dashboard {
   gap: 16px;
   grid-template-columns: 248px minmax(0, 1fr) 236px;
@@ -115,9 +119,16 @@ header::before {
   color: var(--text-secondary);
 }
 
+.logo h3 {
+  color: greenyellow;
+  font-size: 0.8rem;
+  font-weight: 300;
+  margin-top: 0.1rem;
+}
+
 .logo .header-credit {
-  font-size: 1.1rem;
-  font-weight: 400;
+  font-size: 1.2rem;
+  font-weight: 500;
   line-height: 1.35;
   margin-top: 0.2rem;
 }

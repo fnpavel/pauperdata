@@ -2,6 +2,8 @@ function getDashboardSections() {
   return {
     event: document.getElementById('eventAnalysisSection'),
     player: document.getElementById('playerAnalysisSection'),
+    'deck-matchup': document.getElementById('matchupSection'),
+    'player-matchup': document.getElementById('matchupSection'),
     leaderboard: document.getElementById('leaderboardsSection')
   };
 }
