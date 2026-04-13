@@ -599,18 +599,18 @@ function buildLeaderboardResetModeSummary(activeWindow = null) {
 
 function buildLeaderboardSystemSummary(activeWindow = null) {
   if (!activeWindow) {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}.`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards)`;
   }
 
   if (activeWindow.windowMode === 'seasonal') {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. Seasonal Elo resets on January 1.`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Seasonal Elo resets on January 1.`;
   }
 
   if (activeWindow.resetMode === 'continuous') {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. Ratings carry across the selected multi-year range with no January reset inside that window.`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Ratings carry across the selected multi-year range with no January reset inside that window.`;
   }
 
-  return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. Multi-Year Elo resets on January 1, so seasons stay separate.`;
+  return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Multi-Year Elo resets on January 1, so seasons stay separate.`;
 }
 
 function renderLeaderboardWindowControls() {
