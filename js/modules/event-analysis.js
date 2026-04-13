@@ -8,6 +8,7 @@ import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, up
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
+import { downloadEventAnalysisCsv } from './export-table-csv.js';
 
 function getSelectedEventAnalysisTypes() {
   const eventAnalysisSection = document.getElementById('eventAnalysisSection');
@@ -83,6 +84,20 @@ let currentMultiEventRows = [];
 let activeSingleEventDrilldownCategory = '';
 let activeSingleEventDeckDrilldownName = '';
 let activeMultiEventDrilldownState = null;
+let currentSingleEventTableState = {
+  group: 'single',
+  tableType: 'raw',
+  title: 'single-event-table',
+  rows: [],
+  displayMode: 'percent'
+};
+let currentMultiEventTableState = {
+  group: 'multi',
+  tableType: 'aggregate',
+  title: 'multi-event-table',
+  rows: [],
+  displayMode: 'percent'
+};
 
 const TOP_DECK_RANGE_DEFINITIONS = [
   {
@@ -127,6 +142,37 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function getSingleEventDownloadButton() {
+  return document.getElementById('singleEventTableDownloadCsv');
+}
+
+function getMultiEventDownloadButton() {
+  return document.getElementById('multiEventTableDownloadCsv');
+}
+
+function exportSingleEventTableCsv() {
+  downloadEventAnalysisCsv(currentSingleEventTableState, 'single-event-table');
+}
+
+function exportMultiEventTableCsv() {
+  downloadEventAnalysisCsv(currentMultiEventTableState, 'multi-event-table');
+}
+
+function setupEventTableExportActions() {
+  const singleButton = getSingleEventDownloadButton();
+  const multiButton = getMultiEventDownloadButton();
+
+  if (singleButton && singleButton.dataset.listenerAdded !== 'true') {
+    singleButton.addEventListener('click', exportSingleEventTableCsv);
+    singleButton.dataset.listenerAdded = 'true';
+  }
+
+  if (multiButton && multiButton.dataset.listenerAdded !== 'true') {
+    multiButton.addEventListener('click', exportMultiEventTableCsv);
+    multiButton.dataset.listenerAdded = 'true';
+  }
 }
 
 function getSingleEventDrilldownElements() {
@@ -1256,6 +1302,13 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
       </tr>
     `).join(""));
 
+    currentSingleEventTableState = {
+      group: 'single',
+      tableType,
+      title: tableTitle.textContent || 'single-event-table',
+      rows,
+      displayMode: 'raw'
+    };
     setupTableSorting(tableHead, tableBody, rows, tableType);
   } else if (tableType === 'aggregate') {
     updateElementHTML("singleEventTableHead", `
@@ -1298,12 +1351,22 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
     `).join(""));
 
     renderTableBody();
+    currentSingleEventTableState = {
+      group: 'single',
+      tableType,
+      title: tableTitle.textContent || 'single-event-table',
+      rows,
+      displayMode
+    };
     setupTableSorting(tableHead, tableBody, rows, tableType, () => renderTableBody());
     setupDisplayToggle(tableHead, () => { 
       displayMode = tableHead.querySelector('.display-toggle-btn.active').dataset.display; 
+      currentSingleEventTableState.displayMode = displayMode;
       renderTableBody(); 
     });
   }
+
+  setupEventTableExportActions();
 
   const toggleContainer = document.querySelector('.table-toggle');
   if (toggleContainer) {
@@ -1371,9 +1434,17 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
     `).join(""));
 
     renderTableBody();
+    currentMultiEventTableState = {
+      group: 'multi',
+      tableType,
+      title: tableTitle.textContent || 'multi-event-table',
+      rows,
+      displayMode
+    };
     setupTableSorting(tableHead, tableBody, rows, tableType, () => renderTableBody());
     setupDisplayToggle(tableHead, () => { 
       displayMode = tableHead.querySelector('.display-toggle-btn.active').dataset.display; 
+      currentMultiEventTableState.displayMode = displayMode;
       renderTableBody(); 
     });
   } else if (tableType === 'deck') {
@@ -1418,12 +1489,22 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
     `).join(""));
 
     renderTableBody();
+    currentMultiEventTableState = {
+      group: 'multi',
+      tableType,
+      title: tableTitle.textContent || 'multi-event-table',
+      rows,
+      displayMode
+    };
     setupTableSorting(tableHead, tableBody, rows, tableType, () => renderTableBody());
     setupDisplayToggle(tableHead, () => { 
       displayMode = tableHead.querySelector('.display-toggle-btn.active').dataset.display; 
+      currentMultiEventTableState.displayMode = displayMode;
       renderTableBody(); 
     });
   }
+
+  setupEventTableExportActions();
 }
 
 export function populateSingleEventStats(filteredData) {
