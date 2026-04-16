@@ -1,5 +1,6 @@
 // js/main.js
-import { lastUpdatedDate } from './data.js'; // the date is stored in data.js because weekly I'm pushing only changes there.
+import { ensureEventDataLoaded, getLastUpdatedDate } from './utils/event-data.js';
+import { setAnalysisDataRows } from './utils/analysis-data.js';
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
 import { initMatchupAnalysis, updateMatchupAnalytics } from './modules/matchup-analysis.js';
@@ -28,16 +29,17 @@ window.updatePlayerDeckPerformanceChart = () => import('./charts/player-deck-per
 function setLastUpdatedDate() {
   const dateElement = document.getElementById('lastUpdatedDate');
   if (dateElement) {
-    dateElement.textContent = `Last updated: ${lastUpdatedDate}`;
+    dateElement.textContent = `Last updated: ${getLastUpdatedDate()}`;
   }
 }
 
-// Initialize everything
-document.addEventListener('DOMContentLoaded', () => {
+async function initializeDashboard() {
   console.log('Initializing MTG Analytics Dashboard...');
-  
+
+  const { rows } = await ensureEventDataLoaded();
+  setAnalysisDataRows(rows);
   setLastUpdatedDate(); // Call the function to set the date
-  
+
   // Initialize analysis modules
   initEventAnalysis();
   initPlayerAnalysis();
@@ -78,4 +80,11 @@ document.addEventListener('DOMContentLoaded', () => {
       import('./charts/player-deck-performance.js').then(module => module.updatePlayerDeckPerformanceChart());
     });
   }
+}
+
+// Initialize everything
+document.addEventListener('DOMContentLoaded', () => {
+  initializeDashboard().catch(error => {
+    console.error('Failed to initialize MTG Analytics Dashboard.', error);
+  });
 });

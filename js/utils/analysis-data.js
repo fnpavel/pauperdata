@@ -1,4 +1,4 @@
-import { cleanedData as rawCleanedData } from '../data.js';
+import { getEventRows } from './event-data.js';
 
 // This toggle is persisted because it changes which events are eligible for analysis
 // across Event Analysis, Multi-Event views, and Player Analysis.
@@ -93,19 +93,31 @@ function buildEventRowsByName(rows = rawCleanedData) {
   return rowsByEventName;
 }
 
-// Build the excluded-event set once from the static dataset. The runtime toggle
-// simply switches between the full dataset and this prefiltered one.
-const eventRowsByName = buildEventRowsByName();
-const unknownHeavyBelowTop32EventNames = new Set(
-  Array.from(eventRowsByName.entries())
-    .filter(([, eventRows]) => shouldExcludeEventForUnknownHeavyBelowTop32(eventRows))
-    .map(([eventName]) => eventName)
-);
-const filteredAnalysisRows = rawCleanedData.filter(row => {
-  return !unknownHeavyBelowTop32EventNames.has(String(row?.Event || '').trim());
-});
+let rawCleanedData = [];
+let eventRowsByName = new Map();
+let unknownHeavyBelowTop32EventNames = new Set();
+let filteredAnalysisRows = [];
+
+function rebuildAnalysisCaches(rows = []) {
+  rawCleanedData = Array.isArray(rows) ? rows : [];
+  eventRowsByName = buildEventRowsByName(rawCleanedData);
+  unknownHeavyBelowTop32EventNames = new Set(
+    Array.from(eventRowsByName.entries())
+      .filter(([, eventRows]) => shouldExcludeEventForUnknownHeavyBelowTop32(eventRows))
+      .map(([eventName]) => eventName)
+  );
+  filteredAnalysisRows = rawCleanedData.filter(row => {
+    return !unknownHeavyBelowTop32EventNames.has(String(row?.Event || '').trim());
+  });
+}
+
+rebuildAnalysisCaches(getEventRows());
 
 let excludeUnknownHeavyBelowTop32Events = readStoredBoolean(STORAGE_KEY, false);
+
+export function setAnalysisDataRows(rows = []) {
+  rebuildAnalysisCaches(rows);
+}
 
 export function isUnknownHeavyBelowTop32FilterEnabled() {
   return excludeUnknownHeavyBelowTop32Events;
