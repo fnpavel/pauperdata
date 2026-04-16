@@ -4,7 +4,8 @@ import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-dat
 export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
   startingRating: 1500,
   kFactor: 16,
-  resetByYear: true
+  resetByYear: true,
+  entityMode: 'player'
 });
 
 const DEFAULT_EVENT_TYPE = 'online';
@@ -59,6 +60,7 @@ function compareSeasonRows(a, b) {
     Number(b.rating) - Number(a.rating) ||
     Number(b.matches) - Number(a.matches) ||
     Number(b.wins) - Number(a.wins) ||
+    String(a.deck || '').localeCompare(String(b.deck || ''), undefined, { sensitivity: 'base' }) ||
     String(a.displayName).localeCompare(String(b.displayName), undefined, { sensitivity: 'base' }) ||
     String(a.playerKey).localeCompare(String(b.playerKey))
   );
@@ -114,7 +116,8 @@ export async function buildRankingsDataset(
   {
     eventTypes = [DEFAULT_EVENT_TYPE],
     startDate = '',
-    endDate = ''
+    endDate = '',
+    matchFilter = null
   } = {},
   options = {}
 ) {
@@ -156,11 +159,20 @@ export async function buildRankingsDataset(
     };
   }
 
-  const filteredMatches = dedupeMatches(await getEloMatches({
+  const loadedMatches = dedupeMatches(await getEloMatches({
     eventTypes: normalizedEventTypes,
     startDate: resolvedStartDate,
     endDate: resolvedEndDate
   }));
+  const filteredMatches = typeof matchFilter === 'function'
+    ? loadedMatches.filter(match => {
+        try {
+          return matchFilter(match);
+        } catch (error) {
+          return false;
+        }
+      })
+    : loadedMatches;
 
   const eloResults = buildYearlyEloRatings(filteredMatches, {
     ...DEFAULT_RANKINGS_OPTIONS,
@@ -189,7 +201,7 @@ export async function buildRankingsDataset(
       String(a.playerKey).localeCompare(String(b.playerKey))
     );
   })[0] || null;
-  const uniquePlayers = new Set(seasonRows.map(row => row.playerKey)).size;
+  const uniquePlayers = new Set(seasonRows.map(row => row.basePlayerKey || row.playerKey)).size;
   const latestProcessedMatch = eloResults.processedMatches[eloResults.processedMatches.length - 1] || null;
 
   return {

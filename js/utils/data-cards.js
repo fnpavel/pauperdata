@@ -197,7 +197,8 @@ function formatDeckEventWinRateText(eventData) {
 }
 
 // Player Stat Cards
-export function calculatePlayerStats(data) {
+export function calculatePlayerStats(data, options = {}) {
+  const selectedTopFinishDeck = String(options?.selectedTopFinishDeck || '').trim();
   const totalEvents = data.length > 0 ? [...new Set(data.map(row => row.Event))].length : 0;
 
   if (!data || data.length === 0) {
@@ -264,8 +265,14 @@ export function calculatePlayerStats(data) {
   const leastPlayedCount = minCount > 0 ? `${minCount}x` : "";
 
   // Rank Stats
+  const rankStatsSource = selectedTopFinishDeck
+    ? data.filter(row => String(row?.Deck || '').trim() === selectedTopFinishDeck)
+    : data;
+  const rankStatsTotalEvents = rankStatsSource.length > 0
+    ? [...new Set(rankStatsSource.map(row => row.Event))].length
+    : 0;
   const rankStats = { top1: 0, top1_8: 0, top9_16: 0, top17_32: 0, top33Plus: 0 };
-  data.forEach(row => {
+  rankStatsSource.forEach(row => {
     if (row.Rank === 1) {
       rankStats.top1 += 1;
     } else if (row.Rank >= 2 && row.Rank <= 8) {
@@ -278,7 +285,7 @@ export function calculatePlayerStats(data) {
       rankStats.top33Plus += 1;
     }
   });
-  const conversion = (count) => totalEvents === 0 ? "--" : `${((count / totalEvents) * 100).toFixed(0)}%`;
+  const conversion = (count) => rankStatsTotalEvents === 0 ? "--" : `${((count / rankStatsTotalEvents) * 100).toFixed(0)}%`;
   const rankStatsFormatted = {
     top1: rankStats.top1 || "--",
     top1_8: rankStats.top1_8 || "--",

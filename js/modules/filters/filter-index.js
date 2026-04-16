@@ -87,8 +87,25 @@ function getAnalysisQualityToggleButtons() {
   return Array.from(document.querySelectorAll('[data-analysis-quality-toggle="unknown-heavy-below-top32"]'));
 }
 
+function syncAnalysisQualityStatusChip(isEnabled) {
+  const statusChip = document.getElementById('analysisQualityStatusChip');
+  if (!statusChip) {
+    return;
+  }
+
+  statusChip.classList.toggle('active', isEnabled);
+  statusChip.setAttribute('aria-label', isEnabled ? 'Quality-filtered dataset active' : 'Full dataset active');
+
+  const stateElement = statusChip.querySelector('.analysis-quality-status-chip-state');
+  if (stateElement) {
+    stateElement.textContent = isEnabled ? 'Quality-Filtered' : 'Full Dataset';
+  }
+}
+
 function syncAnalysisQualityToggleButtons() {
   const isEnabled = isUnknownHeavyBelowTop32FilterEnabled();
+  document.body.dataset.analysisQualityMode = isEnabled ? 'on' : 'off';
+  syncAnalysisQualityStatusChip(isEnabled);
 
   getAnalysisQualityToggleButtons().forEach(button => {
     button.classList.toggle('active', isEnabled);

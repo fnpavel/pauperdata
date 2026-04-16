@@ -1,6 +1,7 @@
 const DEFAULT_STARTING_RATING = 1500;
 const DEFAULT_K_FACTOR = 16;
 const DEFAULT_RESET_BY_YEAR = true;
+const DEFAULT_ENTITY_MODE = 'player';
 
 const RESULT_SCORES = Object.freeze({
   win: 1,
@@ -17,12 +18,23 @@ function normalizeOptions(options = {}) {
   return {
     startingRating: getFiniteNumber(options.startingRating, DEFAULT_STARTING_RATING),
     kFactor: getFiniteNumber(options.kFactor, DEFAULT_K_FACTOR),
-    resetByYear: options.resetByYear !== false
+    resetByYear: options.resetByYear !== false,
+    entityMode: normalizeEntityMode(options.entityMode)
   };
 }
 
 function normalizeText(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
+}
+
+function normalizeEntityMode(value) {
+  return String(value || DEFAULT_ENTITY_MODE).trim().toLowerCase() === 'player_deck'
+    ? 'player_deck'
+    : DEFAULT_ENTITY_MODE;
+}
+
+function isPlayerDeckMode(entityMode = DEFAULT_ENTITY_MODE) {
+  return normalizeEntityMode(entityMode) === 'player_deck';
 }
 
 function getMatchDate(match) {
@@ -43,6 +55,42 @@ function getPlayerBKey(match) {
 
 function getPlayerBName(match) {
   return normalizeText(match?.player_b || match?.opponent);
+}
+
+function getDeckAName(match) {
+  return normalizeText(match?.deck_a || match?.deck);
+}
+
+function getDeckBName(match) {
+  return normalizeText(match?.deck_b || match?.opponent_deck);
+}
+
+function getEntityDetails(match, side = 'a', entityMode = DEFAULT_ENTITY_MODE) {
+  const normalizedSide = side === 'b' ? 'b' : 'a';
+  const basePlayerKey = normalizedSide === 'a' ? getPlayerAKey(match) : getPlayerBKey(match);
+  const basePlayerName = normalizedSide === 'a' ? getPlayerAName(match) : getPlayerBName(match);
+  const deck = normalizedSide === 'a' ? getDeckAName(match) : getDeckBName(match);
+
+  if (isPlayerDeckMode(entityMode)) {
+    const entityKey = basePlayerKey && deck ? `${basePlayerKey}:::${deck}` : '';
+    const displayName = [basePlayerName || basePlayerKey, deck].filter(Boolean).join(' - ');
+
+    return {
+      entityKey,
+      displayName,
+      basePlayerKey,
+      basePlayerName,
+      deck
+    };
+  }
+
+  return {
+    entityKey: basePlayerKey,
+    displayName: basePlayerName || basePlayerKey,
+    basePlayerKey,
+    basePlayerName,
+    deck
+  };
 }
 
 function getCalendarYear(dateString = '') {
@@ -132,14 +180,14 @@ function getResultScore(match) {
   return null;
 }
 
-function isRatedMatch(match) {
-  const playerKey = getPlayerAKey(match);
-  const opponentKey = getPlayerBKey(match);
+function isRatedMatch(match, entityMode = DEFAULT_ENTITY_MODE) {
+  const playerDetails = getEntityDetails(match, 'a', entityMode);
+  const opponentDetails = getEntityDetails(match, 'b', entityMode);
   const resultType = normalizeText(match?.result_type).toLowerCase();
   const outcome = normalizeText(match?.outcome).toLowerCase();
   const pairingQuality = normalizeText(match?.pairing_quality).toLowerCase();
 
-  if (!playerKey || !opponentKey || playerKey === opponentKey) {
+  if (!playerDetails.entityKey || !opponentDetails.entityKey || playerDetails.entityKey === opponentDetails.entityKey) {
     return false;
   }
 
@@ -148,6 +196,10 @@ function isRatedMatch(match) {
   }
 
   if (pairingQuality === 'conflict') {
+    return false;
+  }
+
+  if (isPlayerDeckMode(entityMode) && (!playerDetails.deck || !opponentDetails.deck)) {
     return false;
   }
 
@@ -168,16 +220,28 @@ function getResultTypeFromScore(score) {
   return 'unknown';
 }
 
-function ensureSeasonState(seasonStates, seasonKey, seasonYear, playerKey, displayName, startingRating) {
-  const stateKey = `${seasonKey}:::${playerKey}`;
-  const normalizedDisplayName = normalizeText(displayName);
+function ensureSeasonState(
+  seasonStates,
+  seasonKey,
+  seasonYear,
+  playerDetails,
+  startingRating
+) {
+  const stateKey = `${seasonKey}:::${playerDetails.entityKey}`;
+  const normalizedDisplayName = normalizeText(playerDetails.displayName);
+  const normalizedBasePlayerKey = normalizeText(playerDetails.basePlayerKey);
+  const normalizedBasePlayerName = normalizeText(playerDetails.basePlayerName);
+  const normalizedDeck = normalizeText(playerDetails.deck);
 
   if (!seasonStates.has(stateKey)) {
     seasonStates.set(stateKey, {
       seasonKey,
       seasonYear,
-      playerKey,
-      displayName: normalizedDisplayName || playerKey,
+      playerKey: playerDetails.entityKey,
+      displayName: normalizedDisplayName || playerDetails.entityKey,
+      basePlayerKey: normalizedBasePlayerKey,
+      basePlayerName: normalizedBasePlayerName || normalizedDisplayName || playerDetails.entityKey,
+      deck: normalizedDeck,
       rating: startingRating,
       matches: 0,
       wins: 0,
@@ -193,6 +257,15 @@ function ensureSeasonState(seasonStates, seasonKey, seasonYear, playerKey, displ
   const state = seasonStates.get(stateKey);
   if (normalizedDisplayName) {
     state.displayName = normalizedDisplayName;
+  }
+  if (normalizedBasePlayerKey) {
+    state.basePlayerKey = normalizedBasePlayerKey;
+  }
+  if (normalizedBasePlayerName) {
+    state.basePlayerName = normalizedBasePlayerName;
+  }
+  if (normalizedDeck) {
+    state.deck = normalizedDeck;
   }
 
   return state;
@@ -240,10 +313,10 @@ function buildBatchKey(match, seasonKey) {
   ].join('|||');
 }
 
-function buildMatchBatches(matches = [], resetByYear = true) {
+function buildMatchBatches(matches = [], resetByYear = true, entityMode = DEFAULT_ENTITY_MODE) {
   const sortedMatches = matches
     .map((match, index) => ({ match, index }))
-    .filter(({ match }) => isRatedMatch(match))
+    .filter(({ match }) => isRatedMatch(match, entityMode))
     .sort(compareMatches)
     .map(({ match }) => ({
       match,
@@ -287,29 +360,31 @@ export function calculateEloRatingDelta(ratingA, ratingB, scoreA, kFactor = DEFA
 
 export function getPlayerEloHistory(matches = [], options = {}) {
   const normalizedOptions = normalizeOptions(options);
-  const { batches, ratedMatchCount } = buildMatchBatches(matches, normalizedOptions.resetByYear);
+  const { batches, ratedMatchCount } = buildMatchBatches(
+    matches,
+    normalizedOptions.resetByYear,
+    normalizedOptions.entityMode
+  );
   const seasonStates = new Map();
   const historyByPlayer = new Map();
   const processedMatches = [];
 
   batches.forEach(batch => {
     const pendingUpdates = batch.matches.map(match => {
-      const playerKey = getPlayerAKey(match);
-      const opponentKey = getPlayerBKey(match);
+      const playerDetails = getEntityDetails(match, 'a', normalizedOptions.entityMode);
+      const opponentDetails = getEntityDetails(match, 'b', normalizedOptions.entityMode);
       const playerState = ensureSeasonState(
         seasonStates,
         batch.seasonKey,
         batch.seasonYear,
-        playerKey,
-        getPlayerAName(match),
+        playerDetails,
         normalizedOptions.startingRating
       );
       const opponentState = ensureSeasonState(
         seasonStates,
         batch.seasonKey,
         batch.seasonYear,
-        opponentKey,
-        getPlayerBName(match),
+        opponentDetails,
         normalizedOptions.startingRating
       );
       const playerRatingBefore = playerState.rating;
@@ -325,6 +400,8 @@ export function getPlayerEloHistory(matches = [], options = {}) {
       return {
         match,
         batch,
+        playerDetails,
+        opponentDetails,
         playerState,
         opponentState,
         playerRatingBefore,
@@ -371,8 +448,14 @@ export function getPlayerEloHistory(matches = [], options = {}) {
         round: Number.isFinite(roundValue) ? roundValue : null,
         playerKey: update.playerState.playerKey,
         player: update.playerState.displayName,
+        playerBaseKey: update.playerState.basePlayerKey,
+        playerBaseName: update.playerState.basePlayerName,
+        deck: update.playerDetails.deck,
         opponentKey: update.opponentState.playerKey,
         opponent: update.opponentState.displayName,
+        opponentBaseKey: update.opponentState.basePlayerKey,
+        opponentBaseName: update.opponentState.basePlayerName,
+        opponentDeck: update.opponentDetails.deck,
         resultType: playerResultType,
         score: update.playerScore,
         ratingBefore: update.playerRatingBefore,
@@ -388,8 +471,14 @@ export function getPlayerEloHistory(matches = [], options = {}) {
         round: Number.isFinite(roundValue) ? roundValue : null,
         playerKey: update.opponentState.playerKey,
         player: update.opponentState.displayName,
+        playerBaseKey: update.opponentState.basePlayerKey,
+        playerBaseName: update.opponentState.basePlayerName,
+        deck: update.opponentDetails.deck,
         opponentKey: update.playerState.playerKey,
         opponent: update.playerState.displayName,
+        opponentBaseKey: update.playerState.basePlayerKey,
+        opponentBaseName: update.playerState.basePlayerName,
+        opponentDeck: update.playerDetails.deck,
         resultType: opponentResultType,
         score: update.opponentScore,
         ratingBefore: update.opponentRatingBefore,
@@ -401,6 +490,15 @@ export function getPlayerEloHistory(matches = [], options = {}) {
         ...update.match,
         seasonKey: update.batch.seasonKey,
         seasonYear: update.batch.seasonYear,
+        entityMode: normalizedOptions.entityMode,
+        playerEntityKey: update.playerState.playerKey,
+        opponentEntityKey: update.opponentState.playerKey,
+        playerBaseKey: update.playerState.basePlayerKey,
+        playerBaseName: update.playerState.basePlayerName,
+        opponentBaseKey: update.opponentState.basePlayerKey,
+        opponentBaseName: update.opponentState.basePlayerName,
+        playerDeck: update.playerDetails.deck,
+        opponentDeck: update.opponentDetails.deck,
         playerRatingBefore: update.playerRatingBefore,
         playerRatingAfter: update.playerRatingAfter,
         opponentRatingBefore: update.opponentRatingBefore,
