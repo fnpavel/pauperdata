@@ -101,6 +101,20 @@ header {
   transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
+body[data-analysis-quality-mode="on"] header {
+  background-image:
+    radial-gradient(circle at center, rgba(91, 189, 180, 0.28) 0%, transparent 48%),
+    linear-gradient(145deg, rgba(91, 189, 180, 0.14), var(--header-shade));
+  box-shadow: 0 14px 34px rgba(10, 46, 44, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+html[data-theme="light"] body[data-analysis-quality-mode="on"] header {
+  background-image:
+    radial-gradient(circle at center, rgba(91, 189, 180, 0.18) 0%, transparent 48%),
+    linear-gradient(145deg, rgba(91, 189, 180, 0.1), rgba(255, 249, 239, 0.96));
+  box-shadow: 0 12px 26px rgba(42, 115, 108, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
 header::before {
   opacity: 0.85;
 }
