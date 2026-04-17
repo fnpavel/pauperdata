@@ -861,6 +861,88 @@ function buildPlayerEloDeckGroups(matchViews = []) {
   });
 }
 
+const MAX_PLAYER_ELO_CACHE_ENTRIES = 24;
+const playerRankingsDatasetCache = new Map();
+const playerEloInsightsCache = new Map();
+
+function rememberLimitedCacheEntry(cache, key, value, maxEntries = MAX_PLAYER_ELO_CACHE_ENTRIES) {
+  if (cache.has(key)) {
+    cache.delete(key);
+  }
+
+  cache.set(key, value);
+
+  while (cache.size > maxEntries) {
+    const oldestKey = cache.keys().next().value;
+    cache.delete(oldestKey);
+  }
+
+  return value;
+}
+
+function getNormalizedPlayerEventTypesKey(eventTypes = []) {
+  return [...new Set(
+    (Array.isArray(eventTypes) ? eventTypes : [eventTypes])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  )].sort().join(',');
+}
+
+function getPlayerEloEventKey(record = {}) {
+  return `${String(record?.Date || record?.date || '').trim()}|||${String(record?.Event || record?.event || '').trim()}`;
+}
+
+function getPlayerEloDeckLookupKey(record = {}) {
+  return `${getPlayerEloEventKey(record)}|||${String(record?.Deck || record?.deck || '').trim()}`;
+}
+
+function buildPlayerEloRowSignature(rows = [], keyBuilder = getPlayerEloEventKey) {
+  return (Array.isArray(rows) ? rows : [])
+    .map(row => keyBuilder(row))
+    .filter(value => value && value !== '|||')
+    .join('@@');
+}
+
+function getCachedPlayerRankingsDataset({
+  eventTypes = [],
+  startDate = '',
+  endDate = '',
+  entityMode = 'player',
+  matchFilterKey = '',
+  matchFilter = null
+} = {}) {
+  const cacheKey = [
+    entityMode,
+    getNormalizedPlayerEventTypesKey(eventTypes),
+    String(startDate || '').trim(),
+    String(endDate || '').trim(),
+    String(matchFilterKey || '').trim() || 'all'
+  ].join('::');
+
+  if (playerRankingsDatasetCache.has(cacheKey)) {
+    return rememberLimitedCacheEntry(
+      playerRankingsDatasetCache,
+      cacheKey,
+      playerRankingsDatasetCache.get(cacheKey)
+    );
+  }
+
+  const datasetPromise = buildRankingsDataset({
+    eventTypes,
+    startDate,
+    endDate,
+    matchFilter
+  }, {
+    resetByYear: false,
+    entityMode
+  }).catch(error => {
+    playerRankingsDatasetCache.delete(cacheKey);
+    throw error;
+  });
+
+  return rememberLimitedCacheEntry(playerRankingsDatasetCache, cacheKey, datasetPromise);
+}
+
 async function buildPlayerEloInsights({
   selectedPlayer = '',
   selectedEventTypes = [],
@@ -874,110 +956,131 @@ async function buildPlayerEloInsights({
     return createEmptyPlayerEloInsights();
   }
 
-  const allowedDeckEventKeys = new Set(
-    (Array.isArray(qualityScopedPlayerRows) ? qualityScopedPlayerRows : [])
-      .map(row => `${String(row?.Date || '').trim()}|||${String(row?.Event || '').trim()}`)
-      .filter(value => value !== '|||')
-  );
-  const deckMatchFilter = allowedDeckEventKeys.size > 0
-    ? match => allowedDeckEventKeys.has(`${String(match?.date || match?.Date || '').trim()}|||${String(match?.event || match?.Event || '').trim()}`)
-    : null;
+  const allowedDeckEventKeySignature = buildPlayerEloRowSignature(qualityScopedPlayerRows, getPlayerEloEventKey);
+  const playerDeckLookupSignature = buildPlayerEloRowSignature(playerRows, getPlayerEloDeckLookupKey);
+  const cacheKey = [
+    String(selectedPlayer || '').trim(),
+    getNormalizedPlayerEventTypesKey(selectedEventTypes),
+    String(startDate || '').trim(),
+    String(endDate || '').trim(),
+    String(selectedDeck || '').trim(),
+    allowedDeckEventKeySignature,
+    playerDeckLookupSignature
+  ].join('::');
 
-  const [overallDataset, deckDataset] = await Promise.all([
-    buildRankingsDataset({
-      eventTypes: selectedEventTypes,
-      startDate,
-      endDate
-    }, {
-      resetByYear: false,
-      entityMode: 'player'
-    }),
-    buildRankingsDataset({
-      eventTypes: selectedEventTypes,
-      startDate,
-      endDate,
-      matchFilter: deckMatchFilter
-    }, {
-      resetByYear: false,
-      entityMode: 'player_deck'
-    })
-  ]);
-  const overallPeriodRow = (overallDataset?.seasonRows || []).find(row => String(row.playerKey || '').trim() === String(selectedPlayer || '').trim()) || null;
-  const sortHistoryEntries = entries => [...entries].sort((a, b) => {
-    return (
-      String(b.date || '').localeCompare(String(a.date || '')) ||
-      Number(b.round || 0) - Number(a.round || 0) ||
-      String(b.eventId || '').localeCompare(String(a.eventId || ''))
-    );
-  });
-  const overallHistoryEntries = overallPeriodRow
-    ? sortHistoryEntries(
-        (overallDataset?.historyByPlayer?.get(selectedPlayer) || [])
-          .filter(entry => String(entry.seasonKey || '').trim() === String(overallPeriodRow.seasonKey || '').trim())
-      )
-    : [];
-  const deckRows = (deckDataset?.seasonRows || [])
-    .filter(row => String(row.basePlayerKey || '').trim() === String(selectedPlayer || '').trim())
-    .sort((a, b) => {
+  if (playerEloInsightsCache.has(cacheKey)) {
+    return rememberLimitedCacheEntry(playerEloInsightsCache, cacheKey, playerEloInsightsCache.get(cacheKey));
+  }
+
+  const insightsPromise = (async () => {
+    const allowedDeckEventKeys = [...new Set(
+      (Array.isArray(qualityScopedPlayerRows) ? qualityScopedPlayerRows : [])
+        .map(row => getPlayerEloEventKey(row))
+        .filter(value => value !== '|||')
+    )];
+    const allowedDeckEventKeySet = new Set(allowedDeckEventKeys);
+    const deckMatchFilter = allowedDeckEventKeySet.size > 0
+      ? match => allowedDeckEventKeySet.has(getPlayerEloEventKey(match))
+      : null;
+
+    const [overallDataset, deckDataset] = await Promise.all([
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate,
+        endDate,
+        entityMode: 'player'
+      }),
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate,
+        endDate,
+        entityMode: 'player_deck',
+        matchFilterKey: allowedDeckEventKeys.join('@@'),
+        matchFilter: deckMatchFilter
+      })
+    ]);
+    const overallPeriodRow = (overallDataset?.seasonRows || []).find(row => String(row.playerKey || '').trim() === String(selectedPlayer || '').trim()) || null;
+    const sortHistoryEntries = entries => [...entries].sort((a, b) => {
       return (
-        Number(b.rating) - Number(a.rating) ||
-        Number(b.matches) - Number(a.matches) ||
-        String(a.deck || '').localeCompare(String(b.deck || ''), undefined, { sensitivity: 'base' })
+        String(b.date || '').localeCompare(String(a.date || '')) ||
+        Number(b.round || 0) - Number(a.round || 0) ||
+        String(b.eventId || '').localeCompare(String(a.eventId || ''))
       );
     });
-  const availableDecks = [...new Set(
-    deckRows
-      .map(row => String(row.deck || '').trim())
-      .filter(isSelectablePlayerEloDeck)
-  )];
-  const resolvedDeck = availableDecks.includes(String(selectedDeck || '').trim()) ? String(selectedDeck || '').trim() : '';
-  const periodRow = resolvedDeck
-    ? (deckRows.find(row => String(row.deck || '').trim() === resolvedDeck) || null)
-    : overallPeriodRow;
-  const historyEntries = resolvedDeck && periodRow
-    ? sortHistoryEntries(
-        (deckDataset?.historyByPlayer?.get(periodRow.playerKey) || [])
-          .filter(entry => String(entry.seasonKey || '').trim() === String(periodRow.seasonKey || '').trim())
-      )
-    : overallHistoryEntries;
-  const eventDeckLookup = getPlayerEventDeckLookup(playerRows);
-  const historyWithDeckFallbacks = historyEntries.map(entry => {
-    if (entry.deck) {
-      return entry;
-    }
+    const overallHistoryEntries = overallPeriodRow
+      ? sortHistoryEntries(
+          (overallDataset?.historyByPlayer?.get(selectedPlayer) || [])
+            .filter(entry => String(entry.seasonKey || '').trim() === String(overallPeriodRow.seasonKey || '').trim())
+        )
+      : [];
+    const deckRows = (deckDataset?.seasonRows || [])
+      .filter(row => String(row.basePlayerKey || '').trim() === String(selectedPlayer || '').trim())
+      .sort((a, b) => {
+        return (
+          Number(b.rating) - Number(a.rating) ||
+          Number(b.matches) - Number(a.matches) ||
+          String(a.deck || '').localeCompare(String(b.deck || ''), undefined, { sensitivity: 'base' })
+        );
+      });
+    const availableDecks = [...new Set(
+      deckRows
+        .map(row => String(row.deck || '').trim())
+        .filter(isSelectablePlayerEloDeck)
+    )];
+    const resolvedDeck = availableDecks.includes(String(selectedDeck || '').trim()) ? String(selectedDeck || '').trim() : '';
+    const periodRow = resolvedDeck
+      ? (deckRows.find(row => String(row.deck || '').trim() === resolvedDeck) || null)
+      : overallPeriodRow;
+    const historyEntries = resolvedDeck && periodRow
+      ? sortHistoryEntries(
+          (deckDataset?.historyByPlayer?.get(periodRow.playerKey) || [])
+            .filter(entry => String(entry.seasonKey || '').trim() === String(periodRow.seasonKey || '').trim())
+        )
+      : overallHistoryEntries;
+    const eventDeckLookup = getPlayerEventDeckLookup(playerRows);
+    const historyWithDeckFallbacks = historyEntries.map(entry => {
+      if (entry.deck) {
+        return entry;
+      }
 
-    const fallbackDeck = eventDeckLookup.get(`${String(entry.date || '').trim()}|||${String(entry.event || '').trim()}`) || '';
+      const fallbackDeck = eventDeckLookup.get(`${String(entry.date || '').trim()}|||${String(entry.event || '').trim()}`) || '';
+      return {
+        ...entry,
+        deck: fallbackDeck
+      };
+    });
+    const allDeckHistoryEntries = sortHistoryEntries(
+      deckRows.flatMap(row => {
+        const entries = deckDataset?.historyByPlayer?.get(row.playerKey) || [];
+        return entries.filter(entry => String(entry.seasonKey || '').trim() === String(row.seasonKey || '').trim());
+      })
+    );
+    const deckGroups = buildPlayerEloDeckGroups(allDeckHistoryEntries);
+    const peakRating = historyWithDeckFallbacks.length > 0
+      ? Math.max(...historyWithDeckFallbacks.map(entry => Number(entry.ratingAfter)).filter(Number.isFinite))
+      : Number.NEGATIVE_INFINITY;
+    const peakEntries = historyWithDeckFallbacks.filter(entry => Number(entry.ratingAfter) === peakRating);
+
     return {
-      ...entry,
-      deck: fallbackDeck
+      dataset: resolvedDeck ? deckDataset : overallDataset,
+      overallDataset,
+      deckDataset,
+      periodRow,
+      overallPeriodRow,
+      historyEntries: historyWithDeckFallbacks,
+      overallHistoryEntries,
+      availableDecks,
+      selectedDeck: resolvedDeck,
+      deckRows,
+      deckGroups,
+      peakEntries
     };
+  })().catch(error => {
+    playerEloInsightsCache.delete(cacheKey);
+    throw error;
   });
-  const allDeckHistoryEntries = sortHistoryEntries(
-    deckRows.flatMap(row => {
-      const entries = deckDataset?.historyByPlayer?.get(row.playerKey) || [];
-      return entries.filter(entry => String(entry.seasonKey || '').trim() === String(row.seasonKey || '').trim());
-    })
-  );
-  const deckGroups = buildPlayerEloDeckGroups(allDeckHistoryEntries);
-  const peakRating = historyWithDeckFallbacks.length > 0
-    ? Math.max(...historyWithDeckFallbacks.map(entry => Number(entry.ratingAfter)).filter(Number.isFinite))
-    : Number.NEGATIVE_INFINITY;
-  const peakEntries = historyWithDeckFallbacks.filter(entry => Number(entry.ratingAfter) === peakRating);
 
-  return {
-    dataset: resolvedDeck ? deckDataset : overallDataset,
-    overallDataset,
-    deckDataset,
-    periodRow,
-    overallPeriodRow,
-    historyEntries: historyWithDeckFallbacks,
-    overallHistoryEntries,
-    availableDecks,
-    selectedDeck: resolvedDeck,
-    deckRows,
-    deckGroups,
-    peakEntries
-  };
+  return rememberLimitedCacheEntry(playerEloInsightsCache, cacheKey, insightsPromise);
 }
 
 function buildPlayerEloMatchListHtml(rows = []) {
