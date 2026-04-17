@@ -1003,6 +1003,11 @@ body.modal-open {
   padding-left: 18px;
 }
 
+.player-rank-drilldown-hover-note-text {
+  display: block;
+  line-height: 1.45;
+}
+
 .player-rank-drilldown-hover-note-header {
   display: block;
   margin-bottom: 6px;
@@ -1102,6 +1107,58 @@ body.modal-open {
 
 #playerStats.stats-container .stat-card.drilldown-tooltip:hover .player-stat-card-hover-note,
 #playerStats.stats-container .stat-card.drilldown-tooltip:focus-within .player-stat-card-hover-note {
+  margin-top: 0;
+  padding-top: 10px;
+  border-top: none;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.player-rank-drilldown-summary-item.drilldown-tooltip,
+.player-rank-drilldown-content .stat-card.drilldown-tooltip {
+  position: relative;
+  isolation: isolate;
+  cursor: help;
+}
+
+.player-rank-drilldown-summary-item .player-stat-card-hover-note,
+.player-rank-drilldown-content .stat-card .player-stat-card-hover-note {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  margin-top: 0;
+  padding: 10px 12px 12px 16px;
+  border-top: none;
+  background: linear-gradient(160deg, rgba(8, 12, 15, 0.94), rgba(22, 27, 35, 0.96));
+  backdrop-filter: blur(6px);
+  color: var(--text-primary);
+  opacity: 0;
+  max-height: none;
+  overflow: hidden;
+  pointer-events: none;
+  transform: translateY(6px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.player-rank-drilldown-summary-item .player-stat-card-hover-note .player-rank-drilldown-hover-note-list,
+.player-rank-drilldown-content .stat-card .player-stat-card-hover-note .player-rank-drilldown-hover-note-list {
+  width: 100%;
+  margin: 0;
+  padding-left: 16px;
+}
+
+.player-rank-drilldown-summary-item .player-stat-card-hover-note .player-rank-drilldown-hover-note-list li + li,
+.player-rank-drilldown-content .stat-card .player-stat-card-hover-note .player-rank-drilldown-hover-note-list li + li {
+  margin-top: 6px;
+}
+
+.player-rank-drilldown-summary-item.drilldown-tooltip:hover .player-stat-card-hover-note,
+.player-rank-drilldown-summary-item.drilldown-tooltip:focus-within .player-stat-card-hover-note,
+.player-rank-drilldown-content .stat-card.drilldown-tooltip:hover .player-stat-card-hover-note,
+.player-rank-drilldown-content .stat-card.drilldown-tooltip:focus-within .player-stat-card-hover-note {
   margin-top: 0;
   padding-top: 10px;
   border-top: none;
@@ -1352,10 +1409,36 @@ body.modal-open {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  width: 100%;
   padding: 14px;
   border-radius: 14px;
   border: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+button.leaderboard-deck-result-card {
+  appearance: none;
+  font: inherit;
+}
+
+.leaderboard-deck-result-card:hover {
+  transform: translateY(-1px);
+  border-color: rgba(212, 166, 87, 0.38);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+}
+
+.leaderboard-deck-result-card.active {
+  border-color: rgba(212, 166, 87, 0.72);
+  background: linear-gradient(145deg, rgba(212, 166, 87, 0.14), rgba(255, 255, 255, 0.04));
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.24);
+}
+
+.leaderboard-deck-result-card-total {
+  background: linear-gradient(145deg, rgba(212, 166, 87, 0.12), rgba(255, 255, 255, 0.04));
 }
 
 .leaderboard-deck-result-header {
@@ -1380,12 +1463,19 @@ body.modal-open {
 }
 
 .leaderboard-deck-result-badge {
+  display: inline-flex;
   flex-direction: column;
+  align-items: center;
   gap: 2px;
   min-width: 92px;
   padding: 8px 12px;
   line-height: 1.15;
   text-align: center;
+}
+
+.leaderboard-deck-result-badge span {
+  font-size: 0.72rem;
+  opacity: 0.8;
 }
 
 .leaderboard-deck-result-stats {

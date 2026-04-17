@@ -184,23 +184,18 @@ export function destroyLeaderboardChart(chartInstance) {
 export function createLeaderboardPlayerEloChart(canvas, {
   row,
   points = [],
+  labels = [],
+  datasets = [],
+  timelineEntries = [],
   formatRating,
   showYearBoundaries = false
 } = {}) {
-  if (!canvas || !globalThis.Chart || !row || !points.length) {
-    return null;
-  }
-
-  const theme = getChartThemeColors();
-  const yearBoundaryMarkers = showYearBoundaries
-    ? buildLeaderboardYearBoundaryMarkers(points)
-    : [];
-
-  return new globalThis.Chart(canvas, {
-    type: 'line',
-    data: {
-      labels: points.map(point => point.label),
-      datasets: [{
+  const resolvedLabels = labels.length > 0
+    ? labels
+    : points.map(point => point.label);
+  const resolvedDatasets = datasets.length > 0
+    ? datasets
+    : (!row || !points.length ? [] : [{
         label: row.displayName || row.playerKey || 'Player Elo',
         data: points.map(point => point.ratingAfter),
         borderColor: getLeaderboardTimelineColor(0),
@@ -209,13 +204,36 @@ export function createLeaderboardPlayerEloChart(canvas, {
         pointHoverRadius: 5,
         borderWidth: 2,
         tension: 0.25,
-        fill: true
-      }]
+        fill: true,
+        tooltipLabelPrefix: 'Elo'
+      }]);
+  const resolvedTimelineEntries = timelineEntries.length > 0
+    ? timelineEntries
+    : points;
+
+  if (!canvas || !globalThis.Chart || !resolvedLabels.length || !resolvedDatasets.length) {
+    return null;
+  }
+
+  const theme = getChartThemeColors();
+  const yearBoundaryMarkers = showYearBoundaries
+    ? buildLeaderboardYearBoundaryMarkers(resolvedTimelineEntries)
+    : [];
+
+  return new globalThis.Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: resolvedLabels,
+      datasets: resolvedDatasets
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       aspectRatio: 2.2,
+      interaction: {
+        mode: 'nearest',
+        intersect: false
+      },
       plugins: {
         leaderboardYearBoundaryPlugin: {
           markers: yearBoundaryMarkers,
@@ -223,7 +241,11 @@ export function createLeaderboardPlayerEloChart(canvas, {
           labelColor: theme.text || '#d4a657'
         },
         legend: {
-          display: false
+          display: resolvedDatasets.length > 1,
+          position: 'top',
+          labels: {
+            color: theme.text
+          }
         },
         datalabels: {
           display: false
@@ -234,7 +256,12 @@ export function createLeaderboardPlayerEloChart(canvas, {
               return items[0]?.label || '';
             },
             label(context) {
-              return `Elo: ${formatRating(context.parsed.y)}`;
+              if (!Number.isFinite(context.parsed.y)) {
+                return `${context.dataset.label}: no event result`;
+              }
+
+              const tooltipLabelPrefix = context.dataset.tooltipLabelPrefix || context.dataset.label || 'Elo';
+              return `${tooltipLabelPrefix}: ${formatRating(context.parsed.y)}`;
             }
           }
         }
