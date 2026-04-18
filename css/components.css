@@ -984,6 +984,12 @@ body.modal-open {
   cursor: help;
 }
 
+.drilldown-tooltip-actionable,
+.player-rank-drilldown-summary-item.drilldown-tooltip-actionable,
+.player-rank-drilldown-content .stat-card.drilldown-tooltip-actionable {
+  cursor: pointer;
+}
+
 .player-rank-drilldown-hover-note {
   display: block;
   max-height: 0;

@@ -21,6 +21,9 @@ import {
   downloadCsvFile,
   sanitizeCsvFilename
 } from './export-table-csv.js';
+import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
+import { getAnalysisRows } from '../utils/analysis-data.js';
+import { getPlayerIdentityKey } from '../utils/player-names.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
@@ -91,6 +94,7 @@ let currentLeaderboardDataset = {
   period: null,
   processedMatches: [],
   historyByPlayer: new Map(),
+  eventResultLookup: new Map(),
   deckDataset: {
     seasonRows: [],
     historyByPlayer: new Map(),
@@ -962,6 +966,173 @@ function normalizeLeaderboardSearchText(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
 }
 
+function getLeaderboardEventKey(record = {}) {
+  return `${String(record?.Date || record?.date || '').trim()}|||${String(record?.Event || record?.event || '').trim()}`;
+}
+
+function getLeaderboardEventResultLookupKey(record = {}, playerIdentityKey = '') {
+  const eventKey = getLeaderboardEventKey(record);
+  const normalizedPlayerKey = String(playerIdentityKey || '').trim();
+  return eventKey && normalizedPlayerKey ? `${eventKey}|||${normalizedPlayerKey}` : '';
+}
+
+function getLeaderboardEventResultWinRate(row = {}) {
+  const explicitWinRate = Number(row?.['Win Rate'] ?? row?.winRate);
+  if (Number.isFinite(explicitWinRate)) {
+    return explicitWinRate <= 1 ? explicitWinRate * 100 : explicitWinRate;
+  }
+
+  const wins = Number(row?.Wins ?? row?.wins) || 0;
+  const losses = Number(row?.Losses ?? row?.losses) || 0;
+  const totalMatches = wins + losses;
+  return totalMatches > 0 ? (wins / totalMatches) * 100 : Number.NaN;
+}
+
+function buildLeaderboardEventResultLookup(dataset = currentLeaderboardDataset) {
+  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const selectedEventTypes = new Set(
+    (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  );
+  const allowedEventKeys = new Set(
+    (Array.isArray(dataset?.filteredMatches) ? dataset.filteredMatches : [])
+      .map(match => getLeaderboardEventKey(match))
+      .filter(Boolean)
+  );
+
+  return eventRows.reduce((lookup, row) => {
+    const rowDate = String(row?.Date || '').trim();
+    const rowEventType = String(row?.EventType || '').trim().toLowerCase();
+    const rowEventKey = getLeaderboardEventKey(row);
+    const playerIdentityKey = getPlayerIdentityKey(row?.Player);
+    const lookupKey = getLeaderboardEventResultLookupKey(row, playerIdentityKey);
+
+    if (!lookupKey || !rowDate) {
+      return lookup;
+    }
+
+    if (dataset?.startDate && rowDate < dataset.startDate) {
+      return lookup;
+    }
+    if (dataset?.endDate && rowDate > dataset.endDate) {
+      return lookup;
+    }
+    if (selectedEventTypes.size > 0 && !selectedEventTypes.has(rowEventType)) {
+      return lookup;
+    }
+    if (allowedEventKeys.size > 0 && !allowedEventKeys.has(rowEventKey)) {
+      return lookup;
+    }
+
+    const normalizedResult = {
+      player: String(row?.Player || '').trim(),
+      event: String(row?.Event || '').trim(),
+      date: rowDate,
+      eventType: rowEventType,
+      rank: Number(row?.Rank),
+      wins: Number(row?.Wins) || 0,
+      losses: Number(row?.Losses) || 0,
+      winRate: getLeaderboardEventResultWinRate(row)
+    };
+    const existingResult = lookup.get(lookupKey);
+
+    if (!existingResult) {
+      lookup.set(lookupKey, normalizedResult);
+      return lookup;
+    }
+
+    const currentRank = Number.isFinite(normalizedResult.rank) ? normalizedResult.rank : Number.POSITIVE_INFINITY;
+    const existingRank = Number.isFinite(existingResult.rank) ? existingResult.rank : Number.POSITIVE_INFINITY;
+    if (
+      currentRank < existingRank ||
+      (currentRank === existingRank && normalizedResult.wins > existingResult.wins) ||
+      (currentRank === existingRank && normalizedResult.wins === existingResult.wins && normalizedResult.losses < existingResult.losses)
+    ) {
+      lookup.set(lookupKey, normalizedResult);
+    }
+
+    return lookup;
+  }, new Map());
+}
+
+function getLeaderboardEventResultForEntry(entry = {}, eventResultLookup = currentLeaderboardDataset.eventResultLookup) {
+  if (!entry || !(eventResultLookup instanceof Map) || eventResultLookup.size === 0) {
+    return null;
+  }
+
+  const playerIdentityKey = getPlayerIdentityKey(entry.playerBaseName || entry.playerBaseKey || entry.player || entry.playerKey);
+  const lookupKey = getLeaderboardEventResultLookupKey(
+    {
+      date: entry.date,
+      event: entry.event
+    },
+    playerIdentityKey
+  );
+
+  return lookupKey ? (eventResultLookup.get(lookupKey) || null) : null;
+}
+
+function buildLeaderboardEventAnalysisDataAttributes(entry = {}) {
+  const eventName = String(entry?.event || '').trim();
+  if (!eventName) {
+    return '';
+  }
+
+  const eventDate = String(entry?.date || '').trim();
+  const playerLabel = String(entry?.playerBaseName || entry?.player || entry?.playerKey || '').trim();
+  const eventLabel = formatEventName(eventName) || eventName;
+  const eventDateLabel = eventDate ? formatDate(eventDate) : 'Unknown Date';
+
+  return [
+    'data-leaderboard-open-event-analysis="true"',
+    `data-leaderboard-open-event-name="${escapeHtml(eventName)}"`,
+    `data-leaderboard-open-event-date="${escapeHtml(eventDate)}"`,
+    `data-leaderboard-open-event-player="${escapeHtml(playerLabel)}"`,
+    `aria-label="${escapeHtml(`Open ${eventLabel} on ${eventDateLabel} in Event Analysis`)}"`
+  ].join(' ');
+}
+
+function resolveLeaderboardEventAnalysisTarget({
+  eventName = '',
+  eventDate = '',
+  playerName = ''
+} = {}) {
+  const fallbackEventName = String(eventName || '').trim();
+  if (!fallbackEventName) {
+    return null;
+  }
+
+  const fallbackPlayerName = String(playerName || '').trim();
+  const matchedResult = getLeaderboardEventResultForEntry({
+    event: fallbackEventName,
+    date: String(eventDate || '').trim(),
+    playerBaseName: fallbackPlayerName,
+    player: fallbackPlayerName
+  });
+
+  return {
+    eventName: matchedResult?.event || fallbackEventName,
+    eventType: matchedResult?.eventType || String(currentLeaderboardDataset?.eventTypes?.[0] || DEFAULT_EVENT_TYPE).trim().toLowerCase(),
+    playerName: matchedResult?.player || fallbackPlayerName
+  };
+}
+
+async function openLeaderboardEventAnalysisShortcut({
+  eventName = '',
+  eventDate = '',
+  playerName = ''
+} = {}) {
+  const target = resolveLeaderboardEventAnalysisTarget({ eventName, eventDate, playerName });
+  if (!target?.eventName) {
+    return;
+  }
+
+  shouldRestoreLeaderboardFullscreen = false;
+  await closeLeaderboardDrilldown();
+  openSingleEventPlayerInAnalysis(target.eventName, target.eventType, target.playerName);
+}
+
 function updateLeaderboardSearchStatus(message = '') {
   const statusElement = getLeaderboardSearchStatus();
   if (statusElement) {
@@ -1524,10 +1695,12 @@ function buildLeaderboardPlayerScopeSummaryItemsHtml(row, model) {
     buildSummaryItemHtml('First Match', firstMatchLabel),
     buildSummaryItemHtml('Last Match', lastMatchLabel),
     buildSummaryItemHtml('Best Gain', bestGainLabel, {
-      hoverItems: buildLeaderboardMatchMomentHoverItems(activeScope.bestDelta)
+      hoverItems: buildLeaderboardMatchMomentHoverItems(activeScope.bestDelta),
+      eventAnalysisEntry: activeScope.bestDelta
     }),
     buildSummaryItemHtml('Biggest Drop', biggestDropLabel, {
-      hoverItems: buildLeaderboardMatchMomentHoverItems(activeScope.worstDelta)
+      hoverItems: buildLeaderboardMatchMomentHoverItems(activeScope.worstDelta),
+      eventAnalysisEntry: activeScope.worstDelta
     }),
     buildLeaderboardPlayerSeasonEloSummaryItemsHtml(activeScope)
   ].filter(Boolean).join('');
@@ -1871,34 +2044,32 @@ function buildLeaderboardMatchMomentHoverItems(entry = {}) {
     return [];
   }
 
-  const rawEventLabel = String(entry.event || '').trim();
-  const compactEventLabel = rawEventLabel
-    ? rawEventLabel
-      .replace(/^MTGO\s+/i, '')
-      .replace(/\((\d{4}-\d{2}-\d{2})\)$/, '$1')
-      .replace(/\s+/g, ' ')
-      .trim()
-    : ((formatEventName(entry.event) || 'Event') + (entry.date ? ` ${entry.date}` : ''));
-  const roundLabel = Number.isFinite(Number(entry.round)) ? `Round ${Number(entry.round)}` : 'Round ---';
+  const eventLabel = formatEventName(entry.event) || entry.event || 'Unknown Event';
+  const eventDateLabel = entry.date ? formatDate(entry.date) : 'Unknown Date';
 
   return [
-    `${roundLabel}, ${compactEventLabel}`
-  ];
+    `Click to open ${eventDateLabel} ${eventLabel} in Event Analysis`
+  ].filter(Boolean);
 }
 
 function buildSummaryItemHtml(label, value, {
   updated = false,
-  hoverItems = []
+  hoverItems = [],
+  eventAnalysisEntry = null
 } = {}) {
   const hasHoverNote = hasLeaderboardHoverContent(hoverItems);
+  const hasEventAnalysisAction = Boolean(eventAnalysisEntry?.event);
   const classes = [
     'player-rank-drilldown-summary-item',
     updated ? 'updated' : '',
-    hasHoverNote ? 'drilldown-tooltip' : ''
+    hasHoverNote ? 'drilldown-tooltip' : '',
+    hasEventAnalysisAction ? 'drilldown-tooltip-actionable' : ''
   ].filter(Boolean).join(' ');
+  const actionAttributes = hasEventAnalysisAction ? buildLeaderboardEventAnalysisDataAttributes(eventAnalysisEntry) : '';
+  const isFocusable = hasHoverNote || hasEventAnalysisAction;
 
   return `
-    <div class="${classes}"${hasHoverNote ? ' tabindex="0"' : ''}>
+    <div class="${classes}"${isFocusable ? ' tabindex="0"' : ''}${hasEventAnalysisAction ? ' role="button"' : ''}${actionAttributes ? ` ${actionAttributes}` : ''}>
       <span class="player-rank-drilldown-summary-label">${escapeHtml(label)}</span>
       <span class="player-rank-drilldown-summary-value">${escapeHtml(value)}</span>
       ${buildLeaderboardHoverNote(hoverItems)}
@@ -1906,14 +2077,21 @@ function buildSummaryItemHtml(label, value, {
   `;
 }
 
-function buildStatCardHtml({ title, value, change, icon, hoverItems = [] }) {
+function buildStatCardHtml({ title, value, change, icon, hoverItems = [], eventAnalysisEntry = null }) {
   const hasHoverNote = hasLeaderboardHoverContent(hoverItems);
-  const classes = ['stat-card', hasHoverNote ? 'drilldown-tooltip' : '']
+  const hasEventAnalysisAction = Boolean(eventAnalysisEntry?.event);
+  const classes = [
+    'stat-card',
+    hasHoverNote ? 'drilldown-tooltip' : '',
+    hasEventAnalysisAction ? 'drilldown-tooltip-actionable' : ''
+  ]
     .filter(Boolean)
     .join(' ');
+  const actionAttributes = hasEventAnalysisAction ? buildLeaderboardEventAnalysisDataAttributes(eventAnalysisEntry) : '';
+  const isFocusable = hasHoverNote || hasEventAnalysisAction;
 
   return `
-    <div class="${classes}"${hasHoverNote ? ' tabindex="0"' : ''}>
+    <div class="${classes}"${isFocusable ? ' tabindex="0"' : ''}${hasEventAnalysisAction ? ' role="button"' : ''}${actionAttributes ? ` ${actionAttributes}` : ''}>
       <div class="stat-title">${escapeHtml(title)}</div>
       <div class="stat-value">${escapeHtml(value)}</div>
       ${change ? `<div class="stat-change">${escapeHtml(change)}</div>` : ''}
@@ -1981,7 +2159,8 @@ function buildLeaderboardPlayerEventChangeCardsHtml(scope) {
     value: bestGain ? formatRatingDelta(bestGain.delta) : '--',
     change: bestGain ? `${formatEventName(bestGain.event) || bestGain.event || 'Unknown Event'} on ${bestGain.date ? formatDate(bestGain.date) : 'Unknown Date'}` : '',
     icon: '\u{1F680}',
-    hoverItems: buildLeaderboardMatchMomentHoverItems(bestGain)
+    hoverItems: buildLeaderboardMatchMomentHoverItems(bestGain),
+    eventAnalysisEntry: bestGain
   });
 
   const lossCard = buildStatCardHtml({
@@ -1989,7 +2168,8 @@ function buildLeaderboardPlayerEventChangeCardsHtml(scope) {
     value: biggestLoss ? formatRatingDelta(biggestLoss.delta) : '--',
     change: biggestLoss ? `${formatEventName(biggestLoss.event) || biggestLoss.event || 'Unknown Event'} on ${biggestLoss.date ? formatDate(biggestLoss.date) : 'Unknown Date'}` : '',
     icon: '\u{1F4C9}',
-    hoverItems: buildLeaderboardMatchMomentHoverItems(biggestLoss)
+    hoverItems: buildLeaderboardMatchMomentHoverItems(biggestLoss),
+    eventAnalysisEntry: biggestLoss
   });
 
   return `
@@ -2436,6 +2616,18 @@ function setupLeaderboardDrilldownModal() {
       return;
     }
 
+    const openEventAnalysisTrigger = event.target.closest('[data-leaderboard-open-event-analysis="true"]');
+    if (openEventAnalysisTrigger) {
+      openLeaderboardEventAnalysisShortcut({
+        eventName: openEventAnalysisTrigger.dataset.leaderboardOpenEventName,
+        eventDate: openEventAnalysisTrigger.dataset.leaderboardOpenEventDate,
+        playerName: openEventAnalysisTrigger.dataset.leaderboardOpenEventPlayer
+      }).catch(error => {
+        console.error('Failed to open leaderboard event in Event Analysis.', error);
+      });
+      return;
+    }
+
     const deckScopeButton = event.target.closest('[data-leaderboard-player-deck-filter]');
     if (deckScopeButton) {
       if (!activeLeaderboardPlayerDrilldown?.playerKey || !activeLeaderboardPlayerDrilldown?.seasonKey) {
@@ -2484,6 +2676,26 @@ function setupLeaderboardDrilldownModal() {
     toggleButton.textContent = shouldExpand ? '-' : '+';
     toggleButton.title = shouldExpand ? 'Hide recent rated matches' : 'Show recent rated matches';
     target.hidden = !shouldExpand;
+  });
+
+  content?.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    const openEventAnalysisTrigger = event.target.closest('[data-leaderboard-open-event-analysis="true"]');
+    if (!openEventAnalysisTrigger) {
+      return;
+    }
+
+    event.preventDefault();
+    openLeaderboardEventAnalysisShortcut({
+      eventName: openEventAnalysisTrigger.dataset.leaderboardOpenEventName,
+      eventDate: openEventAnalysisTrigger.dataset.leaderboardOpenEventDate,
+      playerName: openEventAnalysisTrigger.dataset.leaderboardOpenEventPlayer
+    }).catch(error => {
+      console.error('Failed to open leaderboard event in Event Analysis.', error);
+    });
   });
 
   document.addEventListener('keydown', event => {
@@ -3087,6 +3299,7 @@ export async function updateLeaderboardAnalytics() {
   currentLeaderboardDataset = {
     ...dataset,
     period: activeWindow,
+    eventResultLookup: buildLeaderboardEventResultLookup(dataset),
     deckDataset
   };
   currentLeaderboardRows = dataset.seasonRows;

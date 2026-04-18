@@ -8,7 +8,9 @@ import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, up
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
+import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { downloadEventAnalysisCsv } from './export-table-csv.js';
+import { setSingleEventType, updateEventFilter } from './filters/single-event.js';
 
 function getSelectedEventAnalysisTypes() {
   const eventAnalysisSection = document.getElementById('eventAnalysisSection');
@@ -53,6 +55,11 @@ const SINGLE_EVENT_DRILLDOWN_CONFIG = {
     cardId: 'singleMostCopiesCard',
     title: 'Most Popular Deck',
     emptyMessage: 'No deck data is available for the selected event.'
+  },
+  focusedPlayer: {
+    cardId: '',
+    title: 'Focused Player',
+    emptyMessage: 'The selected player is not present in the selected event.'
   }
 };
 
@@ -83,7 +90,9 @@ let currentSingleEventRows = [];
 let currentMultiEventRows = [];
 let activeSingleEventDrilldownCategory = '';
 let activeSingleEventDeckDrilldownName = '';
+let activeSingleEventFocusedPlayerKey = '';
 let activeMultiEventDrilldownState = null;
+let pendingSingleEventFocusPlayerKey = '';
 let currentSingleEventTableState = {
   group: 'single',
   tableType: 'raw',
@@ -269,6 +278,17 @@ function getSingleEventMostPopularDeckSummary(rows = currentSingleEventRows) {
     deckNames,
     copyCount
   };
+}
+
+function getSingleEventPlayerRowByKey(playerKey = '', rows = currentSingleEventRows) {
+  const normalizedPlayerKey = String(playerKey || '').trim();
+  if (!normalizedPlayerKey) {
+    return null;
+  }
+
+  return (Array.isArray(rows) ? rows : []).find(row => {
+    return getPlayerIdentityKey(row?.Player) === normalizedPlayerKey;
+  }) || null;
 }
 
 function getSingleEventBestFinishRow(rows = []) {
@@ -884,6 +904,20 @@ function renderSingleEventDrilldown(categoryKey) {
   const eventLabel = getSelectedSingleEventLabel();
   const eventDateLabel = getSelectedSingleEventDateLabel();
 
+  if (categoryKey === 'focusedPlayer') {
+    const playerRow = getSingleEventPlayerRowByKey(activeSingleEventFocusedPlayerKey);
+    elements.title.textContent = playerRow
+      ? `${eventLabel} - ${playerRow.Player || config.title}`
+      : `${eventLabel} - ${config.title}`;
+    elements.subtitle.textContent = playerRow
+      ? `${eventDateLabel} | ${playerRow.Deck || '--'} | #${playerRow.Rank ?? '--'} | ${getSingleEventRowWinRateText(playerRow)} WR`
+      : config.emptyMessage;
+    elements.content.innerHTML = playerRow
+      ? buildSingleEventPlayerDrilldownHtml(playerRow)
+      : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
+    return;
+  }
+
   if (categoryKey === 'topDecksByRange') {
     const rangeSummaries = getTopDeckRangeSummaries(currentSingleEventRows, { scope: 'single' });
     elements.title.textContent = `${eventLabel} - ${config.title}`;
@@ -1008,9 +1042,27 @@ function openSingleEventDrilldown(categoryKey) {
   activeMultiEventDrilldownState = null;
   activeSingleEventDrilldownCategory = categoryKey;
   activeSingleEventDeckDrilldownName = '';
+  activeSingleEventFocusedPlayerKey = '';
   renderSingleEventDrilldown(categoryKey);
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
+}
+
+function openSingleEventPlayerDrilldown(playerName = '') {
+  const elements = getSingleEventDrilldownElements();
+  const focusedPlayerKey = getPlayerIdentityKey(playerName);
+  if (!elements.overlay || !focusedPlayerKey || !getSingleEventPlayerRowByKey(focusedPlayerKey)) {
+    return false;
+  }
+
+  activeMultiEventDrilldownState = null;
+  activeSingleEventDeckDrilldownName = '';
+  activeSingleEventFocusedPlayerKey = focusedPlayerKey;
+  activeSingleEventDrilldownCategory = 'focusedPlayer';
+  renderSingleEventDrilldown('focusedPlayer');
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+  return true;
 }
 
 export function openSingleEventDeckDrilldown(deckName) {
@@ -1025,6 +1077,7 @@ export function openSingleEventDeckDrilldown(deckName) {
   activeMultiEventDrilldownState = null;
   activeSingleEventDrilldownCategory = 'mostPopularDeck';
   activeSingleEventDeckDrilldownName = normalizedDeckName;
+  activeSingleEventFocusedPlayerKey = '';
   renderSingleEventDrilldown('mostPopularDeck');
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
@@ -1037,6 +1090,7 @@ function openMultiEventDrilldown(categoryKey, options = {}) {
   }
 
   activeSingleEventDrilldownCategory = '';
+  activeSingleEventFocusedPlayerKey = '';
   activeMultiEventDrilldownState = {
     category: categoryKey,
     view: options.view || (categoryKey === 'totalEvents' ? 'list' : 'event'),
@@ -1056,8 +1110,25 @@ function closeSingleEventDrilldown() {
   overlay.hidden = true;
   activeSingleEventDrilldownCategory = '';
   activeSingleEventDeckDrilldownName = '';
+  activeSingleEventFocusedPlayerKey = '';
   activeMultiEventDrilldownState = null;
   document.body.classList.remove('modal-open');
+}
+
+function applyPendingSingleEventPlayerFocus() {
+  const focusedPlayerKey = String(pendingSingleEventFocusPlayerKey || '').trim();
+  if (!focusedPlayerKey) {
+    return false;
+  }
+
+  pendingSingleEventFocusPlayerKey = '';
+  const playerRow = getSingleEventPlayerRowByKey(focusedPlayerKey);
+  if (!playerRow) {
+    activeSingleEventFocusedPlayerKey = '';
+    return false;
+  }
+
+  return openSingleEventPlayerDrilldown(playerRow.Player || '');
 }
 
 function setupSingleEventDrilldownModal() {
@@ -1555,9 +1626,52 @@ export function populateSingleEventStats(filteredData) {
 
   singleEventStatCardIds.forEach(triggerUpdateAnimation);
 
+  if (applyPendingSingleEventPlayerFocus()) {
+    return;
+  }
+
   if (activeSingleEventDrilldownCategory) {
     renderSingleEventDrilldown(activeSingleEventDrilldownCategory);
   }
+}
+
+export function openSingleEventPlayerInAnalysis(eventName = '', eventType = '', playerName = '') {
+  const normalizedEventName = String(eventName || '').trim();
+  const normalizedEventType = String(eventType || '').trim().toLowerCase();
+  if (!normalizedEventName) {
+    return;
+  }
+
+  pendingSingleEventFocusPlayerKey = getPlayerIdentityKey(playerName);
+  closeSingleEventDrilldown();
+
+  const eventModeButton = document.querySelector('.top-mode-button[data-top-mode="event"]');
+  if (eventModeButton) {
+    eventModeButton.click();
+  }
+
+  const singleModeButton = document.querySelector('.analysis-mode[data-mode="single"]');
+  if (singleModeButton) {
+    singleModeButton.click();
+  }
+
+  if (normalizedEventType) {
+    setSingleEventType(normalizedEventType);
+  }
+
+  updateEventFilter(normalizedEventName, true);
+
+  const eventFilterMenu = document.getElementById('eventFilterMenu');
+  if (eventFilterMenu) {
+    eventFilterMenu.dispatchEvent(new Event('change'));
+  }
+
+  window.requestAnimationFrame(() => {
+    window.scrollTo({
+      top: 340,
+      behavior: 'smooth'
+    });
+  });
 }
 
 export function populateMultiEventStats(filteredData) {
