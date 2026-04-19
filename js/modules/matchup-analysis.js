@@ -2641,8 +2641,8 @@ function buildDeckMatchupCsvMatrixData(matchupMatrix) {
 
 function getMatchupCsvVariantSettings(variant = 'record') {
   return variant === 'winrate'
-    ? { format: 'winrate', filenameSuffix: 'wr', label: 'WR' }
-    : { format: 'record', filenameSuffix: 'wl', label: 'W-L' };
+    ? { format: 'winrate', filenameSuffix: 'wr', label: 'WR', summaryLabel: 'Total WR%' }
+    : { format: 'record', filenameSuffix: 'wl', label: 'W-L', summaryLabel: 'Total W-L' };
 }
 
 function getCurrentMatchupCsvMetadata({
@@ -2701,7 +2701,11 @@ function buildCompactMatchupCsv(matrixData, rowHeaderLabel, {
     {
       format: variantSettings.format,
       blankValue: '',
-      excludeDiagonal
+      excludeDiagonal,
+      includeSummaryRow: true,
+      includeSummaryColumn: true,
+      summaryLabel: variantSettings.summaryLabel,
+      summaryCornerValue: ''
     }
   );
 }

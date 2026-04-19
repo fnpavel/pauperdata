@@ -43,6 +43,26 @@ function formatCrossTabMatrixCell(cell, {
   return `${winRate}% | ${cell.wins}-${cell.losses} | ${matchLabel}`;
 }
 
+function formatCrossTabSummaryValue(stats, {
+  format = 'combined',
+  blankValue = '--'
+} = {}) {
+  if (!stats || Number(stats.decisiveMatches || 0) <= 0) {
+    return blankValue;
+  }
+
+  if (format === 'record') {
+    return `${stats.wins}-${stats.losses}`;
+  }
+
+  const winRate = stats.decisiveMatches > 0 ? ((stats.wins / stats.decisiveMatches) * 100).toFixed(1) : '';
+  if (format === 'winrate') {
+    return winRate || blankValue;
+  }
+
+  return `${winRate}% | ${stats.wins}-${stats.losses}`;
+}
+
 export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck', metadataRows = [], options = {}) {
   if (!matrixData || !Array.isArray(matrixData.rowOrder) || !Array.isArray(matrixData.columnOrder)) {
     return '';
@@ -52,7 +72,11 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
     mirrorCellLabel = 'Mirror',
     format = 'combined',
     blankValue = '--',
-    excludeDiagonal = false
+    excludeDiagonal = false,
+    includeSummaryRow = false,
+    includeSummaryColumn = false,
+    summaryLabel = 'Total',
+    summaryCornerValue = ''
   } = options || {};
   const rows = [];
 
@@ -67,7 +91,27 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
     return matrixData.columnStatsMap.get(columnKey)?.deck || columnKey;
   })];
 
+  if (includeSummaryColumn) {
+    headerRow.push(summaryLabel);
+  }
+
   rows.push(headerRow.map(escapeCsvValue).join(','));
+
+  if (includeSummaryRow) {
+    const summaryRow = [
+      summaryLabel,
+      ...matrixData.columnOrder.map(columnKey => {
+        const columnStats = matrixData.columnStatsMap.get(columnKey);
+        return formatCrossTabSummaryValue(columnStats, { format, blankValue });
+      })
+    ];
+
+    if (includeSummaryColumn) {
+      summaryRow.push(summaryCornerValue);
+    }
+
+    rows.push(summaryRow.map(escapeCsvValue).join(','));
+  }
 
   matrixData.rowOrder.forEach(rowKey => {
     const rowLabel = matrixData.rowStatsMap.get(rowKey)?.deck || rowKey;
@@ -80,7 +124,13 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
       return formatCrossTabMatrixCell(cell, { format, mirrorCellLabel, blankValue });
     });
 
-    rows.push([rowLabel, ...rowCells].map(escapeCsvValue).join(','));
+    const rowValues = [rowLabel, ...rowCells];
+    if (includeSummaryColumn) {
+      const rowStats = matrixData.rowStatsMap.get(rowKey);
+      rowValues.push(formatCrossTabSummaryValue(rowStats, { format, blankValue }));
+    }
+
+    rows.push(rowValues.map(escapeCsvValue).join(','));
   });
 
   return rows.join('\r\n');
