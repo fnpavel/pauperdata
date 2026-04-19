@@ -34,7 +34,6 @@ import { formatGroupDisplayLabel, getEventGroupInfo } from '../utils/event-group
 import { buildCrossTabMatrixCsv, downloadCsvFile, sanitizeCsvFilename } from './export-table-csv.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
-const DEFAULT_DECK_LIMIT = '20';
 const MATCHUP_TOP_MODES = new Set(['deck-matchup', 'player-matchup']);
 const MATCHUP_STAT_CARD_IDS = [
   'matchupTotalEventsCard',
@@ -383,10 +382,6 @@ function getMatchupStartDateSelect() {
 
 function getMatchupEndDateSelect() {
   return document.getElementById('matchupEndDateSelect');
-}
-
-function getMatchupDeckLimitSelect() {
-  return document.getElementById('matchupDeckLimitSelect');
 }
 
 function getMatchupPlayerFocusElements() {
@@ -991,7 +986,7 @@ function updateMatchupViewCopy() {
   }
 
   if (matrixToolbar) {
-    matrixToolbar.style.display = isPlayerMode ? 'none' : 'flex';
+    matrixToolbar.style.display = 'none';
   }
 
   if (secondaryContainer) {
@@ -1012,7 +1007,6 @@ function updateMatchupViewCopy() {
       ? 'Player Matchup Explorer'
       : viewConfig.primaryTitle
   );
-  updateElementText('matchupScopeLabel', viewConfig.scopeLabel);
   updateElementText('matchupTableTitle', viewConfig.matrixTitleBase);
   updateElementText(
     'matchupTableHelper',
@@ -1826,12 +1820,6 @@ function getActivePresetDisplayLabel() {
   return presets.map(preset => preset.buttonLabel || preset.label).join(' + ');
 }
 
-function getSelectedDeckLimit() {
-  const deckLimitSelect = getMatchupDeckLimitSelect();
-  const rawValue = deckLimitSelect?.value || DEFAULT_DECK_LIMIT;
-  return rawValue === 'all' ? Number.POSITIVE_INFINITY : Math.max(1, Number(rawValue) || Number(DEFAULT_DECK_LIMIT));
-}
-
 function isResolvedMatchupMatch(match) {
   const entityA = getMatchEntityInfo(match, 'a');
   const entityB = getMatchEntityInfo(match, 'b');
@@ -2641,6 +2629,16 @@ function getExportFilename(playerLabel, suffix) {
   return `${baseLabel}-${suffix}.csv`;
 }
 
+function buildDeckMatchupCsvMatrixData(matchupMatrix) {
+  return {
+    rowStatsMap: matchupMatrix?.deckStatsMap || new Map(),
+    columnStatsMap: matchupMatrix?.deckStatsMap || new Map(),
+    cellMap: matchupMatrix?.cellMap || new Map(),
+    rowOrder: Array.isArray(matchupMatrix?.deckOrder) ? matchupMatrix.deckOrder : [],
+    columnOrder: Array.isArray(matchupMatrix?.deckOrder) ? matchupMatrix.deckOrder : []
+  };
+}
+
 function getCurrentMatchupCsvMetadata(playerLabel) {
   const metadataRows = [];
   if (playerLabel) {
@@ -2667,13 +2665,56 @@ function getCurrentMatchupCsvMetadata(playerLabel) {
   return metadataRows;
 }
 
+function getDeckMatchupExportFilename() {
+  const windowLabel = sanitizeCsvFilename(getActivePresetDisplayLabel());
+  if (windowLabel) {
+    return `deck-matchup-${windowLabel}.csv`;
+  }
+
+  const startDate = String(currentMatchupSnapshot?.startDate || '').trim();
+  const endDate = String(currentMatchupSnapshot?.endDate || '').trim();
+  const fallbackLabel = sanitizeCsvFilename(
+    startDate && endDate
+      ? `${startDate}-${endDate}`
+      : startDate || endDate || 'matrix'
+  );
+
+  return `deck-matchup-${fallbackLabel}.csv`;
+}
+
+function exportDeckMatchupCsv() {
+  const matrixData = buildDeckMatchupCsvMatrixData(currentMatchupMatrix);
+  if (matrixData.rowOrder.length === 0 || matrixData.columnOrder.length === 0) {
+    return;
+  }
+
+  const viewConfig = getActiveMatchupViewConfig();
+  const metadataRows = [
+    ['View', viewConfig.primaryTitle],
+    ...getCurrentMatchupCsvMetadata()
+  ];
+  const csvText = buildCrossTabMatrixCsv(
+    matrixData,
+    viewConfig.entityTitleSingular,
+    metadataRows,
+    { mirrorCellLabel: viewConfig.sameEntityCellLabel }
+  );
+
+  downloadCsvFile(getDeckMatchupExportFilename(), csvText);
+}
+
 function exportPlayerMatchupCsv(matrixData, playerLabel, suffix) {
   if (!matrixData || matrixData.rowOrder.length === 0 || matrixData.columnOrder.length === 0) {
     return;
   }
 
   const metadataRows = getCurrentMatchupCsvMetadata(playerLabel);
-  const csvText = buildCrossTabMatrixCsv(matrixData, 'Played Deck', metadataRows);
+  const csvText = buildCrossTabMatrixCsv(
+    matrixData,
+    'Played Deck',
+    metadataRows,
+    { mirrorCellLabel: getActiveMatchupViewConfig().sameEntityCellLabel }
+  );
   downloadCsvFile(getExportFilename(playerLabel, suffix), csvText);
 }
 
@@ -2712,10 +2753,11 @@ function updateMatchupExportButtons() {
   const secondaryButton = document.getElementById('matchupDownloadSecondaryCsv');
   const isPlayerMode = isPlayerMatchupMode();
   const hasSelectedPlayer = Boolean(currentMatchupPlayerFocus?.selectedPlayerKey);
+  const hasDeckMatrixData = Boolean(currentMatchupMatrix?.deckOrder?.length);
 
   if (primaryButton) {
-    primaryButton.style.display = isPlayerMode ? 'inline-flex' : 'none';
-    primaryButton.disabled = !hasSelectedPlayer;
+    primaryButton.style.display = 'inline-flex';
+    primaryButton.disabled = isPlayerMode ? !hasSelectedPlayer : !hasDeckMatrixData;
   }
 
   if (secondaryButton) {
@@ -2724,12 +2766,21 @@ function updateMatchupExportButtons() {
   }
 }
 
+function handlePrimaryMatchupCsvExport() {
+  if (isPlayerMatchupMode()) {
+    exportPlayerMatchupPrimaryCsv();
+    return;
+  }
+
+  exportDeckMatchupCsv();
+}
+
 function setupMatchupCsvExportListeners() {
   const primaryButton = document.getElementById('matchupDownloadPrimaryCsv');
   const secondaryButton = document.getElementById('matchupDownloadSecondaryCsv');
 
   if (primaryButton && primaryButton.dataset.listenerAdded !== 'true') {
-    primaryButton.addEventListener('click', exportPlayerMatchupPrimaryCsv);
+    primaryButton.addEventListener('click', handlePrimaryMatchupCsvExport);
     primaryButton.dataset.listenerAdded = 'true';
   }
 
@@ -2830,8 +2881,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
   const startDate = getMatchupStartDateSelect()?.value || '';
   const endDate = getMatchupEndDateSelect()?.value || '';
   const totalDeckCount = matchupMatrix.deckOrder.length;
-  const deckLimit = getSelectedDeckLimit();
-  const displayedDecks = matchupMatrix.deckOrder.slice(0, Math.min(totalDeckCount, deckLimit));
+  const displayedDecks = matchupMatrix.deckOrder;
   const activeWindowLabel = getActivePresetDisplayLabel();
 
   if (!tableHead || !tableBody) {
@@ -2848,7 +2898,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
   updateElementText(
     'matchupTableHelper',
     resolvedMatches.length > 0 && startDate && endDate
-      ? `Each cell shows the row ${viewConfig.entitySingular}'s match win rate against the column ${viewConfig.entitySingular}. Diagonal cells count same-${viewConfig.entitySingular} pairings. Showing ${displayedDecks.length} of ${totalDeckCount} ${viewConfig.entityPlural} from ${formatDate(startDate)} to ${formatDate(endDate)}.`
+      ? `Each cell shows the row ${viewConfig.entitySingular}'s match win rate against the column ${viewConfig.entitySingular}. Diagonal cells count same-${viewConfig.entitySingular} pairings. Covering ${totalDeckCount} ${pluralize(totalDeckCount, viewConfig.entitySingular)} from ${formatDate(startDate)} to ${formatDate(endDate)}.`
       : `Each cell shows the row ${viewConfig.entitySingular}'s match win rate against the column ${viewConfig.entitySingular}. Diagonal cells count same-${viewConfig.entitySingular} pairings.`
   );
 
@@ -2930,7 +2980,6 @@ function renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches = [], foc
 
   const excludedMatchCount = Math.max(0, snapshot.filteredMatches.length - resolvedMatches.length);
   const totalDeckCount = matchupMatrix.deckOrder.length;
-  const displayedDeckCount = Math.min(totalDeckCount, getSelectedDeckLimit());
   const eventCount = snapshot.filteredEvents.length;
   const activeWindowLabel = getActivePresetDisplayLabel();
 
@@ -2949,8 +2998,8 @@ function renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches = [], foc
     <strong>${escapeHtml(activeWindowLabel)}</strong> between
     <strong>${escapeHtml(rangeLabel)}</strong>.
     The matrix is using <strong>${resolvedMatches.length}</strong> resolved ${viewConfig.entitySingular}-vs-${viewConfig.entitySingular}
-    ${pluralize(resolvedMatches.length, 'match')} and currently shows
-    <strong>${displayedDeckCount}</strong> of <strong>${totalDeckCount}</strong> ${viewConfig.entityPlural}.
+    ${pluralize(resolvedMatches.length, 'match')} across
+    <strong>${totalDeckCount}</strong> ${viewConfig.entityPlural}.
     ${escapeHtml(exclusionLabel)}
   `;
 }
@@ -2962,7 +3011,6 @@ function populateMatchupStats(snapshot, matchupMatrix, resolvedMatches = [], foc
   const topPair = matchupMatrix.topPair;
   const leastPair = matchupMatrix.leastPair;
   const totalDeckCount = matchupMatrix.deckOrder.length;
-  const displayedDeckCount = Math.min(totalDeckCount, getSelectedDeckLimit());
   const topPairLeader = describePairLead(topPair);
   const leastPairLeader = describePairLead(leastPair);
 
@@ -3081,7 +3129,7 @@ function populateMatchupStats(snapshot, matchupMatrix, resolvedMatches = [], foc
   updateElementText(
     'matchupTrackedDecksDetails',
     totalDeckCount > 0
-      ? `${displayedDeckCount} shown in matrix`
+      ? `${totalDeckCount} in matrix`
       : viewConfig.noEntitiesAvailableCopy
   );
 
@@ -3982,7 +4030,6 @@ function setupMatchupFilterListeners() {
   const quickViewRoot = getMatchupQuickViewRoot();
   const startDateSelect = getMatchupStartDateSelect();
   const endDateSelect = getMatchupEndDateSelect();
-  const deckLimitSelect = getMatchupDeckLimitSelect();
   const { playerSelect } = getMatchupPlayerFocusElements();
 
   eventTypeButtons.forEach(button => {
@@ -4027,15 +4074,6 @@ function setupMatchupFilterListeners() {
     endDateSelect.dataset.listenerAdded = 'true';
   }
 
-  if (deckLimitSelect && deckLimitSelect.dataset.listenerAdded !== 'true') {
-    deckLimitSelect.addEventListener('change', () => {
-      if (isMatchupTopMode()) {
-        updateMatchupAnalytics();
-      }
-    });
-    deckLimitSelect.dataset.listenerAdded = 'true';
-  }
-
   if (playerSelect && playerSelect.dataset.listenerAdded !== 'true') {
     playerSelect.addEventListener('change', () => {
       activeMatchupPlayerFocusKey = playerSelect.value || '';
@@ -4070,6 +4108,10 @@ export function initMatchupAnalysis() {
 export async function updateMatchupAnalytics() {
   const requestId = matchupAnalyticsRequestId + 1;
   matchupAnalyticsRequestId = requestId;
+  currentMatchupSnapshot = null;
+  currentMatchupMatrix = null;
+  currentResolvedMatchupMatches = [];
+  updateMatchupExportButtons();
   renderMatchupLoadingState();
 
   try {
@@ -4099,6 +4141,7 @@ export async function updateMatchupAnalytics() {
     currentResolvedMatchupMatches = [];
     currentMatchupPlayerFocus = null;
     updateMatchupDrilldownCardStates();
+    updateMatchupExportButtons();
     renderMatchupErrorState('Unable to load matchup data for the selected filters.');
     return;
   }
@@ -4140,6 +4183,7 @@ export async function updateMatchupAnalytics() {
   currentMatchupSnapshot = snapshot;
   currentResolvedMatchupMatches = resolvedMatches;
   currentMatchupMatrix = matchupMatrix;
+  updateMatchupExportButtons();
 
   populateMatchupStats(snapshot, matchupMatrix, resolvedMatches, currentMatchupPlayerFocus);
   renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches, currentMatchupPlayerFocus);

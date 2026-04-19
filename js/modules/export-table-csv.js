@@ -17,11 +17,26 @@ export function sanitizeCsvFilename(value) {
     .replace(/^_+|_+$/g, '') || 'matchup';
 }
 
-export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck', metadataRows = []) {
+function formatCrossTabMatrixCell(cell, { mirrorCellLabel = 'Mirror' } = {}) {
+  if (!cell || cell.total === 0) {
+    return '--';
+  }
+
+  const matchLabel = `${cell.total} ${cell.total === 1 ? 'match' : 'matches'}`;
+  if (cell.isMirror) {
+    return `${mirrorCellLabel} | ${matchLabel}`;
+  }
+
+  const winRate = cell.total > 0 ? ((cell.wins / cell.total) * 100).toFixed(1) : '0.0';
+  return `${winRate}% | ${cell.wins}-${cell.losses} | ${matchLabel}`;
+}
+
+export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck', metadataRows = [], options = {}) {
   if (!matrixData || !Array.isArray(matrixData.rowOrder) || !Array.isArray(matrixData.columnOrder)) {
     return '';
   }
 
+  const { mirrorCellLabel = 'Mirror' } = options || {};
   const rows = [];
 
   if (Array.isArray(metadataRows) && metadataRows.length > 0) {
@@ -41,11 +56,7 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
     const rowLabel = matrixData.rowStatsMap.get(rowKey)?.deck || rowKey;
     const rowCells = matrixData.columnOrder.map(columnKey => {
       const cell = matrixData.cellMap.get(rowKey)?.get(columnKey);
-      if (!cell || cell.total === 0) {
-        return '--';
-      }
-      const winRate = cell.total > 0 ? ((cell.wins / cell.total) * 100).toFixed(1) : '0.0';
-      return `${cell.wins}-${cell.losses} (${winRate}%)`;
+      return formatCrossTabMatrixCell(cell, { mirrorCellLabel });
     });
 
     rows.push([rowLabel, ...rowCells].map(escapeCsvValue).join(','));
