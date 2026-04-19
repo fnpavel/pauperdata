@@ -2639,8 +2639,26 @@ function buildDeckMatchupCsvMatrixData(matchupMatrix) {
   };
 }
 
-function getCurrentMatchupCsvMetadata(playerLabel) {
+function getMatchupCsvVariantSettings(variant = 'record') {
+  return variant === 'winrate'
+    ? { format: 'winrate', filenameSuffix: 'wr', label: 'WR' }
+    : { format: 'record', filenameSuffix: 'wl', label: 'W-L' };
+}
+
+function getCurrentMatchupCsvMetadata({
+  tableLabel = '',
+  playerLabel = '',
+  variant = 'record'
+} = {}) {
+  const variantSettings = getMatchupCsvVariantSettings(variant);
   const metadataRows = [];
+
+  if (tableLabel) {
+    metadataRows.push(['Table', tableLabel]);
+  }
+
+  metadataRows.push(['Metric', variantSettings.label]);
+
   if (playerLabel) {
     metadataRows.push(['Player', playerLabel]);
   }
@@ -2648,6 +2666,11 @@ function getCurrentMatchupCsvMetadata(playerLabel) {
   const eventCount = currentMatchupSnapshot?.filteredEvents?.length ?? 0;
   if (eventCount > 0) {
     metadataRows.push(['Events', String(eventCount)]);
+  }
+
+  const resolvedMatchCount = currentResolvedMatchupMatches?.length ?? 0;
+  if (resolvedMatchCount > 0) {
+    metadataRows.push(['Resolved Matches', String(resolvedMatchCount)]);
   }
 
   if (currentMatchupSnapshot?.startDate || currentMatchupSnapshot?.endDate) {
@@ -2665,10 +2688,29 @@ function getCurrentMatchupCsvMetadata(playerLabel) {
   return metadataRows;
 }
 
-function getDeckMatchupExportFilename() {
+function buildCompactMatchupCsv(matrixData, rowHeaderLabel, {
+  variant = 'record',
+  excludeDiagonal = false,
+  metadataRows = []
+} = {}) {
+  const variantSettings = getMatchupCsvVariantSettings(variant);
+  return buildCrossTabMatrixCsv(
+    matrixData,
+    rowHeaderLabel,
+    metadataRows,
+    {
+      format: variantSettings.format,
+      blankValue: '',
+      excludeDiagonal
+    }
+  );
+}
+
+function getDeckMatchupExportFilename(variant = 'record') {
+  const { filenameSuffix } = getMatchupCsvVariantSettings(variant);
   const windowLabel = sanitizeCsvFilename(getActivePresetDisplayLabel());
   if (windowLabel) {
-    return `deck-matchup-${windowLabel}.csv`;
+    return `deck-matchup-${windowLabel}-${filenameSuffix}.csv`;
   }
 
   const startDate = String(currentMatchupSnapshot?.startDate || '').trim();
@@ -2679,46 +2721,67 @@ function getDeckMatchupExportFilename() {
       : startDate || endDate || 'matrix'
   );
 
-  return `deck-matchup-${fallbackLabel}.csv`;
+  return `deck-matchup-${fallbackLabel}-${filenameSuffix}.csv`;
 }
 
-function exportDeckMatchupCsv() {
+function exportDeckMatchupCsv(variant = 'record') {
   const matrixData = buildDeckMatchupCsvMatrixData(currentMatchupMatrix);
   if (matrixData.rowOrder.length === 0 || matrixData.columnOrder.length === 0) {
     return;
   }
 
-  const viewConfig = getActiveMatchupViewConfig();
-  const metadataRows = [
-    ['View', viewConfig.primaryTitle],
-    ...getCurrentMatchupCsvMetadata()
-  ];
-  const csvText = buildCrossTabMatrixCsv(
+  const tableLabel = getActiveMatchupViewConfig().primaryTitle;
+  const metadataRows = getCurrentMatchupCsvMetadata({
+    tableLabel,
+    variant
+  });
+
+  const csvText = buildCompactMatchupCsv(
     matrixData,
-    viewConfig.entityTitleSingular,
-    metadataRows,
-    { mirrorCellLabel: viewConfig.sameEntityCellLabel }
+    getActiveMatchupViewConfig().entityTitleSingular,
+    {
+      variant,
+      excludeDiagonal: true,
+      metadataRows
+    }
   );
 
-  downloadCsvFile(getDeckMatchupExportFilename(), csvText);
+  downloadCsvFile(getDeckMatchupExportFilename(variant), csvText);
 }
 
-function exportPlayerMatchupCsv(matrixData, playerLabel, suffix) {
+function getPlayerMatchupExportFilename(playerLabel, suffix, variant = 'record') {
+  const variantSettings = getMatchupCsvVariantSettings(variant);
+  return getExportFilename(playerLabel, `${suffix}-${variantSettings.filenameSuffix}`);
+}
+
+function exportPlayerMatchupCsv(matrixData, playerLabel, suffix, {
+  variant = 'record',
+  excludeDiagonal = false,
+  tableLabel = ''
+} = {}) {
   if (!matrixData || matrixData.rowOrder.length === 0 || matrixData.columnOrder.length === 0) {
     return;
   }
 
-  const metadataRows = getCurrentMatchupCsvMetadata(playerLabel);
-  const csvText = buildCrossTabMatrixCsv(
+  const metadataRows = getCurrentMatchupCsvMetadata({
+    tableLabel,
+    playerLabel,
+    variant
+  });
+
+  const csvText = buildCompactMatchupCsv(
     matrixData,
     'Played Deck',
-    metadataRows,
-    { mirrorCellLabel: getActiveMatchupViewConfig().sameEntityCellLabel }
+    {
+      variant,
+      excludeDiagonal,
+      metadataRows
+    }
   );
-  downloadCsvFile(getExportFilename(playerLabel, suffix), csvText);
+  downloadCsvFile(getPlayerMatchupExportFilename(playerLabel, suffix, variant), csvText);
 }
 
-function exportPlayerMatchupPrimaryCsv() {
+function exportPlayerMatchupPrimaryCsv(variant = 'record') {
   if (!currentMatchupPlayerFocus?.selectedPlayerKey) {
     return;
   }
@@ -2730,10 +2793,14 @@ function exportPlayerMatchupPrimaryCsv() {
     allowMirror: false
   });
 
-  exportPlayerMatchupCsv(matrixData, currentMatchupPlayerFocus.selectedPlayerLabel, 'deck-vs-opponents');
+  exportPlayerMatchupCsv(matrixData, currentMatchupPlayerFocus.selectedPlayerLabel, 'deck-vs-opponents', {
+    variant,
+    excludeDiagonal: false,
+    tableLabel: 'Deck vs Opponents'
+  });
 }
 
-function exportPlayerMatchupSecondaryCsv() {
+function exportPlayerMatchupSecondaryCsv(variant = 'record') {
   if (!currentMatchupPlayerFocus?.selectedPlayerKey) {
     return;
   }
@@ -2742,51 +2809,83 @@ function exportPlayerMatchupSecondaryCsv() {
   const matrixData = aggregateFocusedPlayerDimensionMatrix(perspectiveMatches, {
     getColumnKey: entry => entry.opponentDeck,
     getColumnLabel: entry => entry.opponentDeck,
-    allowMirror: true
+    allowMirror: false
   });
 
-  exportPlayerMatchupCsv(matrixData, currentMatchupPlayerFocus.selectedPlayerLabel, 'deck-vs-opposing-decks');
+  exportPlayerMatchupCsv(matrixData, currentMatchupPlayerFocus.selectedPlayerLabel, 'deck-vs-opposing-decks', {
+    variant,
+    excludeDiagonal: true,
+    tableLabel: 'Deck vs Opposing Decks'
+  });
 }
 
 function updateMatchupExportButtons() {
-  const primaryButton = document.getElementById('matchupDownloadPrimaryCsv');
-  const secondaryButton = document.getElementById('matchupDownloadSecondaryCsv');
+  const primaryRecordButton = document.getElementById('matchupDownloadPrimaryRecordCsv');
+  const primaryWinRateButton = document.getElementById('matchupDownloadPrimaryWinRateCsv');
+  const secondaryRecordButton = document.getElementById('matchupDownloadSecondaryRecordCsv');
+  const secondaryWinRateButton = document.getElementById('matchupDownloadSecondaryWinRateCsv');
   const isPlayerMode = isPlayerMatchupMode();
   const hasSelectedPlayer = Boolean(currentMatchupPlayerFocus?.selectedPlayerKey);
   const hasDeckMatrixData = Boolean(currentMatchupMatrix?.deckOrder?.length);
+  const hasPlayerMatchupData = hasSelectedPlayer && currentResolvedMatchupMatches.length > 0;
 
-  if (primaryButton) {
-    primaryButton.style.display = 'inline-flex';
-    primaryButton.disabled = isPlayerMode ? !hasSelectedPlayer : !hasDeckMatrixData;
-  }
+  [primaryRecordButton, primaryWinRateButton].forEach(button => {
+    if (!button) {
+      return;
+    }
 
-  if (secondaryButton) {
-    secondaryButton.style.display = isPlayerMode ? 'inline-flex' : 'none';
-    secondaryButton.disabled = !hasSelectedPlayer;
-  }
-}
+    button.style.display = 'inline-flex';
+    button.disabled = isPlayerMode ? !hasPlayerMatchupData : !hasDeckMatrixData;
+  });
 
-function handlePrimaryMatchupCsvExport() {
-  if (isPlayerMatchupMode()) {
-    exportPlayerMatchupPrimaryCsv();
-    return;
-  }
+  [secondaryRecordButton, secondaryWinRateButton].forEach(button => {
+    if (!button) {
+      return;
+    }
 
-  exportDeckMatchupCsv();
+    button.style.display = isPlayerMode ? 'inline-flex' : 'none';
+    button.disabled = !hasPlayerMatchupData;
+  });
 }
 
 function setupMatchupCsvExportListeners() {
-  const primaryButton = document.getElementById('matchupDownloadPrimaryCsv');
-  const secondaryButton = document.getElementById('matchupDownloadSecondaryCsv');
+  const primaryRecordButton = document.getElementById('matchupDownloadPrimaryRecordCsv');
+  const primaryWinRateButton = document.getElementById('matchupDownloadPrimaryWinRateCsv');
+  const secondaryRecordButton = document.getElementById('matchupDownloadSecondaryRecordCsv');
+  const secondaryWinRateButton = document.getElementById('matchupDownloadSecondaryWinRateCsv');
 
-  if (primaryButton && primaryButton.dataset.listenerAdded !== 'true') {
-    primaryButton.addEventListener('click', handlePrimaryMatchupCsvExport);
-    primaryButton.dataset.listenerAdded = 'true';
+  if (primaryRecordButton && primaryRecordButton.dataset.listenerAdded !== 'true') {
+    primaryRecordButton.addEventListener('click', () => {
+      if (isPlayerMatchupMode()) {
+        exportPlayerMatchupPrimaryCsv('record');
+        return;
+      }
+
+      exportDeckMatchupCsv('record');
+    });
+    primaryRecordButton.dataset.listenerAdded = 'true';
   }
 
-  if (secondaryButton && secondaryButton.dataset.listenerAdded !== 'true') {
-    secondaryButton.addEventListener('click', exportPlayerMatchupSecondaryCsv);
-    secondaryButton.dataset.listenerAdded = 'true';
+  if (primaryWinRateButton && primaryWinRateButton.dataset.listenerAdded !== 'true') {
+    primaryWinRateButton.addEventListener('click', () => {
+      if (isPlayerMatchupMode()) {
+        exportPlayerMatchupPrimaryCsv('winrate');
+        return;
+      }
+
+      exportDeckMatchupCsv('winrate');
+    });
+    primaryWinRateButton.dataset.listenerAdded = 'true';
+  }
+
+  if (secondaryRecordButton && secondaryRecordButton.dataset.listenerAdded !== 'true') {
+    secondaryRecordButton.addEventListener('click', () => exportPlayerMatchupSecondaryCsv('record'));
+    secondaryRecordButton.dataset.listenerAdded = 'true';
+  }
+
+  if (secondaryWinRateButton && secondaryWinRateButton.dataset.listenerAdded !== 'true') {
+    secondaryWinRateButton.addEventListener('click', () => exportPlayerMatchupSecondaryCsv('winrate'));
+    secondaryWinRateButton.dataset.listenerAdded = 'true';
   }
 }
 

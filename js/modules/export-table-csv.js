@@ -17,9 +17,22 @@ export function sanitizeCsvFilename(value) {
     .replace(/^_+|_+$/g, '') || 'matchup';
 }
 
-function formatCrossTabMatrixCell(cell, { mirrorCellLabel = 'Mirror' } = {}) {
+function formatCrossTabMatrixCell(cell, {
+  format = 'combined',
+  mirrorCellLabel = 'Mirror',
+  blankValue = '--'
+} = {}) {
   if (!cell || cell.total === 0) {
-    return '--';
+    return blankValue;
+  }
+
+  if (format === 'record') {
+    return `${cell.wins}-${cell.losses}`;
+  }
+
+  const winRate = cell.total > 0 ? ((cell.wins / cell.total) * 100).toFixed(1) : '';
+  if (format === 'winrate') {
+    return winRate || blankValue;
   }
 
   const matchLabel = `${cell.total} ${cell.total === 1 ? 'match' : 'matches'}`;
@@ -27,7 +40,6 @@ function formatCrossTabMatrixCell(cell, { mirrorCellLabel = 'Mirror' } = {}) {
     return `${mirrorCellLabel} | ${matchLabel}`;
   }
 
-  const winRate = cell.total > 0 ? ((cell.wins / cell.total) * 100).toFixed(1) : '0.0';
   return `${winRate}% | ${cell.wins}-${cell.losses} | ${matchLabel}`;
 }
 
@@ -36,7 +48,12 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
     return '';
   }
 
-  const { mirrorCellLabel = 'Mirror' } = options || {};
+  const {
+    mirrorCellLabel = 'Mirror',
+    format = 'combined',
+    blankValue = '--',
+    excludeDiagonal = false
+  } = options || {};
   const rows = [];
 
   if (Array.isArray(metadataRows) && metadataRows.length > 0) {
@@ -55,8 +72,12 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
   matrixData.rowOrder.forEach(rowKey => {
     const rowLabel = matrixData.rowStatsMap.get(rowKey)?.deck || rowKey;
     const rowCells = matrixData.columnOrder.map(columnKey => {
+      if (excludeDiagonal && rowKey === columnKey) {
+        return blankValue;
+      }
+
       const cell = matrixData.cellMap.get(rowKey)?.get(columnKey);
-      return formatCrossTabMatrixCell(cell, { mirrorCellLabel });
+      return formatCrossTabMatrixCell(cell, { format, mirrorCellLabel, blankValue });
     });
 
     rows.push([rowLabel, ...rowCells].map(escapeCsvValue).join(','));
