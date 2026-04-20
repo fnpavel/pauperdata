@@ -82,6 +82,13 @@
         <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards (Elo Ratings)</button>
         <button class="bubble-button" id="aboutButton">About</button>
         <div class="header-utility-stack">
+          <div class="analysis-quality-status-chip" id="analysisQualityStatusChip" aria-live="polite">
+            <span class="analysis-quality-status-chip-dot" aria-hidden="true"></span>
+            <span class="analysis-quality-status-chip-copy">
+              <span class="analysis-quality-status-chip-label">Dataset Mode</span>
+              <span class="analysis-quality-status-chip-state">Full Dataset</span>
+            </span>
+          </div>
           <button class="bubble-button theme-toggle-button" id="themeToggleButton" type="button" aria-label="Toggle color theme">
             <span class="theme-toggle-indicator" aria-hidden="true"></span>
             <span class="theme-toggle-label">Dark Mode</span>
@@ -373,6 +380,7 @@
             <div class="stat-icon">⬇️</div>
           </div>
         </div>
+        <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
         <div class="player-stats-row player-stats-row-secondary">
           <div class="stat-card" id="playerTop1Card">
             <div class="stat-title">Number of Top 1</div>

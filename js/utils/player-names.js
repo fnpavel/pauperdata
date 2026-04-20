@@ -1,3 +1,6 @@
+const EMPTY_ROWS = [];
+const playerFilterOptionsCache = new WeakMap();
+
 export function normalizePlayerName(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
 }
@@ -16,9 +19,14 @@ function comparePlayerVariantStats(a, b) {
 }
 
 export function buildPlayerFilterOptions(rows) {
+  const resolvedRows = Array.isArray(rows) ? rows : EMPTY_ROWS;
+  if (playerFilterOptionsCache.has(resolvedRows)) {
+    return playerFilterOptionsCache.get(resolvedRows) || [];
+  }
+
   const groups = new Map();
 
-  rows.forEach((row, index) => {
+  resolvedRows.forEach((row, index) => {
     const label = normalizePlayerName(row.Player);
     const key = getPlayerIdentityKey(label);
 
@@ -52,7 +60,7 @@ export function buildPlayerFilterOptions(rows) {
     variants.set(label, existingVariant);
   });
 
-  return Array.from(groups.entries())
+  const playerOptions = Array.from(groups.entries())
     .map(([key, variants]) => {
       const sortedVariants = Array.from(variants.values()).sort(comparePlayerVariantStats);
       return {
@@ -68,6 +76,9 @@ export function buildPlayerFilterOptions(rows) {
         a.label.localeCompare(b.label)
       );
     });
+
+  playerFilterOptionsCache.set(resolvedRows, playerOptions);
+  return playerOptions;
 }
 
 export function rowMatchesPlayerKey(row, playerKey) {

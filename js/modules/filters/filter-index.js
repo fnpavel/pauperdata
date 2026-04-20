@@ -82,13 +82,174 @@ import {
 export { setSelectedSingleEvent, setSingleEventType, updateEventFilter } from './single-event.js';
 
 let filteredData = [];
+const EMPTY_ANALYSIS_ROWS = [];
+const analysisRowsByEventTypesCache = new WeakMap();
+const rowDateValuesCache = new WeakMap();
+const playerRowDateValuesCache = new WeakMap();
+
+let analysisQualityRefreshRequestId = 0;
+let analysisQualityRefreshFrameId = null;
+let analysisQualityRefreshTimeoutId = null;
+let analysisQualityRefreshIdleId = null;
+
+function getResolvedAnalysisRows(rows = getAnalysisRows()) {
+  return Array.isArray(rows) ? rows : EMPTY_ANALYSIS_ROWS;
+}
+
+function normalizeSelectedEventTypes(selectedEventTypes = []) {
+  return [...new Set(
+    (Array.isArray(selectedEventTypes) ? selectedEventTypes : [selectedEventTypes])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  )].sort();
+}
+
+function getSelectedEventTypesCacheKey(selectedEventTypes = []) {
+  return normalizeSelectedEventTypes(selectedEventTypes).join('||');
+}
+
+function getRowsScopedToSelectedEventTypes(rows = getAnalysisRows(), selectedEventTypes = []) {
+  const resolvedRows = getResolvedAnalysisRows(rows);
+  const cacheKey = getSelectedEventTypesCacheKey(selectedEventTypes);
+
+  if (!cacheKey) {
+    return EMPTY_ANALYSIS_ROWS;
+  }
+
+  let scopedRowsCache = analysisRowsByEventTypesCache.get(resolvedRows);
+  if (!scopedRowsCache) {
+    scopedRowsCache = new Map();
+    analysisRowsByEventTypesCache.set(resolvedRows, scopedRowsCache);
+  }
+
+  if (!scopedRowsCache.has(cacheKey)) {
+    const selectedEventTypeSet = new Set(cacheKey.split('||'));
+    scopedRowsCache.set(
+      cacheKey,
+      resolvedRows.filter(row => selectedEventTypeSet.has(String(row?.EventType || '').toLowerCase()))
+    );
+  }
+
+  return scopedRowsCache.get(cacheKey) || EMPTY_ANALYSIS_ROWS;
+}
+
+function getSortedUniqueDateValues(rows = []) {
+  const resolvedRows = getResolvedAnalysisRows(rows);
+
+  if (!rowDateValuesCache.has(resolvedRows)) {
+    rowDateValuesCache.set(
+      resolvedRows,
+      [...new Set(
+        resolvedRows
+          .map(row => String(row?.Date || '').trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b))
+    );
+  }
+
+  return rowDateValuesCache.get(resolvedRows) || [];
+}
+
+function getSortedUniquePlayerDateValues(rows = [], playerKey = '') {
+  const resolvedRows = getResolvedAnalysisRows(rows);
+  const normalizedPlayerKey = String(playerKey || '').trim();
+
+  if (!normalizedPlayerKey) {
+    return [];
+  }
+
+  let cache = playerRowDateValuesCache.get(resolvedRows);
+  if (!cache) {
+    cache = new Map();
+    playerRowDateValuesCache.set(resolvedRows, cache);
+  }
+
+  if (!cache.has(normalizedPlayerKey)) {
+    cache.set(
+      normalizedPlayerKey,
+      [...new Set(
+        resolvedRows
+          .filter(row => rowMatchesPlayerKey(row, normalizedPlayerKey))
+          .map(row => String(row?.Date || '').trim())
+          .filter(Boolean)
+      )].sort((a, b) => a.localeCompare(b))
+    );
+  }
+
+  return cache.get(normalizedPlayerKey) || [];
+}
+
+function cancelScheduledAnalysisQualityRefresh() {
+  if (analysisQualityRefreshFrameId !== null && typeof window !== 'undefined' && typeof window.cancelAnimationFrame === 'function') {
+    window.cancelAnimationFrame(analysisQualityRefreshFrameId);
+  }
+
+  if (analysisQualityRefreshTimeoutId !== null) {
+    window.clearTimeout(analysisQualityRefreshTimeoutId);
+  }
+
+  if (analysisQualityRefreshIdleId !== null && typeof window !== 'undefined' && typeof window.cancelIdleCallback === 'function') {
+    window.cancelIdleCallback(analysisQualityRefreshIdleId);
+  }
+
+  analysisQualityRefreshFrameId = null;
+  analysisQualityRefreshTimeoutId = null;
+  analysisQualityRefreshIdleId = null;
+}
+
+function scheduleAnalysisQualityRefreshOnNextFrame(callback) {
+  if (typeof window !== 'undefined' && typeof window.requestAnimationFrame === 'function') {
+    analysisQualityRefreshFrameId = window.requestAnimationFrame(() => {
+      analysisQualityRefreshFrameId = null;
+      callback();
+    });
+    return;
+  }
+
+  analysisQualityRefreshTimeoutId = window.setTimeout(() => {
+    analysisQualityRefreshTimeoutId = null;
+    callback();
+  }, 0);
+}
+
+function scheduleAnalysisQualityRefreshWhenIdle(callback) {
+  if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+    analysisQualityRefreshIdleId = window.requestIdleCallback(() => {
+      analysisQualityRefreshIdleId = null;
+      callback();
+    }, { timeout: 250 });
+    return;
+  }
+
+  analysisQualityRefreshTimeoutId = window.setTimeout(() => {
+    analysisQualityRefreshTimeoutId = null;
+    callback();
+  }, 0);
+}
 
 function getAnalysisQualityToggleButtons() {
   return Array.from(document.querySelectorAll('[data-analysis-quality-toggle="unknown-heavy-below-top32"]'));
 }
 
+function syncAnalysisQualityStatusChip(isEnabled) {
+  const statusChip = document.getElementById('analysisQualityStatusChip');
+  if (!statusChip) {
+    return;
+  }
+
+  statusChip.classList.toggle('active', isEnabled);
+  statusChip.setAttribute('aria-label', isEnabled ? 'Quality-filtered dataset active' : 'Full dataset active');
+
+  const stateElement = statusChip.querySelector('.analysis-quality-status-chip-state');
+  if (stateElement) {
+    stateElement.textContent = isEnabled ? 'Quality-Filtered' : 'Full Dataset';
+  }
+}
+
 function syncAnalysisQualityToggleButtons() {
   const isEnabled = isUnknownHeavyBelowTop32FilterEnabled();
+  document.body.dataset.analysisQualityMode = isEnabled ? 'on' : 'off';
+  syncAnalysisQualityStatusChip(isEnabled);
 
   getAnalysisQualityToggleButtons().forEach(button => {
     button.classList.toggle('active', isEnabled);
@@ -106,29 +267,46 @@ function refreshAnalysisQualityToggleState() {
   const selectedEventType = getSingleEventSelectedType();
   const activeMultiEventPreset = getActiveMultiEventPreset();
   const activePlayerPreset = getPlayerAnalysisActivePreset();
+  const refreshRequestId = analysisQualityRefreshRequestId + 1;
+  analysisQualityRefreshRequestId = refreshRequestId;
 
   syncAnalysisQualityToggleButtons();
-  renderQuickViewButtons('multi');
-  renderQuickViewButtons('player');
-  updateEventFilter(selectedSingleEvent, Boolean(selectedSingleEvent));
-  if (selectedEventType && !document.getElementById('eventFilterMenu')?.value) {
-    const fallbackEvent = buildSingleEventCalendarEntries(selectedEventType)[0]?.name || '';
-    if (fallbackEvent) {
-      updateEventFilter(fallbackEvent, true);
+  cancelScheduledAnalysisQualityRefresh();
+
+  scheduleAnalysisQualityRefreshOnNextFrame(() => {
+    if (refreshRequestId !== analysisQualityRefreshRequestId) {
+      return;
     }
-  }
-  updateDateOptions();
-  updatePlayerDateOptions();
 
-  if (activeMultiEventPreset) {
-    applyActiveMultiEventPresetDateRange();
-  }
+    renderQuickViewButtons('multi');
+    renderQuickViewButtons('player');
+    updateEventFilter(selectedSingleEvent, Boolean(selectedSingleEvent));
+    if (selectedEventType && !document.getElementById('eventFilterMenu')?.value) {
+      const fallbackEvent = buildSingleEventCalendarEntries(selectedEventType)[0]?.name || '';
+      if (fallbackEvent) {
+        updateEventFilter(fallbackEvent, true);
+      }
+    }
 
-  if (activePlayerPreset) {
-    applyActivePlayerPresetDateRange();
-  }
+    if (activeMultiEventPreset) {
+      applyActiveMultiEventPresetDateRange();
+    } else {
+      updateDateOptions();
+    }
 
-  updateAllCharts();
+    updatePlayerDateOptions();
+    if (activePlayerPreset) {
+      applyActivePlayerPresetDateRange();
+    }
+
+    scheduleAnalysisQualityRefreshWhenIdle(() => {
+      if (refreshRequestId !== analysisQualityRefreshRequestId) {
+        return;
+      }
+
+      updateAllCharts();
+    });
+  });
 }
 
 function setupAnalysisQualityToggleListeners() {
@@ -775,15 +953,8 @@ export function updateDateOptions() {
 
   const selectedEventTypes = getEventAnalysisSelectedTypes();
   const activePreset = getActiveMultiEventPreset();
-  const eventTypeRows = getAnalysisRows().filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
-  const dates =
-    selectedEventTypes.length > 0
-      ? [
-          ...new Set(
-            eventTypeRows.map(row => row.Date)
-          )
-        ].sort((a, b) => new Date(a) - new Date(b))
-      : [];
+  const eventTypeRows = getRowsScopedToSelectedEventTypes(getAnalysisRows(), selectedEventTypes);
+  const dates = selectedEventTypes.length > 0 ? getSortedUniqueDateValues(eventTypeRows) : [];
 
   console.log('Available dates for Multi-Event:', dates, 'Active preset:', activePreset);
 
@@ -890,7 +1061,7 @@ export function updatePlayerDateOptions() {
   const selectedEventTypes = getPlayerAnalysisSelectedTypes();
   const selectedPlayer = playerFilterMenu.value;
   const activePreset = getPlayerAnalysisActivePreset();
-  const eventTypeRows = getAnalysisRows().filter(row => selectedEventTypes.includes(String(row.EventType).toLowerCase()));
+  const eventTypeRows = getRowsScopedToSelectedEventTypes(getAnalysisRows(), selectedEventTypes);
 
   if (selectedEventTypes.length === 0) {
     setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
@@ -942,15 +1113,7 @@ export function updatePlayerDateOptions() {
 
   populatePlayerFilterMenu(playerFilterMenu, playerOptions, currentPlayer);
 
-  const dates = [
-    ...new Set(
-      eventTypeRows
-        .filter(row => {
-          return rowMatchesPlayerKey(row, currentPlayer);
-        })
-        .map(row => row.Date)
-    )
-  ].sort((a, b) => new Date(a) - new Date(b));
+  const dates = getSortedUniquePlayerDateValues(eventTypeRows, currentPlayer);
 
   console.log('Available dates for Player Analysis:', dates, 'Selected Player:', currentPlayer, 'Active preset:', activePreset);
 
@@ -1053,13 +1216,9 @@ export function updatePlayerDateOptions() {
 }
 
 export function populateDateDropdowns(eventType) {
-  const filteredDates = [
-    ...new Set(
-      getAnalysisRows()
-        .filter(row => row.EventType.toLowerCase() === eventType.toLowerCase())
-        .map(row => row.Date)
-    )
-  ].sort();
+  const filteredDates = getSortedUniqueDateValues(
+    getRowsScopedToSelectedEventTypes(getAnalysisRows(), [eventType])
+  );
 
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');

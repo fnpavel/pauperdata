@@ -1,5 +1,5 @@
 export const eloManifest = {
-  "generatedAt": "2026-04-20T17:50:48",
+  "generatedAt": "2026-04-20T19:25:24",
   "lastUpdatedDate": "2026-04-20",
   "totalMatchCount": 61982,
   "years": [
