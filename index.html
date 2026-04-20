@@ -918,13 +918,27 @@
       </div>
 
       <div id="leaderboardStatDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
-        <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboardStatDrilldownTitle">
+        <div
+          id="leaderboardStatDrilldownModal"
+          class="player-rank-drilldown-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="leaderboardStatDrilldownTitle"
+        >
           <div class="player-rank-drilldown-header">
             <div class="player-rank-drilldown-heading">
               <h3 id="leaderboardStatDrilldownTitle">Leaderboard Details</h3>
               <p id="leaderboardStatDrilldownSubtitle">Select a leaderboard stat card to inspect the matching Elo details.</p>
             </div>
             <div class="leaderboard-drilldown-header-actions">
+              <button
+                type="button"
+                class="bubble-button"
+                id="leaderboardStatDrilldownFullscreen"
+                aria-label="Toggle leaderboard details fullscreen mode"
+              >
+                Full Screen
+              </button>
               <button
                 type="button"
                 class="bubble-button leaderboard-player-history-download"

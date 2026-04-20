@@ -123,10 +123,12 @@ function getLeaderboardsSection() {
 function getLeaderboardDrilldownElements() {
   return {
     overlay: document.getElementById('leaderboardStatDrilldownOverlay'),
+    modal: document.getElementById('leaderboardStatDrilldownModal'),
     title: document.getElementById('leaderboardStatDrilldownTitle'),
     subtitle: document.getElementById('leaderboardStatDrilldownSubtitle'),
     content: document.getElementById('leaderboardStatDrilldownContent'),
     closeButton: document.getElementById('leaderboardStatDrilldownClose'),
+    fullscreenButton: document.getElementById('leaderboardStatDrilldownFullscreen'),
     historyDownloadButton: document.getElementById('leaderboardPlayerHistoryDownload')
   };
 }
@@ -2006,6 +2008,7 @@ function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   };
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
+  updateLeaderboardDrilldownFullscreenButtonState();
 }
 
 function hasLeaderboardHoverContent(hoverItems = []) {
@@ -2553,12 +2556,44 @@ function openLeaderboardDrilldown(categoryKey) {
   renderLeaderboardDrilldown(categoryKey);
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
+  updateLeaderboardDrilldownFullscreenButtonState();
+}
+
+async function toggleLeaderboardDrilldownFullscreen() {
+  const { modal } = getLeaderboardDrilldownElements();
+  if (!modal) {
+    return;
+  }
+
+  if (document.fullscreenElement === modal) {
+    if (document.exitFullscreen) {
+      await document.exitFullscreen();
+    }
+    return;
+  }
+
+  if (modal.requestFullscreen) {
+    await modal.requestFullscreen();
+  }
+}
+
+function updateLeaderboardDrilldownFullscreenButtonState() {
+  const { modal, fullscreenButton } = getLeaderboardDrilldownElements();
+  if (!modal || !fullscreenButton) {
+    return;
+  }
+
+  fullscreenButton.textContent = document.fullscreenElement === modal ? 'Exit Full Screen' : 'Full Screen';
 }
 
 async function closeLeaderboardDrilldown() {
-  const { overlay } = getLeaderboardDrilldownElements();
+  const { overlay, modal } = getLeaderboardDrilldownElements();
   if (!overlay) {
     return;
+  }
+
+  if (modal && document.fullscreenElement === modal && document.exitFullscreen) {
+    await document.exitFullscreen();
   }
 
   destroyLeaderboardPlayerEloChart();
@@ -2583,7 +2618,7 @@ async function closeLeaderboardDrilldown() {
 }
 
 function setupLeaderboardDrilldownModal() {
-  const { overlay, closeButton, content, historyDownloadButton } = getLeaderboardDrilldownElements();
+  const { overlay, closeButton, content, fullscreenButton, historyDownloadButton } = getLeaderboardDrilldownElements();
   if (!overlay || overlay.dataset.initialized === 'true') {
     return;
   }
@@ -2591,6 +2626,11 @@ function setupLeaderboardDrilldownModal() {
   overlay.dataset.initialized = 'true';
 
   closeButton?.addEventListener('click', closeLeaderboardDrilldown);
+  fullscreenButton?.addEventListener('click', () => {
+    toggleLeaderboardDrilldownFullscreen().catch(error => {
+      console.error('Failed to toggle leaderboard drilldown fullscreen mode.', error);
+    });
+  });
   historyDownloadButton?.addEventListener('click', event => {
     exportLeaderboardPlayerHistoryCsv(
       event.currentTarget.dataset.leaderboardDownloadHistory,
@@ -2698,11 +2738,23 @@ function setupLeaderboardDrilldownModal() {
     });
   });
 
+  if (document.body.dataset.leaderboardDrilldownFullscreenBound !== 'true') {
+    document.addEventListener('fullscreenchange', updateLeaderboardDrilldownFullscreenButtonState);
+    document.body.dataset.leaderboardDrilldownFullscreenBound = 'true';
+  }
+
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && !overlay.hidden) {
+      const { modal } = getLeaderboardDrilldownElements();
+      if (modal && document.fullscreenElement === modal) {
+        return;
+      }
+
       closeLeaderboardDrilldown();
     }
   });
+
+  updateLeaderboardDrilldownFullscreenButtonState();
 }
 
 function setupLeaderboardTableRowInteractions() {
