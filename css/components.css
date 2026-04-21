@@ -2262,7 +2262,8 @@ button.leaderboard-deck-result-card {
   line-height: 1.4;
 }
 
-.leaderboard-player-history-download {
+.leaderboard-player-history-download,
+.leaderboard-player-report-download {
   flex-shrink: 0;
 }
 

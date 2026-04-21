@@ -21,6 +21,7 @@ import {
   downloadCsvFile,
   sanitizeCsvFilename
 } from './export-table-csv.js';
+import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
 import { getAnalysisRows } from '../utils/analysis-data.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
@@ -29,6 +30,8 @@ const DEFAULT_EVENT_TYPE = 'online';
 const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
 const DEFAULT_LEADERBOARD_RESET_MODE = 'continuous';
 const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
+const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
+const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
 const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardDateRangeCard',
   'leaderboardRatedMatchesCard',
@@ -129,6 +132,7 @@ function getLeaderboardDrilldownElements() {
     content: document.getElementById('leaderboardStatDrilldownContent'),
     closeButton: document.getElementById('leaderboardStatDrilldownClose'),
     fullscreenButton: document.getElementById('leaderboardStatDrilldownFullscreen'),
+    reportDownloadButton: document.getElementById('leaderboardPlayerSeasonReportDownload'),
     historyDownloadButton: document.getElementById('leaderboardPlayerHistoryDownload')
   };
 }
@@ -1273,6 +1277,16 @@ function getSortedLeaderboardRowsWithRank() {
   }));
 }
 
+function getLeaderboardRowByKeysWithRank(playerKey = '', seasonKey = '') {
+  const normalizedPlayerKey = String(playerKey || '').trim();
+  const normalizedSeasonKey = String(seasonKey || '').trim();
+
+  return getSortedLeaderboardRowsWithRank().find(row => {
+    return String(row.playerKey || '').trim() === normalizedPlayerKey
+      && String(row.seasonKey || '').trim() === normalizedSeasonKey;
+  }) || null;
+}
+
 function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   const metadataRows = [
     ['View', getLeaderboardViewTitle(dataset)],
@@ -1488,6 +1502,434 @@ function exportLeaderboardPlayerHistoryCsv(playerKey = '', seasonKey = '', deckS
   const seasonLabel = sanitizeCsvFilename(getLeaderboardEntryLabel(row) || 'selected-range');
   const scopeLabel = sanitizeCsvFilename(historyScope.label || 'all-decks');
   downloadCsvFile(`elo-match-history-${playerLabel}-${seasonLabel}-${scopeLabel}.csv`, csvText);
+}
+
+function getLeaderboardPeakMoment(scope = {}) {
+  const peakRating = Number(scope?.peakRating);
+  if (!Number.isFinite(peakRating)) {
+    return null;
+  }
+
+  const historyEntries = Array.isArray(scope?.historyEntriesAscending) && scope.historyEntriesAscending.length > 0
+    ? scope.historyEntriesAscending
+    : [...(scope?.historyEntries || [])].sort(compareHistoryEntriesAscending);
+
+  const matchingEntry = historyEntries.find(entry => {
+    return Math.abs(Number(entry?.ratingAfter) - peakRating) < 0.001
+      || Math.abs(Number(entry?.ratingBefore) - peakRating) < 0.001;
+  });
+
+  if (!matchingEntry) {
+    return null;
+  }
+
+  return {
+    entry: matchingEntry,
+    phase: Math.abs(Number(matchingEntry?.ratingAfter) - peakRating) < 0.001 ? 'after' : 'before',
+    rating: peakRating
+  };
+}
+
+function buildLeaderboardReportMomentLabel(entry = {}, { includeDelta = true } = {}) {
+  if (!entry) {
+    return '--';
+  }
+
+  const resultLabel = formatResultLabel(entry.resultType);
+  const opponentLabel = entry.opponent || entry.opponentKey || 'Unknown Opponent';
+  const contextLabel = buildHistoryContextLabel(entry);
+  const deltaLabel = includeDelta && Number.isFinite(Number(entry.delta))
+    ? ` | ${formatRating(entry.ratingBefore)} -> ${formatRating(entry.ratingAfter)} (${formatRatingDelta(entry.delta)})`
+    : '';
+
+  return `${resultLabel} vs ${opponentLabel} in ${contextLabel}${deltaLabel}`;
+}
+
+function buildLeaderboardDeckBreakdownReportRows(row, model) {
+  if (!model?.deckSummaries?.length) {
+    return [];
+  }
+
+  const totalMatches = Number(row?.matches) || 0;
+
+  return model.deckSummaries.map(scope => {
+    const scopeRow = scope?.row || {};
+    const matchShare = totalMatches > 0
+      ? `${(((Number(scopeRow.matches) || 0) / totalMatches) * 100).toFixed(1)}%`
+      : '--';
+
+    return {
+      deck: scope.label || 'Unknown Deck',
+      elo: formatRating(scopeRow.rating),
+      peak: Number.isFinite(scope?.peakRating) ? formatRating(scope.peakRating) : '--',
+      matches: String(scopeRow.matches || 0),
+      record: formatLeaderboardRecord(scopeRow),
+      winRate: formatWinRate(scopeRow.winRate),
+      share: matchShare
+    };
+  });
+}
+
+function buildLeaderboardRecentHistoryReportCards(historyEntries = [], {
+  ratingLabel = 'Total Elo',
+  limit = 8,
+  includeScopeNote = true
+} = {}) {
+  const resolvedEntries = Array.isArray(historyEntries) ? historyEntries : [];
+  if (resolvedEntries.length === 0) {
+    return [];
+  }
+
+  const resolvedLimit = Number.isFinite(Number(limit)) && Number(limit) > 0
+    ? Math.floor(Number(limit))
+    : resolvedEntries.length;
+
+  const cards = resolvedEntries.slice(0, resolvedLimit).map(entry => {
+    const eventLabel = formatEventName(entry.event) || entry.event || 'Unknown Event';
+    const roundLabel = Number.isFinite(Number(entry.round)) ? `Round ${Number(entry.round)}` : 'Unknown Round';
+    const deltaLabel = formatRatingDelta(entry.delta);
+    const isPositive = Number(entry.delta) > 0;
+    const isNegative = Number(entry.delta) < 0;
+
+    return {
+      title: `${formatResultLabel(entry.resultType)} vs ${entry.opponent || entry.opponentKey || 'Unknown Opponent'}`,
+      subtitle: `${formatShortDate(entry.date)} | ${eventLabel} | ${roundLabel}`,
+      detail: `${getLeaderboardDeckDisplayName(entry.deck)} vs ${getLeaderboardDeckDisplayName(entry.opponentDeck)} | ${ratingLabel}: ${formatRating(entry.ratingBefore)} -> ${formatRating(entry.ratingAfter)} (${deltaLabel})`,
+      accentText: deltaLabel,
+      accentColor: isPositive ? '#2f7d57' : isNegative ? '#a14848' : '#87631f'
+    };
+  });
+
+  if (includeScopeNote && resolvedEntries.length > resolvedLimit) {
+    cards.push({
+      title: 'Report Scope Note',
+      subtitle: 'Recent matches truncated for readability',
+      detail: `Showing the most recent ${resolvedLimit} rated matches out of ${resolvedEntries.length} total entries in this scope.`,
+      accentText: `${resolvedLimit}/${resolvedEntries.length}`,
+      accentColor: '#87631f'
+    });
+  }
+
+  return cards;
+}
+
+function buildLeaderboardDeckScopeSummaryRows(row, scope = {}) {
+  const scopeRow = scope?.row || {};
+  const matchShare = Number(row?.matches) > 0
+    ? `${(((Number(scopeRow.matches) || 0) / Number(row.matches)) * 100).toFixed(1)}%`
+    : '--';
+  const firstMatchLabel = scope?.firstMatch
+    ? buildLeaderboardReportMomentLabel(scope.firstMatch, { includeDelta: false })
+    : '--';
+  const latestMatchLabel = scope?.latestMatch
+    ? buildLeaderboardReportMomentLabel(scope.latestMatch)
+    : '--';
+
+  return [
+    { label: 'Focused Deck', value: scope.label || '--', valueColor: '#87631f' },
+    { label: 'Deck Elo', value: formatRating(scopeRow.rating), valueColor: '#d4a657' },
+    { label: 'Peak Deck Elo', value: Number.isFinite(scope?.peakRating) ? formatRating(scope.peakRating) : '--' },
+    { label: 'Total Elo Reference', value: formatRating(row?.rating) },
+    { label: 'Deck Record', value: formatLeaderboardRecord(scopeRow) },
+    { label: 'Deck Win Rate', value: formatWinRate(scopeRow.winRate) },
+    { label: 'Deck Matches', value: String(scopeRow.matches || 0) },
+    { label: 'Deck Match Share', value: matchShare },
+    { label: 'First Deck Match', value: firstMatchLabel },
+    { label: 'Latest Deck Match', value: latestMatchLabel },
+    { label: 'Best Deck Gain', value: scope?.bestDelta ? `${formatRatingDelta(scope.bestDelta.delta)} | ${buildLeaderboardReportMomentLabel(scope.bestDelta, { includeDelta: false })}` : '--', valueColor: '#2f7d57' },
+    { label: 'Biggest Deck Drop', value: scope?.worstDelta ? `${formatRatingDelta(scope.worstDelta.delta)} | ${buildLeaderboardReportMomentLabel(scope.worstDelta, { includeDelta: false })}` : '--', valueColor: '#a14848' }
+  ];
+}
+
+function buildLeaderboardPdfChartSection(row, model, reportScope, {
+  title,
+  subtitle,
+  note,
+  ...sectionOptions
+} = {}) {
+  const deckPointShapes = ['diamond', 'triangle', 'circle', 'cross', 'triangle-down'];
+  const isDeckScope = reportScope?.type === 'deck';
+  const chartData = buildLeaderboardPlayerChartData({
+    row,
+    totalScope: model.totalScope,
+    deckSummaries: model.deckSummaries,
+    activeScopeKey: reportScope?.key || LEADERBOARD_PLAYER_TOTAL_SCOPE,
+    activeScope: reportScope || model.totalScope
+  });
+
+  const filteredDatasets = (chartData?.datasets || []).filter((dataset, index) => {
+    if (!isDeckScope) {
+      return true;
+    }
+
+    return index === 0 || (dataset?.label === reportScope?.label);
+  });
+
+  const series = filteredDatasets
+    .map((dataset, index) => {
+      const label = dataset.label || 'Elo';
+      const isTotalSeries = label === 'Total Elo';
+      const deckSeriesIndex = Math.max(0, isTotalSeries ? 0 : index - 1);
+      const originalDeckIndex = isTotalSeries
+        ? 0
+        : Math.max(0, model.deckSummaries.findIndex(scope => scope.label === label));
+      const resolvedColor = isDeckScope
+        ? (isTotalSeries ? LEADERBOARD_REPORT_TOTAL_ELO_COLOR : LEADERBOARD_REPORT_FOCUSED_DECK_COLOR)
+        : (isTotalSeries ? getLeaderboardTimelineColor(0) : getLeaderboardTimelineColor(originalDeckIndex + 1));
+      const resolvedDash = isDeckScope
+        ? (isTotalSeries ? [7, 5] : [])
+        : (Array.isArray(dataset.borderDash) ? dataset.borderDash : []);
+      const resolvedLineWidth = isDeckScope
+        ? (isTotalSeries ? 2.2 : 3.1)
+        : (Number(dataset.borderWidth) || (label === 'Total Elo' ? 3 : 2));
+
+      return {
+        label,
+        color: resolvedColor,
+        data: Array.isArray(dataset.data) ? dataset.data : [],
+        dash: resolvedDash,
+        pointShape: isTotalSeries
+          ? 'square'
+          : deckPointShapes[deckSeriesIndex % deckPointShapes.length],
+        lineWidth: resolvedLineWidth
+      };
+    });
+
+  const totalPointCount = model?.totalScope?.points?.length || 0;
+  const startLabel = model?.totalScope?.firstMatch?.date ? formatShortDate(model.totalScope.firstMatch.date) : 'Start';
+  const endLabel = model?.totalScope?.latestMatch?.date ? formatShortDate(model.totalScope.latestMatch.date) : 'End';
+  const defaultSubtitle = isDeckScope
+    ? `${reportScope.label} focus compared with total Elo only`
+    : 'Season-long rating progression across all tracked decks';
+  const defaultNote = (
+    isDeckScope
+      ? `${reportScope.label} is shown against the player's Total Elo reference across ${totalPointCount} tracked event${totalPointCount === 1 ? '' : 's'}.`
+      : `Showing Total Elo together with every tracked deck Elo trail across ${totalPointCount} tracked event${totalPointCount === 1 ? '' : 's'}.`
+  );
+
+  return {
+    type: 'lineChart',
+    title: title === undefined ? 'Elo Trend' : title,
+    subtitle: subtitle === undefined ? defaultSubtitle : subtitle,
+    series,
+    startLabel,
+    endLabel,
+    note: note === undefined ? defaultNote : note,
+    emptyText: "Not enough Elo history is available to draw the player's trend chart.",
+    connectDiscontinuities: isDeckScope,
+    ...sectionOptions
+  };
+}
+
+function updateLeaderboardPlayerReportDownloadButton(playerKey = '', seasonKey = '', deckScopeKey = LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+  const { reportDownloadButton } = getLeaderboardDrilldownElements();
+  if (!reportDownloadButton) {
+    return;
+  }
+
+  const normalizedPlayerKey = String(playerKey || '').trim();
+  const normalizedSeasonKey = String(seasonKey || '').trim();
+  const shouldShow = Boolean(normalizedPlayerKey);
+  const entryFieldLabel = getLeaderboardEntryFieldLabel(currentLeaderboardDataset);
+  const buttonLabel = `${entryFieldLabel} Full PDF Report`;
+
+  reportDownloadButton.hidden = !shouldShow;
+  reportDownloadButton.textContent = buttonLabel;
+  reportDownloadButton.setAttribute('aria-label', shouldShow ? `Download ${buttonLabel.toLowerCase()}` : buttonLabel);
+  reportDownloadButton.dataset.leaderboardDownloadReport = shouldShow ? normalizedPlayerKey : '';
+  reportDownloadButton.dataset.leaderboardDownloadReportSeason = shouldShow ? normalizedSeasonKey : '';
+  reportDownloadButton.dataset.leaderboardDownloadReportDeck = shouldShow ? normalizeLeaderboardDeckScopeKey(deckScopeKey) : LEADERBOARD_PLAYER_TOTAL_SCOPE;
+}
+
+function exportLeaderboardPlayerSeasonPdfReport(playerKey = '', seasonKey = '', deckScopeKey = LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+  const rankedRow = getLeaderboardRowByKeysWithRank(playerKey, seasonKey);
+  const row = rankedRow || getLeaderboardRowByKeys(playerKey, seasonKey);
+  if (!row) {
+    return;
+  }
+
+  const model = getLeaderboardPlayerDrilldownModel(row);
+  const normalizedScopeKey = normalizeLeaderboardDeckScopeKey(deckScopeKey);
+  const totalScope = model.totalScope;
+  const entryFieldLabel = getLeaderboardEntryFieldLabel(currentLeaderboardDataset);
+  const entryLabel = getLeaderboardEntryLabel(row);
+  const preferredDeckScope = normalizedScopeKey === LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? null
+    : model.deckSummaries.find(scope => scope.key === normalizedScopeKey) || null;
+  const orderedDeckSummaries = preferredDeckScope
+    ? [
+        preferredDeckScope,
+        ...model.deckSummaries.filter(scope => scope.key !== preferredDeckScope.key)
+      ]
+    : model.deckSummaries;
+  const peakMoment = getLeaderboardPeakMoment(totalScope);
+  const mostPlayedDeck = model.deckSummaries[0] || null;
+  const strongestDeck = [...model.deckSummaries].sort((a, b) => {
+    return Number(b?.peakRating || 0) - Number(a?.peakRating || 0)
+      || Number(b?.row?.rating || 0) - Number(a?.row?.rating || 0)
+      || Number(b?.row?.matches || 0) - Number(a?.row?.matches || 0);
+  })[0] || null;
+  const totalDeltaLabel = Number.isFinite(Number(totalScope?.totalDelta))
+    ? formatRatingDelta(totalScope.totalDelta)
+    : '--';
+  const firstMatchLabel = totalScope?.firstMatch
+    ? buildLeaderboardReportMomentLabel(totalScope.firstMatch)
+    : '--';
+  const latestMatchLabel = totalScope?.latestMatch
+    ? buildLeaderboardReportMomentLabel(totalScope.latestMatch)
+    : '--';
+  const peakMomentLabel = peakMoment
+    ? `${formatRating(peakMoment.rating)} ${peakMoment.phase === 'before' ? 'before' : 'after'} ${buildHistoryContextLabel(peakMoment.entry)}`
+    : '--';
+  const bestGainLabel = totalScope?.bestDelta
+    ? `${formatRatingDelta(totalScope.bestDelta.delta)} | ${buildLeaderboardReportMomentLabel(totalScope.bestDelta, { includeDelta: false })}`
+    : '--';
+  const biggestDropLabel = totalScope?.worstDelta
+    ? `${formatRatingDelta(totalScope.worstDelta.delta)} | ${buildLeaderboardReportMomentLabel(totalScope.worstDelta, { includeDelta: false })}`
+    : '--';
+  const mostPlayedDeckLabel = mostPlayedDeck
+    ? `${mostPlayedDeck.label} | ${mostPlayedDeck.row?.matches || 0} matches | ${formatLeaderboardRecord(mostPlayedDeck.row)} | ${formatWinRate(mostPlayedDeck.row?.winRate)} WR | ${formatRating(mostPlayedDeck.row?.rating)} Elo`
+    : '--';
+  const strongestDeckLabel = strongestDeck
+    ? `${strongestDeck.label} | Peak ${Number.isFinite(strongestDeck.peakRating) ? formatRating(strongestDeck.peakRating) : '--'} | ${formatRating(strongestDeck.row?.rating)} current Elo`
+    : '--';
+  const summaryRows = [
+    { label: 'Final Total Elo', value: formatRating(row.rating), valueColor: '#d4a657' },
+    { label: 'Peak Elo', value: `${Number.isFinite(totalScope?.peakRating) ? formatRating(totalScope.peakRating) : '--'} | ${peakMomentLabel}` },
+    { label: 'Record', value: `${formatLeaderboardRecord(row)} across ${row.matches || 0} rated matches` },
+    { label: 'Win Rate', value: formatWinRate(row.winRate) },
+    { label: 'Total Elo Change', value: `${totalDeltaLabel} from the starting ${DEFAULT_RANKINGS_OPTIONS.startingRating}` },
+    { label: 'Tracked Decks', value: String(model.deckSummaries.length || totalScope?.uniqueDeckCount || 0) },
+    { label: 'First Rated Match', value: firstMatchLabel },
+    { label: 'Latest Rated Match', value: latestMatchLabel }
+  ];
+  const highlightRows = [
+    { label: 'Best Single-Match Gain', value: bestGainLabel, valueColor: '#2f7d57' },
+    { label: 'Biggest Single-Match Drop', value: biggestDropLabel, valueColor: '#a14848' },
+    { label: 'Most Played Deck', value: mostPlayedDeckLabel },
+    { label: 'Highest Peak Deck', value: strongestDeckLabel }
+  ];
+  const deckBreakdownRows = buildLeaderboardDeckBreakdownReportRows(row, model);
+  const recentMatchCards = buildLeaderboardRecentHistoryReportCards(totalScope?.historyEntries || [], {
+    ratingLabel: 'Total Elo',
+    limit: 8
+  });
+  const deckSections = orderedDeckSummaries.flatMap(scope => {
+    const deckChartSection = buildLeaderboardPdfChartSection(row, model, scope, {
+      title: '',
+      subtitle: '',
+      note: '',
+      hideHeading: true,
+      compact: true,
+      trailingSpacing: 4
+    });
+    const deckSummaryRows = buildLeaderboardDeckScopeSummaryRows(row, scope);
+    const deckRecentMatchCards = buildLeaderboardRecentHistoryReportCards(scope?.historyEntries || [], {
+      ratingLabel: 'Deck Elo',
+      limit: 40,
+      includeScopeNote: false
+    });
+
+    return [
+      {
+        type: 'keyValueTable',
+        title: `${scope.label} Deck Summary`,
+        subtitle: 'Deck-specific snapshot with the focused Elo trend on the same page',
+        bookmarkTitle: scope.label,
+        rows: deckSummaryRows,
+        pageBreakBefore: true,
+        compact: true,
+        reserveBelow: 240,
+        trailingSpacing: 6
+      },
+      deckChartSection,
+      {
+        type: 'cards',
+        title: `${scope.label} Rated Matches`,
+        subtitle: 'Most recent results with this deck, packed to a single page',
+        bookmarkTitle: 'Rated Matches',
+        bookmarkLevel: 1,
+        items: deckRecentMatchCards,
+        emptyText: `No rated match history is available for ${scope.label} in this report.`,
+        pageBreakBefore: true,
+        compact: true,
+        singlePage: true
+      }
+    ];
+  });
+
+  downloadTextPdfReport(
+    `${sanitizeCsvFilename(`elo-full-report-${row.displayName || row.playerKey || 'player'}-${entryLabel}`)}.pdf`,
+    {
+      title: `${row.displayName || row.playerKey || 'Player'} ${entryFieldLabel} Full Report`,
+      subtitle: `${getLeaderboardViewTitle(currentLeaderboardDataset)} | ${entryFieldLabel}: ${entryLabel} | All Decks plus every tracked deck page`,
+      summaryStats: [
+        { label: 'Leaderboard Rank', value: rankedRow?.displayRank ? `#${rankedRow.displayRank}` : '--' },
+        { label: 'Final Elo', value: formatRating(row.rating), valueColor: '#d4a657' },
+        { label: 'Record', value: formatLeaderboardRecord(row) },
+        { label: 'Win Rate', value: formatWinRate(row.winRate) }
+      ],
+      metadata: [
+        { label: 'Player', value: row.displayName || row.playerKey || '--' },
+        { label: entryFieldLabel, value: entryLabel },
+        { label: 'Leaderboard Rank', value: rankedRow?.displayRank ? `#${rankedRow.displayRank}` : '--' },
+        { label: 'Report Type', value: 'All Decks overview plus one page per tracked deck' },
+        { label: 'Deck Sections', value: String(model.deckSummaries.length || 0) },
+        { label: 'Window Type', value: getLeaderboardWindowModeLabel(currentLeaderboardDataset.period) },
+        { label: 'Rating Continuity', value: getLeaderboardContinuityLabel(currentLeaderboardDataset) },
+        { label: 'Leaderboard Window', value: getWindowLabel(currentLeaderboardDataset.period, currentLeaderboardDataset.summary.selectedYears, currentLeaderboardDataset.startDate, currentLeaderboardDataset.endDate) },
+        { label: 'Date Range', value: formatWindowRange(currentLeaderboardDataset.startDate, currentLeaderboardDataset.endDate) },
+        { label: 'Event Types', value: (currentLeaderboardDataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE },
+        { label: 'Generated', value: new Date().toLocaleString() }
+      ],
+      sections: [
+        {
+          type: 'keyValueTable',
+          title: 'All Decks Snapshot',
+          subtitle: 'Core season metrics at a glance',
+          rows: summaryRows
+        },
+        {
+          type: 'keyValueTable',
+          title: 'All Decks Highlights',
+          subtitle: 'Big swings, best deck peaks, and standout moments',
+          rows: highlightRows
+        },
+        buildLeaderboardPdfChartSection(row, model, totalScope, {
+          title: 'All Decks Elo Trend',
+          subtitle: 'Total Elo plus every tracked deck Elo trail'
+        }),
+        {
+          type: 'table',
+          title: 'Deck Breakdown',
+          subtitle: 'How each tracked deck contributed to the player season/window',
+          columns: [
+            { key: 'deck', label: 'Deck', width: 2.3 },
+            { key: 'elo', label: 'Elo', width: 0.9 },
+            { key: 'peak', label: 'Peak', width: 0.9 },
+            { key: 'matches', label: 'Matches', width: 1.0 },
+            { key: 'record', label: 'Record', width: 1.1 },
+            { key: 'winRate', label: 'WR', width: 0.9 },
+            { key: 'share', label: 'Share', width: 1.0 }
+          ],
+          rows: deckBreakdownRows,
+          note: deckBreakdownRows.length > 0
+            ? `Deck share is based on the player's ${row.matches || 0} rated matches in this ${entryFieldLabel.toLowerCase()}.`
+            : 'No deck-specific Elo trails were tracked for this leaderboard entry.',
+          emptyText: 'No deck-specific Elo trails were tracked for this leaderboard entry.'
+        },
+        {
+          type: 'cards',
+          title: 'Recent Rated Matches (All Decks)',
+          subtitle: 'Most recent results across the full season/window',
+          items: recentMatchCards,
+          emptyText: 'No rated match history is available for this report scope.'
+        },
+        ...deckSections
+      ],
+      footer: 'Generated from the current Pauper MTG Analytics Elo leaderboard drilldown as a full season/window report.'
+    }
+  );
 }
 
 function formatLeaderboardRecord(row = {}) {
@@ -1796,6 +2238,7 @@ function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   elements.subtitle.textContent = buildLeaderboardPlayerScopeSubtitle(row, model);
   elements.content.innerHTML = buildLeaderboardPlayerDetailHtml(row, model);
   renderLeaderboardPlayerEloChart(model);
+  updateLeaderboardPlayerReportDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
   updateLeaderboardPlayerHistoryDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
   return true;
 }
@@ -2554,6 +2997,8 @@ function openLeaderboardDrilldown(categoryKey) {
   activeLeaderboardPlayerDrilldown = null;
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
   renderLeaderboardDrilldown(categoryKey);
+  updateLeaderboardPlayerReportDownloadButton();
+  updateLeaderboardPlayerHistoryDownloadButton();
   elements.overlay.hidden = false;
   document.body.classList.add('modal-open');
   updateLeaderboardDrilldownFullscreenButtonState();
@@ -2601,6 +3046,7 @@ async function closeLeaderboardDrilldown() {
   activeLeaderboardDrilldownCategory = '';
   activeLeaderboardPlayerDrilldown = null;
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  updateLeaderboardPlayerReportDownloadButton();
   updateLeaderboardPlayerHistoryDownloadButton();
   document.body.classList.remove('modal-open');
 
@@ -2618,7 +3064,14 @@ async function closeLeaderboardDrilldown() {
 }
 
 function setupLeaderboardDrilldownModal() {
-  const { overlay, closeButton, content, fullscreenButton, historyDownloadButton } = getLeaderboardDrilldownElements();
+  const {
+    overlay,
+    closeButton,
+    content,
+    fullscreenButton,
+    reportDownloadButton,
+    historyDownloadButton
+  } = getLeaderboardDrilldownElements();
   if (!overlay || overlay.dataset.initialized === 'true') {
     return;
   }
@@ -2630,6 +3083,13 @@ function setupLeaderboardDrilldownModal() {
     toggleLeaderboardDrilldownFullscreen().catch(error => {
       console.error('Failed to toggle leaderboard drilldown fullscreen mode.', error);
     });
+  });
+  reportDownloadButton?.addEventListener('click', event => {
+    exportLeaderboardPlayerSeasonPdfReport(
+      event.currentTarget.dataset.leaderboardDownloadReport,
+      event.currentTarget.dataset.leaderboardDownloadReportSeason,
+      event.currentTarget.dataset.leaderboardDownloadReportDeck
+    );
   });
   historyDownloadButton?.addEventListener('click', event => {
     exportLeaderboardPlayerHistoryCsv(
@@ -2755,6 +3215,8 @@ function setupLeaderboardDrilldownModal() {
   });
 
   updateLeaderboardDrilldownFullscreenButtonState();
+  updateLeaderboardPlayerReportDownloadButton();
+  updateLeaderboardPlayerHistoryDownloadButton();
 }
 
 function setupLeaderboardTableRowInteractions() {
