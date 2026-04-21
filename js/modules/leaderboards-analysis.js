@@ -193,6 +193,22 @@ function getLeaderboardTimelineSearchStatus() {
   return document.getElementById('leaderboardTimelineSearchStatus');
 }
 
+function getLeaderboardTimelineShowAllLinesButton() {
+  return document.getElementById('leaderboardTimelineShowAllLinesButton');
+}
+
+function getLeaderboardTimelineHideAllLinesButton() {
+  return document.getElementById('leaderboardTimelineHideAllLinesButton');
+}
+
+function getLeaderboardPlayerChartShowAllLinesButton() {
+  return document.getElementById('leaderboardPlayerChartShowAllLinesButton');
+}
+
+function getLeaderboardPlayerChartHideAllLinesButton() {
+  return document.getElementById('leaderboardPlayerChartHideAllLinesButton');
+}
+
 function getLeaderboardEventTypeButtons() {
   return Array.from(getLeaderboardsSection()?.querySelectorAll('.event-type-filter') || []);
 }
@@ -1428,6 +1444,7 @@ function getLeaderboardPlayerHistoryAscending(row) {
 
 function destroyLeaderboardPlayerEloChart() {
   leaderboardPlayerEloChart = destroyLeaderboardChart(leaderboardPlayerEloChart);
+  updateLeaderboardPlayerChartVisibilityButtons();
 }
 
 function destroyLeaderboardTimelineChart() {
@@ -2174,6 +2191,24 @@ function buildLeaderboardPlayerDetailHtml(row, model) {
           <div class="player-rank-drilldown-context-title">Elo Timeline</div>
           <div class="leaderboard-table-helper">${escapeHtml(buildLeaderboardPlayerChartHelperText(model))}</div>
         </div>
+        <div class="leaderboard-chart-toolbar-actions">
+          <button
+            type="button"
+            class="bubble-button leaderboard-timeline-visibility-button"
+            id="leaderboardPlayerChartShowAllLinesButton"
+            data-leaderboard-player-chart-lines="show"
+          >
+            Show All Lines
+          </button>
+          <button
+            type="button"
+            class="bubble-button leaderboard-timeline-visibility-button"
+            id="leaderboardPlayerChartHideAllLinesButton"
+            data-leaderboard-player-chart-lines="hide"
+          >
+            Hide All Lines
+          </button>
+        </div>
       </div>
       <canvas id="leaderboardPlayerEloChart"></canvas>
     </div>
@@ -2208,11 +2243,13 @@ function renderLeaderboardPlayerEloChart(model) {
 
   const canvas = document.getElementById('leaderboardPlayerEloChart');
   if (!canvas || !globalThis.Chart || !model) {
+    updateLeaderboardPlayerChartVisibilityButtons();
     return;
   }
 
   const chartData = buildLeaderboardPlayerChartData(model);
   if (chartData.labels.length === 0 || chartData.datasets.length === 0) {
+    updateLeaderboardPlayerChartVisibilityButtons();
     return;
   }
 
@@ -2221,8 +2258,12 @@ function renderLeaderboardPlayerEloChart(model) {
     datasets: chartData.datasets,
     timelineEntries: chartData.timelineEntries,
     formatRating,
-    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers()
+    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers(),
+    onLegendToggle() {
+      updateLeaderboardPlayerChartVisibilityButtons();
+    }
   });
+  updateLeaderboardPlayerChartVisibilityButtons();
 }
 
 function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
@@ -2271,6 +2312,100 @@ function updateLeaderboardTimelineSearchStatus(message = '') {
   if (status) {
     status.textContent = message;
   }
+}
+
+function getLeaderboardChartVisibleDatasetCount(chart = null) {
+  if (!chart?.data?.datasets?.length) {
+    return 0;
+  }
+
+  return chart.data.datasets.reduce((count, _dataset, index) => {
+    if (typeof chart.isDatasetVisible === 'function') {
+      return count + (chart.isDatasetVisible(index) ? 1 : 0);
+    }
+
+    const datasetMeta = typeof chart.getDatasetMeta === 'function'
+      ? chart.getDatasetMeta(index)
+      : null;
+    const isHidden = datasetMeta
+      ? datasetMeta.hidden === true
+      : Boolean(chart.data.datasets[index]?.hidden);
+    return count + (isHidden ? 0 : 1);
+  }, 0);
+}
+
+function setLeaderboardChartLineVisibility(chart = null, shouldShow = true, {
+  fast = false
+} = {}) {
+  if (!chart?.data?.datasets?.length) {
+    return false;
+  }
+
+  chart.data.datasets.forEach((_dataset, index) => {
+    if (typeof chart.setDatasetVisibility === 'function') {
+      chart.setDatasetVisibility(index, shouldShow);
+      return;
+    }
+
+    const datasetMeta = typeof chart.getDatasetMeta === 'function'
+      ? chart.getDatasetMeta(index)
+      : null;
+    if (datasetMeta) {
+      datasetMeta.hidden = shouldShow ? null : true;
+    } else if (chart.data.datasets[index]) {
+      chart.data.datasets[index].hidden = !shouldShow;
+    }
+  });
+
+  chart.update(fast ? 'none' : undefined);
+  return true;
+}
+
+function updateLeaderboardTimelineVisibilityButtons() {
+  const showAllButton = getLeaderboardTimelineShowAllLinesButton();
+  const hideAllButton = getLeaderboardTimelineHideAllLinesButton();
+  const datasetCount = leaderboardTimelineChart?.data?.datasets?.length || 0;
+  const visibleCount = getLeaderboardChartVisibleDatasetCount(leaderboardTimelineChart);
+
+  if (showAllButton) {
+    showAllButton.disabled = datasetCount === 0 || visibleCount === datasetCount;
+  }
+
+  if (hideAllButton) {
+    hideAllButton.disabled = datasetCount === 0 || visibleCount === 0;
+  }
+}
+
+function setLeaderboardTimelineLineVisibility(shouldShow = true) {
+  if (!setLeaderboardChartLineVisibility(leaderboardTimelineChart, shouldShow, { fast: true })) {
+    updateLeaderboardTimelineVisibilityButtons();
+    return;
+  }
+  updateLeaderboardTimelineVisibilityButtons();
+}
+
+function updateLeaderboardPlayerChartVisibilityButtons() {
+  const showAllButton = getLeaderboardPlayerChartShowAllLinesButton();
+  const hideAllButton = getLeaderboardPlayerChartHideAllLinesButton();
+  const datasetCount = leaderboardPlayerEloChart?.data?.datasets?.length || 0;
+  const visibleCount = getLeaderboardChartVisibleDatasetCount(leaderboardPlayerEloChart);
+
+  if (showAllButton) {
+    showAllButton.disabled = datasetCount === 0 || visibleCount === datasetCount;
+  }
+
+  if (hideAllButton) {
+    hideAllButton.disabled = datasetCount === 0 || visibleCount === 0;
+  }
+}
+
+function setLeaderboardPlayerChartLineVisibility(shouldShow = true) {
+  if (!setLeaderboardChartLineVisibility(leaderboardPlayerEloChart, shouldShow, { fast: true })) {
+    updateLeaderboardPlayerChartVisibilityButtons();
+    return;
+  }
+
+  updateLeaderboardPlayerChartVisibilityButtons();
 }
 
 function renderLeaderboardTimelineChipPanel() {
@@ -2346,6 +2481,7 @@ function renderLeaderboardTimelineSearchDropdown() {
 
 function renderLeaderboardTimelineChart() {
   destroyLeaderboardTimelineChart();
+  updateLeaderboardTimelineVisibilityButtons();
 
   const section = getLeaderboardTimelineSection();
   const canvas = getLeaderboardTimelineChartCanvas();
@@ -2364,6 +2500,7 @@ function renderLeaderboardTimelineChart() {
       dropdown.innerHTML = '';
     }
     updateLeaderboardTimelineSearchStatus('');
+    updateLeaderboardTimelineVisibilityButtons();
     return;
   }
 
@@ -2392,6 +2529,7 @@ function renderLeaderboardTimelineChart() {
   }
 
   if (!globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
+    updateLeaderboardTimelineVisibilityButtons();
     return;
   }
 
@@ -2429,8 +2567,12 @@ function renderLeaderboardTimelineChart() {
     datasets,
     timelineEntries: timeline,
     formatRating,
-    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers()
+    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers(),
+    onLegendToggle() {
+      updateLeaderboardTimelineVisibilityButtons();
+    }
   });
+  updateLeaderboardTimelineVisibilityButtons();
 }
 
 function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
@@ -3142,6 +3284,14 @@ function setupLeaderboardDrilldownModal() {
       return;
     }
 
+    const playerChartLineVisibilityButton = event.target.closest('[data-leaderboard-player-chart-lines]');
+    if (playerChartLineVisibilityButton) {
+      setLeaderboardPlayerChartLineVisibility(
+        playerChartLineVisibilityButton.dataset.leaderboardPlayerChartLines === 'show'
+      );
+      return;
+    }
+
     const playerToggleButton = event.target.closest('[data-leaderboard-player-toggle]');
     if (playerToggleButton) {
       const targetId = playerToggleButton.dataset.leaderboardPlayerToggle || '';
@@ -3530,6 +3680,8 @@ function setupLeaderboardTimelineInteractions() {
   const searchInput = getLeaderboardTimelineSearchInput();
   const dropdown = getLeaderboardTimelineSearchDropdown();
   const chipPanel = getLeaderboardTimelineChipPanel();
+  const showAllLinesButton = getLeaderboardTimelineShowAllLinesButton();
+  const hideAllLinesButton = getLeaderboardTimelineHideAllLinesButton();
 
   if (searchInput && searchInput.dataset.listenerAdded !== 'true') {
     searchInput.addEventListener('input', () => {
@@ -3614,6 +3766,22 @@ function setupLeaderboardTimelineInteractions() {
 
     chipPanel.dataset.listenerAdded = 'true';
   }
+
+  if (showAllLinesButton && showAllLinesButton.dataset.listenerAdded !== 'true') {
+    showAllLinesButton.addEventListener('click', () => {
+      setLeaderboardTimelineLineVisibility(true);
+    });
+    showAllLinesButton.dataset.listenerAdded = 'true';
+  }
+
+  if (hideAllLinesButton && hideAllLinesButton.dataset.listenerAdded !== 'true') {
+    hideAllLinesButton.addEventListener('click', () => {
+      setLeaderboardTimelineLineVisibility(false);
+    });
+    hideAllLinesButton.dataset.listenerAdded = 'true';
+  }
+
+  updateLeaderboardTimelineVisibilityButtons();
 }
 
 function setupLeaderboardFilterListeners() {

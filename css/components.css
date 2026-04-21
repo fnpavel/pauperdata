@@ -3258,6 +3258,47 @@ For now at least the search is also visually working */
   z-index: 20;
 }
 
+.leaderboard-chart-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.leaderboard-chart-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.leaderboard-chart-toolbar .leaderboard-table-search {
+  flex: 1 1 280px;
+  min-width: 240px;
+}
+
+.leaderboard-chart-toolbar-actions {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.leaderboard-chart-panel-header .leaderboard-chart-toolbar-actions {
+  margin-left: auto;
+}
+
+.leaderboard-timeline-visibility-button {
+  white-space: nowrap;
+}
+
+.leaderboard-chart-toolbar .leaderboard-table-search-status {
+  flex: 0 1 auto;
+  min-width: 120px;
+}
+
 .player-search-dropdown {
   z-index: 30;
 }

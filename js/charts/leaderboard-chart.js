@@ -291,7 +291,8 @@ export function createLeaderboardPlayerEloChart(canvas, {
   datasets = [],
   timelineEntries = [],
   formatRating,
-  showYearBoundaries = false
+  showYearBoundaries = false,
+  onLegendToggle = null
 } = {}) {
   const resolvedLabels = labels.length > 0
     ? labels
@@ -350,6 +351,23 @@ export function createLeaderboardPlayerEloChart(canvas, {
         legend: {
           display: resolvedDatasets.length > 1,
           position: 'top',
+          onClick(event, legendItem, legend) {
+            const defaultLegendClick = globalThis.Chart?.defaults?.plugins?.legend?.onClick;
+            if (typeof defaultLegendClick === 'function') {
+              defaultLegendClick(event, legendItem, legend);
+            } else if (legend?.chart && Number.isInteger(legendItem?.datasetIndex)) {
+              const datasetIndex = legendItem.datasetIndex;
+              const chart = legend.chart;
+              if (typeof chart.setDatasetVisibility === 'function' && typeof chart.isDatasetVisible === 'function') {
+                chart.setDatasetVisibility(datasetIndex, !chart.isDatasetVisible(datasetIndex));
+              }
+              chart.update();
+            }
+
+            if (typeof onLegendToggle === 'function') {
+              onLegendToggle(legend?.chart || null);
+            }
+          },
           labels: {
             color: theme.text
           }
@@ -405,7 +423,8 @@ export function createLeaderboardTimelineChart(canvas, {
   datasets = [],
   timelineEntries = [],
   formatRating,
-  showYearBoundaries = false
+  showYearBoundaries = false,
+  onLegendToggle = null
 } = {}) {
   if (!canvas || !globalThis.Chart || !labels.length || !datasets.length) {
     return null;
@@ -442,6 +461,23 @@ export function createLeaderboardTimelineChart(canvas, {
         },
         legend: {
           position: 'top',
+          onClick(event, legendItem, legend) {
+            const defaultLegendClick = globalThis.Chart?.defaults?.plugins?.legend?.onClick;
+            if (typeof defaultLegendClick === 'function') {
+              defaultLegendClick(event, legendItem, legend);
+            } else if (legend?.chart && Number.isInteger(legendItem?.datasetIndex)) {
+              const datasetIndex = legendItem.datasetIndex;
+              const chart = legend.chart;
+              if (typeof chart.setDatasetVisibility === 'function' && typeof chart.isDatasetVisible === 'function') {
+                chart.setDatasetVisibility(datasetIndex, !chart.isDatasetVisible(datasetIndex));
+              }
+              chart.update();
+            }
+
+            if (typeof onLegendToggle === 'function') {
+              onLegendToggle(legend?.chart || null);
+            }
+          },
           labels: {
             color: theme.text
           }
