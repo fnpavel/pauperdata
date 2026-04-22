@@ -1,3 +1,6 @@
+// Event results are split into a manifest plus per-year files. This module
+// keeps one in-memory copy of that structure and memoizes year fetches so
+// repeated UI refreshes do not hit the network again.
 const EVENT_DATA_ROOT = new URL('../../data/events/', import.meta.url);
 
 const EMPTY_MANIFEST = Object.freeze({
@@ -11,6 +14,7 @@ let eventManifest = EMPTY_MANIFEST;
 let eventRows = [];
 let eventDataPromise = null;
 
+// year -> Promise<Array<eventRow>>
 const eventYearsCache = new Map();
 
 async function fetchEventJsonFile(relativePath = '') {
@@ -47,6 +51,8 @@ async function loadYearDataset(year = '') {
 
 export async function ensureEventDataLoaded() {
   if (!eventDataPromise) {
+    // Single-flight loading: if several modules initialize at once, they all
+    // await the same promise instead of refetching the manifest and year files.
     eventDataPromise = fetchEventJsonFile('manifest.json')
       .then(async manifest => {
         eventManifest = manifest && typeof manifest === 'object'
@@ -66,6 +72,7 @@ export async function ensureEventDataLoaded() {
         };
       })
       .catch(error => {
+        // Reset the memoized promise so a later retry can attempt loading again.
         eventDataPromise = null;
         throw error;
       });

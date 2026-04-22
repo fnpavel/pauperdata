@@ -1,4 +1,6 @@
-// js/utils/data-cards.js
+// Builds the display-ready card payloads used across Event Analysis and Player
+// Analysis. These helpers intentionally return UI-friendly strings because the
+// card renderers bind directly to the returned object shapes.
 import { formatDate, formatEventName } from './format.js';
 
 function escapeHtml(value) {
@@ -11,6 +13,8 @@ function escapeHtml(value) {
 }
 
 export function calculateTopDecks(data) {
+  // The stat cards treat finish bands as "unique decks represented" buckets,
+  // not copy counts, so each range is de-duplicated before display.
   return {
     "Top 8": [...new Set(data.filter(row => row.Rank >= 1 && row.Rank <= 8).map(row => row.Deck))],
     "Top 16": [...new Set(data.filter(row => row.Rank >= 9 && row.Rank <= 16).map(row => row.Deck))],
@@ -299,7 +303,8 @@ export function calculatePlayerStats(data, options = {}) {
     top33PlusPercent: conversion(rankStats.top33Plus)
   };
 
-  // Deck Performance
+  // Deck performance is derived once here because several cards need the same
+  // per-deck aggregates with different tie-breaking and display rules.
   const deckStats = filteredDataNoShow.reduce((acc, row) => {
     if (!acc[row.Deck]) {
       acc[row.Deck] = { wins: 0, losses: 0, events: new Set(), eventWinRates: [] };

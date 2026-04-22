@@ -24,6 +24,8 @@ export function buildPlayerFilterOptions(rows) {
     return playerFilterOptionsCache.get(resolvedRows) || [];
   }
 
+  // Group spelling/casing variants under one normalized identity key so player
+  // filters stay stable even when source data is inconsistent.
   const groups = new Map();
 
   resolvedRows.forEach((row, index) => {
@@ -62,6 +64,8 @@ export function buildPlayerFilterOptions(rows) {
 
   const playerOptions = Array.from(groups.entries())
     .map(([key, variants]) => {
+      // Prefer the most common label, then the most recent one, as the display
+      // name that appears in dropdowns and summaries.
       const sortedVariants = Array.from(variants.values()).sort(comparePlayerVariantStats);
       return {
         key,

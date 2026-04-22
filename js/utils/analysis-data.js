@@ -1,5 +1,9 @@
 import { getEventRows } from './event-data.js';
 
+// This module is the single source of truth for "analysis rows". Callers do
+// not need to know whether they are reading the raw event dataset or the
+// quality-filtered dataset that excludes badly tracked events.
+
 // This toggle is persisted because it changes which events are eligible for analysis
 // across Event Analysis, Multi-Event views, and Player Analysis.
 const STORAGE_KEY = 'mtg-tracker-exclude-unknown-heavy-below-top32';
@@ -93,6 +97,9 @@ function buildEventRowsByName(rows = rawCleanedData) {
   return rowsByEventName;
 }
 
+// `rawCleanedData` always keeps the full dataset loaded from disk. The rest of
+// the caches are derived from it so toggling the quality rule is just a cheap
+// switch between precomputed row collections.
 let rawCleanedData = [];
 let eventRowsByName = new Map();
 let unknownHeavyBelowTop32EventNames = new Set();
@@ -101,6 +108,8 @@ let filteredAnalysisRows = [];
 function rebuildAnalysisCaches(rows = []) {
   rawCleanedData = Array.isArray(rows) ? rows : [];
   eventRowsByName = buildEventRowsByName(rawCleanedData);
+  // Precompute excluded event names once so every chart/filter can do O(1)
+  // membership checks instead of rerunning the data-quality rule on demand.
   unknownHeavyBelowTop32EventNames = new Set(
     Array.from(eventRowsByName.entries())
       .filter(([, eventRows]) => shouldExcludeEventForUnknownHeavyBelowTop32(eventRows))

@@ -1,3 +1,5 @@
+// Renders Player Analysis: summary cards, Elo-specific controls, event history,
+// raw tables, and the async state needed to keep drilldowns in sync.
 import { getAnalysisRows } from '../utils/analysis-data.js';
 import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
@@ -162,6 +164,9 @@ const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {
   }
 };
 
+// These snapshots support the currently visible Player Analysis view. Keeping
+// them at module scope lets charts, cards, and drilldowns read one consistent
+// state without repeatedly querying the DOM.
 let currentPlayerAnalysisRows = [];
 let activePlayerDrilldownCategory = '';
 let currentPlayerEloInsights = createEmptyPlayerEloInsights();
@@ -173,6 +178,9 @@ let currentPlayerRawTableState = {
 };
 const UNKNOWN_ELO_DECK_NAMES = new Set(['UNKNOWN', 'UNKNOWN DECK', 'UNKNOW']);
 
+// Elo widgets derive several related views from the same normalized structure.
+// An explicit empty object keeps the rendering code simple while async data is
+// still loading or when a player has no tracked Elo history.
 function createEmptyPlayerEloInsights() {
   return {
     dataset: null,
@@ -267,6 +275,9 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
     return '';
   }
 
+  // This filter only scopes Elo cards/drilldowns. The main Player Analysis
+  // filters stay untouched so a deck comparison does not silently change the
+  // rest of the page.
   const availableDecks = Array.isArray(eloInsights?.availableDecks)
     ? [...new Set(eloInsights.availableDecks.filter(isSelectablePlayerEloDeck))]
     : [];
@@ -2758,6 +2769,8 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
 }
 
 export async function updatePlayerAnalytics() {
+  // Async Elo/rankings work can finish out of order if the user changes filters
+  // quickly. Tag each refresh so stale responses cannot overwrite newer state.
   const requestId = playerAnalyticsRequestId + 1;
   playerAnalyticsRequestId = requestId;
   console.log("Updating player analytics...");

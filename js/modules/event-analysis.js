@@ -1,3 +1,5 @@
+// Renders the Event Analysis view for both single-event and multi-event modes:
+// stat cards, drilldowns, tables, and the data snapshots that support exports.
 import { getAnalysisRows } from '../utils/analysis-data.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
@@ -35,6 +37,8 @@ const multiEventStatCardIds = [
   'multiMostCopiesCard'
 ];
 
+// Keeping drilldown metadata declarative makes it easier to add or rename stat
+// cards without having to thread labels and empty states through click handlers.
 const SINGLE_EVENT_DRILLDOWN_CONFIG = {
   winner: {
     cardId: 'singleTopPlayerCard',
@@ -86,6 +90,8 @@ const MULTI_EVENT_DRILLDOWN_CONFIG = {
   }
 };
 
+// These snapshots back the currently visible tables, drilldowns, and CSV
+// exports. They are updated only when the user changes the active selection.
 let currentSingleEventRows = [];
 let currentMultiEventRows = [];
 let activeSingleEventDrilldownCategory = '';
@@ -108,6 +114,8 @@ let currentMultiEventTableState = {
   displayMode: 'percent'
 };
 
+// Rank buckets are shared across cards and drilldowns. Centralizing them keeps
+// UI labels and filtering rules aligned when the bucket definitions change.
 const TOP_DECK_RANGE_DEFINITIONS = [
   {
     key: 'Top 8',
@@ -1322,6 +1330,8 @@ export function updateEventAnalytics() {
   const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
+  // Single-event mode always resolves to one event-type bucket plus one event
+  // selection, even though the UI uses the shared analysis dataset underneath.
   const eventData = getAnalysisRows().filter(row => row.EventType.toLowerCase() === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
   updateSingleEventAnalysis(eventData, eventData.length);
 }
@@ -1331,6 +1341,8 @@ export function updateMultiEventAnalytics() {
   const startDate = document.getElementById("startDateSelect").value;
   const endDate = document.getElementById("endDateSelect").value;
   const selectedEventTypes = getSelectedEventAnalysisTypes();
+  // Multi-event mode keeps the broader date window and event-type scope so the
+  // downstream cards and charts all aggregate over the same row subset.
   const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
     ? getAnalysisRows().filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType.toLowerCase()))
     : [];

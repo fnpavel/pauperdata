@@ -81,12 +81,22 @@ import {
 
 export { setSelectedSingleEvent, setSingleEventType, updateEventFilter } from './single-event.js';
 
+// `filteredData` is the legacy shared snapshot used by some chart helpers. The
+// rest of this module should prefer explicit selectors, but keeping this cache
+// in sync prevents older code paths from drifting out of date.
 let filteredData = [];
 const EMPTY_ANALYSIS_ROWS = [];
+
+// These caches are keyed by the exact rows array instance. When the quality
+// toggle swaps datasets we get a new array identity, which naturally invalidates
+// the old cached slices without extra bookkeeping.
 const analysisRowsByEventTypesCache = new WeakMap();
 const rowDateValuesCache = new WeakMap();
 const playerRowDateValuesCache = new WeakMap();
 
+// Refreshing the data-quality toggle touches several filter controls and can be
+// triggered rapidly, so we keep handles to every scheduled pass and cancel the
+// stale ones when a newer request arrives.
 let analysisQualityRefreshRequestId = 0;
 let analysisQualityRefreshFrameId = null;
 let analysisQualityRefreshTimeoutId = null;
@@ -123,6 +133,8 @@ function getRowsScopedToSelectedEventTypes(rows = getAnalysisRows(), selectedEve
   }
 
   if (!scopedRowsCache.has(cacheKey)) {
+    // Event-type scoping is reused by menus, calendars, and preset logic. Cache
+    // it so those controls can be rebuilt without rescanning the same dataset.
     const selectedEventTypeSet = new Set(cacheKey.split('||'));
     scopedRowsCache.set(
       cacheKey,
@@ -273,6 +285,8 @@ function refreshAnalysisQualityToggleState() {
   syncAnalysisQualityToggleButtons();
   cancelScheduledAnalysisQualityRefresh();
 
+  // Rebuild dependent controls on the next frame so the toggle itself updates
+  // immediately, then let the more expensive chart redraw happen when idle.
   scheduleAnalysisQualityRefreshOnNextFrame(() => {
     if (refreshRequestId !== analysisQualityRefreshRequestId) {
       return;
@@ -531,6 +545,9 @@ export function setupFilters() {
 }
 
 export function updateAllCharts() {
+  // This is the central render router for the dashboard. Filter interactions
+  // funnel through here so each top-level mode can refresh from one shared,
+  // consistent snapshot of the current selections.
   const activeTopMode = getTopMode();
   const activeAnalysisMode = getAnalysisMode();
 
@@ -974,6 +991,8 @@ export function updateDateOptions() {
   let currentStartDate = dates.includes(startDateSelect.value) ? startDateSelect.value : '';
   let currentEndDate = dates.includes(endDateSelect.value) ? endDateSelect.value : '';
 
+  // Presets may seed the initial range, but any still-valid manual selection in
+  // the controls wins so we do not unexpectedly overwrite the user's choice.
   if (!currentStartDate && !currentEndDate) {
     const presetRange = activePreset
       ? getMultiEventPresetSuggestedRange({
@@ -1063,6 +1082,8 @@ export function updatePlayerDateOptions() {
   const activePreset = getPlayerAnalysisActivePreset();
   const eventTypeRows = getRowsScopedToSelectedEventTypes(getAnalysisRows(), selectedEventTypes);
 
+  // Player menus and player date ranges both depend on event-type scope, so we
+  // recompute them together to avoid impossible combinations in the UI.
   if (selectedEventTypes.length === 0) {
     setPlayerFilterPlaceholder(playerFilterMenu, 'No Players Available');
     startDateSelect.innerHTML = '<option value="">No Dates Available</option>';

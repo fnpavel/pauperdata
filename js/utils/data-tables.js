@@ -1,5 +1,5 @@
-// js/utils/data-tables.js
-
+// Table builders shared by the dashboard. The goal is to keep one stable row
+// contract per table type so sorting/export/rendering logic can stay generic.
 import { getAnalysisRows } from './analysis-data.js';
 
 // Single Event Tables
@@ -16,6 +16,8 @@ export function calculateSingleEventRawTable(data) {
 
 export function calculateSingleEventAggregateTable(data) {
   const totalPlayers = data.length;
+  // Aggregate tables keep counts and conversion rates side by side so the UI
+  // can switch between absolute and percentage display modes without recalculating.
   const deckStats = data.reduce((acc, row) => {
     acc[row.Deck] = acc[row.Deck] || { count: 0, wins: 0, losses: 0, top8: 0, top16: 0, top32: 0, belowTop32: 0 };
     acc[row.Deck].count += 1;
@@ -47,6 +49,8 @@ export function calculateSingleEventAggregateTable(data) {
 // Multi-Event Tables
 export function calculateMultiEventAggregateTable(data) {
   const totalPlayers = data.length;
+  // This mirrors the single-event aggregate shape on purpose. Sharing the same
+  // columns lets the multi-event table reuse the same rendering controls.
   const deckStats = data.reduce((acc, row) => {
     acc[row.Deck] = acc[row.Deck] || { count: 0, wins: 0, losses: 0, top8: 0, top16: 0, top32: 0, belowTop32: 0 };
     acc[row.Deck].count += 1;
@@ -75,6 +79,8 @@ export function calculateMultiEventAggregateTable(data) {
 }
 
 export function calculateMultiEventDeckTable(data, deckName) {
+  // Group by event date because the drilldown is a per-event timeline for one
+  // deck, not a single rollup across the whole selected range.
   const deckDataByDate = data.reduce((acc, row) => {
     const date = row.Date;
     if (!acc[date]) {
@@ -119,6 +125,8 @@ export function calculateMultiEventDeckTable(data, deckName) {
 // Player Tables
 export function calculatePlayerEventTable(data) {
   return data.map(row => {
+    // Tooltips and deck meta need the full event field, not just the selected
+    // player's rows, so this lookup intentionally goes back to analysis rows.
     const eventData = getAnalysisRows().filter(r => r.Event === row.Event);
     const deckData = eventData.filter(r => r.Deck === row.Deck);
     const totalWins = deckData.reduce((sum, r) => sum + r.Wins, 0);
@@ -147,6 +155,8 @@ export function calculatePlayerEventTable(data) {
 }
 
 export function calculatePlayerDeckTable(data) {
+  // Player deck tables collapse multiple event appearances into one row per deck
+  // while preserving best/worst single-event snapshots for quick comparison.
   const deckStats = data.reduce((acc, row) => {
     if (!acc[row.Deck]) {
       acc[row.Deck] = { events: [], wins: 0, losses: 0, eventData: [] };

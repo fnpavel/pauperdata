@@ -1,4 +1,5 @@
-// js/main.js
+// Bootstraps the dashboard after the shared dataset is loaded and keeps a small
+// set of globals available for legacy inline handlers declared in index.html.
 import { ensureEventDataLoaded, getLastUpdatedDate } from './utils/event-data.js';
 import { setAnalysisDataRows } from './utils/analysis-data.js';
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
@@ -18,7 +19,8 @@ import {
 import { setupAboutListeners } from './modules/about.js';
 import { setupThemeToggle } from './utils/theme.js';
 
-// Expose global functions for HTML event handlers
+// These globals keep the existing HTML event hooks working without forcing the
+// lazily loaded chart helpers into the initial bundle.
 window.updateMultiEventAnalytics = updateMultiEventAnalytics;
 window.updateDeckEvolutionChart = () => import('./charts/deck-evolution.js').then(module => module.updateDeckEvolutionChart());
 window.updatePlayerAnalytics = updatePlayerAnalytics;
@@ -36,11 +38,14 @@ function setLastUpdatedDate() {
 async function initializeDashboard() {
   console.log('Initializing MTG Analytics Dashboard...');
 
+  // Every analysis module reads from the shared analysis dataset, so the data
+  // cache needs to be populated before any module computes its initial state.
   const { rows } = await ensureEventDataLoaded();
   setAnalysisDataRows(rows);
   setLastUpdatedDate(); // Call the function to set the date
 
-  // Initialize analysis modules
+  // Initialize modules before wiring filters because many filter listeners call
+  // back into these modules immediately.
   initEventAnalysis();
   initPlayerAnalysis();
   initMatchupAnalysis();
@@ -60,7 +65,7 @@ async function initializeDashboard() {
     updateAllCharts();
   });
   
-  // Initial updates based on default mode
+  // The top-mode switch decides which view owns the first render.
   const defaultTopMode = document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';
   if (defaultTopMode === 'event') {
     updateEventAnalytics(); // Default to single event analysis
@@ -73,7 +78,8 @@ async function initializeDashboard() {
     updateLeaderboardAnalytics();
   }
 
-  // Add event listener for playerDeckPerformanceSelect
+  // This select lives outside the chart module, so the entry point owns the
+  // bridge that asks the chart to refresh when the deck changes.
   const deckSelect = document.getElementById('playerDeckPerformanceSelect');
   if (deckSelect) {
     deckSelect.addEventListener('change', () => {
