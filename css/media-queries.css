@@ -29,7 +29,9 @@
   }
 
   #singleEventStats,
-  #multiEventStats {
+  #multiEventStats,
+  #matchupStats,
+  #leaderboardStats {
     width: 100%;
   }
 
@@ -82,6 +84,18 @@
   #playerStats.stats-container {
     width: 100%;
     margin-left: 0;
+    gap: 8px;
+  }
+
+  #singleEventStats.stats-container,
+  #multiEventStats.stats-container,
+  #matchupStats.stats-container,
+  #leaderboardStats.stats-container {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
@@ -190,11 +204,79 @@
 
   #singleEventStats,
   #multiEventStats,
+  #matchupStats,
+  #leaderboardStats,
   #playerStats.stats-container {
     width: 100%;
     margin-left: 0;
     margin-right: 0;
     padding: 0;
+  }
+
+  #singleEventStats.stats-container,
+  #multiEventStats.stats-container,
+  #matchupStats.stats-container,
+  #leaderboardStats.stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #singleEventStats.stats-container .stat-card,
+  #multiEventStats.stats-container .stat-card,
+  #matchupStats.stats-container .stat-card,
+  #leaderboardStats.stats-container .stat-card {
+    min-height: 74px;
+    padding: 6px 8px 20px;
+    display: grid;
+    align-content: start;
+    gap: 2px;
+  }
+
+  #singleEventStats.stats-container .stat-title,
+  #multiEventStats.stats-container .stat-title,
+  #matchupStats.stats-container .stat-title,
+  #leaderboardStats.stats-container .stat-title {
+    font-size: 0.72rem;
+    margin-bottom: 0;
+    line-height: 1.1;
+  }
+
+  #singleEventStats.stats-container .stat-value,
+  #multiEventStats.stats-container .stat-value,
+  #matchupStats.stats-container .stat-value,
+  #leaderboardStats.stats-container .stat-value {
+    font-size: 1.2rem;
+    line-height: 1.1;
+  }
+
+  #singleEventStats.stats-container .stat-change,
+  #multiEventStats.stats-container .stat-change,
+  #matchupStats.stats-container .stat-change,
+  #leaderboardStats.stats-container .stat-change {
+    font-size: 0.84rem;
+    margin-top: 0;
+    line-height: 1.1;
+  }
+
+  #singleEventStats.stats-container .stat-card .stat-change:empty,
+  #multiEventStats.stats-container .stat-card .stat-change:empty,
+  #matchupStats.stats-container .stat-card .stat-change:empty,
+  #leaderboardStats.stats-container .stat-card .stat-change:empty {
+    display: none;
+  }
+
+  #singleEventStats.stats-container .stat-icon,
+  #multiEventStats.stats-container .stat-icon,
+  #matchupStats.stats-container .stat-icon,
+  #leaderboardStats.stats-container .stat-icon {
+    right: 7px;
+    bottom: 5px;
+    font-size: 0.95rem;
+  }
+
+  #singleEventStats.stats-container .stat-card.combined,
+  #multiEventStats.stats-container .stat-card.combined {
+    grid-column: 1 / -1;
   }
 
   .data-table-container {
