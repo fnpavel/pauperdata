@@ -159,7 +159,13 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .filter-section h4 {
-  margin-bottom: 10px;
+  margin-bottom: 2px;
+  color: var(--accent);
+}
+
+.filter-section h5 {
+  margin-bottom: 20 px;
+  font-size: 0.8rem;
   color: var(--accent);
 }
 
@@ -1424,6 +1430,91 @@ body.modal-open {
   gap: 8px;
 }
 
+.leaderboard-threshold-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.leaderboard-threshold-field {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 16px;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+}
+
+.leaderboard-threshold-label-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.leaderboard-threshold-label {
+  color: var(--text-primary);
+  font-size: 0.84rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+.leaderboard-threshold-range {
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  line-height: 1.35;
+  text-align: right;
+}
+
+.leaderboard-threshold-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 10px;
+  align-items: center;
+}
+
+.leaderboard-threshold-slider {
+  width: 100%;
+  margin: 0;
+  accent-color: var(--primary);
+  cursor: pointer;
+}
+
+.leaderboard-threshold-slider:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.leaderboard-threshold-input {
+  padding: 10px 14px;
+  border-radius: 14px;
+  text-align: right;
+}
+
+.leaderboard-threshold-quick-views {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.leaderboard-threshold-quick-button {
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
+@media (max-width: 640px) {
+  .leaderboard-threshold-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-threshold-range {
+    text-align: left;
+  }
+}
+
 .leaderboard-deck-result-card {
   display: flex;
   flex-direction: column;
@@ -2244,6 +2335,29 @@ button.leaderboard-deck-result-card {
   margin-bottom: 12px;
 }
 
+.leaderboard-fullscreen-badge-strip {
+  display: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: -8px;
+  margin-bottom: 10px;
+}
+
+.leaderboard-fullscreen-filter-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(217, 164, 65, 0.16);
+  border: 1px solid rgba(217, 164, 65, 0.24);
+  color: var(--accent);
+  font-size: 0.68rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .leaderboard-table-search {
   flex: 1 1 280px;
   min-width: 220px;
@@ -2296,13 +2410,80 @@ button.leaderboard-deck-result-card {
   max-width: none;
   margin: 0;
   border-radius: 0;
-  padding: 20px;
+  padding: 14px;
   background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen {
+  margin: 0;
+  padding: 10px 12px;
+  flex: 0 0 auto;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen h4,
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .event-calendar-summary-label {
+  display: none;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-field {
+  gap: 6px;
+  padding: 8px 10px;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-label-row {
+  align-items: center;
+  gap: 8px;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-range {
+  font-size: 0.7rem;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-controls {
+  grid-template-columns: minmax(0, 1fr) 82px;
+  gap: 8px;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-quick-views {
+  gap: 4px;
+}
+
+.data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-quick-button {
+  padding: 4px 8px;
+  font-size: 0.66rem;
+}
+
+.data-table-container:fullscreen .leaderboard-fullscreen-badge-strip {
+  display: flex;
 }
 
 .data-table-container:fullscreen .player-data-table-scroll {
-  height: calc(100vh - 180px);
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
   max-height: none;
+}
+
+.data-table-container:fullscreen .leaderboard-table-click-hint {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  .data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 #leaderboardTableBody .leaderboard-rank-cell {
@@ -2734,6 +2915,7 @@ button.leaderboard-deck-result-card {
 }
 
 .filter-section h4,
+.filter-section h5,
 .event-calendar-summary-label,
 .stat-title,
 .deck-stats-sidebar .stat-title,

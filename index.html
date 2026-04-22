@@ -781,7 +781,7 @@
       </div>
 
       <div class="dashboard leaderboard-dashboard" id="leaderboardDashboard">
-        <div class="filters">
+        <div class="filters" id="leaderboardFiltersPanel">
           <h3>Filter Options</h3>
           <div class="filter-section">
             <h4>Event Type</h4>
@@ -789,7 +789,7 @@
               <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
               <button class="bubble-button event-type-filter" data-type="online">Online</button>
             </div>
-            <div class="event-calendar-summary-label">Elo leaderboards use matchup records. Right now the matchup archive is online-only.</div>
+            <div class="event-calendar-summary-label" id="leaderboardEventTypeSummary">Elo leaderboards use matchup records. Right now the matchup archive is online-only.</div>
           </div>
           <div class="filter-section">
             <h4>Window Type</h4>
@@ -831,13 +831,91 @@
               Reset each year creates separate player-season entries. Carry across range keeps one continuous ladder through the selected years.
             </div>
           </div>
+          <div class="filter-section" id="leaderboardEloThresholdControlsSection">
+            <h4>Elo Minimums</h4>
+            <h5>Use Full Screen for better navigation</h5>
+            <div class="leaderboard-threshold-grid">
+              <div class="leaderboard-threshold-field">
+                <div class="leaderboard-threshold-label-row">
+                  <label class="leaderboard-threshold-label" for="leaderboardMinEventsInput">Events</label>
+                  <span class="leaderboard-threshold-range" id="leaderboardMinEventsRange">Current range: --</span>
+                </div>
+                <div class="leaderboard-threshold-controls">
+                  <input type="range" class="leaderboard-threshold-slider" id="leaderboardMinEventsSlider" min="0" max="0" step="1" value="0" aria-label="Minimum events" />
+                  <input type="number" class="player-search-input leaderboard-threshold-input" id="leaderboardMinEventsInput" min="0" step="1" value="0" inputmode="numeric" />
+                </div>
+                <div class="leaderboard-threshold-quick-views" aria-label="Events quick views">
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minEvents" data-leaderboard-threshold-top-percent="1">Top 1%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minEvents" data-leaderboard-threshold-top-percent="10">Top 10%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minEvents" data-leaderboard-threshold-top-percent="50">Top 50%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minEvents" data-leaderboard-threshold-top-percent="90">Top 90%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-top-percent="99" data-leaderboard-threshold-quick="minEvents">Top 99%</button>
+                </div>
+              </div>
+              <div class="leaderboard-threshold-field">
+                <div class="leaderboard-threshold-label-row">
+                  <label class="leaderboard-threshold-label" for="leaderboardMinMatchesInput">Matches</label>
+                  <span class="leaderboard-threshold-range" id="leaderboardMinMatchesRange">Current range: --</span>
+                </div>
+                <div class="leaderboard-threshold-controls">
+                  <input type="range" class="leaderboard-threshold-slider" id="leaderboardMinMatchesSlider" min="0" max="0" step="1" value="0" aria-label="Minimum matches" />
+                  <input type="number" class="player-search-input leaderboard-threshold-input" id="leaderboardMinMatchesInput" min="0" step="1" value="0" inputmode="numeric" />
+                </div>
+                <div class="leaderboard-threshold-quick-views" aria-label="Matches quick views">
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minMatches" data-leaderboard-threshold-top-percent="1">Top 1%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minMatches" data-leaderboard-threshold-top-percent="10">Top 10%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minMatches" data-leaderboard-threshold-top-percent="50">Top 50%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minMatches" data-leaderboard-threshold-top-percent="90">Top 90%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minMatches" data-leaderboard-threshold-top-percent="99">Top 99%</button>
+                </div>
+              </div>
+              <div class="leaderboard-threshold-field">
+                <div class="leaderboard-threshold-label-row">
+                  <label class="leaderboard-threshold-label" for="leaderboardMinEloInput">Elo</label>
+                  <span class="leaderboard-threshold-range" id="leaderboardMinEloRange">Current range: --</span>
+                </div>
+                <div class="leaderboard-threshold-controls">
+                  <input type="range" class="leaderboard-threshold-slider" id="leaderboardMinEloSlider" min="0" max="0" step="1" value="0" aria-label="Minimum Elo" />
+                  <input type="number" class="player-search-input leaderboard-threshold-input" id="leaderboardMinEloInput" min="0" step="1" value="0" inputmode="numeric" />
+                </div>
+                <div class="leaderboard-threshold-quick-views" aria-label="Elo quick views">
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minElo" data-leaderboard-threshold-top-percent="1">Top 1%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minElo" data-leaderboard-threshold-top-percent="10">Top 10%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minElo" data-leaderboard-threshold-top-percent="50">Top 50%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minElo" data-leaderboard-threshold-top-percent="90">Top 90%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minElo" data-leaderboard-threshold-top-percent="99">Top 99%</button>
+                </div>
+              </div>
+              <div class="leaderboard-threshold-field">
+                <div class="leaderboard-threshold-label-row">
+                  <label class="leaderboard-threshold-label" for="leaderboardMinTopConversionInput">Top 8 Conversion %</label>
+                  <span class="leaderboard-threshold-range" id="leaderboardMinTopConversionRange">Current range: --</span>
+                </div>
+                <div class="leaderboard-threshold-controls">
+                  <input type="range" class="leaderboard-threshold-slider" id="leaderboardMinTopConversionSlider" min="0" max="0" step="0.1" value="0" aria-label="Minimum Top 8 conversion" />
+                  <input type="number" class="player-search-input leaderboard-threshold-input" id="leaderboardMinTopConversionInput" min="0" max="100" step="0.1" value="0" inputmode="decimal" />
+                </div>
+                <div class="leaderboard-threshold-quick-views" aria-label="Top 8 conversion quick views">
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minTopConversion" data-leaderboard-threshold-top-percent="1">Top 1%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minTopConversion" data-leaderboard-threshold-top-percent="10">Top 10%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minTopConversion" data-leaderboard-threshold-top-percent="50">Top 50%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minTopConversion" data-leaderboard-threshold-top-percent="90">Top 90%</button>
+                  <button type="button" class="bubble-button leaderboard-threshold-quick-button" data-leaderboard-threshold-quick="minTopConversion" data-leaderboard-threshold-top-percent="99">Top 99%</button>
+                </div>
+              </div>
+            </div>
+            <div class="event-calendar-summary-label" id="leaderboardEloThresholdSummary">
+              Drag a slider or type a minimum. Use 0 to disable a threshold.
+            </div>
+          </div>
+          <div id="leaderboardEloThresholdControlsAnchor" hidden></div>
           <div class="filter-section">
             <h4>System</h4>
             <div class="event-calendar-summary-label" id="leaderboardSystemSummary">Starting rating 1500, K-factor 16 (same as the Vintage Leaderboards). If you select the Seasonal Elo screen, it resets every January 1.</div>
           </div>
         </div>
 
-        <div class="charts-and-tables">
+        <div class="charts-and-tables" id="leaderboardChartsAndTables">
           <div class="data-table-container" id="leaderboardTableContainer">
             <h2 class="chart-title" id="leaderboardTableTitle">Seasonal Elo Leaderboard</h2>
             <div class="leaderboard-table-toolbar" id="leaderboardTableToolbar">
@@ -858,6 +936,7 @@
                 Export CSV
               </button>
             </div>
+            <div class="leaderboard-fullscreen-badge-strip" id="leaderboardFullscreenBadgeStrip" hidden></div>
             <div class="leaderboard-table-helper" id="leaderboardTableHelper">
               Ratings are computed from matchup matches in chronological order. Use the filter panel to switch between seasonal resets and continuous multi-year ladders.
             </div>
@@ -870,14 +949,16 @@
                 <thead id="leaderboardTableHead">
                   <tr>
                     <th>Rank</th>
-                    <th>Player</th>
-                    <th><span id="leaderboardEntryColumnLabel">Season</span></th>
-                    <th>Elo</th>
-                    <th>Matches</th>
-                    <th>Wins</th>
-                    <th>Losses</th>
-                    <th>Win Rate</th>
-                    <th>Last Match</th>
+                    <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
+                    <th data-sort="seasonYear"><span id="leaderboardEntryColumnLabel">Season</span> <span class="sort-arrow"></span></th>
+                    <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
+                    <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
+                    <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
+                    <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
+                    <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
+                    <th data-sort="top8Conversion">Top 8 Conv <span class="sort-arrow"></span></th>
+                    <th data-sort="challengeWins">Challenge Wins <span class="sort-arrow"></span></th>
+                    <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
                   </tr>
                 </thead>
                 <tbody id="leaderboardTableBody"></tbody>
@@ -1005,9 +1086,10 @@
           <li><s>Add the player vs player matchup matrix and keep expanding matchup tooling</s>.</li>
           <li><s>Create ELO ratings for players. 1500 start point k=16, like in Vintage, with option to reset every season</s></li>
           <li><s>Add Export as CSV functionality</s></li>
-          <li>Improve the mobile and small-screen layout.</li>
-          <li>Continue the move from one large frontend dataset file toward a cleaner JSON or database-backed pipeline. (partial progress)</li>
+          <li><s>Improve the mobile and small-screen layout.</s></li>
+          <li><s>Continue the move from one large frontend dataset file toward a cleaner JSON or database-backed pipeline.</s></li>
           <li>Add more formats beyond Pauper.</li>
+          <li>Rework the mobile layout (do a full overhaul: Change statistics cards, less cluttered charts and tables, etc.)</li>
         </ul>
 
         <h3>Recent Data Additions</h3>

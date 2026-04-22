@@ -24,6 +24,7 @@ import {
 import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
 import { getAnalysisRows } from '../utils/analysis-data.js';
+import { getEventGroupInfo } from '../utils/event-groups.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
@@ -32,6 +33,44 @@ const DEFAULT_LEADERBOARD_RESET_MODE = 'continuous';
 const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
 const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
 const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
+const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
+  elo: new Set(['displayName', 'seasonYear', 'rating', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
+});
+const LEADERBOARD_ELO_THRESHOLD_CONFIG = Object.freeze({
+  minEvents: {
+    inputId: 'leaderboardMinEventsInput',
+    sliderId: 'leaderboardMinEventsSlider',
+    rangeId: 'leaderboardMinEventsRange',
+    label: 'Events',
+    step: 1,
+    getRowValue: row => Number(row?.eventCount || 0)
+  },
+  minMatches: {
+    inputId: 'leaderboardMinMatchesInput',
+    sliderId: 'leaderboardMinMatchesSlider',
+    rangeId: 'leaderboardMinMatchesRange',
+    label: 'Matches',
+    step: 1,
+    getRowValue: row => Number(row?.matches || 0)
+  },
+  minElo: {
+    inputId: 'leaderboardMinEloInput',
+    sliderId: 'leaderboardMinEloSlider',
+    rangeId: 'leaderboardMinEloRange',
+    label: 'Elo',
+    step: 1,
+    getRowValue: row => Number(row?.rating || 0)
+  },
+  minTopConversion: {
+    inputId: 'leaderboardMinTopConversionInput',
+    sliderId: 'leaderboardMinTopConversionSlider',
+    rangeId: 'leaderboardMinTopConversionRange',
+    label: 'Top 8 Conversion',
+    step: 0.1,
+    getRowValue: row => Number(row?.top8Conversion || 0) * 100
+  }
+});
+const LEADERBOARD_ELO_THRESHOLD_QUICK_VIEW_OPTIONS = Object.freeze([1, 10, 50, 90, 99]);
 const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardDateRangeCard',
   'leaderboardRatedMatchesCard',
@@ -79,8 +118,16 @@ let activeLeaderboardSeasonYear = '';
 let activeLeaderboardRangeStartYear = '';
 let activeLeaderboardRangeEndYear = '';
 let activeLeaderboardResetMode = DEFAULT_LEADERBOARD_RESET_MODE;
+let activeLeaderboardEloThresholds = {
+  minEvents: 0,
+  minMatches: 0,
+  minElo: 0,
+  minTopConversion: 0
+};
+let currentLeaderboardBaseRows = [];
 let currentLeaderboardRows = [];
 let currentLeaderboardDataset = {
+  mode: 'elo',
   summary: {
     selectedYears: [],
     selectedYearRangeLabel: '',
@@ -123,6 +170,10 @@ function getLeaderboardsSection() {
   return document.getElementById('leaderboardsSection');
 }
 
+function getLeaderboardEloThresholdControlsAnchor() {
+  return document.getElementById('leaderboardEloThresholdControlsAnchor');
+}
+
 function getLeaderboardDrilldownElements() {
   return {
     overlay: document.getElementById('leaderboardStatDrilldownOverlay'),
@@ -159,6 +210,14 @@ function getLeaderboardFullscreenButton() {
 
 function getLeaderboardTableContainer() {
   return document.getElementById('leaderboardTableContainer');
+}
+
+function getLeaderboardTableToolbar() {
+  return document.getElementById('leaderboardTableToolbar');
+}
+
+function getLeaderboardFullscreenBadgeStrip() {
+  return document.getElementById('leaderboardFullscreenBadgeStrip');
 }
 
 function getLeaderboardTableScrollContainer() {
@@ -213,6 +272,10 @@ function getLeaderboardEventTypeButtons() {
   return Array.from(getLeaderboardsSection()?.querySelectorAll('.event-type-filter') || []);
 }
 
+function getLeaderboardModeButtons() {
+  return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-mode]') || []);
+}
+
 function getLeaderboardWindowModeButtons() {
   return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-window-mode]') || []);
 }
@@ -243,6 +306,243 @@ function getLeaderboardResetModeSection() {
 
 function getLeaderboardResetModeButtons() {
   return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-reset-mode]') || []);
+}
+
+function getLeaderboardPerformanceControlsSection() {
+  return document.getElementById('leaderboardPerformanceControlsSection');
+}
+
+function getLeaderboardPerformanceMinEventButtons() {
+  return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-performance-min-events]') || []);
+}
+
+function getLeaderboardEloThresholdControlsSection() {
+  return document.getElementById('leaderboardEloThresholdControlsSection');
+}
+
+function getLeaderboardEloThresholdControls() {
+  return Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG).reduce((controls, [key, config]) => {
+    controls[key] = {
+      input: document.getElementById(config.inputId),
+      slider: document.getElementById(config.sliderId),
+      rangeLabel: document.getElementById(config.rangeId),
+      quickButtons: Array.from(getLeaderboardsSection()?.querySelectorAll(`[data-leaderboard-threshold-quick="${key}"]`) || [])
+    };
+    return controls;
+  }, {});
+}
+
+function getLeaderboardTableClickHint() {
+  return document.getElementById('leaderboardTableClickHint');
+}
+
+function isPerformanceLeaderboardMode() {
+  return false;
+}
+
+function setLeaderboardMode() {
+  leaderboardTableSort = getDefaultLeaderboardSortState('elo');
+}
+
+function setLeaderboardPerformanceMinEvents() {
+}
+
+function sanitizeLeaderboardThresholdValue(key = '', value = 0) {
+  const numericValue = Number.parseFloat(value);
+  const normalizedValue = Number.isFinite(numericValue) ? numericValue : 0;
+  const step = Number(LEADERBOARD_ELO_THRESHOLD_CONFIG[key]?.step) || 1;
+  const clampedValue = key === 'minTopConversion'
+    ? Math.max(0, Math.min(100, normalizedValue))
+    : Math.max(0, normalizedValue);
+  const roundedValue = Math.round(clampedValue / step) * step;
+  return Number(roundedValue.toFixed(step < 1 ? 1 : 0));
+}
+
+function roundLeaderboardThresholdMetricValue(key = '', value = 0, strategy = 'round') {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return 0;
+  }
+  const step = Number(LEADERBOARD_ELO_THRESHOLD_CONFIG[key]?.step) || 1;
+  const precision = step < 1 ? 1 : 0;
+  let roundedValue;
+
+  if (strategy === 'min') {
+    roundedValue = Math.floor(numericValue / step) * step;
+  } else if (strategy === 'max') {
+    roundedValue = Math.ceil(numericValue / step) * step;
+  } else {
+    roundedValue = Math.round(numericValue / step) * step;
+  }
+
+  return Number(roundedValue.toFixed(precision));
+}
+
+function formatLeaderboardThresholdMetricValue(key = '', value = 0) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return '--';
+  }
+
+  if (key === 'minTopConversion') {
+    return `${roundLeaderboardThresholdMetricValue(key, numericValue).toFixed(1)}%`;
+  }
+
+  const roundedValue = roundLeaderboardThresholdMetricValue(key, numericValue);
+  return Number.isInteger(roundedValue) ? String(roundedValue) : roundedValue.toFixed(1);
+}
+
+function getLeaderboardEloThresholdRanges(rows = currentLeaderboardBaseRows) {
+  const resolvedRows = Array.isArray(rows) ? rows : [];
+
+  return Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG).reduce((ranges, [key, config]) => {
+    let minValue = Number.POSITIVE_INFINITY;
+    let maxValue = Number.NEGATIVE_INFINITY;
+    let hasRows = false;
+
+    resolvedRows.forEach(row => {
+      const nextValue = Number(config.getRowValue(row));
+      if (!Number.isFinite(nextValue)) {
+        return;
+      }
+
+      hasRows = true;
+      minValue = Math.min(minValue, nextValue);
+      maxValue = Math.max(maxValue, nextValue);
+    });
+
+    const availableMin = hasRows ? roundLeaderboardThresholdMetricValue(key, minValue, 'min') : 0;
+    const availableMax = hasRows ? roundLeaderboardThresholdMetricValue(key, maxValue, 'max') : 0;
+    const activeValue = sanitizeLeaderboardThresholdValue(key, activeLeaderboardEloThresholds[key] ?? 0);
+
+    ranges[key] = {
+      hasRows,
+      availableMin,
+      availableMax,
+      sliderMax: Math.max(activeValue, availableMax, 0),
+      step: config.step
+    };
+    return ranges;
+  }, {});
+}
+
+function getLeaderboardEloThresholdQuickViewValue(key = '', topPercent = 0, rows = currentLeaderboardBaseRows) {
+  if (!Object.prototype.hasOwnProperty.call(LEADERBOARD_ELO_THRESHOLD_CONFIG, key)) {
+    return 0;
+  }
+
+  const normalizedPercent = Number(topPercent);
+  if (!Number.isFinite(normalizedPercent) || normalizedPercent <= 0) {
+    return 0;
+  }
+
+  const resolvedPercent = LEADERBOARD_ELO_THRESHOLD_QUICK_VIEW_OPTIONS.includes(normalizedPercent)
+    ? normalizedPercent
+    : Math.min(Math.max(normalizedPercent, 0), 100);
+  const rangeInfo = getLeaderboardEloThresholdRanges(rows)[key];
+
+  if (!rangeInfo?.hasRows) {
+    return 0;
+  }
+
+  const span = Number(rangeInfo.availableMax) - Number(rangeInfo.availableMin);
+  const thresholdValue = Number(rangeInfo.availableMax) - (span * resolvedPercent / 100);
+  return sanitizeLeaderboardThresholdValue(key, thresholdValue);
+}
+
+function areLeaderboardThresholdValuesEqual(key = '', leftValue = 0, rightValue = 0) {
+  const step = Number(LEADERBOARD_ELO_THRESHOLD_CONFIG[key]?.step) || 1;
+  return Math.abs(Number(leftValue) - Number(rightValue)) < (step / 2);
+}
+
+function buildLeaderboardEloThresholdRangeLabel(key = '', rangeInfo = null) {
+  if (!rangeInfo?.hasRows) {
+    return 'Current range: no Elo rows';
+  }
+
+  return `Current range: ${formatLeaderboardThresholdMetricValue(key, rangeInfo.availableMin)}-${formatLeaderboardThresholdMetricValue(key, rangeInfo.availableMax)}`;
+}
+
+function syncLeaderboardEloThresholdInputs() {
+  const controls = getLeaderboardEloThresholdControls();
+  const ranges = getLeaderboardEloThresholdRanges();
+
+  Object.entries(controls).forEach(([key, control]) => {
+    const config = LEADERBOARD_ELO_THRESHOLD_CONFIG[key];
+    const rangeInfo = ranges[key];
+    const activeValue = sanitizeLeaderboardThresholdValue(key, activeLeaderboardEloThresholds[key] ?? 0);
+    const normalizedValue = roundLeaderboardThresholdMetricValue(key, activeValue);
+    const sliderMax = Math.max(Number(rangeInfo?.sliderMax || 0), 0);
+
+    if (control.input) {
+      control.input.value = String(normalizedValue);
+      control.input.min = '0';
+      control.input.step = String(config?.step || 1);
+      if (key === 'minTopConversion') {
+        control.input.max = '100';
+      } else {
+        control.input.removeAttribute('max');
+      }
+    }
+
+    if (control.slider) {
+      control.slider.min = '0';
+      control.slider.max = String(sliderMax);
+      control.slider.step = String(config?.step || 1);
+      control.slider.value = String(Math.min(normalizedValue, sliderMax));
+      control.slider.disabled = !rangeInfo?.hasRows && normalizedValue === 0;
+    }
+
+    if (!control.rangeLabel) {
+      if (Array.isArray(control.quickButtons)) {
+        control.quickButtons.forEach(button => {
+          const topPercent = Number(button.dataset.leaderboardThresholdTopPercent || 0);
+          const quickValue = getLeaderboardEloThresholdQuickViewValue(key, topPercent);
+          const isActive = rangeInfo?.hasRows && areLeaderboardThresholdValuesEqual(key, quickValue, normalizedValue);
+
+          button.disabled = !rangeInfo?.hasRows;
+          button.classList.toggle('active', isActive);
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+      }
+      return;
+    }
+
+    control.rangeLabel.textContent = buildLeaderboardEloThresholdRangeLabel(key, rangeInfo);
+    if (!Array.isArray(control.quickButtons)) {
+      return;
+    }
+
+    control.quickButtons.forEach(button => {
+      const topPercent = Number(button.dataset.leaderboardThresholdTopPercent || 0);
+      const quickValue = getLeaderboardEloThresholdQuickViewValue(key, topPercent);
+      const isActive = rangeInfo?.hasRows && areLeaderboardThresholdValuesEqual(key, quickValue, normalizedValue);
+
+      button.disabled = !rangeInfo?.hasRows;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  });
+}
+
+function setLeaderboardEloThreshold(key = '', value = 0) {
+  if (!Object.prototype.hasOwnProperty.call(activeLeaderboardEloThresholds, key)) {
+    return;
+  }
+
+  activeLeaderboardEloThresholds = {
+    ...activeLeaderboardEloThresholds,
+    [key]: sanitizeLeaderboardThresholdValue(key, value)
+  };
+  syncLeaderboardEloThresholdInputs();
+}
+
+function getActiveLeaderboardEloThresholds() {
+  return { ...activeLeaderboardEloThresholds };
+}
+
+function hasActiveLeaderboardEloThresholds() {
+  return Object.values(activeLeaderboardEloThresholds).some(value => Number(value) > 0);
 }
 
 function getSelectedLeaderboardEventTypes() {
@@ -320,6 +620,10 @@ function getLeaderboardSelectedYearsLabel(dataset = currentLeaderboardDataset) {
 }
 
 function getLeaderboardSelectedYearGainColumns(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return [];
+  }
+
   const years = Array.isArray(dataset?.summary?.selectedYears) ? dataset.summary.selectedYears.filter(Boolean) : [];
   if (dataset.resetByYear || years.length === 0) {
     return [];
@@ -355,6 +659,10 @@ function getLeaderboardEntryLabel(row = {}) {
 }
 
 function getLeaderboardEntryFieldLabel(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return dataset?.period?.windowMode === 'seasonal' ? 'Season' : 'Window';
+  }
+
   return dataset.resetByYear ? 'Season' : 'Window';
 }
 
@@ -363,6 +671,10 @@ function getLeaderboardWindowModeLabel(period = currentLeaderboardDataset.period
 }
 
 function getLeaderboardContinuityLabel(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return 'Aggregated Range';
+  }
+
   if (dataset?.period?.windowMode === 'seasonal') {
     return 'Seasonal Reset';
   }
@@ -371,6 +683,12 @@ function getLeaderboardContinuityLabel(dataset = currentLeaderboardDataset) {
 }
 
 function getLeaderboardViewTitle(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return dataset?.period?.windowMode === 'seasonal'
+      ? 'Seasonal Performance Leaderboard'
+      : 'Multi-Year Performance Leaderboard';
+  }
+
   if (dataset?.period?.windowMode === 'seasonal') {
     return 'Seasonal Elo Leaderboard';
   }
@@ -380,6 +698,10 @@ function getLeaderboardViewTitle(dataset = currentLeaderboardDataset) {
 
 function getLeaderboardRowCollectionLabel(count = 0, dataset = currentLeaderboardDataset) {
   const safeCount = Number(count) || 0;
+  if (dataset?.mode === 'performance') {
+    return `${safeCount} qualified player${safeCount === 1 ? '' : 's'}`;
+  }
+
   if (!dataset.resetByYear) {
     return `${safeCount} continuous ladder entr${safeCount === 1 ? 'y' : 'ies'}`;
   }
@@ -392,20 +714,33 @@ function getLeaderboardRowCollectionLabel(count = 0, dataset = currentLeaderboar
 }
 
 function buildLeaderboardTableHelperText(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    if ((dataset?.summary?.seasonEntries || 0) === 0) {
+      return buildEmptyStateMessage(dataset?.eventTypes);
+    }
+
+    const yearsLabel = getLeaderboardSelectedYearsLabel(dataset) || 'the selected years';
+    const minEvents = Number(dataset?.summary?.minEvents) || DEFAULT_LEADERBOARD_PERFORMANCE_MIN_EVENTS;
+    return `Rows are ranked by Top 8 conversion across ${yearsLabel}. Players need at least ${minEvents} event${minEvents === 1 ? '' : 's'} in the selected window to qualify.`;
+  }
+
   if ((dataset?.summary?.ratedMatches || 0) === 0) {
     return buildEmptyStateMessage(dataset?.eventTypes);
   }
 
   const yearsLabel = getLeaderboardSelectedYearsLabel(dataset) || 'the selected years';
+  const thresholdNote = hasActiveLeaderboardEloThresholds()
+    ? ' Visible rows must also meet the current Elo minimum filters.'
+    : '';
   if (dataset?.period?.windowMode === 'seasonal') {
-    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1.`;
+    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Top 8 conversion and Challenge wins are shown from the same window.${thresholdNote}`;
   }
 
   if (dataset.resetByYear) {
-    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season.`;
+    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season. Top 8 conversion and Challenge wins are scoped to each row's season.${thresholdNote}`;
   }
 
-  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range.`;
+  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range. Top 8 conversion and Challenge wins cover the same selected window.${thresholdNote}`;
 }
 
 function ensureActiveLeaderboardWindow() {
@@ -592,7 +927,63 @@ function renderLeaderboardResetModeButtons(activeWindow = null) {
   });
 }
 
+function buildLeaderboardEloThresholdSummary() {
+  const thresholds = getActiveLeaderboardEloThresholds();
+  const parts = [];
+
+  if (thresholds.minEvents > 0) {
+    parts.push(`${thresholds.minEvents}+ events`);
+  }
+  if (thresholds.minMatches > 0) {
+    parts.push(`${thresholds.minMatches}+ matches`);
+  }
+  if (thresholds.minElo > 0) {
+    parts.push(`${thresholds.minElo}+ Elo`);
+  }
+  if (thresholds.minTopConversion > 0) {
+    parts.push(`${thresholds.minTopConversion}%+ Top 8 conversion`);
+  }
+
+  if (parts.length === 0) {
+    return 'Drag a slider or type a minimum. Range labels reflect the full Elo window. Use 0 to disable a threshold.';
+  }
+
+  return `Active Elo minimums: ${parts.join(' | ')}. Drag or type to adjust them.`;
+}
+
+function renderLeaderboardEloThresholdControls() {
+  const section = getLeaderboardEloThresholdControlsSection();
+  section?.classList.remove('hidden');
+  syncLeaderboardFullscreenLayout();
+  syncLeaderboardEloThresholdInputs();
+  updateElementText('leaderboardEloThresholdSummary', buildLeaderboardEloThresholdSummary());
+}
+
+function buildLeaderboardModeSummary() {
+  return isPerformanceLeaderboardMode()
+    ? 'Performance ranks players by Top 8 conversion from event finishes. Elo stays available in the other mode.'
+    : 'Elo uses the matchup archive to build rating ladders. Performance ranks players from event finishes instead.';
+}
+
+function buildLeaderboardEventTypeSummary() {
+  return isPerformanceLeaderboardMode()
+    ? 'Performance uses event-result rows, so it can rank either online or offline events when those finishes exist in the dataset.'
+    : 'Elo leaderboards use matchup records. Right now the matchup archive is online-only.';
+}
+
 function buildLeaderboardWindowModeSummary(activeWindow = null) {
+  if (isPerformanceLeaderboardMode()) {
+    if (!activeWindow) {
+      return 'Choose Seasonal or Multi-Year to rank players by Top 8 conversion.';
+    }
+
+    if (activeWindow.windowMode === 'seasonal') {
+      return `Seasonal view isolates the ${activeWindow.year || 'selected'} calendar year and ranks players by Top 8 conversion inside that season.`;
+    }
+
+    return 'Multi-Year view combines the selected years into one performance table ranked by Top 8 conversion.';
+  }
+
   if (!activeWindow) {
     return 'Choose Seasonal or Multi-Year to build Elo from the rated matchup archive.';
   }
@@ -606,7 +997,9 @@ function buildLeaderboardWindowModeSummary(activeWindow = null) {
 
 function buildLeaderboardRangeSummary(activeWindow = null) {
   if (!activeWindow || activeWindow.windowMode !== 'range') {
-    return 'Pick the first and last year included in the Elo window.';
+    return isPerformanceLeaderboardMode()
+      ? 'Pick the first and last year included in the Performance window.'
+      : 'Pick the first and last year included in the Elo window.';
   }
 
   const yearsLabel = getLeaderboardYearRangeLabel(activeWindow.years) || 'Selected range';
@@ -615,6 +1008,10 @@ function buildLeaderboardRangeSummary(activeWindow = null) {
 }
 
 function buildLeaderboardResetModeSummary(activeWindow = null) {
+  if (isPerformanceLeaderboardMode()) {
+    return 'Performance mode always aggregates the selected window directly, so rating continuity does not apply here.';
+  }
+
   if (!activeWindow || activeWindow.windowMode !== 'range') {
     return 'Seasonal view always resets to 1500 on January 1. Switch to Multi-Year to choose between yearly resets and a continuous ladder.';
   }
@@ -632,6 +1029,15 @@ function buildLeaderboardResetModeSummary(activeWindow = null) {
 }
 
 function buildLeaderboardSystemSummary(activeWindow = null) {
+  if (isPerformanceLeaderboardMode()) {
+    const minEvents = activeLeaderboardPerformanceMinEvents;
+    if (!activeWindow) {
+      return `Performance mode ranks players by Top 8 conversion. Minimum sample is currently ${minEvents} event${minEvents === 1 ? '' : 's'}.`;
+    }
+
+    return `Performance mode ranks players by Top 8 conversion inside the selected window. Players need at least ${minEvents} event${minEvents === 1 ? '' : 's'} to qualify.`;
+  }
+
   if (!activeWindow) {
     return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards)`;
   }
@@ -647,18 +1053,113 @@ function buildLeaderboardSystemSummary(activeWindow = null) {
   return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Multi-Year Elo resets on January 1, so seasons stay separate.`;
 }
 
+function buildLeaderboardPerformanceSummary(activeWindow = null) {
+  const minEvents = activeLeaderboardPerformanceMinEvents;
+  if (!activeWindow) {
+    return `Players need at least ${minEvents} event${minEvents === 1 ? '' : 's'} before their Top 8 conversion appears in the ranking.`;
+  }
+
+  const scopeLabel = activeWindow.windowMode === 'seasonal'
+    ? `${activeWindow.year || 'selected'} season`
+    : `${getLeaderboardYearRangeLabel(activeWindow.years) || 'selected range'} window`;
+  return `Top 8 conversion = Top 8 finishes divided by total events in the ${scopeLabel}. Minimum sample: ${minEvents} event${minEvents === 1 ? '' : 's'}.`;
+}
+
+function formatLeaderboardFilterBadgeLabel(value = '') {
+  const normalizedValue = String(value || '').trim();
+  if (!normalizedValue) {
+    return '';
+  }
+
+  return normalizedValue
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map(token => token.charAt(0).toUpperCase() + token.slice(1))
+    .join(' ');
+}
+
+function getLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboardDataset?.period || ensureActiveLeaderboardWindow().activeWindow) {
+  const badges = [];
+  const selectedEventTypes = getSelectedLeaderboardEventTypes();
+
+  if (selectedEventTypes.length > 0) {
+    badges.push(...selectedEventTypes.map(formatLeaderboardFilterBadgeLabel).filter(Boolean));
+  }
+
+  if (activeWindow?.windowMode === 'seasonal') {
+    badges.push('Seasonal');
+    if (activeWindow.year) {
+      badges.push(`${activeWindow.year} Season`);
+    }
+  } else if (activeWindow?.windowMode === 'range') {
+    badges.push('Multi-Year');
+
+    if (activeWindow.startYear || activeWindow.endYear) {
+      badges.push(`${activeWindow.startYear || '--'}-${activeWindow.endYear || '--'}`);
+    }
+
+    badges.push(activeWindow.resetMode === 'continuous' ? 'Carry Across Range' : 'Reset Each Year');
+  }
+
+  return badges.filter(Boolean);
+}
+
+function renderLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboardDataset?.period || ensureActiveLeaderboardWindow().activeWindow) {
+  const badgeStrip = getLeaderboardFullscreenBadgeStrip();
+  const container = getLeaderboardTableContainer();
+  if (!badgeStrip || !container) {
+    return;
+  }
+
+  const isFullscreen = document.fullscreenElement === container;
+  const badges = isFullscreen ? getLeaderboardFullscreenFilterBadges(activeWindow) : [];
+
+  badgeStrip.hidden = badges.length === 0;
+  updateElementHTML(
+    'leaderboardFullscreenBadgeStrip',
+    badges.map(label => `<span class="leaderboard-fullscreen-filter-badge">${escapeHtml(label)}</span>`).join('')
+  );
+}
+
+function syncLeaderboardModeDisplayHints(activeWindow = null) {
+  const searchInput = getLeaderboardSearchInput();
+  const clickHint = getLeaderboardTableClickHint();
+  const timelineHelper = getLeaderboardTimelineHelper();
+
+  if (searchInput) {
+    const placeholderText = 'Find a player in the Elo table';
+    searchInput.placeholder = placeholderText;
+    searchInput.setAttribute('aria-label', placeholderText);
+  }
+
+  if (clickHint) {
+    clickHint.hidden = false;
+  }
+
+  if (timelineHelper) {
+    timelineHelper.textContent = 'Tracking the selected players across the current Elo window. Top 8 are shown by default.';
+  }
+
+  updateElementText('leaderboardModeSummary', buildLeaderboardModeSummary());
+  updateElementText('leaderboardEventTypeSummary', buildLeaderboardEventTypeSummary());
+  updateElementText('leaderboardEloThresholdSummary', buildLeaderboardEloThresholdSummary());
+}
+
 function renderLeaderboardWindowControls() {
   const { availableYears, activeWindow } = ensureActiveLeaderboardWindow();
 
+  renderLeaderboardEloThresholdControls();
   renderLeaderboardWindowModeButtons(availableYears);
   renderLeaderboardSeasonYearButtons(availableYears);
   renderLeaderboardRangeControls(availableYears, activeWindow);
   renderLeaderboardResetModeButtons(activeWindow);
 
+  syncLeaderboardModeDisplayHints(activeWindow);
   updateElementText('leaderboardWindowModeSummary', buildLeaderboardWindowModeSummary(activeWindow));
   updateElementText('leaderboardRangeSummary', buildLeaderboardRangeSummary(activeWindow));
   updateElementText('leaderboardResetModeSummary', buildLeaderboardResetModeSummary(activeWindow));
   updateElementText('leaderboardSystemSummary', buildLeaderboardSystemSummary(activeWindow));
+  renderLeaderboardFullscreenFilterBadges(activeWindow);
 
   return activeWindow;
 }
@@ -713,11 +1214,34 @@ function getWindowLabel(period, selectedYears = [], startDate = '', endDate = ''
 }
 
 function buildEmptyStateMessage(selectedEventTypes = []) {
+  if (isPerformanceLeaderboardMode()) {
+    if (selectedEventTypes.length === 1 && selectedEventTypes[0] === 'offline') {
+      return 'No offline event finishes are available for the selected Performance window.';
+    }
+
+    return 'No player finishes are available for the selected Performance filters.';
+  }
+
   if (selectedEventTypes.length === 1 && selectedEventTypes[0] === 'offline') {
     return 'No offline matchup records are available yet, so Elo leaderboards can only be computed for online events right now.';
   }
 
   return 'No rated matchup records are available for the selected filters.';
+}
+
+function applyLeaderboardRowFilters(rows = [], dataset = currentLeaderboardDataset) {
+  const resolvedRows = Array.isArray(rows) ? rows : [];
+  if (dataset?.mode !== 'elo') {
+    return resolvedRows;
+  }
+
+  const thresholds = getActiveLeaderboardEloThresholds();
+  return resolvedRows.filter(row => {
+    return Number(row?.eventCount || 0) >= thresholds.minEvents
+      && Number(row?.matches || 0) >= thresholds.minMatches
+      && Number(row?.rating || 0) >= thresholds.minElo
+      && (Number(row?.top8Conversion || 0) * 100) >= thresholds.minTopConversion;
+  });
 }
 
 function buildSummaryText(dataset) {
@@ -1162,12 +1686,97 @@ function updateLeaderboardSearchStatus(message = '') {
   }
 }
 
+function getLeaderboardSortMode(dataset = currentLeaderboardDataset) {
+  return 'elo';
+}
+
+function getDefaultLeaderboardSortState(mode = getLeaderboardSortMode()) {
+  return { key: 'rating', direction: 'desc' };
+}
+
+function getLeaderboardSortDefaultDirection(sortKey = '') {
+  switch (String(sortKey || '').trim()) {
+    case 'displayName':
+    case 'seasonYear':
+      return 'asc';
+    case 'lastActiveDate':
+      return 'desc';
+    default:
+      return 'desc';
+  }
+}
+
+function ensureLeaderboardSortState(dataset = currentLeaderboardDataset) {
+  const mode = getLeaderboardSortMode(dataset);
+  const validKeys = LEADERBOARD_SORTABLE_KEYS[mode] || LEADERBOARD_SORTABLE_KEYS.elo;
+  const currentKey = String(leaderboardTableSort?.key || '').trim();
+  const currentDirection = String(leaderboardTableSort?.direction || '').trim().toLowerCase();
+
+  if (!validKeys.has(currentKey)) {
+    leaderboardTableSort = getDefaultLeaderboardSortState(mode);
+    return leaderboardTableSort;
+  }
+
+  if (!['asc', 'desc'].includes(currentDirection)) {
+    leaderboardTableSort = {
+      key: currentKey,
+      direction: getLeaderboardSortDefaultDirection(currentKey)
+    };
+    return leaderboardTableSort;
+  }
+
+  return leaderboardTableSort;
+}
+
+function getLeaderboardComparableValue(row = {}, sortKey = '', dataset = currentLeaderboardDataset) {
+  const resolvedSortKey = String(sortKey || '').trim();
+
+  switch (resolvedSortKey) {
+    case 'displayName':
+      return String(row.displayName || '').toLowerCase();
+    case 'seasonYear':
+      return String(getLeaderboardEntryLabel(row) || '').toLowerCase();
+    case 'lastActiveDate':
+      return String(row.lastActiveDate || '');
+    default:
+      return Number(row?.[resolvedSortKey] || 0);
+  }
+}
+
+function compareEloLeaderboardRows(a = {}, b = {}) {
+  return (
+    Number(b.rating || 0) - Number(a.rating || 0) ||
+    Number(b.matches || 0) - Number(a.matches || 0) ||
+    Number(b.wins || 0) - Number(a.wins || 0) ||
+    Number(a.losses || 0) - Number(b.losses || 0) ||
+    Number(b.top8Conversion || 0) - Number(a.top8Conversion || 0) ||
+    Number(b.challengeWins || 0) - Number(a.challengeWins || 0) ||
+    String(a.displayName || '').localeCompare(String(b.displayName || ''), undefined, { sensitivity: 'base' }) ||
+    String(a.playerKey || '').localeCompare(String(b.playerKey || ''))
+  );
+}
+
+function comparePerformanceLeaderboardRows(a = {}, b = {}) {
+  return (
+    Number(b.top8Conversion || 0) - Number(a.top8Conversion || 0) ||
+    Number(b.top8Count || 0) - Number(a.top8Count || 0) ||
+    Number(b.eventCount || 0) - Number(a.eventCount || 0) ||
+    Number(b.matchCount || 0) - Number(a.matchCount || 0) ||
+    Number(b.wins || 0) - Number(a.wins || 0) ||
+    String(a.displayName || '').localeCompare(String(b.displayName || ''), undefined, { sensitivity: 'base' }) ||
+    String(a.playerKey || '').localeCompare(String(b.playerKey || ''))
+  );
+}
+
 function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   destroyLeaderboardTimelineChart();
   updateElementText('leaderboardTableTitle', 'Elo Leaderboard');
   updateElementText('leaderboardTableHelper', message);
   updateElementText('leaderboardEntryColumnLabel', 'Season');
-  updateElementHTML('leaderboardTableBody', "<tr><td colspan='9'>Loading Elo leaderboard...</td></tr>");
+  updateElementHTML(
+    'leaderboardTableBody',
+    `<tr><td colspan='11'>${escapeHtml(message)}</td></tr>`
+  );
   updateLeaderboardSearchStatus(message);
   const timelineSection = getLeaderboardTimelineSection();
   if (timelineSection) {
@@ -1178,11 +1787,53 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
   destroyLeaderboardTimelineChart();
   updateElementText('leaderboardTableHelper', message);
-  updateElementHTML('leaderboardTableBody', `<tr><td colspan='9'>${escapeHtml(message)}</td></tr>`);
+  updateElementHTML('leaderboardTableBody', `<tr><td colspan='11'>${escapeHtml(message)}</td></tr>`);
   updateLeaderboardSearchStatus(message);
   const timelineSection = getLeaderboardTimelineSection();
   if (timelineSection) {
     timelineSection.hidden = true;
+  }
+}
+
+function renderLeaderboardFromCurrentState() {
+  const searchInput = getLeaderboardSearchInput();
+  const downloadButton = getLeaderboardDownloadButton();
+
+  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
+  renderLeaderboardEloThresholdControls();
+
+  populateLeaderboardStats(currentLeaderboardDataset);
+  updateLeaderboardDrilldownCardStates();
+  renderLeaderboardTable(currentLeaderboardDataset);
+  renderLeaderboardTimelineChart();
+
+  if (searchInput) {
+    searchInput.disabled = currentLeaderboardRows.length === 0;
+  }
+  if (downloadButton) {
+    downloadButton.disabled = currentLeaderboardRows.length === 0;
+  }
+
+  if (activeLeaderboardSearchTerm) {
+    applyLeaderboardTableSearch(searchInput?.value || activeLeaderboardSearchTerm, { scrollIntoView: false });
+  } else {
+    clearLeaderboardSearchHighlights();
+    updateLeaderboardSearchStatus('');
+  }
+
+  if (activeLeaderboardPlayerDrilldown?.playerKey && activeLeaderboardPlayerDrilldown?.seasonKey) {
+    const didRenderPlayerDrilldown = renderLeaderboardPlayerDrilldown(
+      activeLeaderboardPlayerDrilldown.playerKey,
+      activeLeaderboardPlayerDrilldown.seasonKey
+    );
+
+    if (!didRenderPlayerDrilldown) {
+      closeLeaderboardDrilldown().catch(error => {
+        console.error('Failed to close leaderboard drilldown after filters removed the active row.', error);
+      });
+    }
+  } else if (activeLeaderboardDrilldownCategory) {
+    renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
   }
 }
 
@@ -1194,37 +1845,31 @@ function clearLeaderboardSearchHighlights() {
     });
 }
 
-function compareRows(a, b, key) {
-  const resolvedKey = key === 'displayRank' ? 'rating' : key;
-
-  if (resolvedKey === 'displayName') {
-    return (
-      String(a.displayName).localeCompare(String(b.displayName), undefined, { sensitivity: 'base' }) ||
-      String(a.playerKey).localeCompare(String(b.playerKey))
-    );
-  }
-
-  if (resolvedKey === 'seasonYear' || resolvedKey === 'lastActiveDate') {
-    const leftValue = resolvedKey === 'seasonYear' ? getLeaderboardEntryLabel(a) : String(a[resolvedKey] || '');
-    const rightValue = resolvedKey === 'seasonYear' ? getLeaderboardEntryLabel(b) : String(b[resolvedKey] || '');
-    return String(leftValue).localeCompare(String(rightValue || ''));
-  }
-
-  return Number(a[resolvedKey] || 0) - Number(b[resolvedKey] || 0);
-}
-
 function sortLeaderboardRows(rows = []) {
   const sortedRows = [...rows];
+  const dataset = currentLeaderboardDataset;
+  const mode = getLeaderboardSortMode(dataset);
+  const sortState = ensureLeaderboardSortState(dataset);
+  const tieBreaker = compareEloLeaderboardRows;
+  const sortKey = sortState.key;
+  const directionMultiplier = sortState.direction === 'asc' ? 1 : -1;
 
   sortedRows.sort((a, b) => {
-    return (
-      Number(b.rating) - Number(a.rating) ||
-      Number(b.matches) - Number(a.matches) ||
-      Number(b.wins) - Number(a.wins) ||
-      Number(a.losses) - Number(b.losses) ||
-      String(a.displayName).localeCompare(String(b.displayName), undefined, { sensitivity: 'base' }) ||
-      String(a.playerKey).localeCompare(String(b.playerKey))
-    );
+    const leftValue = getLeaderboardComparableValue(a, sortKey, dataset);
+    const rightValue = getLeaderboardComparableValue(b, sortKey, dataset);
+    let comparison = 0;
+
+    if (typeof leftValue === 'string' || typeof rightValue === 'string') {
+      comparison = String(leftValue || '').localeCompare(String(rightValue || ''), undefined, { sensitivity: 'base' });
+    } else {
+      comparison = Number(leftValue || 0) - Number(rightValue || 0);
+    }
+
+    if (comparison !== 0) {
+      return comparison * directionMultiplier;
+    }
+
+    return tieBreaker(a, b);
   });
 
   return sortedRows;
@@ -1287,10 +1932,118 @@ function applyLeaderboardTableSearch(searchTerm = '', { scrollIntoView = true } 
 }
 
 function getSortedLeaderboardRowsWithRank() {
+  ensureLeaderboardSortState(currentLeaderboardDataset);
   return sortLeaderboardRows(currentLeaderboardRows).map((row, index) => ({
     ...row,
     displayRank: index + 1
   }));
+}
+
+function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboardDataset) {
+  const normalizedDate = String(rowDate || '').trim();
+  if (!dataset?.resetByYear) {
+    return 'all-time';
+  }
+
+  return /^\d{4}-\d{2}-\d{2}$/.test(normalizedDate)
+    ? normalizedDate.slice(0, 4)
+    : 'unknown-year';
+}
+
+function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
+  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const selectedEventTypes = new Set(
+    (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  );
+  const groupedEventRows = new Map();
+
+  eventRows.forEach((row, index) => {
+    const rowDate = String(row?.Date || '').trim();
+    const eventType = String(row?.EventType || '').trim().toLowerCase();
+    const playerKey = getPlayerIdentityKey(row?.Player);
+    const seasonKey = getLeaderboardStatsSeasonKey(rowDate, dataset);
+    const eventKey = `${rowDate}|||${String(row?.Event || '').trim()}`;
+    const groupKey = `${seasonKey}:::${playerKey}`;
+
+    if (!playerKey || !rowDate || !eventKey || eventKey === '|||' || !seasonKey) {
+      return;
+    }
+
+    if (dataset?.startDate && rowDate < dataset.startDate) {
+      return;
+    }
+    if (dataset?.endDate && rowDate > dataset.endDate) {
+      return;
+    }
+    if (selectedEventTypes.size > 0 && !selectedEventTypes.has(eventType)) {
+      return;
+    }
+
+    if (!groupedEventRows.has(groupKey)) {
+      groupedEventRows.set(groupKey, new Map());
+    }
+
+    const eventMap = groupedEventRows.get(groupKey);
+    const existing = eventMap.get(eventKey);
+    const nextRank = Number(row?.Rank);
+    const existingRank = Number(existing?.Rank);
+
+    if (!existing) {
+      eventMap.set(eventKey, { ...row, __sourceIndex: index });
+      return;
+    }
+
+    if (
+      !Number.isFinite(existingRank) ||
+      (Number.isFinite(nextRank) && nextRank < existingRank) ||
+      (Number.isFinite(nextRank) && nextRank === existingRank && index > Number(existing?.__sourceIndex || -1))
+    ) {
+      eventMap.set(eventKey, { ...row, __sourceIndex: index });
+    }
+  });
+
+  return Array.from(groupedEventRows.entries()).reduce((lookup, [groupKey, eventMap]) => {
+    const dedupedRows = Array.from(eventMap.values());
+    const eventCount = dedupedRows.length;
+    const top8Count = dedupedRows.filter(row => Number(row?.Rank) >= 1 && Number(row?.Rank) <= 8).length;
+    const challengeWins = dedupedRows.filter(row => {
+      return Number(row?.Rank) === 1 && getEventGroupInfo(row?.Event).key === 'challenge';
+    }).length;
+
+    lookup.set(groupKey, {
+      eventCount,
+      top8Count,
+      top8Conversion: eventCount > 0 ? top8Count / eventCount : 0,
+      challengeWins
+    });
+
+    return lookup;
+  }, new Map());
+}
+
+function augmentEloLeaderboardRowsWithEventStats(rows = [], dataset = currentLeaderboardDataset) {
+  const statsLookup = buildLeaderboardEventStatsLookup(dataset);
+
+  return (Array.isArray(rows) ? rows : []).map(row => {
+    const playerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
+    const seasonKey = String(row?.seasonKey || '').trim() || getLeaderboardStatsSeasonKey(row?.lastActiveDate, dataset);
+    const rowStats = statsLookup.get(`${seasonKey}:::${playerKey}`) || {
+      eventCount: 0,
+      top8Count: 0,
+      top8Conversion: 0,
+      challengeWins: 0
+    };
+
+    return {
+      ...row,
+      eventCount: rowStats.eventCount,
+      top8Count: rowStats.top8Count,
+      top8Conversion: rowStats.top8Conversion,
+      challengeWins: rowStats.challengeWins
+    };
+  });
 }
 
 function getLeaderboardRowByKeysWithRank(playerKey = '', seasonKey = '') {
@@ -1304,6 +2057,23 @@ function getLeaderboardRowByKeysWithRank(playerKey = '', seasonKey = '') {
 }
 
 function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return [
+      ['View', getLeaderboardViewTitle(dataset)],
+      ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
+      ['Selected Window', getWindowLabel(dataset.period, dataset.summary.selectedYears, dataset.startDate, dataset.endDate)],
+      ['Selected Years', getLeaderboardSelectedYearsLabel(dataset) || '--'],
+      ['Date Range', formatWindowRange(dataset.startDate, dataset.endDate)],
+      ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
+      ['Metric', 'Top 8 Conversion'],
+      ['Minimum Events', String(dataset.summary.minEvents || 0)],
+      ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
+      ['Qualified Rows', String(dataset.summary.seasonEntries || 0)],
+      ['Unique Events', String(dataset.summary.totalEvents || 0)],
+      ['Qualified Player Appearances', String(dataset.summary.playerAppearances || 0)]
+    ];
+  }
+
   const metadataRows = [
     ['View', getLeaderboardViewTitle(dataset)],
     ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
@@ -1324,7 +2094,81 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
     ]);
   }
 
+  if (hasActiveLeaderboardEloThresholds()) {
+    const thresholds = getActiveLeaderboardEloThresholds();
+    metadataRows.push(['Visible Leaderboard Rows', String(currentLeaderboardRows.length)]);
+    metadataRows.push(['Minimum Events', String(thresholds.minEvents || 0)]);
+    metadataRows.push(['Minimum Matches', String(thresholds.minMatches || 0)]);
+    metadataRows.push(['Minimum Elo', String(thresholds.minElo || 0)]);
+    metadataRows.push(['Minimum Top 8 Conversion', `${thresholds.minTopConversion || 0}%`]);
+  }
+
   return metadataRows;
+}
+
+function applyLeaderboardTableSortHeaderState() {
+  const tableHead = document.getElementById('leaderboardTableHead');
+  if (!tableHead) {
+    return;
+  }
+
+  const sortState = ensureLeaderboardSortState(currentLeaderboardDataset);
+  tableHead.querySelectorAll('th[data-sort]').forEach(header => {
+    const isActive = String(header.dataset.sort || '') === sortState.key;
+    const arrow = header.querySelector('.sort-arrow');
+
+    header.classList.remove('asc', 'desc');
+    header.setAttribute('aria-sort', 'none');
+    if (arrow) {
+      arrow.textContent = '';
+    }
+
+    if (!isActive) {
+      return;
+    }
+
+    header.classList.add(sortState.direction);
+    header.setAttribute('aria-sort', sortState.direction === 'asc' ? 'ascending' : 'descending');
+    if (arrow) {
+      arrow.textContent = sortState.direction === 'asc' ? '\u2191' : '\u2193';
+    }
+  });
+}
+
+function setupLeaderboardTableSorting() {
+  const tableHead = document.getElementById('leaderboardTableHead');
+  if (!tableHead || tableHead.dataset.listenerAdded === 'true') {
+    applyLeaderboardTableSortHeaderState();
+    return;
+  }
+
+  tableHead.addEventListener('click', event => {
+    const header = event.target.closest('th[data-sort]');
+    if (!header) {
+      return;
+    }
+
+    const sortKey = String(header.dataset.sort || '').trim();
+    const defaultDirection = getLeaderboardSortDefaultDirection(sortKey);
+    const isSameKey = leaderboardTableSort?.key === sortKey;
+
+    leaderboardTableSort = {
+      key: sortKey,
+      direction: isSameKey
+        ? (leaderboardTableSort.direction === 'asc' ? 'desc' : 'asc')
+        : defaultDirection
+    };
+
+    renderLeaderboardTable(currentLeaderboardDataset);
+    if (activeLeaderboardSearchTerm) {
+      applyLeaderboardTableSearch(getLeaderboardSearchInput()?.value || activeLeaderboardSearchTerm, { scrollIntoView: false });
+    } else {
+      updateLeaderboardSearchStatus('');
+    }
+  });
+
+  tableHead.dataset.listenerAdded = 'true';
+  applyLeaderboardTableSortHeaderState();
 }
 
 function exportLeaderboardCsv() {
@@ -1333,14 +2177,26 @@ function exportLeaderboardCsv() {
     return;
   }
 
-  const yearGainColumns = getLeaderboardSelectedYearGainColumns(currentLeaderboardDataset);
-  const csvText = buildStructuredTableCsv(
-    [
+  const csvColumns = currentLeaderboardDataset?.mode === 'performance'
+    ? [
+      { header: 'Rank', value: row => row.displayRank },
+      { header: 'Player', value: row => row.displayName },
+      { header: getLeaderboardEntryFieldLabel(currentLeaderboardDataset), value: row => getLeaderboardEntryLabel(row) },
+      { header: 'Top 8 Conversion', value: row => formatWinRate(row.top8Conversion) },
+      { header: 'Top 8s', value: row => row.top8Count },
+      { header: 'Events', value: row => row.eventCount },
+      { header: 'Matches', value: row => row.matchCount },
+      { header: 'Wins', value: row => row.wins },
+      { header: 'Losses', value: row => row.losses },
+      { header: 'Match Win Rate', value: row => formatWinRate(row.winRate) },
+      { header: 'Last Event', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
+    ]
+    : [
       { header: 'Rank', value: row => row.displayRank },
       { header: 'Player', value: row => row.displayName },
       { header: getLeaderboardEntryFieldLabel(currentLeaderboardDataset), value: row => getLeaderboardEntryLabel(row) },
       { header: 'Elo', value: row => formatRating(row.rating) },
-      ...yearGainColumns.map(year => ({
+      ...getLeaderboardSelectedYearGainColumns(currentLeaderboardDataset).map(year => ({
         header: `${year} Gains`,
         value: row => getLeaderboardRowYearGainValue(row, year)
       })),
@@ -1348,8 +2204,12 @@ function exportLeaderboardCsv() {
       { header: 'Wins', value: row => row.wins },
       { header: 'Losses', value: row => row.losses },
       { header: 'Win Rate', value: row => formatWinRate(row.winRate) },
+      { header: 'Top 8 Conversion', value: row => formatWinRate(row.top8Conversion) },
+      { header: 'Challenge Wins', value: row => row.challengeWins },
       { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
-    ],
+    ];
+  const csvText = buildStructuredTableCsv(
+    csvColumns,
     rowsWithRank,
     getLeaderboardCsvMetadata()
   );
@@ -3052,9 +3912,14 @@ function renderLeaderboardDrilldown(categoryKey) {
   }
 
   if (categoryKey === 'trackedPlayers') {
-    const rowLabel = getLeaderboardRowCollectionLabel(summary.seasonEntries || 0, currentLeaderboardDataset);
+    const visiblePlayerCount = new Set(
+      items
+        .map(row => String(row?.playerKey || '').trim())
+        .filter(Boolean)
+    ).size;
+    const rowLabel = getLeaderboardRowCollectionLabel(items.length, currentLeaderboardDataset);
     elements.subtitle.textContent = items.length > 0
-      ? `${summary.uniquePlayers || 0} tracked player${summary.uniquePlayers === 1 ? '' : 's'} represented by ${rowLabel}`
+      ? `${visiblePlayerCount} tracked player${visiblePlayerCount === 1 ? '' : 's'} represented by ${rowLabel}`
       : config.emptyMessage;
     elements.content.innerHTML = items.length > 0
       ? buildLeaderboardPlayerSummaryHtml(items, { collapsePlayers: true })
@@ -3452,44 +4317,175 @@ function setupLeaderboardDrilldownCards() {
 }
 
 function populateLeaderboardStats(dataset) {
+  if (dataset?.mode === 'performance') {
+    const { summary } = dataset;
+    const topConversionRows = getRowsAtMaxValue(currentLeaderboardRows, 'top8Conversion')
+      .filter(row => Number(row.eventCount) >= (Number(summary.minEvents) || 1));
+    const mostTop8Rows = getRowsAtMaxValue(currentLeaderboardRows, 'top8Count')
+      .filter(row => Number(row.top8Count) > 0);
+    const mostActiveRows = getRowsAtMaxValue(currentLeaderboardRows, 'eventCount')
+      .filter(row => Number(row.eventCount) > 0);
+    const bestMatchWinRateRows = getRowsAtMaxValue(currentLeaderboardRows, 'winRate')
+      .filter(row => Number.isFinite(Number(row.winRate)) && Number(row.matchCount) > 0);
+    const selectedRangeLabel = getWindowLabel(dataset.period, dataset.summary.selectedYears, dataset.startDate, dataset.endDate) || '--';
+    const selectedRangeDetails = formatWindowRange(dataset.startDate, dataset.endDate);
+    const rowCollectionLabel = getLeaderboardRowCollectionLabel(summary.seasonEntries || 0, dataset);
+
+    const setCardTitle = (cardId, title) => {
+      const titleElement = document.getElementById(cardId)?.querySelector('.stat-title');
+      if (titleElement) {
+        titleElement.textContent = title;
+      }
+    };
+
+    setCardTitle('leaderboardDateRangeCard', 'Selected Range');
+    setCardTitle('leaderboardRatedMatchesCard', 'Minimum Events');
+    setCardTitle('leaderboardTrackedPlayersCard', 'Tracked Players');
+    setCardTitle('leaderboardTopEloCard', 'Best Top 8 Conversion');
+    setCardTitle('leaderboardPeakEloCard', 'Most Top 8s');
+    setCardTitle('leaderboardMostActiveCard', 'Most Active');
+    setCardTitle('leaderboardBiggestSwingCard', 'Best Match Win Rate');
+
+    updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
+    updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
+    updateElementText('leaderboardRatedMatches', String(summary.minEvents || 0));
+    updateElementText(
+      'leaderboardRatedMatchesDetails',
+      `${summary.totalEvents || 0} unique event${summary.totalEvents === 1 ? '' : 's'} in the selected window`
+    );
+    updateElementText('leaderboardTrackedPlayers', String(summary.uniquePlayers || 0));
+    updateElementText(
+      'leaderboardTrackedPlayersDetails',
+      `${rowCollectionLabel} / ${summary.playerAppearances || 0} player appearance${summary.playerAppearances === 1 ? '' : 's'}`
+    );
+    updateElementText(
+      'leaderboardTopEloName',
+      topConversionRows.length > 1 ? `${topConversionRows.length} Players Tied` : (summary.leader?.displayName || '--')
+    );
+    updateElementText(
+      'leaderboardTopEloDetails',
+      topConversionRows.length > 1
+        ? `${formatWinRate(topConversionRows[0]?.top8Conversion)} / ${formatNameList(topConversionRows.map(row => row.displayName))}`
+        : (
+          summary.leader
+            ? `${formatWinRate(summary.leader.top8Conversion)} / ${summary.leader.top8Count} Top 8s in ${summary.leader.eventCount} events`
+            : 'No qualified leader yet'
+        )
+    );
+    updateElementText(
+      'leaderboardPeakEloName',
+      mostTop8Rows.length > 1 ? `${mostTop8Rows.length} Players Tied` : (mostTop8Rows[0]?.displayName || '--')
+    );
+    updateElementText(
+      'leaderboardPeakEloDetails',
+      mostTop8Rows.length > 1
+        ? `${mostTop8Rows[0]?.top8Count || 0} Top 8s / ${formatNameList(mostTop8Rows.map(row => row.displayName))}`
+        : (
+          mostTop8Rows[0]
+            ? `${mostTop8Rows[0].top8Count} Top 8s / ${formatWinRate(mostTop8Rows[0].top8Conversion)} conversion`
+            : 'No Top 8 finishes yet'
+        )
+    );
+    updateElementText(
+      'leaderboardMostActiveName',
+      mostActiveRows.length > 1 ? `${mostActiveRows.length} Players Tied` : (summary.mostActiveSeason?.displayName || '--')
+    );
+    updateElementText(
+      'leaderboardMostActiveDetails',
+      mostActiveRows.length > 1
+        ? `${mostActiveRows[0]?.eventCount || 0} events each / ${formatNameList(mostActiveRows.map(row => row.displayName))}`
+        : (
+          summary.mostActiveSeason
+            ? `${summary.mostActiveSeason.eventCount} events / ${summary.mostActiveSeason.matchCount} matches / ${formatWinRate(summary.mostActiveSeason.top8Conversion)} Top 8 conversion`
+            : 'No active player yet'
+        )
+    );
+    updateElementText(
+      'leaderboardBiggestSwingName',
+      bestMatchWinRateRows.length > 1 ? `${bestMatchWinRateRows.length} Players Tied` : (summary.bestMatchWinRate?.displayName || '--')
+    );
+    updateElementText(
+      'leaderboardBiggestSwingDetails',
+      bestMatchWinRateRows.length > 1
+        ? `${formatWinRate(bestMatchWinRateRows[0]?.winRate)} WR / ${formatNameList(bestMatchWinRateRows.map(row => row.displayName))}`
+        : (
+          summary.bestMatchWinRate
+            ? `${formatWinRate(summary.bestMatchWinRate.winRate)} WR / ${summary.bestMatchWinRate.wins}-${summary.bestMatchWinRate.losses} / ${summary.bestMatchWinRate.eventCount} events`
+            : 'No recorded matches yet'
+        )
+    );
+
+    LEADERBOARD_STAT_CARD_IDS.forEach(triggerUpdateAnimation);
+    return;
+  }
+
   const { summary } = dataset;
   const topEloRows = getRowsAtMaxValue(currentLeaderboardRows, 'rating').filter(row => Number.isFinite(Number(row.rating)));
   const mostActiveRows = getRowsAtMaxValue(currentLeaderboardRows, 'matches').filter(row => Number(row.matches) > 0);
   const topEloNames = topEloRows.map(row => row.displayName).filter(Boolean);
-  const mostActiveNames = mostActiveRows.map(row => row.displayName).filter(Boolean);
   const peakEloEntries = getPeakEloEntries();
   const biggestGainEntries = getBiggestGainEntries();
   const biggestLossEntries = getBiggestLossEntries();
   const topRating = topEloRows[0]?.rating;
   const peakRating = peakEloEntries[0]?.ratingAfter;
   const topMatchCount = mostActiveRows[0]?.matches || 0;
-  const rowCollectionLabel = getLeaderboardRowCollectionLabel(summary.seasonEntries || 0, dataset);
+  const visiblePlayerCount = new Set(
+    currentLeaderboardRows
+      .map(row => String(row?.playerKey || '').trim())
+      .filter(Boolean)
+  ).size;
+  const totalPlayerCount = new Set(
+    currentLeaderboardBaseRows
+      .map(row => String(row?.playerKey || '').trim())
+      .filter(Boolean)
+  ).size;
+  const visibleRowCount = currentLeaderboardRows.length;
+  const totalRowCount = currentLeaderboardBaseRows.length;
+  const rowCollectionLabel = getLeaderboardRowCollectionLabel(visibleRowCount, dataset);
+  const totalRowCollectionLabel = getLeaderboardRowCollectionLabel(totalRowCount, dataset);
   const selectedPairingsLabel = summary.selectedMatches > 0
     ? `${summary.selectedMatches} selected pairings${summary.skippedMatches > 0 ? ` / ${summary.skippedMatches} skipped due to byes or unknown results` : ''}`
     : 'No selected pairings';
   const selectedRangeLabel = getWindowLabel(dataset.period, dataset.summary.selectedYears, dataset.startDate, dataset.endDate) || '--';
   const selectedRangeDetails = formatWindowRange(dataset.startDate, dataset.endDate);
 
+  const setCardTitle = (cardId, title) => {
+    const titleElement = document.getElementById(cardId)?.querySelector('.stat-title');
+    if (titleElement) {
+      titleElement.textContent = title;
+    }
+  };
+
+  setCardTitle('leaderboardDateRangeCard', 'Selected Range');
+  setCardTitle('leaderboardRatedMatchesCard', 'Rated Matches');
+  setCardTitle('leaderboardTrackedPlayersCard', 'Tracked Players');
+  setCardTitle('leaderboardTopEloCard', 'Current Top Elo');
+  setCardTitle('leaderboardPeakEloCard', 'Peak Elo');
+  setCardTitle('leaderboardMostActiveCard', 'Most Active');
+  setCardTitle('leaderboardBiggestSwingCard', 'Biggest Elo Gain / Loss');
+
   updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
   updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
   updateElementText('leaderboardRatedMatches', String(summary.ratedMatches || 0));
   updateElementText('leaderboardRatedMatchesDetails', selectedPairingsLabel);
-  updateElementText('leaderboardTrackedPlayers', String(summary.uniquePlayers || 0));
+  updateElementText('leaderboardTrackedPlayers', String(visiblePlayerCount || 0));
   updateElementText(
     'leaderboardTrackedPlayersDetails',
-    rowCollectionLabel
+    hasActiveLeaderboardEloThresholds()
+      ? `${rowCollectionLabel} visible / ${totalRowCollectionLabel} total / ${totalPlayerCount} total player${totalPlayerCount === 1 ? '' : 's'}`
+      : rowCollectionLabel
   );
   updateElementText(
     'leaderboardTopEloName',
-    topEloRows.length > 1 ? `${topEloRows.length} Players Tied` : (summary.leader?.displayName || '--')
+    topEloRows.length > 1 ? `${topEloRows.length} Players Tied` : (topEloRows[0]?.displayName || '--')
   );
   updateElementText(
     'leaderboardTopEloDetails',
     topEloRows.length > 1
       ? `${formatRating(topRating)} Elo / ${formatNameList(topEloNames)}`
       : (
-        summary.leader
-          ? `${formatRating(summary.leader.rating)} Elo / ${summary.leader.matches} matches / ${getLeaderboardEntryLabel(summary.leader)}`
+        topEloRows[0]
+          ? `${formatRating(topEloRows[0].rating)} Elo / ${topEloRows[0].matches} matches / ${getLeaderboardEntryLabel(topEloRows[0])}`
           : 'No leader yet'
       )
   );
@@ -3515,15 +4511,15 @@ function populateLeaderboardStats(dataset) {
   );
   updateElementText(
     'leaderboardMostActiveName',
-    mostActiveRows.length > 1 ? `${mostActiveRows.length} Players Tied` : (summary.mostActiveSeason?.displayName || '--')
+    mostActiveRows.length > 1 ? `${mostActiveRows.length} Players Tied` : (mostActiveRows[0]?.displayName || '--')
   );
   updateElementText(
     'leaderboardMostActiveDetails',
     mostActiveRows.length > 1
       ? `${topMatchCount} matches each / ${formatNameList(mostActiveRows.map(row => `${row.displayName} (${formatRating(row.rating)} Elo)`))}`
       : (
-        summary.mostActiveSeason
-          ? `${summary.mostActiveSeason.matches} matches / ${formatRating(summary.mostActiveSeason.rating)} Elo / ${formatWinRate(summary.mostActiveSeason.winRate)} WR / ${getLeaderboardEntryLabel(summary.mostActiveSeason)}`
+        mostActiveRows[0]
+          ? `${mostActiveRows[0].matches} matches / ${formatRating(mostActiveRows[0].rating)} Elo / ${formatWinRate(mostActiveRows[0].winRate)} WR / ${getLeaderboardEntryLabel(mostActiveRows[0])}`
           : 'No active player yet'
       )
   );
@@ -3544,11 +4540,60 @@ function populateLeaderboardStats(dataset) {
 }
 
 function renderLeaderboardTable(dataset) {
+  ensureLeaderboardSortState(dataset);
   const rowsWithRank = getSortedLeaderboardRowsWithRank();
   const entryFieldLabel = getLeaderboardEntryFieldLabel(dataset);
+
+  if (dataset?.mode === 'performance') {
+    updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
+    updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
+    updateElementHTML(
+      'leaderboardTableHead',
+      `
+        <tr>
+          <th>Rank</th>
+          <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
+          <th data-sort="seasonYear"><span id="leaderboardEntryColumnLabel">${escapeHtml(entryFieldLabel)}</span> <span class="sort-arrow"></span></th>
+          <th data-sort="top8Conversion">Top 8 Conv <span class="sort-arrow"></span></th>
+          <th data-sort="top8Count">Top 8s <span class="sort-arrow"></span></th>
+          <th data-sort="eventCount">Events <span class="sort-arrow"></span></th>
+          <th data-sort="matchCount">Matches <span class="sort-arrow"></span></th>
+          <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
+          <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
+          <th data-sort="winRate">Match WR <span class="sort-arrow"></span></th>
+          <th data-sort="lastActiveDate">Last Event <span class="sort-arrow"></span></th>
+        </tr>
+      `
+    );
+    updateElementHTML(
+      'leaderboardTableBody',
+      rowsWithRank.length === 0
+        ? '<tr><td colspan="11">No Performance leaderboard rows are available for the selected filters.</td></tr>'
+        : rowsWithRank.map(row => `
+          <tr
+            data-leaderboard-player-name="${escapeHtml(normalizeLeaderboardSearchText(row.displayName))}"
+          >
+            <td class="leaderboard-rank-cell">${row.displayRank}</td>
+            <td>${escapeHtml(row.displayName)}</td>
+            <td>${escapeHtml(getLeaderboardEntryLabel(row))}</td>
+            <td>${formatWinRate(row.top8Conversion)}</td>
+            <td>${row.top8Count}</td>
+            <td>${row.eventCount}</td>
+            <td>${row.matchCount}</td>
+            <td>${row.wins}</td>
+            <td>${row.losses}</td>
+            <td>${formatWinRate(row.winRate)}</td>
+            <td>${row.lastActiveDate ? escapeHtml(formatDate(row.lastActiveDate)) : '--'}</td>
+          </tr>
+        `).join('')
+    );
+    applyLeaderboardTableSortHeaderState();
+    return;
+  }
+
   const yearGainColumns = getLeaderboardSelectedYearGainColumns(dataset);
   const yearGainHeaderCells = yearGainColumns.map(year => `<th>${escapeHtml(`${year} Elo Gains`)}</th>`).join('');
-  const totalColumns = 9 + yearGainColumns.length;
+  const totalColumns = 11 + yearGainColumns.length;
 
   updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
   updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
@@ -3557,22 +4602,28 @@ function renderLeaderboardTable(dataset) {
     `
       <tr>
         <th>Rank</th>
-        <th>Player</th>
-        <th><span id="leaderboardEntryColumnLabel">${escapeHtml(entryFieldLabel)}</span></th>
-        <th>Elo</th>
+        <th data-sort="displayName">Player <span class="sort-arrow"></span></th>
+        <th data-sort="seasonYear"><span id="leaderboardEntryColumnLabel">${escapeHtml(entryFieldLabel)}</span> <span class="sort-arrow"></span></th>
+        <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
         ${yearGainHeaderCells}
-        <th>Matches</th>
-        <th>Wins</th>
-        <th>Losses</th>
-        <th>Win Rate</th>
-        <th>Last Match</th>
+        <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
+        <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
+        <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
+        <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
+        <th data-sort="top8Conversion">Top 8 Conv <span class="sort-arrow"></span></th>
+        <th data-sort="challengeWins">Challenge Wins <span class="sort-arrow"></span></th>
+        <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
       </tr>
     `
   );
   updateElementHTML(
     'leaderboardTableBody',
     rowsWithRank.length === 0
-      ? `<tr><td colspan="${totalColumns}">No Elo leaderboard rows are available for the selected filters.</td></tr>`
+      ? `<tr><td colspan="${totalColumns}">${
+        hasActiveLeaderboardEloThresholds() && currentLeaderboardBaseRows.length > 0
+          ? 'No Elo leaderboard rows met the current minimum filters.'
+          : 'No Elo leaderboard rows are available for the selected filters.'
+      }</td></tr>`
       : rowsWithRank.map(row => `
         <tr
           class="leaderboard-player-row"
@@ -3592,10 +4643,38 @@ function renderLeaderboardTable(dataset) {
           <td>${row.wins}</td>
           <td>${row.losses}</td>
           <td>${formatWinRate(row.winRate)}</td>
+          <td>${formatWinRate(row.top8Conversion)}</td>
+          <td>${row.challengeWins}</td>
           <td>${row.lastActiveDate ? escapeHtml(formatDate(row.lastActiveDate)) : '--'}</td>
         </tr>
       `).join('')
   );
+  applyLeaderboardTableSortHeaderState();
+}
+
+function syncLeaderboardFullscreenLayout() {
+  const container = getLeaderboardTableContainer();
+  const toolbar = getLeaderboardTableToolbar();
+  const thresholdSection = getLeaderboardEloThresholdControlsSection();
+  const thresholdAnchor = getLeaderboardEloThresholdControlsAnchor();
+
+  if (!container || !toolbar || !thresholdSection || !thresholdAnchor) {
+    return;
+  }
+
+  const fullscreenActive = document.fullscreenElement === container && !thresholdSection.classList.contains('hidden');
+  if (fullscreenActive) {
+    if (thresholdSection.parentElement !== container) {
+      container.insertBefore(thresholdSection, toolbar);
+    }
+    thresholdSection.classList.add('leaderboard-elo-threshold-fullscreen');
+    return;
+  }
+
+  if (thresholdSection.parentElement !== thresholdAnchor.parentElement) {
+    thresholdAnchor.parentElement.insertBefore(thresholdSection, thresholdAnchor);
+  }
+  thresholdSection.classList.remove('leaderboard-elo-threshold-fullscreen');
 }
 
 async function toggleLeaderboardFullscreen() {
@@ -3619,6 +4698,8 @@ async function toggleLeaderboardFullscreen() {
 function updateLeaderboardFullscreenButtonState() {
   const button = getLeaderboardFullscreenButton();
   const container = getLeaderboardTableContainer();
+  syncLeaderboardFullscreenLayout();
+  renderLeaderboardFullscreenFilterBadges(currentLeaderboardDataset?.period || ensureActiveLeaderboardWindow().activeWindow);
   if (!button || !container) {
     return;
   }
@@ -3791,6 +4872,7 @@ function setupLeaderboardFilterListeners() {
   const rangeStartYearRoot = document.getElementById('leaderboardRangeStartYearButtons');
   const rangeEndYearRoot = document.getElementById('leaderboardRangeEndYearButtons');
   const resetModeButtons = getLeaderboardResetModeButtons();
+  const eloThresholdControls = getLeaderboardEloThresholdControls();
 
   eventTypeButtons.forEach(button => {
     if (button.dataset.listenerAdded === 'true') {
@@ -3920,11 +5002,70 @@ function setupLeaderboardFilterListeners() {
 
     button.dataset.listenerAdded = 'true';
   });
+
+  Object.entries(eloThresholdControls).forEach(([key, control]) => {
+    const applyThreshold = value => {
+      setLeaderboardEloThreshold(key, value);
+      renderLeaderboardEloThresholdControls();
+
+      if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+        renderLeaderboardFromCurrentState();
+      }
+    };
+
+    if (Array.isArray(control.quickButtons)) {
+      control.quickButtons.forEach(button => {
+        if (button.dataset.listenerAdded === 'true') {
+          return;
+        }
+
+        button.addEventListener('click', () => {
+          const topPercent = Number(button.dataset.leaderboardThresholdTopPercent || 0);
+          const quickValue = getLeaderboardEloThresholdQuickViewValue(key, topPercent);
+          const activeValue = getActiveLeaderboardEloThresholds()[key] ?? 0;
+          applyThreshold(areLeaderboardThresholdValuesEqual(key, quickValue, activeValue) ? 0 : quickValue);
+        });
+
+        button.dataset.listenerAdded = 'true';
+      });
+    }
+
+    if (control.slider && control.slider.dataset.listenerAdded !== 'true') {
+      control.slider.addEventListener('input', () => {
+        applyThreshold(control.slider.value);
+      });
+      control.slider.dataset.listenerAdded = 'true';
+    }
+
+    if (!control.input || control.input.dataset.listenerAdded === 'true') {
+      return;
+    }
+
+    control.input.addEventListener('change', () => {
+      applyThreshold(control.input.value);
+    });
+
+    control.input.addEventListener('blur', () => {
+      applyThreshold(control.input.value);
+    });
+
+    control.input.addEventListener('keydown', event => {
+      if (event.key !== 'Enter') {
+        return;
+      }
+
+      event.preventDefault();
+      control.input.blur();
+    });
+
+    control.input.dataset.listenerAdded = 'true';
+  });
 }
 
 export function initLeaderboards() {
   setLeaderboardEventType(DEFAULT_EVENT_TYPE);
   renderLeaderboardWindowControls();
+  setupLeaderboardTableSorting();
   setupLeaderboardTableRowInteractions();
   setupLeaderboardTableActions();
   setupLeaderboardTimelineInteractions();
@@ -3964,7 +5105,9 @@ export async function updateLeaderboardAnalytics() {
     }
 
     console.error('Failed to build Elo leaderboard dataset.', error);
+    currentLeaderboardBaseRows = [];
     currentLeaderboardRows = [];
+    renderLeaderboardEloThresholdControls();
     renderLeaderboardErrorState('Unable to load Elo leaderboard data for the selected window.');
     return;
   }
@@ -3980,40 +5123,14 @@ export async function updateLeaderboardAnalytics() {
 
   currentLeaderboardDataset = {
     ...dataset,
+    mode: 'elo',
     period: activeWindow,
     eventResultLookup: buildLeaderboardEventResultLookup(dataset),
     deckDataset
   };
-  currentLeaderboardRows = dataset.seasonRows;
+  currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(dataset.seasonRows, currentLeaderboardDataset);
+  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
 
-  populateLeaderboardStats(currentLeaderboardDataset);
-  updateLeaderboardDrilldownCardStates();
-  renderLeaderboardTable(currentLeaderboardDataset);
-  renderLeaderboardTimelineChart();
-  if (searchInput) {
-    searchInput.disabled = currentLeaderboardRows.length === 0;
-  }
-  if (downloadButton) {
-    downloadButton.disabled = currentLeaderboardRows.length === 0;
-  }
-  if (activeLeaderboardSearchTerm) {
-    applyLeaderboardTableSearch(searchInput?.value || activeLeaderboardSearchTerm, { scrollIntoView: false });
-  } else {
-    clearLeaderboardSearchHighlights();
-    updateLeaderboardSearchStatus('');
-  }
-
-  if (activeLeaderboardPlayerDrilldown?.playerKey && activeLeaderboardPlayerDrilldown?.seasonKey) {
-    const didRenderPlayerDrilldown = renderLeaderboardPlayerDrilldown(
-      activeLeaderboardPlayerDrilldown.playerKey,
-      activeLeaderboardPlayerDrilldown.seasonKey
-    );
-
-    if (!didRenderPlayerDrilldown) {
-      closeLeaderboardDrilldown();
-    }
-  } else if (activeLeaderboardDrilldownCategory) {
-    renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
-  }
+  renderLeaderboardFromCurrentState();
 }
 
