@@ -1,3 +1,5 @@
+// Renders the Leaderboards view: Elo controls, sortable table, stat cards,
+// player drilldowns, timeline charts, CSV exports, and PDF season reports.
 import { escapeHtml, getTopMode } from './filters/shared.js';
 import { updateElementHTML, updateElementText, triggerUpdateAnimation } from '../utils/dom.js';
 import { formatDate, formatEventName } from '../utils/format.js';
@@ -36,6 +38,8 @@ const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
   elo: new Set(['displayName', 'seasonYear', 'rating', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
 });
+// Threshold controls are generated from this config so adding a new Elo filter
+// only requires one key with DOM ids, label text, and a row-value accessor.
 const LEADERBOARD_ELO_THRESHOLD_CONFIG = Object.freeze({
   minEvents: {
     inputId: 'leaderboardMinEventsInput',
@@ -80,6 +84,8 @@ const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardMostActiveCard',
   'leaderboardBiggestSwingCard'
 ];
+// Drilldown copy stays declarative so card wiring and empty states remain in
+// sync when cards are renamed or rearranged.
 const LEADERBOARD_DRILLDOWN_CONFIG = {
   ratedMatches: {
     cardId: 'leaderboardRatedMatchesCard',
@@ -113,6 +119,9 @@ const LEADERBOARD_DRILLDOWN_CONFIG = {
   }
 };
 
+// Module-level state mirrors the currently selected controls and the dataset
+// rendered on screen. Keeping it here avoids repeatedly scraping the DOM when
+// sorting, exporting, opening drilldowns, or redrawing charts.
 let activeLeaderboardWindowMode = DEFAULT_LEADERBOARD_WINDOW_MODE;
 let activeLeaderboardSeasonYear = '';
 let activeLeaderboardRangeStartYear = '';
@@ -321,6 +330,8 @@ function getLeaderboardEloThresholdControlsSection() {
 }
 
 function getLeaderboardEloThresholdControls() {
+  // The threshold UI has input, range, label, and quick buttons per metric; this
+  // lookup keeps sync/setup functions generic across every metric.
   return Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG).reduce((controls, [key, config]) => {
     controls[key] = {
       input: document.getElementById(config.inputId),
@@ -396,6 +407,8 @@ function getLeaderboardEloThresholdRanges(rows = currentLeaderboardBaseRows) {
   const resolvedRows = Array.isArray(rows) ? rows : [];
 
   return Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG).reduce((ranges, [key, config]) => {
+    // Ranges are derived from the unfiltered base rows so sliders expose the full
+    // available span before the active threshold cuts rows down.
     let minValue = Number.POSITIVE_INFINITY;
     let maxValue = Number.NEGATIVE_INFINITY;
     let hasRows = false;
@@ -446,6 +459,8 @@ function getLeaderboardEloThresholdQuickViewValue(key = '', topPercent = 0, rows
   }
 
   const span = Number(rangeInfo.availableMax) - Number(rangeInfo.availableMin);
+  // "Top N%" quick buttons translate into a minimum threshold value at the
+  // corresponding percentile of the current row span.
   const thresholdValue = Number(rangeInfo.availableMax) - (span * resolvedPercent / 100);
   return sanitizeLeaderboardThresholdValue(key, thresholdValue);
 }
@@ -1146,6 +1161,7 @@ function syncLeaderboardModeDisplayHints(activeWindow = null) {
 }
 
 function renderLeaderboardWindowControls() {
+  // Rebuilds season/range/reset controls and returns the resolved active window.
   const { availableYears, activeWindow } = ensureActiveLeaderboardWindow();
 
   renderLeaderboardEloThresholdControls();
@@ -1214,6 +1230,8 @@ function getWindowLabel(period, selectedYears = [], startDate = '', endDate = ''
 }
 
 function buildEmptyStateMessage(selectedEventTypes = []) {
+  // Creates a helpful table empty-state message based on which filters removed
+  // all rows.
   if (isPerformanceLeaderboardMode()) {
     if (selectedEventTypes.length === 1 && selectedEventTypes[0] === 'offline') {
       return 'No offline event finishes are available for the selected Performance window.';
@@ -1245,6 +1263,7 @@ function applyLeaderboardRowFilters(rows = [], dataset = currentLeaderboardDatas
 }
 
 function buildSummaryText(dataset) {
+  // Builds the small helper text under the leaderboard table title.
   const { summary, resetByYear, processedMatches = [] } = dataset;
 
   if (summary.ratedMatches === 0) {
@@ -1409,6 +1428,8 @@ function buildLeaderboardScopeData({
   historyEntries = [],
   totalRow = null
 } = {}) {
+  // A "scope" is either all decks for the player or one deck-specific Elo slice.
+  // Reports, cards, and charts all consume this same normalized shape.
   const sortedHistoryEntries = [...(Array.isArray(historyEntries) ? historyEntries : [])].sort(compareHistoryEntriesDescending);
   const historyEntriesAscending = [...sortedHistoryEntries].sort(compareHistoryEntriesAscending);
   const points = buildEventLevelEloPoints(historyEntriesAscending);
@@ -1484,6 +1505,8 @@ function resolveActiveLeaderboardPlayerDeckScope(deckSummaries = []) {
 }
 
 function getLeaderboardPlayerDrilldownModel(row) {
+  // Player drilldowns always include an all-decks scope plus optional per-deck
+  // scopes so users can compare total Elo against deck-specific Elo.
   const totalScope = buildLeaderboardScopeData({
     key: LEADERBOARD_PLAYER_TOTAL_SCOPE,
     type: 'all',
@@ -1535,6 +1558,8 @@ function getLeaderboardEventResultWinRate(row = {}) {
 }
 
 function buildLeaderboardEventResultLookup(dataset = currentLeaderboardDataset) {
+  // Elo match records do not contain finish/rank details, so join back to the
+  // event results dataset by event + normalized player identity.
   const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
@@ -1796,6 +1821,8 @@ function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard d
 }
 
 function renderLeaderboardFromCurrentState() {
+  // Re-render every dependent surface from the current dataset snapshot. This is
+  // used after threshold changes, sorts, theme refreshes, and async data loads.
   const searchInput = getLeaderboardSearchInput();
   const downloadButton = getLeaderboardDownloadButton();
 
@@ -1846,6 +1873,8 @@ function clearLeaderboardSearchHighlights() {
 }
 
 function sortLeaderboardRows(rows = []) {
+  // Sorting is stable from a user perspective: selected column first, then the
+  // default Elo ranking tie-breakers.
   const sortedRows = [...rows];
   const dataset = currentLeaderboardDataset;
   const mode = getLeaderboardSortMode(dataset);
@@ -1889,6 +1918,8 @@ function getPrimaryLeaderboardSearchMatch(rows = [], normalizedSearchTerm = '') 
 }
 
 function applyLeaderboardTableSearch(searchTerm = '', { scrollIntoView = true } = {}) {
+  // Search is highlight-only. It preserves the active filters and sorted order so
+  // a search never silently changes leaderboard rank context.
   const normalizedSearchTerm = normalizeLeaderboardSearchText(searchTerm);
   const tableRows = Array.from(document.querySelectorAll('#leaderboardTableBody tr[data-leaderboard-player-name]'));
 
@@ -1951,6 +1982,8 @@ function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboard
 }
 
 function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
+  // Event-stat augmentation powers Top 8 conversion and challenge-win columns.
+  // Group by player identity + season so continuous and yearly modes both work.
   const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
@@ -2056,6 +2089,47 @@ function getLeaderboardRowByKeysWithRank(playerKey = '', seasonKey = '') {
   }) || null;
 }
 
+// Formats a threshold value for CSV metadata and marks zero values as disabled.
+// Formats one threshold value for CSV metadata, marking zero values as disabled.
+function formatLeaderboardThresholdCsvValue(key = '', value = 0) {
+  const normalizedValue = sanitizeLeaderboardThresholdValue(key, value);
+  const formattedValue = formatLeaderboardThresholdMetricValue(key, normalizedValue);
+  return normalizedValue > 0 ? formattedValue : `${formattedValue} (disabled)`;
+}
+
+// Builds the CSV metadata rows that describe active Elo minimum filters.
+// Builds the CSV metadata rows that describe the active Elo minimum filters.
+function getLeaderboardEloThresholdCsvMetadata() {
+  const thresholds = getActiveLeaderboardEloThresholds();
+  const activeThresholdRows = Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG)
+    .map(([key, config]) => {
+      const value = sanitizeLeaderboardThresholdValue(key, thresholds[key] ?? 0);
+      return {
+        key,
+        label: config.label,
+        value,
+        formattedValue: formatLeaderboardThresholdMetricValue(key, value)
+      };
+    })
+    .filter(row => row.value > 0);
+
+  return [
+    ['Elo Minimum Filters', activeThresholdRows.length > 0 ? 'Active' : 'Inactive'],
+    [
+      'Elo Minimum Filters Summary',
+      activeThresholdRows.length > 0
+        ? activeThresholdRows.map(row => `${row.label} >= ${row.formattedValue}`).join(' | ')
+        : 'No Elo minimum filters selected'
+    ],
+    ['Rows Before Elo Minimum Filters', String(currentLeaderboardBaseRows.length)],
+    ['Rows After Elo Minimum Filters', String(currentLeaderboardRows.length)],
+    ...Object.entries(LEADERBOARD_ELO_THRESHOLD_CONFIG).map(([key, config]) => [
+      `Minimum ${config.label}`,
+      formatLeaderboardThresholdCsvValue(key, thresholds[key] ?? 0)
+    ])
+  ];
+}
+
 function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   if (dataset?.mode === 'performance') {
     return [
@@ -2084,7 +2158,8 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
     ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
     ['Rated Matches', String(dataset.summary.ratedMatches || 0)],
     ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
-    ['Leaderboard Rows', String(dataset.summary.seasonEntries || 0)]
+    ['Leaderboard Rows', String(dataset.summary.seasonEntries || 0)],
+    ...getLeaderboardEloThresholdCsvMetadata()
   ];
 
   if (dataset.summary.latestProcessedMatch?.date) {
@@ -2092,15 +2167,6 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
       'Latest Rated Match',
       `${formatEventName(dataset.summary.latestProcessedMatch.event) || dataset.summary.latestProcessedMatch.event || 'Unknown Event'} on ${formatDate(dataset.summary.latestProcessedMatch.date)}`
     ]);
-  }
-
-  if (hasActiveLeaderboardEloThresholds()) {
-    const thresholds = getActiveLeaderboardEloThresholds();
-    metadataRows.push(['Visible Leaderboard Rows', String(currentLeaderboardRows.length)]);
-    metadataRows.push(['Minimum Events', String(thresholds.minEvents || 0)]);
-    metadataRows.push(['Minimum Matches', String(thresholds.minMatches || 0)]);
-    metadataRows.push(['Minimum Elo', String(thresholds.minElo || 0)]);
-    metadataRows.push(['Minimum Top 8 Conversion', `${thresholds.minTopConversion || 0}%`]);
   }
 
   return metadataRows;
@@ -2902,6 +2968,7 @@ function buildLeaderboardPlayerChartHelperText(model) {
 }
 
 function buildLeaderboardPlayerChartData(model) {
+  // Builds chart labels/datasets for all-decks and per-deck Elo scopes.
   const timelineEntries = model.totalScope.points || [];
   const labels = timelineEntries.map(point => point.label);
   const timelineIndexByKey = new Map(timelineEntries.map(point => [[
@@ -3028,6 +3095,8 @@ function buildLeaderboardPlayerScopeSummaryItemsHtml(row, model) {
 }
 
 function buildLeaderboardPlayerDetailHtml(row, model) {
+  // Builds the full player drilldown body: deck scope cards, summary metrics,
+  // chart container, and match history.
   const activeScope = model.activeScope;
   const ratingLabel = activeScope.type === 'deck' ? 'Deck Elo' : 'Total Elo';
 
@@ -3099,6 +3168,7 @@ function updateLeaderboardPlayerHistoryDownloadButton(playerKey = '', seasonKey 
 }
 
 function renderLeaderboardPlayerEloChart(model) {
+  // Recreates the player drilldown chart after scope changes or theme refreshes.
   destroyLeaderboardPlayerEloChart();
 
   const canvas = document.getElementById('leaderboardPlayerEloChart');
@@ -3127,6 +3197,7 @@ function renderLeaderboardPlayerEloChart(model) {
 }
 
 function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
+  // Rebuilds an open player drilldown from the current table rows.
   const elements = getLeaderboardDrilldownElements();
   const row = getLeaderboardRowByKeys(playerKey, seasonKey);
   if (!row || !elements.title || !elements.subtitle || !elements.content) {
@@ -3340,6 +3411,8 @@ function renderLeaderboardTimelineSearchDropdown() {
 }
 
 function renderLeaderboardTimelineChart() {
+  // Rebuilds the multi-player timeline chart from selected/visible leaderboard
+  // rows.
   destroyLeaderboardTimelineChart();
   updateLeaderboardTimelineVisibilityButtons();
 
@@ -3888,6 +3961,7 @@ function updateLeaderboardDrilldownCardStates() {
 }
 
 function renderLeaderboardDrilldown(categoryKey) {
+  // Rebuilds stat-card drilldowns such as rated matches, top Elo, and peak Elo.
   const elements = getLeaderboardDrilldownElements();
   const config = LEADERBOARD_DRILLDOWN_CONFIG[categoryKey];
   if (!config || !elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
@@ -4235,6 +4309,8 @@ function setupLeaderboardDrilldownModal() {
 }
 
 function setupLeaderboardTableRowInteractions() {
+  // Uses delegated row clicks/keyboard events so re-rendered table rows stay
+  // interactive.
   const tableBody = document.getElementById('leaderboardTableBody');
   if (!tableBody || tableBody.dataset.listenerAdded === 'true') {
     return;
@@ -4317,6 +4393,7 @@ function setupLeaderboardDrilldownCards() {
 }
 
 function populateLeaderboardStats(dataset) {
+  // Fills the leaderboard stat cards from the current Elo dataset summary.
   if (dataset?.mode === 'performance') {
     const { summary } = dataset;
     const topConversionRows = getRowsAtMaxValue(currentLeaderboardRows, 'top8Conversion')
@@ -4540,6 +4617,8 @@ function populateLeaderboardStats(dataset) {
 }
 
 function renderLeaderboardTable(dataset) {
+  // Renders sorted leaderboard rows and keeps search/export/fullscreen controls in
+  // sync with the current row set.
   ensureLeaderboardSortState(dataset);
   const rowsWithRank = getSortedLeaderboardRowsWithRank();
   const entryFieldLabel = getLeaderboardEntryFieldLabel(dataset);
@@ -4866,6 +4945,7 @@ function setupLeaderboardTimelineInteractions() {
 }
 
 function setupLeaderboardFilterListeners() {
+  // Wires event type, window mode, range/reset, and threshold controls.
   const eventTypeButtons = getLeaderboardEventTypeButtons();
   const windowModeButtons = getLeaderboardWindowModeButtons();
   const seasonYearRoot = getLeaderboardSeasonYearRoot();
@@ -5062,6 +5142,8 @@ function setupLeaderboardFilterListeners() {
   });
 }
 
+// Wires Leaderboard controls, table actions, drilldowns, and timeline
+// interactions.
 export function initLeaderboards() {
   setLeaderboardEventType(DEFAULT_EVENT_TYPE);
   renderLeaderboardWindowControls();
@@ -5074,7 +5156,10 @@ export function initLeaderboards() {
   setupLeaderboardDrilldownCards();
 }
 
+// Builds the active Elo dataset and refreshes every Leaderboards surface.
 export async function updateLeaderboardAnalytics() {
+  // Async requests can overlap when filters change quickly. Incrementing this id
+  // lets stale responses exit before overwriting the latest rendered dataset.
   const requestId = leaderboardDatasetRequestId + 1;
   leaderboardDatasetRequestId = requestId;
   const activeWindow = renderLeaderboardWindowControls();
@@ -5117,6 +5202,8 @@ export async function updateLeaderboardAnalytics() {
   }
 
   const deckDataset = buildYearlyEloRatings(dataset.filteredMatches || [], {
+    // Build a second Elo model where each player/deck combination is its own
+    // entity. Player drilldowns use it for deck-specific Elo comparisons.
     resetByYear: activeWindow?.resetByYear,
     entityMode: 'player_deck'
   });
