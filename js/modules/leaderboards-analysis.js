@@ -26,7 +26,6 @@ import {
 import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
 import { getAnalysisRows } from '../utils/analysis-data.js';
-import { getEventGroupInfo } from '../utils/event-groups.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
@@ -748,14 +747,14 @@ function buildLeaderboardTableHelperText(dataset = currentLeaderboardDataset) {
     ? ' Visible rows must also meet the current Elo minimum filters.'
     : '';
   if (dataset?.period?.windowMode === 'seasonal') {
-    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Top 8 conversion and Challenge wins are shown from the same window.${thresholdNote}`;
+    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Top 8 conversion and first-place finishes are shown from the same window.${thresholdNote}`;
   }
 
   if (dataset.resetByYear) {
-    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season. Top 8 conversion and Challenge wins are scoped to each row's season.${thresholdNote}`;
+    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season. Top 8 conversion and first-place finishes are scoped to each row's season.${thresholdNote}`;
   }
 
-  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range. Top 8 conversion and Challenge wins cover the same selected window.${thresholdNote}`;
+  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range. Top 8 conversion and first-place finishes cover the same selected window.${thresholdNote}`;
 }
 
 function ensureActiveLeaderboardWindow() {
@@ -1982,7 +1981,7 @@ function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboard
 }
 
 function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
-  // Event-stat augmentation powers Top 8 conversion and challenge-win columns.
+  // Event-stat augmentation powers Top 8 conversion and first-place columns.
   // Group by player identity + season so continuous and yearly modes both work.
   const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
   const selectedEventTypes = new Set(
@@ -2041,9 +2040,7 @@ function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
     const dedupedRows = Array.from(eventMap.values());
     const eventCount = dedupedRows.length;
     const top8Count = dedupedRows.filter(row => Number(row?.Rank) >= 1 && Number(row?.Rank) <= 8).length;
-    const challengeWins = dedupedRows.filter(row => {
-      return Number(row?.Rank) === 1 && getEventGroupInfo(row?.Event).key === 'challenge';
-    }).length;
+    const challengeWins = dedupedRows.filter(row => Number(row?.Rank) === 1).length;
 
     lookup.set(groupKey, {
       eventCount,
@@ -2271,7 +2268,7 @@ function exportLeaderboardCsv() {
       { header: 'Losses', value: row => row.losses },
       { header: 'Win Rate', value: row => formatWinRate(row.winRate) },
       { header: 'Top 8 Conversion', value: row => formatWinRate(row.top8Conversion) },
-      { header: 'Challenge Wins', value: row => row.challengeWins },
+      { header: '1st Places', value: row => row.challengeWins },
       { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
     ];
   const csvText = buildStructuredTableCsv(
@@ -4690,7 +4687,7 @@ function renderLeaderboardTable(dataset) {
         <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
         <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
         <th data-sort="top8Conversion">Top 8 Conv <span class="sort-arrow"></span></th>
-        <th data-sort="challengeWins">Challenge Wins <span class="sort-arrow"></span></th>
+        <th data-sort="challengeWins">1st Places <span class="sort-arrow"></span></th>
         <th data-sort="lastActiveDate">Last Match <span class="sort-arrow"></span></th>
       </tr>
     `
