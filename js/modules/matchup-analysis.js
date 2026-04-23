@@ -1934,7 +1934,9 @@ function calculateMatchupMatrix(matches = []) {
       deckStatsA.mirrors += 1;
 
       const mirrorCell = ensureMatrixCell(cellMap, entityA.key, entityA.key);
-      mirrorCell.total += 1;
+      mirrorCell.total += 2;
+      mirrorCell.wins += 1;
+      mirrorCell.losses += 1;
       mirrorCell.isMirror = true;
       return;
     }
@@ -2123,11 +2125,16 @@ function buildMatrixCellHtml(cell, rowDeck, columnDeck, { allowMirror = true } =
   }
 
   if (allowMirror && (rowDeck === columnDeck || cell.isMirror)) {
+    const mirrorWinRate = cell.total > 0 ? (cell.wins / cell.total) * 100 : 0;
+    const mirrorPairings = Math.max(cell.wins, cell.losses);
+
     return `
-      <td class="matchup-matrix-cell matchup-matrix-cell-mirror">
-        <span class="matchup-matrix-rate">${escapeHtml(viewConfig.sameEntityCellLabel)}</span>
-        <span class="matchup-matrix-record">${cell.total} ${pluralize(cell.total, 'match')}</span>
-        <span class="matchup-matrix-sample">${escapeHtml(viewConfig.sameEntityPairingsLabel)}</span>
+      <td
+        class="matchup-matrix-cell matchup-matrix-cell-mirror"
+        title="${escapeHtml(`${rowDeck} mirror: ${cell.wins}-${cell.losses} (${formatMatchupPercentage(mirrorWinRate)}) across ${mirrorPairings} ${pluralize(mirrorPairings, viewConfig.pairingSingular)}`)}"
+      >
+        <span class="matchup-matrix-rate">${cell.total} (${cell.wins}-${cell.losses})</span>
+        <span class="matchup-matrix-sample">${escapeHtml(viewConfig.sameEntityCellLabel)} | ${escapeHtml(viewConfig.sameEntityPairingsLabel)}</span>
       </td>
     `;
   }
