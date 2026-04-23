@@ -1,3 +1,5 @@
+// Single-event meta/win-rate chart. It supports a scatter view for outlier
+// discovery and a dual-axis bar view for sortable deck comparisons.
 import { setChartLoading } from '../utils/dom.js';
 import { getMetaWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
@@ -6,6 +8,7 @@ import { getChartTheme } from '../utils/theme.js';
 
 export let metaWinRateEventChart = null;
 
+// Redraws the single-event meta/win-rate chart in scatter or sortable bar mode.
 export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta') {
   console.log("updateEventMetaWinRateChart called...", { viewType, sortBy });
   setChartLoading("metaWinRateEventChart", true);
@@ -32,6 +35,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
 
   if (viewType === 'bar') {
     console.log("Sorting bar view with sortBy:", sortBy);
+    // Sort copies of the calculated deck rows in the requested display order.
     const sortedDecks = deckData.sort((a, b) => {
       if (sortBy === 'meta') {
         return b.meta - a.meta || a.deck.localeCompare(b.deck);
@@ -112,6 +116,8 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
 
     labels = deckNames;
   } else if (viewType === 'scatter') {
+    // Scatter mode keeps meta share and win rate on independent axes so users can
+    // spot high-share/low-performance or low-share/high-performance decks.
     scatterData = deckData.map(d => ({
       x: d.meta,
       y: d.winRate,

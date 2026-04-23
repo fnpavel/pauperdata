@@ -1,3 +1,5 @@
+/* Component styles: buttons, filters, calendars, summaries, drilldowns, stat
+   cards, theme controls, and feature-specific UI chrome. */
 .mode-buttons {
   display: flex;
   gap: 10px;
@@ -12,6 +14,8 @@
   min-width: 180px;
 }
 
+/* Header utility controls keep the current dataset/theme state visible next to
+   the mode navigation. */
 .analysis-quality-status-chip {
   display: flex;
   align-items: center;
@@ -130,6 +134,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   color: var(--accent);
 }
 
+/* Filter panels are shared by Event, Player, Matchup, and Leaderboard modes. */
 .filters {
   background-color: var(--secondary);
   border-radius: 10px;
@@ -175,6 +180,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   gap: 10px;
 }
 
+/* Quick-view controls group all-period/year/set-window preset chips. */
 .quick-view-control {
   display: flex;
   flex-direction: column;
@@ -321,6 +327,8 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   box-shadow: 0 0 0 1px rgba(255, 215, 0, 0.16), 0 12px 24px rgba(0, 0, 0, 0.32);
 }
 
+/* Custom select/search wrappers keep native selects hidden while preserving a
+   consistent searchable UI for players and events. */
 .player-search-select::before {
   content: '';
   position: absolute;
@@ -432,6 +440,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   display: none;
 }
 
+/* Single-event calendar picker and multi-event selection summaries. */
 .event-calendar-filter {
   display: flex;
   flex-direction: column;
@@ -686,6 +695,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   cursor: default;
 }
 
+/* Drilldown list primitives used by Event and Player detail modals. */
 .event-stat-drilldown-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -790,6 +800,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   color: var(--light);
 }
 
+/* Hover/pin detail cards rendered next to the interactive chart canvases. */
 #playerEventDetails,
 #deckEvolutionEventDetails,
 #multiPlayerWinRateDetails {
@@ -914,6 +925,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   color: var(--text-primary);
 }
 
+/* Shared modal shell for player/event/leaderboard drilldowns. */
 body.modal-open {
   overflow: hidden;
 }
@@ -2078,6 +2090,7 @@ button.leaderboard-deck-result-card {
   gap: 14px;
 }
 
+/* Dual-calendar date range picker used by multi-event, player, and matchup views. */
 .range-calendar-panel {
   padding: 12px;
   border-radius: 12px;
@@ -2208,6 +2221,8 @@ button.leaderboard-deck-result-card {
   font-weight: bold;
 }
 
+/* Stat cards are the dashboard's high-level summary layer. They are clickable
+   when a module marks them as drilldown cards. */
 .stats-container {
   display: grid;
   gap: 15px;
@@ -2246,6 +2261,8 @@ button.leaderboard-deck-result-card {
   line-height: 1.5;
 }
 
+/* Leaderboard and matchup utility chrome: helper text, search, fullscreen, and
+   export/download affordances. */
 .leaderboard-table-click-hint {
   margin-top: -4px;
   margin-bottom: 12px;
@@ -2495,6 +2512,8 @@ button.leaderboard-deck-result-card {
   font-variant-numeric: tabular-nums;
 }
 
+/* Player stats have a custom two-row layout because the player page has less
+   horizontal space than Event Analysis. */
 #playerStats.stats-container {
   width: 100%;
   margin-left: 0;
@@ -2791,6 +2810,7 @@ button.leaderboard-deck-result-card {
   transform: scale(1.05);
 }
 
+/* About page content is hidden by default and shown through modules/about.js. */
 #aboutSection {
   padding: 20px;
   background: #1a1a1a;
@@ -2859,6 +2879,8 @@ button.leaderboard-deck-result-card {
   color: #000;
 }
 
+/* Theme-aware refinement layer for shared controls and surfaces. Earlier rules
+   define structure; this block swaps in semantic variables from base.css. */
 .top-mode-button,
 .bubble-button,
 .table-toggle-btn,
@@ -2947,6 +2969,8 @@ button.leaderboard-deck-result-card {
   box-shadow: 0 14px 28px var(--shadow-color);
 }
 
+/* Data-quality mode visually distinguishes the filtered dataset without changing
+   layout dimensions. */
 body[data-analysis-quality-mode="on"] .stat-card,
 body[data-analysis-quality-mode="on"] .filters,
 body[data-analysis-quality-mode="on"] .chart-container,
@@ -3036,6 +3060,7 @@ html[data-theme="light"] body[data-analysis-quality-mode="on"] .stat-title {
   font-weight: 700;
 }
 
+/* Header theme toggle and data-quality toggle switch styling. */
 .theme-toggle-button {
   display: inline-flex;
   align-items: center;
@@ -3431,9 +3456,10 @@ html[data-theme="light"] .range-calendar-day.active {
   color: #fffaf1;
 }
 
-/*this needs to be improved, the search and the whole leaderboard-chart is unpolished! 
-For now at least the search is also visually working */
+/* TODO: The leaderboard chart search works visually, but the full chart toolbar
+   could use a dedicated design pass for polish and accessibility. */
 
+/* Leaderboard timeline/player-chart toolbar and search controls. */
 .leaderboard-chart-toolbar,
 .player-search-select {
   position: relative;

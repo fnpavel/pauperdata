@@ -16,6 +16,7 @@ import {
   clearSectionEventTypes
 } from './shared.js';
 
+// Extracts a YYYY-MM-DD date from an event name when a row date is unavailable.
 export function getEventDate(eventName) {
   const match = eventName.match(/\((\d{4}-\d{2}-\d{2})\)$/);
   if (match) {
@@ -25,6 +26,7 @@ export function getEventDate(eventName) {
   return getAnalysisRows().find(row => row.Event === eventName)?.Date || '';
 }
 
+// Builds calendar-picker entries for the active single-event event type.
 export function buildSingleEventCalendarEntries(selectedEventType) {
   const entries = new Map();
 
@@ -50,6 +52,7 @@ export function buildSingleEventCalendarEntries(selectedEventType) {
   });
 }
 
+// Finds the latest available single-event entry for default selection.
 export function getLatestSingleEventEntry() {
   const entries = new Map();
 
@@ -97,6 +100,7 @@ function populateEventFilterMenu(entries) {
   return eventFilterMenu;
 }
 
+// Writes a selected single-event value into the hidden compatibility select.
 export function setSelectedSingleEvent(eventName, dispatchChange = false) {
   const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (!eventFilterMenu) {
@@ -112,23 +116,27 @@ export function setSelectedSingleEvent(eventName, dispatchChange = false) {
   }
 }
 
+// Sets the active event type for Single Event mode.
 export function setSingleEventType(eventType) {
   getSectionEventTypeButtons(getEventAnalysisSection()).forEach(button => {
     button.classList.toggle('active', button.dataset.type === eventType);
   });
 }
 
+// Clears single-event type and event selection state.
 export function resetSingleEventSelectionState() {
   resetEventFilterCalendarState();
   setSelectedSingleEvent('', false);
   filterState.lastSingleEventType = '';
 }
 
+// Clears only the calendar-backed selected event.
 export function resetSingleEventCalendarSelection() {
   resetEventFilterCalendarState();
   setSelectedSingleEvent('', false);
 }
 
+// Shows or hides the single-event picker depending on active analysis mode.
 export function updateSingleEventFilterVisibility() {
   const eventTypeSection = document.getElementById('eventTypeFilterSection');
   const eventFilterSection = document.getElementById('eventFilterSection');
@@ -150,10 +158,12 @@ export function updateSingleEventFilterVisibility() {
   filterRuntime.updateMultiEventSelectionSummary();
 }
 
+// Returns whether a valid single event is currently selected.
 export function hasSelectedSingleEvent() {
   return Boolean(getSingleEventSelectedType() && document.getElementById('eventFilterMenu')?.value);
 }
 
+// Selects the latest available event for first render.
 export function applyLatestSingleEventSelection() {
   const latestEntry = getLatestSingleEventEntry();
   if (!latestEntry) {
@@ -170,6 +180,7 @@ export function applyLatestSingleEventSelection() {
   updateEventFilter(latestEntry.name, true);
 }
 
+// Rebuilds the single-event picker and hidden select for the active event type.
 export function updateEventFilter(preferredEvent = '', expandPreferredEvent = false) {
   const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (!eventFilterMenu || getAnalysisMode() !== 'single') {

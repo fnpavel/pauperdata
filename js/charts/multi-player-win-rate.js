@@ -1,3 +1,5 @@
+// Multi-event player performance scatter chart. It aggregates the selected event
+// window by player, then provides hover/click detail cards for individual runs.
 import { setChartLoading } from '../utils/dom.js';
 import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
@@ -5,6 +7,8 @@ import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 
 export let multiPlayerWinRateChart = null;
+// Empty means hover controls the details panel; a value means the clicked point
+// stays pinned until another point or reset action changes it.
 let pinnedMultiPlayerPointKey = '';
 
 function escapeHtml(value) {
@@ -143,6 +147,8 @@ function getRankBucketCounts(rows = []) {
 }
 
 function buildMultiPlayerPointDetails(sortedPlayerData, chartData) {
+  // Chart.js only needs average win rate/event count, but the side panel needs a
+  // richer per-player model. Build it once from the same filtered rows.
   return sortedPlayerData.map(playerStat => {
     const playerRows = chartData.filter(row => String(row?.Player || '').trim() === playerStat.player);
     const wins = playerRows.reduce((sum, row) => sum + (Number(row?.Wins) || 0), 0);
@@ -299,6 +305,8 @@ function renderMultiPlayerWinRateDetails(point, { pinned = false } = {}) {
   `);
 }
 
+// Redraws the aggregate player win-rate scatter chart for the active multi-event
+// window.
 export function updateMultiPlayerWinRateChart() {
   console.log("updateMultiPlayerWinRateChart called...");
   setChartLoading("multiPlayerWinRateChart", true);

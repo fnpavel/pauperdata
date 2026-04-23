@@ -1,3 +1,6 @@
+// Builds the normalized leaderboard dataset used by Leaderboards and Player
+// Analysis Elo widgets. This module owns date-window resolution, event-type
+// filtering, duplicate protection, and the final summary values consumed by UI.
 import { buildYearlyEloRatings } from './elo-rating.js';
 import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-data.js';
 
@@ -23,6 +26,9 @@ function normalizeEventTypes(eventTypes = []) {
 }
 
 function getMatchKey(match, index) {
+  // Prefer the generated pair key when present. Older data may not have it, so
+  // the fallback uses stable match fields plus the input index to avoid merging
+  // legitimate rematches by accident.
   const pairKey = normalizeText(match?.pair_key || match?.pairKey);
   if (pairKey) {
     return pairKey;
@@ -84,15 +90,20 @@ function getYearRangeLabel(years = []) {
   return `${normalizedYears[0]}-${normalizedYears[normalizedYears.length - 1]}`;
 }
 
+// Exposes the event types available to ranking/leaderboard consumers.
 export function getRankingsEventTypes() {
   return getEloEventTypes();
 }
 
+// Exposes available ranking dates after normalizing the requested event types.
 export function getRankingsAvailableDates(eventTypes = [DEFAULT_EVENT_TYPE]) {
   return getEloAvailableDates(normalizeEventTypes(eventTypes));
 }
 
+// Chooses the default leaderboard date window from a sorted date list.
 export function getDefaultRankingsRange(dates = []) {
+  // Leaderboards default to the latest available calendar year instead of the
+  // whole archive so first render remains focused and reasonably fast.
   if (!Array.isArray(dates) || dates.length === 0) {
     return {
       startDate: '',
@@ -112,6 +123,8 @@ export function getDefaultRankingsRange(dates = []) {
   };
 }
 
+// Builds one complete rankings dataset: loaded matches, Elo rows, history maps,
+// summary stats, and resolved date metadata.
 export async function buildRankingsDataset(
   {
     eventTypes = [DEFAULT_EVENT_TYPE],
@@ -130,6 +143,8 @@ export async function buildRankingsDataset(
     availableDates.includes(endDate) ? endDate : defaultRange.endDate;
 
   if (availableDates.length === 0) {
+    // Return the full dataset shape even when no files are available. Callers can
+    // render empty states without checking for missing properties.
     const eloResults = buildYearlyEloRatings([], {
       ...DEFAULT_RANKINGS_OPTIONS,
       ...options
@@ -167,6 +182,8 @@ export async function buildRankingsDataset(
   const filteredMatches = typeof matchFilter === 'function'
     ? loadedMatches.filter(match => {
         try {
+          // User-facing quality filters should not be able to break the entire
+          // leaderboard if one record shape is unexpected.
           return matchFilter(match);
         } catch (error) {
           return false;
@@ -187,6 +204,8 @@ export async function buildRankingsDataset(
   const seasonRows = [...eloResults.seasonRows]
     .map(row => ({
       ...row,
+      // Continuous all-time mode still needs a human-readable period label in
+      // tables and reports, so derive it from the selected match years.
       displaySeasonYear: eloResults.resetByYear
         ? row.seasonYear
         : (selectedYearRangeLabel || row.seasonYear || 'Selected Range')

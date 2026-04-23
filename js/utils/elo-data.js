@@ -1,3 +1,6 @@
+// Provides lazy access to generated Elo match files. The manifest is imported
+// eagerly, while the per-year match modules are dynamic imports so Leaderboards
+// only loads the seasons required by the selected window.
 import { eloManifest } from '../../data/elo-data/manifest.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
@@ -51,6 +54,8 @@ async function loadYearMatches(year = '') {
   }
 
   if (!yearModuleCache.has(normalizedYear)) {
+    // Cache the import promise itself so overlapping leaderboard/player refreshes
+    // do not request the same generated year module twice.
     yearModuleCache.set(
       normalizedYear,
       import(`../../data/elo-data/${normalizedYear}.js`)
@@ -62,14 +67,17 @@ async function loadYearMatches(year = '') {
   return yearModuleCache.get(normalizedYear);
 }
 
+// Returns the generated manifest that lists available Elo years and dates.
 export function getEloManifest() {
   return eloManifest;
 }
 
+// Lists event-type buckets present in the generated Elo manifest.
 export function getEloEventTypes() {
   return Object.keys(eloManifest?.availableDatesByEventType || {}).sort((a, b) => a.localeCompare(b));
 }
 
+// Returns the union of available Elo dates for the selected event types.
 export function getEloAvailableDates(eventTypes = [DEFAULT_EVENT_TYPE]) {
   const normalizedEventTypes = normalizeEventTypes(eventTypes);
   const datesByEventType = eloManifest?.availableDatesByEventType || {};
@@ -79,6 +87,7 @@ export function getEloAvailableDates(eventTypes = [DEFAULT_EVENT_TYPE]) {
   )].sort((a, b) => a.localeCompare(b));
 }
 
+// Loads and filters Elo match records for the selected event types/date window.
 export async function getEloMatches({
   eventTypes = [DEFAULT_EVENT_TYPE],
   startDate = '',
@@ -89,6 +98,8 @@ export async function getEloMatches({
   const yearMatchGroups = await Promise.all(yearsToLoad.map(loadYearMatches));
   const loadedMatches = yearMatchGroups.flat();
 
+  // Final filtering happens after loading because the files are year-based while
+  // UI windows can be arbitrary date ranges inside those years.
   return loadedMatches.filter(match => {
     const matchDate = getMatchDate(match);
     const matchEventType = getMatchEventType(match);

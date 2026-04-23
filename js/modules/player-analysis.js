@@ -560,6 +560,8 @@ function buildDrilldownHoverNote(tooltipText = [], extraClasses = '', headerText
 }
 
 function buildEventRowsByName(eventNames) {
+  // Drilldowns often need the full event field around the selected player's row
+  // so they can show winner/top-table context.
   const eventNameSet = new Set(eventNames);
   const eventRowsByName = new Map();
 
@@ -659,6 +661,8 @@ function getWorstFinishRow(rows) {
 }
 
 function buildPlayerDeckGroups(data = currentPlayerAnalysisRows) {
+  // Deck groups power several cards and drilldowns, so calculate wins/losses,
+  // finish extremes, and average finish once in a shared model.
   const deckGroups = new Map();
 
   getPlayerDeckRows(data).forEach(row => {
@@ -821,6 +825,8 @@ function getPlayerEloMatchView(match, selectedPlayerKey = '', eventDeckLookup = 
 }
 
 function buildPlayerEloDeckGroups(matchViews = []) {
+  // Deck-specific Elo cards are based on match history rather than event rows so
+  // they can include per-round rating movement and peak Elo moments.
   const deckGroups = new Map();
 
   matchViews.forEach(matchView => {
@@ -877,6 +883,8 @@ const playerRankingsDatasetCache = new Map();
 const playerEloInsightsCache = new Map();
 
 function rememberLimitedCacheEntry(cache, key, value, maxEntries = MAX_PLAYER_ELO_CACHE_ENTRIES) {
+  // Tiny LRU behavior keeps rapid filter toggling responsive without letting
+  // long sessions accumulate unbounded cached Elo datasets.
   if (cache.has(key)) {
     cache.delete(key);
   }
@@ -963,6 +971,8 @@ async function buildPlayerEloInsights({
   qualityScopedPlayerRows = [],
   selectedDeck = ''
 } = {}) {
+  // Player Analysis combines event rows with Elo match files. This function
+  // returns one complete object for the cards, deck filter, and drilldowns.
   if (!selectedPlayer || !startDate || !endDate || !Array.isArray(selectedEventTypes) || selectedEventTypes.length === 0) {
     return createEmptyPlayerEloInsights();
   }
@@ -994,6 +1004,8 @@ async function buildPlayerEloInsights({
       ? match => allowedDeckEventKeySet.has(getPlayerEloEventKey(match))
       : null;
 
+    // Load all-decks and deck-specific Elo datasets together because every
+    // refresh needs both for comparison and filter options.
     const [overallDataset, deckDataset] = await Promise.all([
       getCachedPlayerRankingsDataset({
         eventTypes: selectedEventTypes,
@@ -1095,6 +1107,7 @@ async function buildPlayerEloInsights({
 }
 
 function buildPlayerEloMatchListHtml(rows = []) {
+  // Renders Elo match history rows for period/peak Elo drilldowns.
   if (!rows.length) {
     return '<div class="player-rank-drilldown-empty">No rated Elo matches found for this period.</div>';
   }
@@ -1128,6 +1141,7 @@ function buildPlayerEloMatchListHtml(rows = []) {
 }
 
 function buildPlayerPeriodEloDrilldownHtml() {
+  // Builds the drilldown body for the selected period Elo card.
   const { periodRow, historyEntries, selectedDeck } = currentPlayerEloInsights;
   if (!periodRow) {
     return '<div class="player-rank-drilldown-empty">No Elo results are available for the current Player Analysis filters.</div>';
@@ -1240,6 +1254,7 @@ function buildPlayerPeriodEloDrilldownHtml() {
 }
 
 function buildPlayerPeakEloDrilldownHtml() {
+  // Builds the drilldown body for peak Elo moments in the selected filters.
   const peakEntries = currentPlayerEloInsights.peakEntries || [];
   if (!peakEntries.length) {
     return '<div class="player-rank-drilldown-empty">No Elo peaks are available for the current Player Analysis filters.</div>';
@@ -1685,6 +1700,7 @@ function buildPlayerRankTop8Html(eventRows, playerRow, selectedPlayerKey) {
 }
 
 function buildPlayerRankDrilldownHtml(categoryKey) {
+  // Builds rank-band drilldowns such as Top 1, Top 2-8, and Below Top 32.
   const config = PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey];
   if (!config) {
     return '';
@@ -1720,6 +1736,7 @@ function buildPlayerEventAccordionListHtml(
   rows,
   { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null } = {}
 ) {
+  // Builds expandable event rows shared by rank and summary drilldowns.
   if (!rows || rows.length === 0) {
     return '<div class="player-rank-drilldown-empty">No events found.</div>';
   }
@@ -1786,6 +1803,7 @@ function buildPlayerEventResultDrilldownHtml(
   playerRow,
   { includeTop8 = true, selectedPlayerKey = '', eventRowsByName = null, actionButtonHtml = '' } = {}
 ) {
+  // Builds the event-result modal with surrounding deck/top-table context.
   if (!playerRow) {
     return '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
   }
@@ -2008,6 +2026,7 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
 }
 
 function buildPlayerSummaryDrilldownHtml(categoryKey) {
+  // Builds summary-card drilldowns such as event history and deck usage.
   const config = PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey];
   if (!config) {
     return '';
@@ -2034,6 +2053,7 @@ function buildPlayerSummaryDrilldownHtml(categoryKey) {
 }
 
 function updatePlayerRankDrilldownCardStates(data = currentPlayerAnalysisRows) {
+  // Marks rank-band cards as clickable only when matching events exist.
   Object.entries(PLAYER_RANK_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card) {
@@ -2055,6 +2075,7 @@ function updatePlayerRankDrilldownCardStates(data = currentPlayerAnalysisRows) {
 }
 
 function updatePlayerSummaryDrilldownCardStates(data = currentPlayerAnalysisRows) {
+  // Marks main summary cards as clickable only when their drilldowns have items.
   Object.entries(PLAYER_SUMMARY_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card) {
@@ -2076,6 +2097,7 @@ function updatePlayerSummaryDrilldownCardStates(data = currentPlayerAnalysisRows
 }
 
 function updatePlayerSidebarDrilldownCardStates(data = currentPlayerAnalysisRows) {
+  // Marks sidebar deck-stat cards as clickable only when deck rows exist.
   Object.entries(PLAYER_SIDEBAR_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card) {
@@ -2098,6 +2120,7 @@ function updatePlayerSidebarDrilldownCardStates(data = currentPlayerAnalysisRows
 }
 
 function renderPlayerRankDrilldown(categoryKey) {
+  // Renders the modal for finish-band stat cards.
   const elements = getPlayerRankDrilldownElements();
   const config = PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey];
 
@@ -2118,6 +2141,7 @@ function renderPlayerRankDrilldown(categoryKey) {
 }
 
 function renderPlayerSummaryDrilldown(categoryKey) {
+  // Renders the modal for main Player Analysis summary cards.
   const elements = getPlayerRankDrilldownElements();
   const config = PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey];
 
@@ -2150,6 +2174,7 @@ function getPlayerSidebarCardTitle(cardId, fallbackTitle = 'Details') {
 }
 
 function renderPlayerSidebarDrilldown(categoryKey) {
+  // Renders the modal for right-sidebar deck-stat cards.
   const elements = getPlayerRankDrilldownElements();
   const config = PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey];
 
@@ -2171,6 +2196,7 @@ function renderPlayerSidebarDrilldown(categoryKey) {
 }
 
 function renderPlayerDrilldown(categoryKey) {
+  // Delegates modal body rendering based on which Player Analysis card opened it.
   if (PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) {
     renderPlayerRankDrilldown(categoryKey);
     return;
@@ -2187,6 +2213,7 @@ function renderPlayerDrilldown(categoryKey) {
 }
 
 function openPlayerDrilldown(categoryKey) {
+  // Opens any Player Analysis stat-card drilldown.
   const elements = getPlayerRankDrilldownElements();
   const hasConfig =
     Boolean(PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) ||
@@ -2225,6 +2252,7 @@ function findPlayerEventHistoryRow({ eventName = '', eventDate = '', deckName = 
 }
 
 function openPlayerEventHistoryDrilldown({ eventName = '', eventDate = '', deckName = '', rank = '' } = {}) {
+  // Opens a focused drilldown from an event-history row.
   const elements = getPlayerRankDrilldownElements();
   if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
     return;
@@ -2336,6 +2364,7 @@ function openPlayerEventInAnalysis(eventName = '', eventType = '') {
 }
 
 function setupPlayerRankDrilldownModal() {
+  // Wires close behavior for the Player Analysis drilldown modal.
   const { overlay, closeButton, content } = getPlayerRankDrilldownElements();
   if (!overlay || overlay.dataset.initialized === 'true') {
     return;
@@ -2388,6 +2417,7 @@ function setupPlayerRankDrilldownModal() {
 }
 
 function setupPlayerRankDrilldownCards() {
+  // Wires click/keyboard handlers for finish-band stat cards.
   Object.entries(PLAYER_RANK_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card || card.dataset.drilldownBound === 'true') {
@@ -2415,6 +2445,7 @@ function setupPlayerRankDrilldownCards() {
 }
 
 function setupPlayerEventHistoryInteractions() {
+  // Uses event delegation so dynamically rendered history rows remain clickable.
   const eventHistoryList = document.getElementById('playerEventsDetails');
   if (!eventHistoryList || eventHistoryList.dataset.drilldownBound === 'true') {
     return;
@@ -2437,6 +2468,7 @@ function setupPlayerEventHistoryInteractions() {
 }
 
 function setupPlayerSummaryDrilldownCards() {
+  // Wires click/keyboard handlers for main Player Analysis summary cards.
   Object.entries(PLAYER_SUMMARY_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card || card.dataset.drilldownBound === 'true') {
@@ -2464,6 +2496,7 @@ function setupPlayerSummaryDrilldownCards() {
 }
 
 function setupPlayerSidebarDrilldownCards() {
+  // Wires click/keyboard handlers for right-sidebar deck-stat cards.
   Object.entries(PLAYER_SIDEBAR_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card || card.dataset.drilldownBound === 'true') {
@@ -2745,6 +2778,7 @@ function initPlayerSearchDropdown() {
   syncInputFromSelect();
 }
 
+// Wires Player Analysis controls, drilldown modals, card handlers, and exports.
 export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
   setupPlayerRankDrilldownModal();
@@ -2759,7 +2793,10 @@ export function initPlayerAnalysis() {
   console.log('Player Analysis initialized');
 }
 
+// Stores the visible Player Analysis rows and refreshes dependent charts/cards.
 export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsights) {
+  // Store the visible rows before asking child charts/cards to render so each
+  // component reads the same snapshot.
   currentPlayerAnalysisRows = Array.isArray(data) ? [...data] : [];
   currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
   updatePlayerWinRateChart();
@@ -2768,6 +2805,8 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
   populatePlayerStats(data, currentPlayerEloInsights);
 }
 
+// Resolves current player/date/type filters, builds Elo insights, and refreshes
+// the Player Analysis view.
 export async function updatePlayerAnalytics() {
   // Async Elo/rankings work can finish out of order if the user changes filters
   // quickly. Tag each refresh so stale responses cannot overwrite newer state.
@@ -2800,6 +2839,8 @@ export async function updatePlayerAnalytics() {
         );
       })
     : [];
+  // Event-group chips only affect the visible Player Analysis rows. Elo deck
+  // scoping still receives the ungrouped base rows for data-quality matching.
   const filteredData = applyPlayerEventGroupFilter(baseFilteredData);
   const selectedPlayerKey = selectedPlayer ? getPlayerIdentityKey(selectedPlayerLabel || selectedPlayer) : '';
   let eloInsights = createEmptyPlayerEloInsights();
@@ -2828,6 +2869,7 @@ export async function updatePlayerAnalytics() {
   updatePlayerAnalysis(filteredData, eloInsights);
 }
 
+// Renders the Player Analysis raw/deck data table and table mode controls.
 export function populatePlayerAnalysisRawData(data) {
   const rawTableHead = document.getElementById("playerRawTableHead");
   const rawTableBody = document.getElementById("playerRawTableBody");
@@ -2937,6 +2979,7 @@ export function populatePlayerAnalysisRawData(data) {
   }));
 }
 
+// Fills Player Analysis stat cards from selected player rows and Elo insights.
 export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights) {
   console.log("populatePlayerStats called with data:", data);
   const resolvedSelectedDeck = renderPlayerEloDeckFilter(eloInsights);

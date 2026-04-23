@@ -1,3 +1,6 @@
+// Renders Deck Matchup and Player Matchup views. It loads matchup archives for
+// the active date window, builds matrix/table summaries, and manages focused
+// player matchup drilldowns.
 import {
   getDefaultQuickViewYear,
   getLatestSetQuickViewPresetId,
@@ -45,6 +48,8 @@ const MATCHUP_STAT_CARD_IDS = [
   'matchupResultsVillainCard'
 ];
 
+// State below represents the currently rendered matchup window. Matrix exports,
+// stat-card drilldowns, and fullscreen tables all read from these snapshots.
 let activeQuickViewYear = '';
 let matchupGroupSelectionInitialized = false;
 let activeMatchupGroupKeys = new Set();
@@ -97,6 +102,8 @@ function normalizeMatchupEntityKey(value) {
 }
 
 const MATCHUP_VIEW_CONFIGS = {
+  // Deck and player matchup modes share nearly all rendering code. Config objects
+  // provide copy and entity accessors so the matrix builder can stay generic.
   'deck-matchup': {
     mode: 'deck-matchup',
     viewTitle: 'Deck Matchup',
@@ -300,6 +307,8 @@ function renderMatchupErrorState(message = 'Unable to load matchup data.') {
 
 async function ensureMatchupCatalogUiReady() {
   if (!matchupCatalogUiPromise) {
+    // Single-flight UI initialization: if multiple top-mode changes happen while
+    // the catalog is loading, every caller awaits the same setup promise.
     matchupCatalogUiPromise = ensureMatchupCatalogLoaded()
       .then(() => {
         const quickViewRows = getMatchupQuickViewRows();
@@ -411,6 +420,8 @@ function getMatchupPlayerTableElements() {
 }
 
 function updateMatchupFullscreenButtonState() {
+  // Both primary and secondary matrix tables can enter fullscreen. The button
+  // text follows whichever table currently owns document.fullscreenElement.
   const tableElements = getMatchupPlayerTableElements();
   const buttonPairs = [
     { button: tableElements.primaryFullscreenButton, container: tableElements.primaryContainer },
@@ -510,6 +521,8 @@ function matchIncludesPlayer(match, playerKey = '') {
 }
 
 function buildMatchupPlayerOptions(matches = []) {
+  // Player focus search options need both label quality and sample counts, so
+  // collect every side of every match before sorting.
   const playerMap = new Map();
 
   (matches || []).forEach(match => {
@@ -892,6 +905,8 @@ function initMatchupPlayerSearchDropdown() {
 }
 
 function buildPlayerMatchupFocusState(snapshot, resolvedMatches = []) {
+  // Builds the focused-player model used by Player Matchup mode, including
+  // opponent and deck-pair summaries from the selected player's perspective.
   const { playerStatus } = getMatchupPlayerFocusElements();
   const playerOptions = buildMatchupPlayerOptions(resolvedMatches);
   populateMatchupPlayerFocusSelect(playerOptions);
@@ -1527,6 +1542,8 @@ function getMatchupGroupContextKey(events = getBaseMatchupEvents()) {
 }
 
 function syncMatchupGroupFilterState(groupSummaries, contextKey = '') {
+  // Preserve existing group selections while the same event universe is active,
+  // but reset to all groups when event type/date/preset changes the universe.
   if (groupSummaries.length === 0) {
     resetMatchupGroupFilterState();
     return;
@@ -1551,6 +1568,8 @@ function syncMatchupGroupFilterState(groupSummaries, contextKey = '') {
 }
 
 function buildMatchupSelectionSnapshot() {
+  // The snapshot is the single source for the selection summary, active matches,
+  // and matrix data so the pills, list, and table cannot drift apart.
   const baseEvents = getBaseMatchupEvents();
   if (baseEvents.length === 0) {
     resetMatchupGroupFilterState();
@@ -1619,6 +1638,8 @@ function toggleMatchupEventGroupFilter(groupKey) {
 }
 
 function updateMatchupSelectionSummary(snapshot = buildMatchupSelectionSnapshot()) {
+  // Group chips are interactive filters. They are rebuilt from the snapshot each
+  // time so counts always reflect the current date/type/preset scope.
   const { panels, summary, summaryContent, listBox, list } = getMatchupSelectionElements();
   if (!panels || !summary || !summaryContent || !listBox || !list) {
     return;
@@ -1700,6 +1721,8 @@ function setMatchupDateSelection(type, value, options = {}) {
 }
 
 function updateMatchupDateOptions() {
+  // Date selectors are constrained to dates that exist after event-type and
+  // quick-view preset scoping, preventing impossible empty windows.
   const startDateSelect = getMatchupStartDateSelect();
   const endDateSelect = getMatchupEndDateSelect();
 
@@ -2570,6 +2593,8 @@ function renderFocusedPlayerDimensionTable({
   matrixData,
   allowMirror = false
 }) {
+  // Renders one focused-player matrix, either focus decks vs opponent decks or
+  // focus decks vs opponents.
   if (!titleElement || !helperElement || !headElement || !bodyElement) {
     return;
   }
@@ -2894,6 +2919,7 @@ function setupMatchupCsvExportListeners() {
 }
 
 function renderFocusedPlayerMatchupTables(resolvedMatches = [], focusState = currentMatchupPlayerFocus) {
+  // Renders the secondary matrices that appear only in Player Matchup mode.
   const tableElements = getMatchupPlayerTableElements();
   const selectedPlayerKey = focusState?.selectedPlayerKey || '';
   const selectedPlayerLabel = focusState?.selectedPlayerLabel || 'Selected Player';
@@ -2973,6 +2999,7 @@ function renderFocusedPlayerMatchupTables(resolvedMatches = [], focusState = cur
 }
 
 function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusState = currentMatchupPlayerFocus) {
+  // Renders the primary deck/player matrix table for the active matchup mode.
   if (isPlayerMatchupMode()) {
     renderFocusedPlayerMatchupTables(resolvedMatches, focusState);
     return;
@@ -3048,6 +3075,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
 }
 
 function renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches = [], focusState = currentMatchupPlayerFocus) {
+  // Populates matchup stat cards and helper text from the current matrix.
   const viewConfig = getActiveMatchupViewConfig();
   const summaryElement = document.getElementById('matchupMatrixSummary');
   if (!summaryElement) {
@@ -3561,6 +3589,7 @@ function buildMatchupDeckListHtml(deckSummaries = [], noteText = '') {
 }
 
 function buildMatchupDeckDetailHtml(summary) {
+  // Builds tracked-entity drilldown detail for one deck/player summary.
   if (!summary) {
     return '<div class="player-rank-drilldown-empty">Matchup details are unavailable.</div>';
   }
@@ -3694,6 +3723,7 @@ function getPairEventBreakdown(pairSummary) {
 }
 
 function buildMatchupPairDetailHtml(summary) {
+  // Builds drilldown detail for one matchup pair.
   if (!summary) {
     return '<div class="player-rank-drilldown-empty">Pairing details are unavailable.</div>';
   }
@@ -3938,6 +3968,7 @@ function updateMatchupDrilldownCardStates() {
 }
 
 function renderMatchupDrilldown(categoryKey) {
+  // Rebuilds the matchup stat-card modal for the requested category.
   const elements = getMatchupDrilldownElements();
   const drilldownConfig = getMatchupDrilldownConfig();
   const config = drilldownConfig[categoryKey];
@@ -4129,6 +4160,7 @@ function setupMatchupDrilldownCards() {
 }
 
 function setupMatchupFilterListeners() {
+  // Wires event-type, date, quick-view, player-focus, and fullscreen controls.
   const eventTypeButtons = getMatchupEventTypeButtons();
   const quickViewRoot = getMatchupQuickViewRoot();
   const startDateSelect = getMatchupStartDateSelect();
@@ -4190,6 +4222,8 @@ function setupMatchupFilterListeners() {
   }
 }
 
+// Wires matchup date/type/preset controls, fullscreen actions, drilldowns, and
+// CSV exports.
 export function initMatchupAnalysis() {
   initMatchupPlayerSearchDropdown();
   renderMatchupLoadingState();
@@ -4208,6 +4242,8 @@ export function initMatchupAnalysis() {
   console.log('Matchup Analysis initialized');
 }
 
+// Loads matchup data for the active window, rebuilds summaries/matrices, and
+// protects against stale async responses.
 export async function updateMatchupAnalytics() {
   const requestId = matchupAnalyticsRequestId + 1;
   matchupAnalyticsRequestId = requestId;

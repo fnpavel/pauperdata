@@ -12,6 +12,7 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+// Counts the most represented decks in a row set for summary cards.
 export function calculateTopDecks(data) {
   // The stat cards treat finish bands as "unique decks represented" buckets,
   // not copy counts, so each range is de-duplicated before display.
@@ -24,6 +25,7 @@ export function calculateTopDecks(data) {
 }
 
 // Single Event Stat Card
+// Calculates one deck's meta share, win rate, and finish-band counts.
 export function calculateDeckStats(data, deck, totalPlayers) {
   const deckData = data.filter(row => row.Deck === deck);
   const wins = deckData.reduce((sum, r) => sum + r.Wins, 0);
@@ -35,6 +37,7 @@ export function calculateDeckStats(data, deck, totalPlayers) {
 }
 
 // Single Event Stat Cards
+// Builds the summary-card payload for a single selected event.
 export function calculateSingleEventStats(filteredData) {
   const totalPlayers = filteredData.length;
   const topPlayer = filteredData.find(row => row.Rank === 1);
@@ -88,6 +91,7 @@ export function calculateSingleEventStats(filteredData) {
 }
 
 // Multi-Event Stat Cards
+// Builds the summary-card payload for a selected multi-event window.
 export function calculateMultiEventStats(filteredData) {
   const uniqueEvents = [...new Set(filteredData.map(row => row.Event))];
   const eventPlayerCounts = uniqueEvents.map(event => ({
@@ -137,6 +141,7 @@ export function calculateMultiEventStats(filteredData) {
   };
 }
 
+// Produces the HTML used by Player Analysis event-history sidebars.
 export function buildPlayerEventHistoryHTML(data) {
   if (!data || data.length === 0) {
     return "<div>No events selected</div>";
@@ -201,6 +206,7 @@ function formatDeckEventWinRateText(eventData) {
 }
 
 // Player Stat Cards
+// Builds the complete Player Analysis card payload from selected player rows.
 export function calculatePlayerStats(data, options = {}) {
   const selectedTopFinishDeck = String(options?.selectedTopFinishDeck || '').trim();
   const totalEvents = data.length > 0 ? [...new Set(data.map(row => row.Event))].length : 0;

@@ -351,6 +351,8 @@ function isTrackedDeckName(deckName) {
 }
 
 function getTopDeckRangeSummaries(rows = [], { scope = 'single' } = {}) {
+  // Build one shared range model for stat cards and drilldowns. The model keeps
+  // finish-band copy counts separate from whole-scope deck performance metrics.
   return TOP_DECK_RANGE_DEFINITIONS.map(definition => {
     const allRangeRows = (rows || []).filter(definition.predicate);
     const trackedRangeRows = allRangeRows.filter(row => isTrackedDeckName(row?.Deck));
@@ -478,6 +480,8 @@ function buildTopDeckRangeSectionHtml(rangeSummary, { scope = 'single' } = {}) {
 }
 
 function buildTopDeckRangeDrilldownHtml(rows = [], { scope = 'single' } = {}) {
+  // The same renderer supports single-event and multi-event ranges; copy changes
+  // by scope explain whether percentages refer to one event or the selected span.
   const rangeSummaries = getTopDeckRangeSummaries(rows, { scope });
   if (rangeSummaries.length === 0) {
     return '<div class="player-rank-drilldown-empty">No deck-range data found.</div>';
@@ -499,6 +503,7 @@ function buildSingleEventTop8Html(
   eventRows = currentSingleEventRows,
   { selectedPlayerName = '', highlightedDeckName = '' } = {}
 ) {
+  // Builds the contextual Top 8 table embedded in player/deck drilldowns.
   const top8Rows = sortSingleEventRows(eventRows.filter(row => Number(row?.Rank) >= 1 && Number(row?.Rank) <= 8)).slice(0, 8);
   if (top8Rows.length === 0) {
     return `
@@ -563,6 +568,7 @@ function buildSingleEventTop8Html(
 }
 
 function buildSingleEventDeckPilotsHtml(deckRows = []) {
+  // Lists every pilot for a deck in the selected event, ordered by finish.
   if (deckRows.length === 0) {
     return `
       <div class="player-rank-drilldown-top8">
@@ -604,6 +610,7 @@ function buildSingleEventDeckPilotsHtml(deckRows = []) {
 }
 
 function buildSingleEventPlayerDrilldownHtml(playerRow) {
+  // Builds the modal body for winner/runner-up/focused-player cards.
   if (!playerRow) {
     return '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
   }
@@ -680,6 +687,7 @@ function buildSingleEventPlayerDrilldownHtml(playerRow) {
 }
 
 function buildSingleEventDeckDrilldownHtml(deckNames = [], copyCount = 0) {
+  // Builds the modal body for most-popular-deck cards and chart deck clicks.
   if (deckNames.length === 0) {
     return '<div class="player-rank-drilldown-empty">No deck data found.</div>';
   }
@@ -752,6 +760,8 @@ function getMultiEventDateRangeLabel() {
 }
 
 function getMultiEventSummaries(rows = currentMultiEventRows) {
+  // Collapses selected rows into one event summary each for multi-event cards and
+  // drilldowns.
   const events = new Map();
 
   (rows || []).forEach(row => {
@@ -810,6 +820,7 @@ function getMultiEventSummaryByName(eventName, summaries = getMultiEventSummarie
 }
 
 function buildMultiEventEventOverviewHtml(summary) {
+  // Builds the detail card for one event inside a multi-event drilldown.
   if (!summary || !Array.isArray(summary.rows) || summary.rows.length === 0) {
     return '<div class="player-rank-drilldown-empty">Event details are unavailable.</div>';
   }
@@ -872,6 +883,7 @@ function buildMultiEventEventOverviewHtml(summary) {
 }
 
 function buildMultiEventListHtml(summaries = []) {
+  // Renders a sorted event list for multi-event stat-card drilldowns.
   if (!Array.isArray(summaries) || summaries.length === 0) {
     return '<div class="player-rank-drilldown-empty">No events found.</div>';
   }
@@ -902,6 +914,7 @@ function buildMultiEventListHtml(summaries = []) {
 }
 
 function renderSingleEventDrilldown(categoryKey) {
+  // Rebuilds the currently open single-event modal when data/filter state changes.
   const elements = getSingleEventDrilldownElements();
   const config = SINGLE_EVENT_DRILLDOWN_CONFIG[categoryKey];
 
@@ -986,6 +999,7 @@ function renderSingleEventDrilldown(categoryKey) {
 }
 
 function renderMultiEventDrilldown(state = activeMultiEventDrilldownState) {
+  // Rebuilds the currently open multi-event modal from its saved drilldown state.
   const elements = getSingleEventDrilldownElements();
   const config = MULTI_EVENT_DRILLDOWN_CONFIG[state?.category];
 
@@ -1042,6 +1056,7 @@ function renderMultiEventDrilldown(state = activeMultiEventDrilldownState) {
 }
 
 function openSingleEventDrilldown(categoryKey) {
+  // Opens a stat-card drilldown for the active single event.
   const elements = getSingleEventDrilldownElements();
   if (!elements.overlay || !SINGLE_EVENT_DRILLDOWN_CONFIG[categoryKey]) {
     return;
@@ -1073,6 +1088,7 @@ function openSingleEventPlayerDrilldown(playerName = '') {
   return true;
 }
 
+// Opens a single-event deck drilldown from chart clicks or stat-card actions.
 export function openSingleEventDeckDrilldown(deckName) {
   const elements = getSingleEventDrilldownElements();
   const normalizedDeckName = String(deckName || '').trim();
@@ -1140,6 +1156,7 @@ function applyPendingSingleEventPlayerFocus() {
 }
 
 function setupSingleEventDrilldownModal() {
+  // Wires modal close affordances once.
   const { overlay, closeButton, content } = getSingleEventDrilldownElements();
   if (!overlay || overlay.dataset.initialized === 'true') {
     return;
@@ -1186,6 +1203,7 @@ function setupSingleEventDrilldownModal() {
 }
 
 function updateSingleEventDrilldownCardStates(data = currentSingleEventRows) {
+  // Enables only single-event cards whose drilldowns have backing data.
   const winnerRow = getSingleEventWinnerRow(data);
   const runnerUpRow = getSingleEventRunnerUpRow(data);
   const topDeckRangeSummaries = getTopDeckRangeSummaries(data, { scope: 'single' });
@@ -1238,6 +1256,7 @@ function updateMultiEventDrilldownCardStates(data = currentMultiEventRows) {
 }
 
 function setupSingleEventDrilldownCards() {
+  // Attaches click and keyboard handlers to single-event stat cards.
   Object.entries(SINGLE_EVENT_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
     if (!card || card.dataset.drilldownBound === 'true') {
@@ -1291,6 +1310,7 @@ function setupMultiEventDrilldownCards() {
   });
 }
 
+// Wires Event Analysis modals, stat-card click targets, and CSV export buttons.
 export function initEventAnalysis() {
   setupSingleEventDrilldownModal();
   setupSingleEventDrilldownCards();
@@ -1300,6 +1320,7 @@ export function initEventAnalysis() {
   console.log('Event Analysis initialized');
 }
 
+// Stores single-event rows and refreshes cards/tables for the selected event.
 export function updateSingleEventAnalysis(data, totalPlayers) {
   if (activeMultiEventDrilldownState) {
     closeSingleEventDrilldown();
@@ -1312,6 +1333,7 @@ export function updateSingleEventAnalysis(data, totalPlayers) {
   populateSingleEventStats(data);
 }
 
+// Stores multi-event rows and refreshes cards/tables for the selected date span.
 export function updateMultiEventAnalysis(data) {
   if (activeSingleEventDrilldownCategory) {
     closeSingleEventDrilldown();
@@ -1325,6 +1347,7 @@ export function updateMultiEventAnalysis(data) {
   populateMultiEventStats(data);
 }
 
+// Resolves current single-event filters and refreshes Single Event Analysis.
 export function updateEventAnalytics() {
   console.log("Updating event analytics...");
   const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
@@ -1336,6 +1359,7 @@ export function updateEventAnalytics() {
   updateSingleEventAnalysis(eventData, eventData.length);
 }
 
+// Resolves current multi-event filters and refreshes Multi-Event Analysis.
 export function updateMultiEventAnalytics() {
   console.log("Updating multi-event analytics...");
   const startDate = document.getElementById("startDateSelect").value;
@@ -1349,6 +1373,7 @@ export function updateMultiEventAnalytics() {
   updateMultiEventAnalysis(filteredData);
 }
 
+// Renders the single-event table in raw or aggregate mode.
 export function updateSingleEventTables(eventData, tableType = 'raw') {
   const tableHead = document.getElementById("singleEventTableHead");
   const tableBody = document.getElementById("singleEventTableBody");
@@ -1462,6 +1487,7 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
   }
 }
 
+// Renders the multi-event table in aggregate mode or focused-deck timeline mode.
 export function updateMultiEventTables(filteredData, tableType = 'aggregate', deckName = '') {
   const tableElement = document.getElementById("multiEventTable");
   const tableHead = document.getElementById("multiEventTableHead");
@@ -1590,6 +1616,7 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
   setupEventTableExportActions();
 }
 
+// Fills the Single Event stat cards from filtered event rows.
 export function populateSingleEventStats(filteredData) {
   const stats = calculateSingleEventStats(filteredData);
   toggleStatCardVisibility("singleEventInfoCard", true);
@@ -1647,6 +1674,8 @@ export function populateSingleEventStats(filteredData) {
   }
 }
 
+// Navigates from a player/event drilldown into Player Analysis with matching
+// filters selected.
 export function openSingleEventPlayerInAnalysis(eventName = '', eventType = '', playerName = '') {
   const normalizedEventName = String(eventName || '').trim();
   const normalizedEventType = String(eventType || '').trim().toLowerCase();
@@ -1686,6 +1715,7 @@ export function openSingleEventPlayerInAnalysis(eventName = '', eventType = '', 
   });
 }
 
+// Fills the Multi-Event stat cards from filtered date-window rows.
 export function populateMultiEventStats(filteredData) {
   const stats = calculateMultiEventStats(filteredData);
   const eventSummaries = getMultiEventSummaries(filteredData);

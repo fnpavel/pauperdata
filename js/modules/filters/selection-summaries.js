@@ -21,6 +21,7 @@ import {
 } from './quick-view.js';
 import { getEventDate } from './single-event.js';
 
+// Clears the multi-event group-chip state.
 export function resetMultiEventGroupFilterState() {
   filterState.multiEventGroupSelectionInitialized = false;
   filterState.activeMultiEventGroupKeys = new Set();
@@ -72,6 +73,8 @@ function buildMultiEventSelectionListHTML(entries = []) {
 }
 
 function syncPlayerEventGroupFilterDataset() {
+  // Player Analysis reads group filter state from both filterState and dataset
+  // attributes because some rendering code lives outside this module.
   const panels = document.getElementById('playerSelectionPanels');
   if (!panels) {
     return;
@@ -81,6 +84,7 @@ function syncPlayerEventGroupFilterDataset() {
   panels.dataset.activeGroupKeys = Array.from(filterState.activePlayerEventGroupKeys).join(',');
 }
 
+// Clears the Player Analysis group-chip state and mirrors it to DOM data attrs.
 export function resetPlayerEventGroupFilterState() {
   filterState.playerEventGroupSelectionInitialized = false;
   filterState.activePlayerEventGroupKeys = new Set();
@@ -89,6 +93,8 @@ export function resetPlayerEventGroupFilterState() {
 }
 
 function getBasePlayerAnalysisRows() {
+  // Base rows apply global Player Analysis filters but not the group-chip filter;
+  // this lets the summary show all available groups before the user narrows them.
   const startDate = document.getElementById('playerStartDateSelect')?.value || '';
   const endDate = document.getElementById('playerEndDateSelect')?.value || '';
   const selectedPlayer = document.getElementById('playerFilterMenu')?.value || '';
@@ -164,6 +170,8 @@ function getPlayerEventGroupContextKey(rows = getBasePlayerAnalysisRows()) {
 }
 
 function syncPlayerEventGroupFilterState(groupSummaries, contextKey = '') {
+  // Reset to all groups when the underlying event universe changes; otherwise
+  // keep the user's active group choices and drop only groups that disappeared.
   if (groupSummaries.length === 0) {
     resetPlayerEventGroupFilterState();
     return;
@@ -187,7 +195,9 @@ function syncPlayerEventGroupFilterState(groupSummaries, contextKey = '') {
   syncPlayerEventGroupFilterDataset();
 }
 
+// Returns Player Analysis rows after global filters and group-chip filtering.
 export function getFilteredPlayerAnalysisRows() {
+  // This is the rows selector used by charts/cards after group-chip filtering.
   const baseRows = getBasePlayerAnalysisRows();
   if (baseRows.length === 0) {
     resetPlayerEventGroupFilterState();
@@ -220,7 +230,10 @@ function togglePlayerEventGroupFilter(groupKey) {
   filterRuntime.updateAllCharts();
 }
 
+// Renders Player Analysis group chips and selected-event history.
 export function updatePlayerSelectionSummary() {
+  // Rebuild both the compact group chips and the event-history list from the
+  // same base rows so the two panels stay consistent.
   const { panels, summaryBox, listBox, content, list } = getPlayerSelectionSummaryElements();
   if (!panels || !summaryBox || !listBox || !content || !list) {
     return;
@@ -351,6 +364,7 @@ function syncMultiEventGroupFilterState(groupSummaries) {
   );
 }
 
+// Returns Multi-Event rows after date/type/preset and group-chip filtering.
 export function getFilteredMultiEventRows() {
   const startDate = document.getElementById('startDateSelect')?.value || '';
   const endDate = document.getElementById('endDateSelect')?.value || '';
@@ -393,6 +407,7 @@ function toggleMultiEventGroupFilter(groupKey) {
   filterRuntime.updateAllCharts();
 }
 
+// Renders Multi-Event group chips and selected-event list.
 export function updateMultiEventSelectionSummary() {
   const { panels, summaryBox, listBox, content, list } = getMultiEventSelectionSummaryElements();
   if (!panels || !summaryBox || !listBox || !content || !list) {

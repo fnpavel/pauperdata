@@ -1,3 +1,5 @@
+// Release windows drive the "set" quick-view buttons. Each window starts on the
+// listed release date and runs until the next release date in this ordered list.
 export const setReleaseWindows = [
   {
     slug: 'ravnica-remastered',

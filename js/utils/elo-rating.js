@@ -1,3 +1,6 @@
+// Implements the Elo engine for player and player-deck leaderboards. The code
+// rates only clean, resolved matches and can reset ratings per calendar year or
+// run one continuous all-time ladder.
 const DEFAULT_STARTING_RATING = 1500;
 const DEFAULT_K_FACTOR = 16;
 const DEFAULT_RESET_BY_YEAR = true;
@@ -72,6 +75,8 @@ function getEntityDetails(match, side = 'a', entityMode = DEFAULT_ENTITY_MODE) {
   const deck = normalizedSide === 'a' ? getDeckAName(match) : getDeckBName(match);
 
   if (isPlayerDeckMode(entityMode)) {
+    // Deck-scoped Elo treats "player on deck" as a separate ladder identity from
+    // the same player on a different deck.
     const entityKey = basePlayerKey && deck ? `${basePlayerKey}:::${deck}` : '';
     const displayName = [basePlayerName || basePlayerKey, deck].filter(Boolean).join(' - ');
 
@@ -137,6 +142,8 @@ function compareMatches(a, b) {
 }
 
 function getResultScore(match) {
+  // Generated data evolved over time, so result information may live in newer
+  // outcome fields, generic result_type fields, or legacy game counters.
   const outcome = normalizeText(match?.outcome).toLowerCase();
   if (outcome === 'player_a_win') {
     return 1;
@@ -188,6 +195,8 @@ function isRatedMatch(match, entityMode = DEFAULT_ENTITY_MODE) {
   const pairingQuality = normalizeText(match?.pairing_quality).toLowerCase();
 
   if (!playerDetails.entityKey || !opponentDetails.entityKey || playerDetails.entityKey === opponentDetails.entityKey) {
+    // Missing identities, self-pairings, byes, unknowns, and conflict-marked
+    // rows would distort the ladder, so they are excluded before batching.
     return false;
   }
 
@@ -314,6 +323,8 @@ function buildBatchKey(match, seasonKey) {
 }
 
 function buildMatchBatches(matches = [], resetByYear = true, entityMode = DEFAULT_ENTITY_MODE) {
+  // Matches in the same event round are batched so all rating deltas use the
+  // ratings that existed before that round began.
   const sortedMatches = matches
     .map((match, index) => ({ match, index }))
     .filter(({ match }) => isRatedMatch(match, entityMode))
@@ -348,6 +359,7 @@ function buildMatchBatches(matches = [], resetByYear = true, entityMode = DEFAUL
   };
 }
 
+// Calculates the rating delta for one side of an Elo-rated match.
 export function calculateEloRatingDelta(ratingA, ratingB, scoreA, kFactor = DEFAULT_K_FACTOR) {
   const safeRatingA = getFiniteNumber(ratingA, DEFAULT_STARTING_RATING);
   const safeRatingB = getFiniteNumber(ratingB, DEFAULT_STARTING_RATING);
@@ -355,9 +367,13 @@ export function calculateEloRatingDelta(ratingA, ratingB, scoreA, kFactor = DEFA
   const safeKFactor = getFiniteNumber(kFactor, DEFAULT_K_FACTOR);
   const expectedScoreA = 1 / (1 + 10 ** ((safeRatingB - safeRatingA) / 400));
 
+  // Positive deltas mean player A outperformed expectation; negative deltas mean
+  // the result was worse than expected.
   return safeKFactor * (safeScoreA - expectedScoreA);
 }
 
+// Processes match records into season rows, per-player histories, and annotated
+// match records with before/after ratings.
 export function getPlayerEloHistory(matches = [], options = {}) {
   const normalizedOptions = normalizeOptions(options);
   const { batches, ratedMatchCount } = buildMatchBatches(
@@ -371,6 +387,8 @@ export function getPlayerEloHistory(matches = [], options = {}) {
 
   batches.forEach(batch => {
     const pendingUpdates = batch.matches.map(match => {
+      // Compute every match in the batch first, then apply updates. That avoids
+      // order bias inside a single event round.
       const playerDetails = getEntityDetails(match, 'a', normalizedOptions.entityMode);
       const opponentDetails = getEntityDetails(match, 'b', normalizedOptions.entityMode);
       const playerState = ensureSeasonState(
@@ -529,6 +547,7 @@ export function getPlayerEloHistory(matches = [], options = {}) {
   };
 }
 
+// Adds a season -> player -> rating lookup on top of getPlayerEloHistory().
 export function buildYearlyEloRatings(matches = [], options = {}) {
   const eloHistory = getPlayerEloHistory(matches, options);
   const ratings = new Map();

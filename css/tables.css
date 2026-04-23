@@ -1,3 +1,5 @@
+/* Shared table shells, sticky headers/columns, matchup matrices, and leaderboard
+   table interactions. */
 .data-table-container {
   background-color: var(--secondary);
   border-radius: 10px;
@@ -17,6 +19,8 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Scroll wrappers keep large tables usable while preserving sticky headers and
+   first columns. */
 .event-analysis-table-scroll,
 .player-data-table-scroll {
   position: relative;
@@ -222,6 +226,8 @@ th.asc .sort-arrow {
   z-index: 4;
 }
 
+/* Matchup matrices can be both wide and tall, so they use separate sticky axis
+   styles below for row and column labels. */
 .matchup-matrix-scroll {
   position: relative;
   overflow-x: auto;
@@ -352,6 +358,8 @@ th.asc .sort-arrow {
   font-size: 0.86rem;
 }
 
+/* Leaderboard table gets extra width control because it has many numeric ranking
+   columns plus searchable player rows. */
 #leaderboardTable {
   --leaderboard-rank-column-width: 72px;
   --leaderboard-player-column-width: 220px;
@@ -423,6 +431,8 @@ th.asc .sort-arrow {
   font-size: 0.8rem;
 }
 
+/* Sticky first columns keep row identity visible while horizontally scrolling
+   dense event/player/leaderboard tables. */
 #singleEventTable thead tr:first-child > th:first-child,
 #singleEventTable tbody td:first-child,
 #multiEventTable thead tr:first-child > th:first-child,
@@ -572,6 +582,8 @@ th.asc .sort-arrow {
   width: 42%;
 }
 
+/* Table-specific responsive behavior; broader layout breakpoints live in
+   media-queries.css. */
 @media (max-width: 768px) {
   .event-analysis-table-scroll,
   .player-data-table-scroll {

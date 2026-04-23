@@ -49,6 +49,7 @@ async function loadYearDataset(year = '') {
   return eventYearsCache.get(normalizedYear);
 }
 
+// Loads the event manifest and every referenced yearly result file once.
 export async function ensureEventDataLoaded() {
   if (!eventDataPromise) {
     // Single-flight loading: if several modules initialize at once, they all
@@ -81,14 +82,17 @@ export async function ensureEventDataLoaded() {
   return eventDataPromise;
 }
 
+// Returns the loaded event manifest.
 export function getEventManifest() {
   return eventManifest;
 }
 
+// Returns all loaded event result rows.
 export function getEventRows() {
   return eventRows;
 }
 
+// Returns the manifest's last-updated label for the header.
 export function getLastUpdatedDate() {
   return String(eventManifest?.last_updated_date || '').trim();
 }

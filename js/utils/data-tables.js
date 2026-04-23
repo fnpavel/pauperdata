@@ -3,6 +3,8 @@
 import { getAnalysisRows } from './analysis-data.js';
 
 // Single Event Tables
+// Converts one event's rows into the raw row shape used by the single-event
+// table and CSV export.
 export function calculateSingleEventRawTable(data) {
   return data.map(row => ({
     rank: row.Rank,
@@ -14,6 +16,7 @@ export function calculateSingleEventRawTable(data) {
   }));
 }
 
+// Aggregates one event by deck for the single-event aggregate table.
 export function calculateSingleEventAggregateTable(data) {
   const totalPlayers = data.length;
   // Aggregate tables keep counts and conversion rates side by side so the UI
@@ -47,6 +50,7 @@ export function calculateSingleEventAggregateTable(data) {
 }
 
 // Multi-Event Tables
+// Aggregates all selected events by deck for the multi-event aggregate table.
 export function calculateMultiEventAggregateTable(data) {
   const totalPlayers = data.length;
   // This mirrors the single-event aggregate shape on purpose. Sharing the same
@@ -78,6 +82,7 @@ export function calculateMultiEventAggregateTable(data) {
   }));
 }
 
+// Builds a per-event timeline table for one focused deck.
 export function calculateMultiEventDeckTable(data, deckName) {
   // Group by event date because the drilldown is a per-event timeline for one
   // deck, not a single rollup across the whole selected range.
@@ -123,6 +128,7 @@ export function calculateMultiEventDeckTable(data, deckName) {
 }
 
 // Player Tables
+// Builds the selected player's event-history table rows.
 export function calculatePlayerEventTable(data) {
   return data.map(row => {
     // Tooltips and deck meta need the full event field, not just the selected
@@ -154,6 +160,7 @@ export function calculatePlayerEventTable(data) {
   });
 }
 
+// Aggregates the selected player's results by deck.
 export function calculatePlayerDeckTable(data) {
   // Player deck tables collapse multiple event appearances into one row per deck
   // while preserving best/worst single-event snapshots for quick comparison.

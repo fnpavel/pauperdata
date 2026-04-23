@@ -1,3 +1,6 @@
+// Defines and resolves quick-view presets shared by multi-event, player, and
+// matchup views. Presets can be static ranges, calendar years, or MTG set
+// windows derived from release dates.
 import { getAnalysisRows } from './analysis-data.js';
 import { setReleaseWindows } from '../config/set-release-windows.js';
 
@@ -23,6 +26,8 @@ function getQuickViewRowsCache(rows = getAnalysisRows()) {
   let cache = quickViewRowsCache.get(resolvedRows);
 
   if (!cache) {
+    // Cache by rows array identity. When the analysis-quality toggle swaps in a
+    // different array, this WeakMap naturally invalidates all derived preset data.
     cache = {
       latestRowDate: '',
       setPresetDefinitions: new Map(),
@@ -77,6 +82,8 @@ function getRowsScopedToEventTypes(rows = getAnalysisRows(), selectedEventTypes 
 }
 
 function buildSuggestedRange(rows = []) {
+  // Suggested ranges power the date selectors after a preset click. We compute
+  // them from the actual scoped rows so missing data dates are not offered.
   const seenDates = new Set();
   let startDate = '';
   let endDate = '';
@@ -118,6 +125,7 @@ function getLatestRowDate(rows = getAnalysisRows()) {
   return cache.latestRowDate;
 }
 
+// Normalizes comma-separated or array preset input into unique preset ids.
 export function normalizeQuickViewPresetIds(presetIds = []) {
   const sourceValues = Array.isArray(presetIds) ? presetIds : [presetIds];
   const uniqueIds = new Set();
@@ -154,6 +162,8 @@ function buildSetWindowPresets(rows = getAnalysisRows(), { includeFuture = false
   const sortedWindows = [...setReleaseWindows].sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
   const latestRowDate = getLatestRowDate(rows);
 
+  // A set window runs from a release date until the next release date. Future
+  // releases stay hidden in normal UI until the dataset has rows that reach them.
   return sortedWindows
     .map((window, index) => {
       const nextWindow = sortedWindows[index + 1];
@@ -172,6 +182,7 @@ function buildSetWindowPresets(rows = getAnalysisRows(), { includeFuture = false
     .filter(preset => includeFuture || !latestRowDate || preset.releaseDate <= latestRowDate);
 }
 
+// Shifts an ISO date by whole UTC days, used to display set-window end dates.
 export function shiftDateByDays(dateString, dayDelta) {
   if (!dateString) {
     return '';
@@ -186,10 +197,12 @@ export function shiftDateByDays(dateString, dayDelta) {
   return date.toISOString().slice(0, 10);
 }
 
+// Returns non-data-dependent presets such as All Period and calendar years.
 export function getStaticQuickViewPresetDefinitions() {
   return [...STATIC_QUICK_VIEW_PRESETS, ...buildCalendarYearPresets()];
 }
 
+// Returns MTG set-window presets, optionally including future releases.
 export function getSetQuickViewPresetDefinitions(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -202,6 +215,7 @@ export function getSetQuickViewPresetDefinitions(rows = getAnalysisRows(), { inc
   return cache.setPresetDefinitions.get(cacheKey) || [];
 }
 
+// Returns the combined preset list used by quick-view button renderers.
 export function getQuickViewPresetDefinitions(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -217,10 +231,12 @@ export function getQuickViewPresetDefinitions(rows = getAnalysisRows(), { includ
   return cache.quickViewDefinitions.get(cacheKey) || [];
 }
 
+// Finds one preset definition by id.
 export function getQuickViewPresetDefinitionById(presetId, rows = getAnalysisRows(), { includeFuture = true } = {}) {
   return getQuickViewPresetDefinitions(rows, { includeFuture }).find(preset => preset.id === presetId) || null;
 }
 
+// Resolves multiple preset ids into definitions while preserving id order.
 export function getQuickViewPresetDefinitionsByIds(presetIds = [], rows = getAnalysisRows(), { includeFuture = true } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -242,6 +258,7 @@ export function getQuickViewPresetDefinitionsByIds(presetIds = [], rows = getAna
   return cache.presetDefinitionsByIds.get(cacheKey) || [];
 }
 
+// Lists release years that have set-window presets for the current dataset.
 export function getQuickViewPresetYearOptions(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -258,6 +275,8 @@ export function getQuickViewPresetYearOptions(rows = getAnalysisRows(), { includ
   return cache.yearOptions.get(cacheKey) || [];
 }
 
+// Picks the initial quick-view year tab, preferring the current calendar year
+// when data exists for it.
 export function getDefaultQuickViewYear(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const yearOptions = getQuickViewPresetYearOptions(rows, { includeFuture });
   const currentYear = String(new Date().getFullYear());
@@ -269,6 +288,7 @@ export function getDefaultQuickViewYear(rows = getAnalysisRows(), { includeFutur
   return yearOptions[0] || '';
 }
 
+// Finds the latest visible set-window preset id for default button state.
 export function getLatestSetQuickViewPresetId(rows = getAnalysisRows(), { includeFuture = false } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -284,6 +304,8 @@ export function getLatestSetQuickViewPresetId(rows = getAnalysisRows(), { includ
   return cache.latestSetPresetIds.get(cacheKey) || 'all-period';
 }
 
+// Returns the event-type requirements declared by a preset, or null when no
+// matching preset exists.
 export function getQuickViewPresetEventTypes(presetId, rows = getAnalysisRows()) {
   const presets = getQuickViewPresetDefinitionsByIds(presetId, rows);
   if (presets.length === 0) {
@@ -293,6 +315,7 @@ export function getQuickViewPresetEventTypes(presetId, rows = getAnalysisRows())
   return [...new Set(presets.flatMap(preset => preset.eventTypes || []))];
 }
 
+// Applies event-type and preset scoping to analysis rows.
 export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', rows = getAnalysisRows()) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);
@@ -311,6 +334,7 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
   const presets = getQuickViewPresetDefinitionsByIds(presetId, resolvedRows);
 
   if (presets.length === 0 || presets.some(preset => preset.kind === 'static')) {
+    // "All Period" is intentionally broad: it only honors event-type selection.
     cache.presetRows.set(cacheKey, baseRows);
     return baseRows;
   }
@@ -341,6 +365,7 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
   return baseRows;
 }
 
+// Returns the smallest date range that covers the rows in a preset selection.
 export function getQuickViewPresetSuggestedRange({ selectedEventTypes = [], presetId = '', rows = getAnalysisRows() } = {}) {
   const resolvedRows = getResolvedRows(rows);
   const cache = getQuickViewRowsCache(resolvedRows);

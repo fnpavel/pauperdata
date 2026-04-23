@@ -1,3 +1,6 @@
+// Maintains the canonical event rows used by every analysis surface and the
+// optional data-quality filter that excludes events with too much unknown deck
+// data below Top 32.
 import { getEventRows } from './event-data.js';
 
 // This module is the single source of truth for "analysis rows". Callers do
@@ -44,10 +47,13 @@ function normalizeDeckName(deckName) {
   return String(deckName ?? '').trim().toUpperCase();
 }
 
+// Returns true for placeholder deck names that should not be treated as tracked
+// archetypes in quality checks.
 export function isUnknownDeckName(deckName) {
   return UNKNOWN_DECK_NAMES.has(normalizeDeckName(deckName));
 }
 
+// Counts below-Top-32 known vs unknown rows for one event.
 export function getUnknownBelowTop32Stats(eventRows = []) {
   // Only rows below Top 32 matter for this quality rule.
   const rowsBelowTop32 = (eventRows || []).filter(row => Number(row?.Rank) > 32);
@@ -62,6 +68,8 @@ export function getUnknownBelowTop32Stats(eventRows = []) {
   };
 }
 
+// Applies the quality rule for excluding events with heavy unknown deck data
+// below Top 32.
 export function shouldExcludeEventForUnknownHeavyBelowTop32(eventRows = []) {
   const {
     belowTop32Count,
@@ -124,25 +132,32 @@ rebuildAnalysisCaches(getEventRows());
 
 let excludeUnknownHeavyBelowTop32Events = readStoredBoolean(STORAGE_KEY, false);
 
+// Replaces the raw analysis dataset and rebuilds every derived cache.
 export function setAnalysisDataRows(rows = []) {
   rebuildAnalysisCaches(rows);
 }
 
+// Reads the current persisted/in-memory setting for the unknown-heavy event
+// exclusion rule.
 export function isUnknownHeavyBelowTop32FilterEnabled() {
   return excludeUnknownHeavyBelowTop32Events;
 }
 
+// Toggles the unknown-heavy event exclusion rule and persists the choice.
 export function setUnknownHeavyBelowTop32FilterEnabled(isEnabled) {
   excludeUnknownHeavyBelowTop32Events = Boolean(isEnabled);
   writeStoredBoolean(STORAGE_KEY, excludeUnknownHeavyBelowTop32Events);
 }
 
+// Returns the currently active row set: raw rows or quality-filtered rows.
 export function getAnalysisRows() {
   // This is the single entry point the rest of the app uses when it needs rows
   // for analysis. On = dataset with low-quality events removed. Off = raw dataset.
   return excludeUnknownHeavyBelowTop32Events ? filteredAnalysisRows : rawCleanedData;
 }
 
+// Exposes the event names removed by the quality rule so UI summaries/tooltips
+// can explain what changed.
 export function getUnknownHeavyBelowTop32ExcludedEventNames() {
   return unknownHeavyBelowTop32EventNames;
 }

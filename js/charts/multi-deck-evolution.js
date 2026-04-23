@@ -1,3 +1,5 @@
+// Multi-event deck evolution chart. It follows one deck across dates and keeps
+// the multi-event table synchronized with the focused deck.
 import { setChartLoading } from '../utils/dom.js';
 import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckEvolutionStats } from "../utils/data-chart.js";
@@ -6,6 +8,8 @@ import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 
 export let deckEvolutionChart = null;
+// Empty means hover controls the detail panel; otherwise the clicked date remains
+// pinned so the user can compare the chart with the table below.
 let pinnedDeckEvolutionPointKey = '';
 
 function setMultiEventTableToggleState(tableType = 'aggregate') {
@@ -122,6 +126,8 @@ function formatDeckPilotSummary(row) {
 }
 
 function buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaShares, winRates) {
+  // The chart plots only meta/win-rate series, but the details panel needs event
+  // counts, pilots, finish extremes, and records for the same date.
   return dates.map((date, index) => {
     const dateRows = filteredData.filter(row => row.Date === date);
     const deckRows = dateRows.filter(row => String(row?.Deck || '').trim() === currentDeck);
@@ -258,6 +264,8 @@ function renderDeckEvolutionDetails(point, { pinned = false } = {}) {
   `);
 }
 
+// Programmatically selects a deck in the multi-event deck evolution control and
+// optionally scrolls the chart into view.
 export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
   const deckSelect = document.getElementById('deckEvolutionSelect');
   const normalizedDeckName = String(deckName || '').trim();
@@ -280,6 +288,7 @@ export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
   return true;
 }
 
+// Redraws the selected deck's date-by-date meta share and win-rate evolution.
 export function updateDeckEvolutionChart() {
   console.log("updateDeckEvolutionChart called...");
   setChartLoading("deckEvolutionChart", true);

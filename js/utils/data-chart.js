@@ -1,8 +1,11 @@
-// js/utils/data-chart.js
+// Pure data transforms for Chart.js views. These helpers accept already-filtered
+// rows and return display-ready arrays/objects without touching the DOM.
 
-
-// Function for Event Analysis -> Single Event: Event Top 8/16/32 Conversion
+// Event Analysis -> Single Event: Event Top 8/16/32 Conversion.
+// Returns stacked percentage bands per deck for the conversion funnel.
 export function calculateDeckConversionStats(data) {
+  // UNKNOWN rows represent incomplete deck data; charts omit them so percentages
+  // reflect known archetypes only.
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
   
   const deckConversionStats = filteredData.reduce((acc, row) => {
@@ -44,7 +47,8 @@ export function calculateDeckConversionStats(data) {
     }));
 }
 
-// Function for Single and Multiple Events
+// Single and Multiple Events: deck meta share plus aggregate match win rate.
+// Returns one point/bar record per known deck with meta share and win rate.
 export function calculateMetaWinRateStats(data) {
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
   const totalPlayers = filteredData.length;
@@ -70,7 +74,8 @@ export function calculateMetaWinRateStats(data) {
   }));
 }
 
-// Function for Event Analysis -> Multiple Events: Deck Evolution: Meta and Win Rate
+// Event Analysis -> Multiple Events: selected deck meta share and win rate over time.
+// Returns date-aligned series for the selected deck's copies and match results.
 export function calculateDeckEvolutionStats(data, selectedDeck) {
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
   
@@ -101,8 +106,8 @@ export function calculateDeckEvolutionStats(data, selectedDeck) {
   };
 }
 
-// Function for Event Analysis -> Multiple Events: Aggregate Player Win Rates
-// in multi-player-win-rate.js
+// Event Analysis -> Multiple Events: aggregate player win rates used by multi-player-win-rate.js.
+// Returns one aggregate record per player for multi-event scatter plotting.
 export function calculateMultiPlayerWinRateStats(data) {
   const playerStats = data.reduce((acc, row) => {
     if (!acc[row.Player]) {
@@ -121,8 +126,8 @@ export function calculateMultiPlayerWinRateStats(data) {
     });
 }
 
-// Function for Player Analysis: Deck Performance Scatter Plot
-// in player-deck-performance.js
+// Player Analysis: deck performance scatter plot used by player-deck-performance.js.
+// Returns one aggregate record per deck for the selected player.
 export function calculatePlayerDeckPerformanceStats(data) {
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
   
@@ -154,8 +159,8 @@ export function calculatePlayerDeckPerformanceStats(data) {
   });
 }
 
-// Function for Player Analysis: Player Analytics
-// in player-winrate.js
+// Player Analysis: chronological player event points used by player-win-rate.js.
+// Returns date-ordered win-rate points and hover metadata for one player.
 export function calculatePlayerWinRateStats(data) {
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
   

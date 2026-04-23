@@ -1,3 +1,6 @@
+// Defines the event-family taxonomy used by selection summaries and group
+// filters. Known MTGO event names get predictable ordering; unknown names still
+// receive a stable slug so the UI can group them safely.
 const EVENT_GROUPS = {
   'MTGO Challenge': {
     key: 'challenge',
@@ -52,10 +55,13 @@ function normalizeEventBaseName(value) {
   return toDisplayTitleCase(String(value || '').trim().replace(/\s+/g, ' '));
 }
 
+// Formats group labels for compact UI display by removing MTGO prefixes and
+// normalizing title case.
 export function formatGroupDisplayLabel(label) {
   return toDisplayTitleCase(String(label || '').replace(/^MTGO\s+/i, '').trim());
 }
 
+// Resolves event names into known group metadata or a stable fallback group.
 export function getEventGroupInfo(eventName) {
   const baseName = normalizeEventBaseName(stripEventDate(eventName));
   const predefinedGroup = EVENT_GROUPS[baseName];

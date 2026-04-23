@@ -1,5 +1,8 @@
+// Chart.js helpers for Leaderboards. The analysis module prepares the datasets;
+// this file owns timeline shaping, year-boundary drawing, and chart lifecycle.
 import { formatDate, formatEventName } from '../utils/format.js';
 
+// Collapses a player's per-round Elo history into one point per event.
 export function buildEventLevelEloPoints(historyEntries = []) {
   if (!historyEntries.length) {
     return [];
@@ -8,6 +11,8 @@ export function buildEventLevelEloPoints(historyEntries = []) {
   const eventMap = new Map();
 
   historyEntries.forEach(entry => {
+    // Multiple rounds can happen inside the same event; the event-level line
+    // should show the last rating after that event, not every individual round.
     const eventKey = [
       String(entry.seasonKey || '').trim(),
       String(entry.date || '').trim(),
@@ -45,7 +50,11 @@ export function buildEventLevelEloPoints(historyEntries = []) {
     .filter(point => Number.isFinite(point.ratingAfter));
 }
 
+// Builds the canonical event timeline used to align all leaderboard chart
+// datasets.
 export function buildLeaderboardTimeline(processedMatches = []) {
+  // Build the canonical x-axis once so multi-player timeline datasets align on
+  // identical event indexes even when some players skipped events.
   const eventMap = new Map();
 
   (processedMatches || []).forEach(match => {
@@ -81,6 +90,7 @@ export function buildLeaderboardTimeline(processedMatches = []) {
     }));
 }
 
+// Picks a deterministic palette color for leaderboard timeline datasets.
 export function getLeaderboardTimelineColor(index = 0) {
   const palette = [
     '#d4a657',
@@ -96,6 +106,7 @@ export function getLeaderboardTimelineColor(index = 0) {
   return palette[index % palette.length];
 }
 
+// Determines whether continuous-range charts need year separators.
 export function shouldShowLeaderboardYearBoundaries(dataset = {}) {
   const selectedYears = Array.isArray(dataset?.summary?.selectedYears) ? dataset.summary.selectedYears : [];
   return dataset?.period?.windowMode === 'range' && !dataset?.resetByYear && selectedYears.length > 1;
@@ -106,6 +117,7 @@ function getLeaderboardEntryYear(entry = {}) {
   return /^\d{4}$/.test(year) ? year : '';
 }
 
+// Groups adjacent timeline entries by calendar year for chart background bands.
 export function buildLeaderboardYearBands(entries = []) {
   return (Array.isArray(entries) ? entries : []).reduce((bands, entry, index) => {
     const year = getLeaderboardEntryYear(entry);
@@ -128,6 +140,7 @@ export function buildLeaderboardYearBands(entries = []) {
   }, []);
 }
 
+// Converts year bands into marker positions for boundary labels/lines.
 export function buildLeaderboardYearBoundaryMarkers(entries = []) {
   return buildLeaderboardYearBands(entries).slice(1).map(band => ({
     index: band.startIndex,
@@ -176,6 +189,8 @@ function getLeaderboardYearBandPixelRange(xScale, chartArea, band, lastIndex) {
 const leaderboardYearBoundaryPlugin = {
   id: 'leaderboardYearBoundaryPlugin',
   beforeDraw(chart, _args, pluginOptions) {
+    // Lightly shade calendar-year bands behind the data when a continuous range
+    // spans multiple years.
     const bands = Array.isArray(pluginOptions?.bands) ? pluginOptions.bands : [];
     if (!bands.length) {
       return;
@@ -212,6 +227,8 @@ const leaderboardYearBoundaryPlugin = {
     ctx.restore();
   },
   afterDatasetsDraw(chart, _args, pluginOptions) {
+    // Draw dashed separators and labels after datasets so year boundaries remain
+    // visible over filled line charts.
     const bands = Array.isArray(pluginOptions?.bands) ? pluginOptions.bands : [];
     if (!bands.length) {
       return;
@@ -277,6 +294,7 @@ function getChartThemeColors() {
   };
 }
 
+// Safely destroys a Chart.js instance and returns null for easy reassignment.
 export function destroyLeaderboardChart(chartInstance) {
   if (chartInstance) {
     chartInstance.destroy();
@@ -284,6 +302,7 @@ export function destroyLeaderboardChart(chartInstance) {
   return null;
 }
 
+// Creates the detail Elo chart used in leaderboard player drilldowns.
 export function createLeaderboardPlayerEloChart(canvas, {
   row,
   points = [],
@@ -294,6 +313,8 @@ export function createLeaderboardPlayerEloChart(canvas, {
   showYearBoundaries = false,
   onLegendToggle = null
 } = {}) {
+  // The same renderer supports a single player's detail chart and multi-dataset
+  // scoped charts by accepting optional labels/datasets from the caller.
   const resolvedLabels = labels.length > 0
     ? labels
     : points.map(point => point.label);
@@ -418,6 +439,7 @@ export function createLeaderboardPlayerEloChart(canvas, {
   });
 }
 
+// Creates the multi-player timeline chart shown above the leaderboard table.
 export function createLeaderboardTimelineChart(canvas, {
   labels = [],
   datasets = [],

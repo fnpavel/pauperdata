@@ -1,10 +1,15 @@
+// Normalizes player names for selectors and joins. Source data can contain
+// different casing or spacing for the same player; this module chooses stable
+// identity keys while preserving a friendly display label.
 const EMPTY_ROWS = [];
 const playerFilterOptionsCache = new WeakMap();
 
+// Collapses whitespace while preserving the display casing from source data.
 export function normalizePlayerName(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
 }
 
+// Converts a player display name into the stable identity key used for joins.
 export function getPlayerIdentityKey(value) {
   return normalizePlayerName(value).toLowerCase();
 }
@@ -18,9 +23,13 @@ function comparePlayerVariantStats(a, b) {
   );
 }
 
+// Builds sorted player search options with variant labels grouped under one
+// identity key.
 export function buildPlayerFilterOptions(rows) {
   const resolvedRows = Array.isArray(rows) ? rows : EMPTY_ROWS;
   if (playerFilterOptionsCache.has(resolvedRows)) {
+    // Filter menus rebuild often during date/preset changes, so cache the
+    // expensive grouping work for each immutable rows snapshot.
     return playerFilterOptionsCache.get(resolvedRows) || [];
   }
 
@@ -85,10 +94,12 @@ export function buildPlayerFilterOptions(rows) {
   return playerOptions;
 }
 
+// Checks whether a row belongs to the normalized selected-player key.
 export function rowMatchesPlayerKey(row, playerKey) {
   return Boolean(playerKey) && getPlayerIdentityKey(row?.Player) === playerKey;
 }
 
+// Reads the visible label for the currently selected player option.
 export function getSelectedPlayerLabel(playerFilterMenu) {
   if (!playerFilterMenu) {
     return '';

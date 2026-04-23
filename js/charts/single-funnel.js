@@ -1,3 +1,5 @@
+// Single-event conversion funnel. The stacked horizontal bars show how each
+// known deck converts its copies into finish bands within the selected event.
 import { setChartLoading } from '../utils/dom.js';
 import { getFunnelChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from "../utils/data-chart.js";
@@ -5,6 +7,8 @@ import { getChartTheme } from '../utils/theme.js';
 
 export let eventFunnelChart = null;
 
+// Redraws the single-event conversion funnel for the active event and rank
+// range.
 export function updateEventFunnelChart() {
   console.log("updateEventFunnelChart called...");
   setChartLoading("eventFunnelChart", true);
@@ -19,6 +23,7 @@ export function updateEventFunnelChart() {
 
   const sortedDecksData = calculateDeckConversionStats(chartData);
   const labels = sortedDecksData.map(item => item.deck);
+  // Dataset order matches the visual funnel from best finish band to lowest.
   const datasets = [
     {
       label: "1st–8th",
@@ -133,6 +138,7 @@ export function updateEventFunnelChart() {
             padding: 10
           },
           datalabels: {
+            // Hide tiny labels to keep crowded events readable.
             display: context => context.dataset.data[context.dataIndex] > 5,
             color: '#000000',
             font: { size: 12, weight: 'bold', family: "'Bitter', serif" },

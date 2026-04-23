@@ -1,3 +1,6 @@
+// Minimal PDF writer used for Leaderboard reports. It emits PDF drawing
+// commands directly instead of relying on a third-party PDF dependency, keeping
+// the static dashboard deploy simple.
 const PDF_PAGE_WIDTH = 612;
 const PDF_PAGE_HEIGHT = 792;
 const PDF_MARGIN_LEFT = 54;
@@ -30,6 +33,8 @@ function getByteLength(text = '') {
 }
 
 function normalizePdfText(value = '') {
+  // Built-in PDF fonts support a limited character set, so normalize smart
+  // punctuation and strip unsupported glyphs before measuring or drawing text.
   return String(value ?? '')
     .replace(/\r\n?/g, '\n')
     .replace(/\u00A0/g, ' ')
@@ -153,6 +158,8 @@ function getLineHeight(fontSize = 11, lineHeightFactor = PDF_LINE_HEIGHT_FACTOR)
 }
 
 function createPdfLayout() {
+  // Layout is intentionally command-oriented: helpers append PDF commands to the
+  // current page and advance currentY as sections are rendered.
   return {
     pages: [[]],
     currentY: PDF_PAGE_HEIGHT - PDF_MARGIN_TOP,
@@ -217,6 +224,7 @@ function addCommand(layout, command = '') {
 }
 
 function ensureSpace(layout, height = 0) {
+  // Leave room for the footer on every page before adding a block.
   if ((layout.currentY - Number(height || 0)) < (PDF_MARGIN_BOTTOM + PDF_FOOTER_HEIGHT)) {
     startNewPage(layout);
     return true;
@@ -502,6 +510,7 @@ function drawTextLine(layout, {
   );
 }
 
+// Draws wrapped text and advances the layout cursor, creating pages as needed.
 function renderWrappedText(layout, {
   x = PDF_MARGIN_LEFT,
   topY = PDF_PAGE_HEIGHT - PDF_MARGIN_TOP,
@@ -537,6 +546,7 @@ function renderWrappedText(layout, {
   };
 }
 
+// Renders the report title, subtitle, and optional metadata header.
 function renderTitleBlock(layout, report = {}) {
   const title = String(report?.title || 'PDF Report').trim();
   const subtitle = String(report?.subtitle || '').trim();
@@ -574,6 +584,7 @@ function renderTitleBlock(layout, report = {}) {
   layout.currentY -= 14;
 }
 
+// Renders the compact top-of-report KPI cards.
 function renderSummaryStats(layout, stats = []) {
   const resolvedStats = (Array.isArray(stats) ? stats : []).filter(item => item?.label || item?.value);
   if (resolvedStats.length === 0) {
@@ -647,6 +658,7 @@ function renderSummaryStats(layout, stats = []) {
   });
 }
 
+// Renders key/value report metadata in a two-column grid.
 function renderMetadataGrid(layout, metadata = []) {
   const resolvedMetadata = (Array.isArray(metadata) ? metadata : [])
     .map(item => Array.isArray(item) ? { label: item[0], value: item[1] } : item)
@@ -727,6 +739,7 @@ function renderMetadataGrid(layout, metadata = []) {
   });
 }
 
+// Renders a section heading and optional explanatory subtitle.
 function renderSectionHeading(layout, title = '', subtitle = '') {
   const estimatedHeight = subtitle ? 34 : 20;
   ensureSpace(layout, estimatedHeight);
@@ -783,6 +796,7 @@ function measureSectionHeadingHeight(title = '', subtitle = '') {
   return height + 8;
 }
 
+// Renders a simple label/value table section.
 function renderKeyValueTableSection(layout, section = {}) {
   const rows = (Array.isArray(section?.rows) ? section.rows : []).filter(row => row?.label || row?.value);
   const headingHeight = measureSectionHeadingHeight(section.title || 'Section', section.subtitle || '');
@@ -978,6 +992,7 @@ function measureChartLegendHeight(series = [], width = PDF_BODY_WIDTH - 28, {
   return rows * rowHeight;
 }
 
+// Draws a lightweight line chart directly into PDF commands.
 function renderLineChartSection(layout, section = {}) {
   const series = (Array.isArray(section?.series) ? section.series : [])
     .map(item => ({
@@ -1231,6 +1246,7 @@ function normalizeTableColumns(columns = []) {
   }));
 }
 
+// Renders multi-column tabular data with automatic page breaks.
 function renderTableSection(layout, section = {}) {
   const rows = Array.isArray(section?.rows) ? section.rows : [];
   const columns = normalizeTableColumns(section?.columns);
@@ -1408,6 +1424,7 @@ function renderTableSection(layout, section = {}) {
   layout.currentY -= 12;
 }
 
+// Renders card-style report sections for recent highlights and moments.
 function renderCardsSection(layout, section = {}) {
   const items = Array.isArray(section?.items) ? section.items : [];
   const title = section.title || 'Items';
@@ -1580,6 +1597,7 @@ function renderCardsSection(layout, section = {}) {
   layout.currentY -= trailingSpacing;
 }
 
+// Supports older report sections that provide plain text content only.
 function renderLegacyTextSection(layout, section = {}) {
   const lines = Array.isArray(section?.lines) ? section.lines : [];
   const headingHeight = measureSectionHeadingHeight(section.title || 'Section', section.subtitle || '');
@@ -1620,6 +1638,7 @@ function renderLegacyTextSection(layout, section = {}) {
   layout.currentY -= 8;
 }
 
+// Dispatches each report section to the correct renderer based on section.type.
 function renderSection(layout, section = {}) {
   if (section?.pageBreakBefore) {
     forceNewPage(layout);
@@ -1643,6 +1662,7 @@ function renderSection(layout, section = {}) {
   }
 }
 
+// Adds page numbering and footer line to a completed page command stream.
 function renderFooter(pageCommands = [], pageIndex = 0, pageCount = 1) {
   return [
     ...pageCommands,
@@ -1659,6 +1679,7 @@ function renderFooter(pageCommands = [], pageIndex = 0, pageCount = 1) {
   ].join('\n');
 }
 
+// Converts flat bookmark metadata into a nested outline tree for PDF viewers.
 function buildBookmarkTree(bookmarks = []) {
   const root = { children: [] };
   const stack = [root];
@@ -1702,6 +1723,7 @@ function assignOutlineObjectIds(nodes = [], nextObjectIdRef = { value: 1 }) {
   });
 }
 
+// Serializes bookmark nodes into PDF outline objects.
 function buildOutlineObjects(objects, nodes = [], parentObjectId, pageObjectIds = []) {
   (Array.isArray(nodes) ? nodes : []).forEach((node, index, siblingNodes) => {
     const resolvedPageObjectId = pageObjectIds[Math.max(0, Math.min(pageObjectIds.length - 1, node.pageIndex || 0))]
@@ -1735,6 +1757,7 @@ function buildOutlineObjects(objects, nodes = [], parentObjectId, pageObjectIds 
   });
 }
 
+// Assembles PDF objects, cross-reference table, trailer, and optional outline.
 function buildPdfDocument(pageStreams = [], bookmarks = []) {
   const streams = Array.isArray(pageStreams) && pageStreams.length > 0 ? pageStreams : [''];
   const objects = new Map();
@@ -1790,6 +1813,7 @@ function buildPdfDocument(pageStreams = [], bookmarks = []) {
   return pdfText;
 }
 
+// Builds a Blob containing a complete text-first PDF report.
 export function buildTextPdfReportBlob(report = {}) {
   const layout = createPdfLayout();
 
@@ -1825,6 +1849,7 @@ export function buildTextPdfReportBlob(report = {}) {
   return new Blob([pdfText], { type: 'application/pdf' });
 }
 
+// Builds and downloads a PDF report in the browser.
 export function downloadTextPdfReport(filename = 'report.pdf', report = {}) {
   const blob = buildTextPdfReportBlob(report);
   const url = URL.createObjectURL(blob);

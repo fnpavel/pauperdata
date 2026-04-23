@@ -1,3 +1,6 @@
+/* Responsive layout adjustments. Breakpoints are ordered from tablet widths down
+   to very small phones so later blocks can tighten earlier decisions. */
+/* Tablet: keep side filters visible while reducing chart/card density. */
 @media (max-width: 1024px) {
   .event-dashboard {
     grid-template-columns: 280px 1fr;
@@ -63,6 +66,7 @@
   }
 }
 
+/* Large phones/small tablets: collapse dashboard grids into one column. */
 @media (max-width: 768px) {
   .dashboard {
     grid-template-columns: 1fr;
@@ -145,6 +149,7 @@
   }
 }
 
+/* Phones: reduce spacing and typography so dense controls remain tappable. */
 @media (max-width: 600px) {
   .header-content {
     flex-direction: column;
@@ -348,6 +353,7 @@
   }
 }
 
+/* Narrow phones need extra compression for chips, stat cards, and tables. */
 @media (max-width: 375px) {
   .container {
     padding: 10px 5px;
@@ -455,6 +461,7 @@
   }
 }
 
+/* Smallest supported width: prioritize content fit over decorative spacing. */
 @media (max-width: 320px) {
   .data-table-container {
     overflow: visible;

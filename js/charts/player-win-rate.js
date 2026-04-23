@@ -1,3 +1,5 @@
+// Player Analysis win-rate timeline. The chart uses one point per event and a
+// local deck chip filter that does not mutate the global Player Analysis filters.
 import { setChartLoading, triggerUpdateAnimation } from '../utils/dom.js';
 import { getPlayerWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
@@ -7,6 +9,8 @@ import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 
 export let playerWinRateChart = null;
+// Empty means the detail card follows hover; a value means a clicked event stays
+// pinned until another point or reset action replaces it.
 let pinnedPlayerPointKey = '';
 const PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE = 'Deck chips appear here once the current player filters include deck results.';
 
@@ -47,6 +51,8 @@ function readSelectedPlayerWinRateDeck() {
   }
 
   try {
+    // Older UI state stored this as a JSON array. Keep reading it so stale DOM
+    // state from a hot reload does not lose the user's selection.
     const parsed = JSON.parse(root.dataset.selectedDecks || '[]');
     return Array.isArray(parsed) ? String(parsed[0] || '').trim() : '';
   } catch (error) {
@@ -404,6 +410,7 @@ function getSelectedPlayerEventTypeCount() {
   return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).length;
 }
 
+// Redraws the selected player's event-by-event win-rate timeline.
 export function updatePlayerWinRateChart() {
   console.log("updatePlayerWinRateChart called...");
   setChartLoading("playerWinRateChart", true);

@@ -1,3 +1,5 @@
+/* Top-level page layout: container widths, header treatment, and dashboard grid
+   templates for each analysis mode. */
 .container {
   max-width: 1200px;
   margin: 0 auto;
@@ -5,6 +7,8 @@
   width: 100%;
 }
 
+/* Original header shell and animation. Theme-aware overrides later in this file
+   refine the colors while preserving the same structure. */
 header {
   background-color: var(--secondary);
   background-image: radial-gradient(circle at center, rgba(139, 0, 139, 0.2) 0%, rgba(13, 15, 15, 0.9) 70%), 
@@ -59,6 +63,8 @@ header::before {
   opacity: 0.9;
 }
 
+/* Dashboard modes share the same two-column base idea, except Player Analysis
+   uses a three-column layout with sidebars. */
 .dashboard {
   display: grid;
   gap: 30px;
@@ -91,6 +97,7 @@ header::before {
   min-width: 0;
 }
 
+/* Theme-aware header override driven by variables in base.css. */
 header {
   background-color: var(--surface-1);
   background-image:
@@ -101,6 +108,8 @@ header {
   transition: background-color 0.25s ease, box-shadow 0.25s ease;
 }
 
+/* The quality-filter mode gets a distinct header glow to make the active dataset
+   mode visible even before reading the status chip. */
 body[data-analysis-quality-mode="on"] header {
   background-image:
     radial-gradient(circle at center, rgba(91, 189, 180, 0.28) 0%, transparent 48%),

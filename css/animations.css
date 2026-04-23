@@ -1,3 +1,4 @@
+/* Small animation library shared by cards, charts, header, and loading states. */
 @keyframes fadeIn {
   from {
     opacity: 0;

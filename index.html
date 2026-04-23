@@ -24,6 +24,7 @@
   <link rel="canonical" href="https://fnpavel.github.io/pauperdata/">
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="shortcut icon" href="favicon.svg">
+  <!-- Apply the saved/preferred theme before CSS loads to avoid a light/dark flash. -->
   <script>
     (function() {
       const storageKey = 'mtg-tracker-theme';
@@ -41,6 +42,7 @@
       }
     })();
   </script>
+  <!-- CSS is ordered from foundations to increasingly specific overrides. -->
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
@@ -75,12 +77,16 @@
         <h3>Matchup data takes a few seconds to load</h3>
       </div>
       <div class="mode-buttons">
+        <!-- Top-mode buttons are the primary router; js/main.js and filter-index.js
+             decide which dashboard section renders for each mode. -->
         <button class="bubble-button top-mode-button active" data-top-mode="event">Event Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="player">Player Analysis</button>
         <button class="bubble-button top-mode-button" data-top-mode="deck-matchup">Deck Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="player-matchup">Player Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards (Elo Ratings)</button>
         <button class="bubble-button" id="aboutButton">About</button>
+        <!-- Utility controls are global because theme and data-quality mode affect
+             every analysis surface, not just the active section. -->
         <div class="header-utility-stack">
           <div class="analysis-quality-status-chip" id="analysisQualityStatusChip" aria-live="polite">
             <span class="analysis-quality-status-chip-dot" aria-hidden="true"></span>
@@ -113,7 +119,7 @@
   </header>
 
   <div class="container">
-    <!-- Event Analysis Section -->
+    <!-- Event Analysis Section: single-event and multi-event modes share this area. -->
     <div id="eventAnalysisSection">
       <div class="stats-container" id="singleEventStats">
         <div class="stat-card" id="singleEventInfoCard">
@@ -272,7 +278,8 @@
               <select id="endDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
               <div id="metaWinRateChartLegend" class="custom-legend"></div>
               <div id="metaWinRateChartLoading">Loading...</div>
-              <div id="metaWinRateChartContainer"> <!-- Added container -->
+              <!-- Chart modules inject search controls into this wrapper before the canvas. -->
+              <div id="metaWinRateChartContainer">
                 <canvas id="metaWinRateChart"></canvas>
               </div>
             </div>
@@ -340,7 +347,7 @@
       </div>
     </div>
 
-    <!-- Player Analysis Section -->
+    <!-- Player Analysis Section: player filters drive cards, tables, and player-specific charts. -->
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">
         <div class="player-stats-row player-stats-row-primary">
@@ -568,7 +575,7 @@
       </div>
     </div>
 
-    <!-- Matchup Section -->
+    <!-- Matchup Section: reused by deck-vs-deck and player-vs-player top modes. -->
     <div id="matchupSection" style="display: none;">
       <div class="stats-container" id="matchupStats">
         <div class="stat-card" id="matchupTotalEventsCard">
@@ -733,7 +740,7 @@
       </div>
     </div>
 
-    <!-- Leaderboards Section -->
+    <!-- Leaderboards Section: Elo table, timeline, drilldowns, and exports. -->
     <div id="leaderboardsSection" style="display: none;">
       <div class="stats-container" id="leaderboardStats">
         <div class="stat-card" id="leaderboardDateRangeCard">
@@ -1058,7 +1065,7 @@
       </div>
     </div>
 
-    <!-- About Section -->
+    <!-- About Section: shown by modules/about.js without leaving the dashboard page. -->
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
@@ -1103,7 +1110,8 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <!-- Scripts: legacy module tags remain here for browser execution, while
+       js/main.js performs the real initialization after DOMContentLoaded. -->
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script src="js/data.js" type="module"></script>
   <script src="js/utils/dom.js" type="module"></script>

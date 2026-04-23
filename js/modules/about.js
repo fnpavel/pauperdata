@@ -1,3 +1,5 @@
+// Handles the lightweight About page overlay. It temporarily hides whichever
+// dashboard mode was active and restores that mode when the user returns.
 function getDashboardSections() {
   return {
     event: document.getElementById('eventAnalysisSection'),
@@ -17,11 +19,14 @@ function hideDashboardSections() {
   });
 }
 
+// Wires the About button and "Back to Dashboard" link.
 export function setupAboutListeners() {
   const aboutButton = document.getElementById('aboutButton');
   const backToApp = document.getElementById('backToApp');
   const aboutSection = document.getElementById('aboutSection');
   const modeButtons = Array.from(document.querySelectorAll('.top-mode-button[data-top-mode]'));
+  // Track the last real dashboard mode so the About page can behave like a
+  // modal destination rather than a separate permanent top-level mode.
   let lastDashboardMode = document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';
 
   modeButtons.forEach(button => {
@@ -53,6 +58,7 @@ export function setupAboutListeners() {
   }
 }
 
+// Hides the About section when another top-level dashboard mode is selected.
 export function hideAboutSection(mode) {
   const aboutSection = document.getElementById('aboutSection');
   const aboutButton = document.getElementById('aboutButton');

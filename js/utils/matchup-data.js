@@ -1,3 +1,6 @@
+// Loads the matchup archive in two phases: a lightweight catalog first, then
+// per-year match/round files for the active date window. This keeps initial page
+// load smaller while still allowing large matchup matrices when requested.
 import { getQuickViewPresetDefinitionsByIds } from './quick-view-presets.js';
 
 const MATCHUP_DATA_ROOT = new URL('../../data/matchups/', import.meta.url);
@@ -91,6 +94,8 @@ async function loadYearDataset(year = '', fileMap = {}, cache = new Map()) {
   }
 
   if (!cache.has(normalizedYear)) {
+    // Store promises, not just resolved arrays, so concurrent calls for the same
+    // year share one network request.
     const relativePath = String(fileMap?.[normalizedYear] || '').trim();
     if (!relativePath) {
       cache.set(normalizedYear, Promise.resolve([]));
@@ -111,6 +116,7 @@ function getYearCacheKey(years = []) {
   return [...new Set((Array.isArray(years) ? years : []).filter(Boolean))].join('|');
 }
 
+// Loads the matchup manifest and event catalog once.
 export async function ensureMatchupCatalogLoaded() {
   if (!matchupCatalogPromise) {
     matchupCatalogPromise = Promise.all([
@@ -137,6 +143,7 @@ export async function ensureMatchupCatalogLoaded() {
   return matchupCatalogPromise;
 }
 
+// Loads match and/or round records for the years touched by the active window.
 export async function ensureMatchupWindowLoaded({
   startDate = '',
   endDate = '',
@@ -149,6 +156,8 @@ export async function ensureMatchupWindowLoaded({
 
   if (includeMatches) {
     if (yearsKey !== loadedMatchYearsKey) {
+      // Only reload when the set of years changes. Date filtering happens below
+      // in memory, so sliding within the same year range is cheap.
       const matchGroups = await Promise.all(
         yearsToLoad.map(year => loadYearDataset(year, matchupManifest.match_files_by_year, matchYearsCache))
       );
@@ -182,22 +191,28 @@ export async function ensureMatchupWindowLoaded({
   };
 }
 
+// Returns the currently loaded matchup manifest.
 export function getMatchupManifest() {
   return matchupManifest;
 }
 
+// Returns the matchup event catalog loaded by ensureMatchupCatalogLoaded().
 export function getMatchupEvents() {
   return matchupEvents;
 }
 
+// Returns currently loaded round records for the active window.
 export function getMatchupRounds() {
   return matchupRounds;
 }
 
+// Returns currently loaded match records for the active window.
 export function getMatchupMatches() {
   return matchupMatches;
 }
 
+// Filters loaded matchup records by event type, date window, and quick-view
+// preset.
 export function filterMatchupRecords(
   records = [],
   {
@@ -207,6 +222,8 @@ export function filterMatchupRecords(
     quickViewPresetId = ''
   } = {}
 ) {
+  // The archive uses normalized ISO dates, so string comparisons are safe and
+  // faster than constructing Date objects for every record.
   const selectedEventTypes = Array.isArray(eventTypes)
     ? eventTypes.map(value => String(value || '').toLowerCase()).filter(Boolean)
     : [];

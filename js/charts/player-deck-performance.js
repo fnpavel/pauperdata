@@ -1,3 +1,5 @@
+// Player Analysis scatter chart comparing each deck's event count against its
+// overall win rate for the currently selected player and date/event filters.
 import { setChartLoading } from '../utils/dom.js';
 import { getPlayerDeckPerformanceChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
@@ -11,6 +13,7 @@ function getSelectedPlayerEventTypeCount() {
   return Array.from(playerAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).length;
 }
 
+// Redraws the selected player's deck-performance scatter chart.
 export function updatePlayerDeckPerformanceChart() {
   console.log("updatePlayerDeckPerformanceChart called...");
   setChartLoading("playerDeckPerformanceChart", true);
@@ -18,6 +21,8 @@ export function updatePlayerDeckPerformanceChart() {
 
   const filteredData = getPlayerDeckPerformanceChartData();
   if (!filteredData.length) {
+    // Render an inert placeholder chart instead of leaving stale data visible
+    // when the player/date/event-type filters have no matching rows.
     console.log("No data condition triggered");
     if (playerDeckPerformanceChart) playerDeckPerformanceChart.destroy();
     const ctx = document.getElementById("playerDeckPerformanceChart");
@@ -83,6 +88,8 @@ export function updatePlayerDeckPerformanceChart() {
   ];
 
   let colorIndex = 0;
+  // Each deck gets its own one-point dataset so Chart.js can expose deck names
+  // directly in the legend and let users toggle decks independently.
   const datasets = deckStats.map(stats => {
     const color = colors[colorIndex++ % colors.length];
     return {

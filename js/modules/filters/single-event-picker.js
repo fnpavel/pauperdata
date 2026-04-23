@@ -17,6 +17,8 @@ const MONTH_NAMES = [
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 const calendarState = {
+  // Local state keeps the picker interactive while the hidden select remains the
+  // compatibility bridge for older chart/filter code.
   entries: [],
   selectedEvent: '',
   selectedGroupKey: '',
@@ -26,6 +28,7 @@ const calendarState = {
   onSelectEvent: null
 };
 
+// Resets the local calendar picker state when the available event set changes.
 export function resetEventFilterCalendarState() {
   calendarState.entries = [];
   calendarState.selectedEvent = '';
@@ -35,7 +38,10 @@ export function resetEventFilterCalendarState() {
   calendarState.emptyMessage = 'No events available.';
 }
 
+// Primes the picker to an externally selected event before rendering.
 export function primeEventFilterCalendarSelection(selectedEvent, entries = []) {
+  // Called when external code changes the selected event before the picker
+  // renders, so the calendar opens to the correct group/year/month.
   const sourceEntries = entries.length > 0 ? entries : calendarState.entries;
   if (!selectedEvent || sourceEntries.length === 0) {
     return;
@@ -121,6 +127,8 @@ function getEntriesForCurrentMonth() {
 }
 
 function resolveCalendarState(selectedEvent) {
+  // Resolve the currently valid group/year/month after event type changes. Any
+  // now-invalid selection is cleared rather than pointing at a stale event.
   if (calendarState.entries.length === 0) {
     calendarState.selectedEvent = '';
     calendarState.selectedGroupKey = '';
@@ -225,6 +233,8 @@ function getCurrentDisplayedEventName() {
 }
 
 function drawCalendar(container, selectedEntry) {
+  // The picker is built from buttons instead of a native select because users
+  // need to browse by event family, year, month, and day.
   container.innerHTML = '';
 
   if (calendarState.entries.length === 0) {
@@ -397,6 +407,7 @@ function drawCalendar(container, selectedEntry) {
   container.appendChild(grid);
 }
 
+// Renders the single-event calendar picker for the provided entries.
 export function renderEventFilterCalendar({
   entries = [],
   selectedEvent = '',

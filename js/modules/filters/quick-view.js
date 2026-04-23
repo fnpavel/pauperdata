@@ -34,10 +34,12 @@ import {
   setSectionEventType
 } from './shared.js';
 
+// Returns the multi-event quick-view chip container.
 export function getMultiEventQuickViewRoot() {
   return document.getElementById('multiEventQuickViewButtons');
 }
 
+// Returns the Player Analysis quick-view chip container.
 export function getPlayerQuickViewRoot() {
   return document.getElementById('playerQuickViewButtons');
 }
@@ -67,6 +69,8 @@ function getQuickViewDatasetKey(scope) {
 }
 
 function createQuickViewButton(preset, buttonClass, datasetKey) {
+  // Button titles expose the exact date window for maintainers/users without
+  // crowding the compact chip labels.
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `bubble-button ${buttonClass}`;
@@ -104,6 +108,8 @@ function getActiveQuickViewPresetIds(scope, activePresetValue = '') {
 }
 
 function getResolvedQuickViewYear(scope, activePresetIds = []) {
+  // Prefer the user's current year tab, then the active preset's year, then the
+  // newest available year. This keeps set-window chips stable after rerenders.
   const analysisRows = getAnalysisRows();
   const yearOptions = getQuickViewPresetYearOptions(analysisRows);
   if (yearOptions.length === 0) {
@@ -130,6 +136,7 @@ function getResolvedQuickViewYear(scope, activePresetIds = []) {
   return yearOptions[0];
 }
 
+// Rebuilds quick-view chips for either multi-event or player scope.
 export function renderQuickViewButtons(scope) {
   const container = getQuickViewRoot(scope);
   if (!container) {
@@ -156,6 +163,8 @@ export function renderQuickViewButtons(scope) {
   const highlightedYears = new Set();
   const highlightedSetWindowIds = new Set();
 
+  // Calendar-year presets highlight every set chip in that year. A specific set
+  // preset highlights only its own chip and parent year.
   if (!hasAllPeriodPreset) {
     if (activeCalendarYearPresets.length > 0) {
       activeCalendarYearPresets.forEach(preset => {
@@ -265,6 +274,7 @@ export function renderQuickViewButtons(scope) {
   container.appendChild(setSection);
 }
 
+// Reads the active multi-event preset id from the quick-view container.
 export function getActiveMultiEventPreset() {
   return getMultiEventQuickViewRoot()?.dataset.activePreset
     || Array.from(document.querySelectorAll('.multi-event-preset-button.active'))
@@ -274,10 +284,12 @@ export function getActiveMultiEventPreset() {
     || '';
 }
 
+// Reads active multi-event preset ids as a normalized list.
 export function getActiveMultiEventPresetIds() {
   return normalizeQuickViewPresetIds(getActiveMultiEventPreset());
 }
 
+// Writes active state to the multi-event preset buttons and container dataset.
 export function setMultiEventPresetButtonState(activePresetId = '') {
   const root = getMultiEventQuickViewRoot();
   const activePresetIds = normalizeQuickViewPresetIds(activePresetId);
@@ -297,14 +309,17 @@ export function setMultiEventPresetButtonState(activePresetId = '') {
   renderQuickViewButtons('multi');
 }
 
+// Clears the active multi-event preset state after a manual date/type change.
 export function clearMultiEventPresetButtonState() {
   setMultiEventPresetButtonState('');
 }
 
+// Returns the default set-window quick-view preset for current analysis rows.
 export function getDefaultSetQuickViewPresetId() {
   return getLatestSetQuickViewPresetId(getAnalysisRows());
 }
 
+// Ensures multi-event controls have a preset before first render.
 export function ensureDefaultMultiEventPreset() {
   const activePresetId = getActiveMultiEventPreset();
   if (activePresetId) {
@@ -316,20 +331,24 @@ export function ensureDefaultMultiEventPreset() {
   return defaultPresetId;
 }
 
+// Updates the selected quick-view year tab for a scope.
 export function setQuickViewYearSelection(scope, year) {
   setActiveQuickViewYear(scope, year);
   renderQuickViewButtons(scope);
 }
 
+// Applies event-type button state in the Event Analysis section.
 export function setEventAnalysisEventTypes(nextTypes = []) {
   const requestedType = Array.isArray(nextTypes) ? nextTypes[0] : nextTypes;
   setSectionEventType(getEventAnalysisSection(), requestedType || 'online');
 }
 
+// Returns rows scoped to Event Analysis event types and active preset.
 export function getScopedMultiEventRows(selectedEventTypes = getEventAnalysisSelectedTypes()) {
   return getMultiEventPresetRows(selectedEventTypes, getActiveMultiEventPreset());
 }
 
+// Applies the active multi-event preset's suggested date range to date controls.
 export function applyActiveMultiEventPresetDateRange() {
   const activePreset = getActiveMultiEventPreset();
   const startDateSelect = document.getElementById('startDateSelect');
@@ -357,6 +376,8 @@ export function applyActiveMultiEventPresetDateRange() {
   return true;
 }
 
+// Applies one multi-event preset, including event types, dates, button state, and
+// chart refresh.
 export function applyMultiEventPreset(presetId) {
   const analysisRows = getAnalysisRows();
   const preset = getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true });
@@ -404,6 +425,8 @@ export function applyMultiEventPreset(presetId) {
   }
 }
 
+// Writes active state to the Player Analysis preset buttons and container
+// dataset.
 export function setPlayerPresetButtonState(activePresetId = '') {
   const root = getPlayerQuickViewRoot();
   const activePresetIds = normalizeQuickViewPresetIds(activePresetId);
@@ -423,10 +446,12 @@ export function setPlayerPresetButtonState(activePresetId = '') {
   renderQuickViewButtons('player');
 }
 
+// Clears the active Player Analysis preset after a manual date/type change.
 export function clearPlayerPresetButtonState() {
   setPlayerPresetButtonState('');
 }
 
+// Ensures Player Analysis controls have a preset before first render.
 export function ensureDefaultPlayerPreset() {
   const activePresetId = getPlayerAnalysisActivePreset();
   if (activePresetId) {
@@ -438,6 +463,7 @@ export function ensureDefaultPlayerPreset() {
   return defaultPresetId;
 }
 
+// Applies event-type button state in the Player Analysis section.
 export function setPlayerAnalysisEventTypes(nextTypes = []) {
   const requestedType = Array.isArray(nextTypes) ? nextTypes[0] : nextTypes;
   setSectionEventType(getPlayerAnalysisSection(), requestedType || 'online');
@@ -460,10 +486,12 @@ function resolvePresetEventTypeSelection(currentTypes = [], presetEventTypes = [
   return normalizedPresetTypes[0] || defaultType;
 }
 
+// Returns rows scoped to Player Analysis event types and active preset.
 export function getScopedPlayerAnalysisRows(selectedEventTypes = getPlayerAnalysisSelectedTypes()) {
   return getPlayerPresetRows(selectedEventTypes, getPlayerAnalysisActivePreset());
 }
 
+// Applies the active Player Analysis preset's suggested date range to controls.
 export function applyActivePlayerPresetDateRange() {
   const activePreset = getPlayerAnalysisActivePreset();
   const playerFilterMenu = document.getElementById('playerFilterMenu');
@@ -493,6 +521,8 @@ export function applyActivePlayerPresetDateRange() {
   return true;
 }
 
+// Applies one Player Analysis preset, including event types, dates, player menu
+// refresh, and chart refresh.
 export function applyPlayerAnalysisPreset(presetId) {
   const analysisRows = getAnalysisRows();
   const preset = getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true });

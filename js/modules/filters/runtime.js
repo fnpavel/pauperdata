@@ -9,6 +9,7 @@ export const filterRuntime = {
   resetPlayerDateRange: () => {}
 };
 
+// Allows the filter coordinator to inject callbacks used by split filter modules.
 export function configureFilterRuntime(overrides = {}) {
   Object.assign(filterRuntime, overrides);
 }

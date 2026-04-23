@@ -1,3 +1,5 @@
+/* Global link styling. Component-specific link treatments should override these
+   variables rather than hard-coding colors. */
 a {
   color: var(--link-color);
   transition: color 0.2s ease;

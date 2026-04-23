@@ -475,9 +475,13 @@ function setPlayerDateSelection(type, value, options = {}) {
   updateAllCharts();
 }
 
+// Initializes all filter controls to a coherent default state and triggers the
+// first dashboard render.
 export function setupFilters() {
   console.log('Setting up filters...');
 
+  // Establish default control state before the first render so every module sees
+  // a complete, valid filter selection.
   setupAnalysisQualityToggleListeners();
   setDefaultSectionEventType(getPlayerAnalysisSection());
   setMultiEventPresetButtonState(getDefaultSetQuickViewPresetId());
@@ -544,6 +548,7 @@ export function setupFilters() {
   updateAllCharts();
 }
 
+// Central render router called by filter interactions and theme refreshes.
 export function updateAllCharts() {
   // This is the central render router for the dashboard. Filter interactions
   // funnel through here so each top-level mode can refresh from one shared,
@@ -593,7 +598,10 @@ export function updateAllCharts() {
   updatePlayerSelectionSummary();
 }
 
+// Returns rows for the single-event funnel chart.
 export function getFunnelChartData() {
+  // Funnel data is intentionally rebuilt from analysis rows rather than the
+  // legacy filteredData cache because it also honors rank-range controls.
   const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
   const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
@@ -606,6 +614,7 @@ export function getFunnelChartData() {
   return filtered.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
 }
 
+// Returns rows for the single-event meta/win-rate chart.
 export function getMetaWinRateChartData() {
   const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
@@ -615,10 +624,12 @@ export function getMetaWinRateChartData() {
   });
 }
 
+// Returns rows for charts that use the active multi-event window.
 export function getMultiEventChartData() {
   return getFilteredMultiEventRows();
 }
 
+// Returns rows for the deck evolution chart.
 export function getDeckEvolutionChartData() {
   const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
   const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
@@ -627,14 +638,17 @@ export function getDeckEvolutionChartData() {
   return multiEventData.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
 }
 
+// Returns rows for the selected player's deck-performance chart.
 export function getPlayerDeckPerformanceChartData() {
   return getFilteredPlayerAnalysisRows().filter(row => row.Deck !== 'No Show');
 }
 
+// Returns rows for the selected player's win-rate timeline.
 export function getPlayerWinRateChartData() {
   return getPlayerDeckPerformanceChartData();
 }
 
+// Wires the top-mode navigation buttons.
 export function setupTopModeListeners() {
   const topModeButtons = document.querySelectorAll('.top-mode-button');
   const eventAnalysisSection = document.getElementById('eventAnalysisSection');
@@ -774,6 +788,7 @@ export function setupTopModeListeners() {
   });
 }
 
+// Wires Event Analysis single/multi mode buttons.
 export function setupAnalysisModeListeners() {
   const analysisModeButtons = document.querySelectorAll('.analysis-mode');
   const singleEventStats = document.getElementById('singleEventStats');
@@ -825,6 +840,7 @@ export function setupAnalysisModeListeners() {
   });
 }
 
+// Wires event-type buttons for Event and Player analysis sections.
 export function setupEventTypeListeners() {
   const eventAnalysisButtons = getSectionEventTypeButtons(getEventAnalysisSection());
   const playerAnalysisButtons = getSectionEventTypeButtons(getPlayerAnalysisSection());
@@ -885,6 +901,7 @@ export function setupEventTypeListeners() {
   });
 }
 
+// Wires hidden single-event select changes for legacy compatibility.
 export function setupEventFilterListeners() {
   const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (eventFilterMenu) {
@@ -892,6 +909,7 @@ export function setupEventFilterListeners() {
   }
 }
 
+// Wires player filter changes.
 export function setupPlayerFilterListeners() {
   const playerFilterMenu = document.getElementById('playerFilterMenu');
   const playerStartDateSelect = document.getElementById('playerStartDateSelect');
@@ -940,6 +958,7 @@ export function setupPlayerFilterListeners() {
   }
 }
 
+// Wires quick-view preset buttons for multi-event/player views.
 export function setupMultiEventPresetListeners() {
   const multiEventQuickViewRoot = getMultiEventQuickViewRoot();
   if (!multiEventQuickViewRoot) {
@@ -960,6 +979,7 @@ export function setupMultiEventPresetListeners() {
   });
 }
 
+// Rebuilds multi-event date controls after event type or preset changes.
 export function updateDateOptions() {
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');
@@ -1068,6 +1088,8 @@ export function updateDateOptions() {
   updateMultiEventSelectionSummary();
 }
 
+// Rebuilds Player Analysis player/date controls after event type or preset
+// changes.
 export function updatePlayerDateOptions() {
   const startDateSelect = document.getElementById('playerStartDateSelect');
   const endDateSelect = document.getElementById('playerEndDateSelect');
@@ -1236,6 +1258,7 @@ export function updatePlayerDateOptions() {
   updatePlayerSelectionSummary();
 }
 
+// Populates date dropdown options for the given event type.
 export function populateDateDropdowns(eventType) {
   const filteredDates = getSortedUniqueDateValues(
     getRowsScopedToSelectedEventTypes(getAnalysisRows(), [eventType])

@@ -1,3 +1,5 @@
+/* Shared Chart.js containers, loading states, chart-specific sizing, and
+   reusable search/dropdown controls used by chart modules. */
 .chart-container {
   background-color: var(--secondary);
   max-width: 100%;
@@ -75,7 +77,8 @@ canvas {
   transition: opacity 0.3s ease;
 }
 
-/* Specific Charts */
+/* Specific Charts: these heights match the amount of label/detail density each
+   chart needs. Keep them with the canvas ids so module changes are easy to map. */
 #eventFunnelChart {
   max-height: 800px !important;
 }
@@ -210,6 +213,8 @@ canvas {
   font-weight: bold;
 }
 
+/* Theme-token refinement layer. Earlier rules establish layout and animation;
+   this block swaps in variables for dark/light mode support. */
 .chart-container {
   background: linear-gradient(155deg, var(--surface-2), var(--surface-1));
   box-shadow: 0 14px 26px var(--shadow-color);
@@ -237,6 +242,8 @@ canvas {
   border: 1px solid var(--tooltip-border);
 }
 
+/* Search widgets injected by chart modules share these classes even when the
+   underlying search targets differ between decks and players. */
 .chart-search-container {
   margin-bottom: 15px;
   position: relative;

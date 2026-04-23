@@ -18,6 +18,8 @@ const MONTH_NAMES = [
 const rangeCalendarStates = new Map();
 
 function getRangeCalendarState(containerId) {
+  // Each calendar instance keeps independent viewed months, so multi-event and
+  // player calendars can be open on different months without fighting.
   if (!rangeCalendarStates.has(containerId)) {
     rangeCalendarStates.set(containerId, {
       startViewMonth: '',
@@ -110,6 +112,8 @@ function renderCalendarPanel({
   onNavigateMonth,
   onSelectDate
 }) {
+  // One renderer is used for both "Start" and "End" panels. The caller supplies
+  // the selectable date set so invalid start/end combinations stay disabled.
   const panel = document.createElement('div');
   panel.className = 'range-calendar-panel';
 
@@ -239,6 +243,7 @@ function renderCalendarPanel({
   return panel;
 }
 
+// Renders a two-panel date range calendar for any range-based filter.
 export function renderDateRangeCalendar({
   containerId,
   dates = [],
@@ -343,6 +348,7 @@ export function renderDateRangeCalendar({
   container.appendChild(wrapper);
 }
 
+// Renders the Multi-Event Analysis date range calendar.
 export function renderMultiEventDateRangeCalendar(options = {}) {
   return renderDateRangeCalendar({
     containerId: 'multiEventDateRangeCalendar',
@@ -350,6 +356,7 @@ export function renderMultiEventDateRangeCalendar(options = {}) {
   });
 }
 
+// Renders the Player Analysis date range calendar.
 export function renderPlayerDateRangeCalendar(options = {}) {
   return renderDateRangeCalendar({
     containerId: 'playerDateRangeCalendar',

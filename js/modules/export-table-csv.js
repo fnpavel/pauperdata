@@ -1,13 +1,20 @@
+// CSV export helpers for tables and matchup matrices. Export modules receive
+// already-rendered table state and convert it to stable, spreadsheet-friendly
+// rows without reaching back into the DOM.
 import { formatDate, formatEventName } from '../utils/format.js';
 
+// Escapes a single CSV field.
 export function escapeCsvValue(value) {
   const text = String(value ?? '');
+  // RFC-style CSV escaping: quote fields only when commas, quotes, or newlines
+  // would otherwise break the column shape.
   if (/[",\r\n]/.test(text)) {
     return `"${text.replace(/"/g, '""')}"`;
   }
   return text;
 }
 
+// Converts arbitrary UI labels into filesystem-safe CSV filenames.
 export function sanitizeCsvFilename(value) {
   return String(value || '')
     .trim()
@@ -63,6 +70,7 @@ function formatCrossTabSummaryValue(stats, {
   return `${winRate}% | ${stats.wins}-${stats.losses}`;
 }
 
+// Builds a CSV string for deck/player matchup matrices.
 export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck', metadataRows = [], options = {}) {
   if (!matrixData || !Array.isArray(matrixData.rowOrder) || !Array.isArray(matrixData.columnOrder)) {
     return '';
@@ -81,6 +89,8 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
   const rows = [];
 
   if (Array.isArray(metadataRows) && metadataRows.length > 0) {
+    // Metadata rows give exported files enough context to be useful outside the
+    // dashboard, while the blank row keeps the actual matrix easy to locate.
     metadataRows.forEach(metadataRow => {
       rows.push((metadataRow || []).map(escapeCsvValue).join(','));
     });
@@ -136,6 +146,7 @@ export function buildCrossTabMatrixCsv(matrixData, rowHeaderLabel = 'Played Deck
   return rows.join('\r\n');
 }
 
+// Builds a CSV string from generic column definitions and row objects.
 export function buildStructuredTableCsv(columnDefinitions = [], rows = [], metadataRows = []) {
   if (!Array.isArray(columnDefinitions) || columnDefinitions.length === 0) {
     return '';
@@ -176,7 +187,10 @@ export function buildStructuredTableCsv(columnDefinitions = [], rows = [], metad
   return csvRows.join('\r\n');
 }
 
+// Downloads a CSV string in the browser.
 export function downloadCsvFile(filename, csvText) {
+  // Browser-only download path: create a temporary object URL, click a hidden
+  // anchor, then immediately release the blob URL.
   const blob = new Blob([csvText], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');
@@ -192,6 +206,7 @@ function buildTableMetadata(title = '') {
   return title ? [['Table', title]] : [];
 }
 
+// Exports the currently visible Event Analysis table.
 export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-analysis-table') {
   const {
     tableType = 'raw',
@@ -207,6 +222,8 @@ export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-
 
   let columnDefinitions = [];
 
+  // Column definitions deliberately mirror the visible table modes so exported
+  // CSV files match what the user was looking at when they clicked Download.
   if (group === 'single' && tableType === 'raw') {
     columnDefinitions = [
       { header: 'Rank', key: 'rank' },
@@ -253,6 +270,7 @@ export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-
   return true;
 }
 
+// Exports the currently visible Player Analysis table.
 export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'player-analysis-table') {
   const {
     tableType = 'event',

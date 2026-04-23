@@ -1,3 +1,5 @@
+// Multi-event meta vs win-rate scatter chart. It doubles as navigation: clicking
+// a deck focuses the Deck Evolution chart/table on that archetype.
 import { setChartLoading } from '../utils/dom.js';
 import { getMultiEventChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
@@ -6,6 +8,8 @@ import { getChartTheme } from '../utils/theme.js';
 
 export let metaWinRateChart = null;
 
+// Redraws the multi-event meta/win-rate scatter chart from the active filter
+// state.
 export function updateMultiMetaWinRateChart() {
   console.log("updateMultiMetaWinRateChart called...");
   setChartLoading("metaWinRateChart", true);
@@ -22,7 +26,7 @@ export function updateMultiMetaWinRateChart() {
   const deckData = calculateMetaWinRateStats(filteredData);
   let labels, datasets, options;
 
-  // Scatter view logic
+  // Scatter view logic: each deck is a point where x = meta share and y = win rate.
   const scatterData = deckData.map(d => ({
     x: d.meta,
     y: d.winRate,
@@ -104,7 +108,8 @@ export function updateMultiMetaWinRateChart() {
     return;
   }
 
-  // Add searchable dropdown
+  // Add a local search dropdown. It highlights and zooms this chart only; it does
+  // not change the global multi-event filters.
   const chartContainer = metaWinRateMultiCtx.parentElement;
   let searchContainer = chartContainer.querySelector('.deck-search-container');
   if (!searchContainer) {
@@ -168,7 +173,8 @@ export function updateMultiMetaWinRateChart() {
           searchInput.value = deck;
           dropdown.style.display = 'none';
           
-          // Find and highlight the selected deck's point
+          // Find and highlight the selected deck's point, then zoom around it so
+          // dense metagames remain navigable.
           const dataset = metaWinRateChart.data.datasets[0];
           const pointIndex = dataset.data.findIndex(d => d.label === deck);
           if (pointIndex !== -1) {
@@ -257,6 +263,8 @@ export function updateMultiMetaWinRateChart() {
           }
         },
         onClick: (_, activeElements, chart) => {
+          // A point click promotes the selected deck into the Deck Evolution view
+          // so users can inspect the same archetype over time.
           if (activeElements.length === 0) {
             return;
           }

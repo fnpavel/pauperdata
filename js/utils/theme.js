@@ -1,7 +1,12 @@
+// Centralizes all theme behavior for the dashboard. Keeping persistence,
+// button state, custom events, and Chart.js color tokens here prevents each
+// chart/module from duplicating light/dark mode logic.
 export const THEME_STORAGE_KEY = 'mtg-tracker-theme';
 const THEME_CHANGE_EVENT = 'mtg-theme-change';
 
 function canUseLocalStorage() {
+  // localStorage can throw in privacy modes or embedded contexts, so all theme
+  // persistence goes through this guard before reading or writing.
   try {
     return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
   } catch (error) {
@@ -15,6 +20,8 @@ function getSystemThemePreference() {
     : 'dark';
 }
 
+// Reads the persisted explicit user preference, returning an empty string when
+// storage is unavailable or the user has not chosen a theme.
 export function getStoredThemePreference() {
   if (!canUseLocalStorage()) {
     return '';
@@ -23,6 +30,8 @@ export function getStoredThemePreference() {
   return window.localStorage.getItem(THEME_STORAGE_KEY) || '';
 }
 
+// Resolves the theme currently driving the page, falling back to saved/system
+// preference when the dataset has not been initialized yet.
 export function getActiveTheme() {
   return document.documentElement.dataset.theme || getStoredThemePreference() || getSystemThemePreference();
 }
@@ -39,6 +48,8 @@ function getThemeLabel(theme) {
   return theme === 'light' ? 'Light Mode' : 'Dark Mode';
 }
 
+// Mirrors the active theme into the header toggle's text, ARIA state, and next
+// action label.
 export function syncThemeToggleButton() {
   const button = document.getElementById('themeToggleButton');
   if (!button) {
@@ -58,9 +69,11 @@ export function syncThemeToggleButton() {
   }
 }
 
+// Applies a theme to the document and optionally persists it for future visits.
 export function applyTheme(theme, { persist = true } = {}) {
   const normalizedTheme = theme === 'light' ? 'light' : 'dark';
 
+  // The CSS selectors and browser native controls both rely on these two values.
   document.documentElement.dataset.theme = normalizedTheme;
   document.documentElement.style.colorScheme = normalizedTheme;
 
@@ -72,12 +85,15 @@ export function applyTheme(theme, { persist = true } = {}) {
   window.dispatchEvent(new CustomEvent(THEME_CHANGE_EVENT, { detail: { theme: normalizedTheme } }));
 }
 
+// Flips between light and dark mode and returns the newly active theme.
 export function toggleTheme() {
   const nextTheme = getActiveTheme() === 'light' ? 'dark' : 'light';
   applyTheme(nextTheme);
   return nextTheme;
 }
 
+// Wires the header toggle once and allows the caller to redraw charts after a
+// theme change.
 export function setupThemeToggle(onThemeChange) {
   syncThemeToggleButton();
 
@@ -95,14 +111,19 @@ export function setupThemeToggle(onThemeChange) {
   });
 }
 
+// Lets modules subscribe to theme changes without coupling to the toggle button.
 export function onThemeChange(listener) {
   window.addEventListener(THEME_CHANGE_EVENT, listener);
 }
 
+// Reads CSS custom properties and converts them into the color bundle expected by
+// Chart.js config builders.
 export function getChartTheme() {
   const styles = getComputedStyle(document.documentElement);
   const readVar = name => styles.getPropertyValue(name).trim();
 
+  // Chart helpers read this object on each redraw so theme changes can refresh
+  // Chart.js colors without rebuilding theme constants in every chart file.
   return {
     text: readVar('--chart-text') || readVar('--light') || '#ffffff',
     mutedText: readVar('--chart-muted-text') || readVar('--light') || '#e0e0e0',

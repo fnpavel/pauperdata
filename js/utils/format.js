@@ -1,4 +1,7 @@
-// js/utils/format.js
+// Shared formatting helpers. These intentionally avoid browser timezone
+// surprises because event dates are stored as plain YYYY-MM-DD values.
+// Formats a YYYY-MM-DD value for display without letting local timezone offsets
+// shift the calendar date.
 export function formatDate(dateStr) { // From utils.js
   // Split the date string to avoid timezone interpretation issues
   const [year, month, day] = dateStr.split('-').map(Number);
@@ -7,10 +10,12 @@ export function formatDate(dateStr) { // From utils.js
   return date.toLocaleDateString('en-US', { timeZone: 'UTC', month: 'long', day: '2-digit', year: 'numeric' });
 }
 
+// Formats numeric percentages to one decimal place plus a percent sign.
 export function formatPercentage(value) { // Existing from previous
   return `${parseFloat(value).toFixed(1)}%`;
 }
 
+// Formats a start/end date pair for labels and summaries.
 export function formatDateRange(startDateStr, endDateStr) { // Existing from previous
   if (!startDateStr || !endDateStr) return "Select a date range";
   const startDate = new Date(startDateStr);
@@ -25,6 +30,7 @@ export function formatDateRange(startDateStr, endDateStr) { // Existing from pre
 
 // The eventName for ONLINE Events is stored as "MTGO <type of Event> (YYYY-MM-DD)" so this function removes the
 // trailing date and hides the "MTGO" prefix for display in the UI.
+// Removes noisy MTGO/date prefixes from event names for compact display.
 export function formatEventName(eventName) {
   if (!eventName) return "";
   const dateSuffixPattern = /\s*\(\d{4}-\d{2}-\d{2}\)$/;
