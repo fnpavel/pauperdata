@@ -280,7 +280,8 @@ export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'playe
   const {
     tableType = 'event',
     title = fallbackName,
-    rows = []
+    rows = [],
+    runningEloLabel = '2024-2026'
   } = tableState || {};
 
   if (!Array.isArray(rows) || rows.length === 0) {
@@ -294,19 +295,18 @@ export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'playe
       { header: 'Number of Players', key: 'players' },
       { header: 'Rank', key: 'rank' },
       { header: 'Deck', key: 'deck' },
-      { header: 'Season Elo Gained', value: row => Number.isFinite(Number(row.seasonEloDelta)) ? `${Math.round(Number(row.seasonEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.seasonEloDelta))}` : '--' },
-      { header: 'Season Elo', value: row => Number.isFinite(Number(row.seasonElo)) ? String(Math.round(Number(row.seasonElo))) : '--' },
-      { header: 'Running Elo Gained', value: row => Number.isFinite(Number(row.runningEloDelta)) ? `${Math.round(Number(row.runningEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.runningEloDelta))}` : '--' },
-      { header: 'Running Elo (2024-2026)', value: row => Number.isFinite(Number(row.runningElo)) ? String(Math.round(Number(row.runningElo))) : '--' },
       { header: 'Wins', key: 'wins' },
       { header: 'Losses', key: 'losses' },
       { header: 'Player Win Rate', value: row => `${Number(row.winRate || 0).toFixed(1)}%` },
       { header: "Deck's Overall Win Rate", value: row => `${Number(row.deckWinRate || 0).toFixed(1)}%` },
-      { header: "Deck's Meta", value: row => `${Number(row.deckMeta || 0).toFixed(1)}%` }
+      { header: "Deck's Meta", value: row => `${Number(row.deckMeta || 0).toFixed(1)}%` },
+      { header: 'Season Elo Gained', value: row => Number.isFinite(Number(row.seasonEloDelta)) ? `${Math.round(Number(row.seasonEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.seasonEloDelta))}` : '--' },
+      { header: 'Season Elo', value: row => Number.isFinite(Number(row.seasonElo)) ? String(Math.round(Number(row.seasonElo))) : '--' },
+      { header: 'Running Elo Gained', value: row => Number.isFinite(Number(row.runningEloDelta)) ? `${Math.round(Number(row.runningEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.runningEloDelta))}` : '--' },
+      { header: `Running Elo (${runningEloLabel})`, value: row => Number.isFinite(Number(row.runningElo)) ? String(Math.round(Number(row.runningElo))) : '--' }
     ]
     : [
       { header: 'Deck', key: 'deck' },
-      { header: 'Elo Deck', value: row => Number.isFinite(Number(row.deckElo)) ? String(Math.round(Number(row.deckElo))) : '--' },
       { header: 'Number of Events', key: 'events' },
       { header: 'Wins', key: 'wins' },
       { header: 'Losses', key: 'losses' },
@@ -314,7 +314,8 @@ export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'playe
       { header: 'Best Win Rate', value: row => `${Number(row.bestWinRate || 0).toFixed(2)}%` },
       { header: 'Best Event', value: row => `${row.bestDate || '--'} - ${row.bestEvent || '--'}` },
       { header: 'Worst Win Rate', value: row => `${Number(row.worstWinRate || 0).toFixed(2)}%` },
-      { header: 'Worst Event', value: row => `${row.worstDate || '--'} - ${row.worstEvent || '--'}` }
+      { header: 'Worst Event', value: row => `${row.worstDate || '--'} - ${row.worstEvent || '--'}` },
+      { header: 'Elo Deck', value: row => Number.isFinite(Number(row.deckElo)) ? String(Math.round(Number(row.deckElo))) : '--' }
     ];
 
   const csvText = buildStructuredTableCsv(columnDefinitions, rows, buildTableMetadata(title));

@@ -3107,15 +3107,15 @@ function renderPlayerEventTableRows(rows = []) {
       <td>${row.players}</td>
       <td>${row.rank}</td>
       <td>${row.deck}</td>
-      <td>${formatEloDelta(row.seasonEloDelta)}</td>
-      <td>${formatEloRating(row.seasonElo)}</td>
-      <td>${formatEloDelta(row.runningEloDelta)}</td>
-      <td>${formatEloRating(row.runningElo)}</td>
       <td>${row.wins}</td>
       <td>${row.losses}</td>
       <td>${row.winRate.toFixed(1)}%</td>
       <td>${row.deckWinRate.toFixed(1)}%</td>
       <td>${row.deckMeta.toFixed(1)}%</td>
+      <td>${formatEloDelta(row.seasonEloDelta)}</td>
+      <td>${formatEloRating(row.seasonElo)}</td>
+      <td>${formatEloDelta(row.runningEloDelta)}</td>
+      <td>${formatEloRating(row.runningElo)}</td>
     </tr>
   `).join("");
 }
@@ -3124,13 +3124,13 @@ function renderPlayerDeckTableRows(rows = []) {
   return rows.map(row => `
     <tr>
       <td>${row.deck}</td>
-      <td>${formatEloRating(row.deckElo)}</td>
       <td>${row.events}</td>
       <td>${row.wins}</td>
       <td>${row.losses}</td>
       <td>${row.overallWinRate.toFixed(2)}%</td>
       <td class="event-tooltip" data-tooltip="${row.bestDate} - ${row.bestEvent}">${row.bestWinRate.toFixed(2)}%</td>
       <td class="event-tooltip" data-tooltip="${row.worstDate} - ${row.worstEvent}">${row.worstWinRate.toFixed(2)}%</td>
+      <td>${formatEloRating(row.deckElo)}</td>
     </tr>
   `).join("");
 }
@@ -3229,15 +3229,15 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
           <th data-sort="players">Number of Players <span class="sort-arrow"></span></th>
           <th data-sort="rank">Rank <span class="sort-arrow"></span></th>
           <th data-sort="deck">Deck <span class="sort-arrow"></span></th>
-          <th data-sort="seasonEloDelta">Season Elo Gained <span class="sort-arrow"></span></th>
-          <th data-sort="seasonElo">Season Elo <span class="sort-arrow"></span></th>
-          <th data-sort="runningEloDelta">Running Elo Gained <span class="sort-arrow"></span></th>
-          <th data-sort="runningElo">Running Elo (${runningEloLabel}) <span class="sort-arrow"></span></th>
           <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
           <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
           <th data-sort="winRate">Player Win Rate <span class="sort-arrow"></span></th>
           <th data-sort="deckWinRate">Deck's Overall Win Rate <span class="sort-arrow"></span></th>
           <th data-sort="deckMeta">Deck's Meta <span class="sort-arrow"></span></th>
+          <th data-sort="seasonEloDelta">Season Elo Gained <span class="sort-arrow"></span></th>
+          <th data-sort="seasonElo">Season Elo <span class="sort-arrow"></span></th>
+          <th data-sort="runningEloDelta">Running Elo Gained <span class="sort-arrow"></span></th>
+          <th data-sort="runningElo">Running Elo (${runningEloLabel}) <span class="sort-arrow"></span></th>
         </tr>
       `;
 
@@ -3253,7 +3253,8 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
       currentPlayerRawTableState = {
         tableType,
         title: rawTableTitle.textContent || 'player-event-data',
-        rows
+        rows,
+        runningEloLabel
       };
       setupTableSorting(rawTableHead, rawTableBody, rows, tableType);
     } else if (tableType === 'deck') {
@@ -3261,13 +3262,13 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
       rawTableHead.innerHTML = `
         <tr>
           <th data-sort="deck">Deck <span class="sort-arrow"></span></th>
-          <th data-sort="deckElo">Elo Deck <span class="sort-arrow"></span></th>
           <th data-sort="events">Number of Events <span class="sort-arrow"></span></th>
           <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
           <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
           <th data-sort="overallWinRate">Overall Win Rate <span class="sort-arrow"></span></th>
           <th data-sort="bestWinRate">Best Win Rate <span class="sort-arrow"></span></th>
           <th data-sort="worstWinRate">Worst Win Rate <span class="sort-arrow"></span></th>
+          <th data-sort="deckElo">Elo Deck <span class="sort-arrow"></span></th>
         </tr>
       `;
 
@@ -3282,7 +3283,8 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
       currentPlayerRawTableState = {
         tableType,
         title: rawTableTitle.textContent || 'player-deck-data',
-        rows
+        rows,
+        runningEloLabel
       };
       setupTableSorting(rawTableHead, rawTableBody, rows, tableType);
     }
