@@ -11,6 +11,7 @@ import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
+import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
 import { downloadEventAnalysisCsv } from './export-table-csv.js';
 import { setSingleEventType, updateEventFilter } from './filters/single-event.js';
 
@@ -99,13 +100,16 @@ let activeSingleEventDeckDrilldownName = '';
 let activeSingleEventFocusedPlayerKey = '';
 let activeMultiEventDrilldownState = null;
 let pendingSingleEventFocusPlayerKey = '';
+let singleEventAnalysisRequestId = 0;
 let currentSingleEventTableState = {
   group: 'single',
   tableType: 'raw',
   title: 'single-event-table',
   rows: [],
-  displayMode: 'percent'
+  displayMode: 'percent',
+  runningEloLabel: '2024-2026'
 };
+let currentSingleEventTableElo = createEmptySingleEventTableElo();
 let currentMultiEventTableState = {
   group: 'multi',
   tableType: 'aggregate',
@@ -165,6 +169,14 @@ function getSingleEventDownloadButton() {
   return document.getElementById('singleEventTableDownloadCsv');
 }
 
+function getSingleEventFullscreenButton() {
+  return document.getElementById('singleEventTableFullscreenButton');
+}
+
+function getSingleEventTableContainer() {
+  return document.getElementById('singleEventTableContainer');
+}
+
 function getMultiEventDownloadButton() {
   return document.getElementById('multiEventTableDownloadCsv');
 }
@@ -190,6 +202,53 @@ function setupEventTableExportActions() {
     multiButton.addEventListener('click', exportMultiEventTableCsv);
     multiButton.dataset.listenerAdded = 'true';
   }
+}
+
+function updateSingleEventFullscreenButtonState() {
+  const button = getSingleEventFullscreenButton();
+  const container = getSingleEventTableContainer();
+  if (!button || !container) {
+    return;
+  }
+
+  button.textContent = document.fullscreenElement === container ? 'Exit Full Screen' : 'Full Screen';
+}
+
+async function toggleSingleEventTableFullscreen() {
+  const container = getSingleEventTableContainer();
+  if (!container) {
+    return;
+  }
+
+  if (document.fullscreenElement === container) {
+    if (document.exitFullscreen) {
+      await document.exitFullscreen();
+    }
+    return;
+  }
+
+  if (container.requestFullscreen) {
+    await container.requestFullscreen();
+  }
+}
+
+function setupSingleEventTableFullscreenAction() {
+  const button = getSingleEventFullscreenButton();
+  if (button && button.dataset.listenerAdded !== 'true') {
+    button.addEventListener('click', () => {
+      toggleSingleEventTableFullscreen().catch(error => {
+        console.error('Failed to toggle single-event table fullscreen mode.', error);
+      });
+    });
+    button.dataset.listenerAdded = 'true';
+  }
+
+  if (document.body.dataset.singleEventTableFullscreenBound !== 'true') {
+    document.addEventListener('fullscreenchange', updateSingleEventFullscreenButtonState);
+    document.body.dataset.singleEventTableFullscreenBound = 'true';
+  }
+
+  updateSingleEventFullscreenButtonState();
 }
 
 function getSingleEventDrilldownElements() {
@@ -237,6 +296,223 @@ function formatAverageFinish(value) {
 
   const roundedValue = Math.round(value * 10) / 10;
   return Number.isInteger(roundedValue) ? `#${roundedValue}` : `#${roundedValue.toFixed(1)}`;
+}
+
+function formatEloRating(value) {
+  return Number.isFinite(Number(value)) ? String(Math.round(Number(value))) : '--';
+}
+
+function formatEloDelta(value) {
+  if (!Number.isFinite(Number(value))) {
+    return '--';
+  }
+
+  const roundedValue = Math.round(Number(value));
+  return roundedValue > 0 ? `+${roundedValue}` : String(roundedValue);
+}
+
+function createEmptySingleEventTableElo(rangeLabel = '2024-2026') {
+  return {
+    playerLookup: new Map(),
+    rangeLabel
+  };
+}
+
+const MAX_SINGLE_EVENT_ELO_CACHE_ENTRIES = 12;
+const singleEventRankingsDatasetCache = new Map();
+
+function rememberLimitedCacheEntry(cache, key, value, maxEntries = MAX_SINGLE_EVENT_ELO_CACHE_ENTRIES) {
+  if (cache.has(key)) {
+    cache.delete(key);
+  }
+
+  cache.set(key, value);
+
+  while (cache.size > maxEntries) {
+    const oldestKey = cache.keys().next().value;
+    cache.delete(oldestKey);
+  }
+
+  return value;
+}
+
+function getNormalizedEventTypesKey(eventTypes = []) {
+  return [...new Set(
+    (Array.isArray(eventTypes) ? eventTypes : [eventTypes])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  )].sort().join(',');
+}
+
+function getFullSingleEventEloDateWindow(eventTypes = []) {
+  const dates = getRankingsAvailableDates(eventTypes);
+  return {
+    startDate: dates[0] || '',
+    endDate: dates[dates.length - 1] || '',
+    rangeLabel: dates.length > 0
+      ? `${dates[0].slice(0, 4)}-${dates[dates.length - 1].slice(0, 4)}`
+      : '2024-2026'
+  };
+}
+
+function getCachedSingleEventRankingsDataset({
+  eventTypes = [],
+  startDate = '',
+  endDate = '',
+  resetByYear = false
+} = {}) {
+  const cacheKey = [
+    resetByYear ? 'seasonal' : 'running',
+    getNormalizedEventTypesKey(eventTypes),
+    String(startDate || '').trim(),
+    String(endDate || '').trim()
+  ].join('::');
+
+  if (singleEventRankingsDatasetCache.has(cacheKey)) {
+    return rememberLimitedCacheEntry(
+      singleEventRankingsDatasetCache,
+      cacheKey,
+      singleEventRankingsDatasetCache.get(cacheKey)
+    );
+  }
+
+  const datasetPromise = buildRankingsDataset({
+    eventTypes,
+    startDate,
+    endDate
+  }, {
+    resetByYear,
+    entityMode: 'player'
+  }).catch(error => {
+    singleEventRankingsDatasetCache.delete(cacheKey);
+    throw error;
+  });
+
+  return rememberLimitedCacheEntry(singleEventRankingsDatasetCache, cacheKey, datasetPromise);
+}
+
+function getSingleEventEloEventKey(record = {}) {
+  return `${String(record?.Date || record?.date || '').trim()}|||${String(record?.Event || record?.event || '').trim()}`;
+}
+
+function getSingleEventEloPlayerLookupKey(record = {}) {
+  return `${getSingleEventEloEventKey(record)}|||${getPlayerIdentityKey(record?.Player || record?.player || '')}`;
+}
+
+function compareSingleEventEloHistoryEntriesAscending(a, b) {
+  return (
+    String(a?.date || '').localeCompare(String(b?.date || '')) ||
+    String(a?.eventId || '').localeCompare(String(b?.eventId || '')) ||
+    String(a?.event || '').localeCompare(String(b?.event || '')) ||
+    Number(a?.round || 0) - Number(b?.round || 0)
+  );
+}
+
+function summarizeSingleEventEloEntries(entries = [], eventRow = {}) {
+  const eventKey = getSingleEventEloEventKey(eventRow);
+  const matchingEntries = [...(Array.isArray(entries) ? entries : [])]
+    .filter(entry => getSingleEventEloEventKey(entry) === eventKey)
+    .sort(compareSingleEventEloHistoryEntriesAscending);
+
+  if (matchingEntries.length === 0) {
+    return {
+      eloDelta: Number.NaN,
+      finalElo: Number.NaN,
+      matchCount: 0
+    };
+  }
+
+  return matchingEntries.reduce((summary, entry) => {
+    const delta = Number(entry?.delta);
+    if (Number.isFinite(delta)) {
+      summary.eloDelta += delta;
+    }
+    if (Number.isFinite(Number(entry?.ratingAfter))) {
+      summary.finalElo = Number(entry.ratingAfter);
+    }
+    summary.matchCount += 1;
+    return summary;
+  }, {
+    eloDelta: 0,
+    finalElo: Number.NaN,
+    matchCount: 0
+  });
+}
+
+function buildSingleEventTableEloLookup(eventRows = [], {
+  runningDataset = null,
+  seasonalDataset = null
+} = {}) {
+  const playerLookup = new Map();
+
+  (Array.isArray(eventRows) ? eventRows : []).forEach(row => {
+    const playerKey = getPlayerIdentityKey(row?.Player);
+    const lookupKey = getSingleEventEloPlayerLookupKey(row);
+    if (!playerKey || !lookupKey || lookupKey.endsWith('|||')) {
+      return;
+    }
+
+    const runningSummary = summarizeSingleEventEloEntries(
+      runningDataset?.historyByPlayer?.get(playerKey) || [],
+      row
+    );
+    const seasonalSummary = summarizeSingleEventEloEntries(
+      seasonalDataset?.historyByPlayer?.get(playerKey) || [],
+      row
+    );
+
+    if (runningSummary.matchCount === 0 && seasonalSummary.matchCount === 0) {
+      return;
+    }
+
+    playerLookup.set(lookupKey, {
+      seasonEloDelta: seasonalSummary.eloDelta,
+      seasonElo: seasonalSummary.finalElo,
+      runningEloDelta: runningSummary.eloDelta,
+      runningElo: runningSummary.finalElo,
+      matchCount: runningSummary.matchCount || seasonalSummary.matchCount || 0
+    });
+  });
+
+  return playerLookup;
+}
+
+async function buildSingleEventTableElo(eventRows = [], eventTypes = []) {
+  if (!Array.isArray(eventRows) || eventRows.length === 0) {
+    return createEmptySingleEventTableElo();
+  }
+
+  const resolvedEventTypes = eventTypes.length > 0
+    ? eventTypes
+    : [...new Set(eventRows.map(row => String(row?.EventType || '').trim().toLowerCase()).filter(Boolean))];
+  const fullEloWindow = getFullSingleEventEloDateWindow(resolvedEventTypes);
+
+  if (!fullEloWindow.startDate || !fullEloWindow.endDate) {
+    return createEmptySingleEventTableElo(fullEloWindow.rangeLabel);
+  }
+
+  const [runningDataset, seasonalDataset] = await Promise.all([
+    getCachedSingleEventRankingsDataset({
+      eventTypes: resolvedEventTypes,
+      startDate: fullEloWindow.startDate,
+      endDate: fullEloWindow.endDate,
+      resetByYear: false
+    }),
+    getCachedSingleEventRankingsDataset({
+      eventTypes: resolvedEventTypes,
+      startDate: fullEloWindow.startDate,
+      endDate: fullEloWindow.endDate,
+      resetByYear: true
+    })
+  ]);
+
+  return {
+    playerLookup: buildSingleEventTableEloLookup(eventRows, {
+      runningDataset,
+      seasonalDataset
+    }),
+    rangeLabel: fullEloWindow.rangeLabel
+  };
 }
 
 function getSelectedSingleEventLabel(rows = currentSingleEventRows) {
@@ -1312,6 +1588,7 @@ function setupMultiEventDrilldownCards() {
 
 // Wires Event Analysis modals, stat-card click targets, and CSV export buttons.
 export function initEventAnalysis() {
+  setupSingleEventTableFullscreenAction();
   setupSingleEventDrilldownModal();
   setupSingleEventDrilldownCards();
   setupMultiEventDrilldownCards();
@@ -1322,15 +1599,36 @@ export function initEventAnalysis() {
 
 // Stores single-event rows and refreshes cards/tables for the selected event.
 export function updateSingleEventAnalysis(data, totalPlayers) {
+  const requestId = singleEventAnalysisRequestId + 1;
+  singleEventAnalysisRequestId = requestId;
   if (activeMultiEventDrilldownState) {
     closeSingleEventDrilldown();
   }
 
   currentSingleEventRows = Array.isArray(data) ? [...data] : [];
+  currentSingleEventTableElo = createEmptySingleEventTableElo();
   updateEventMetaWinRateChart();
   updateEventFunnelChart();
-  updateSingleEventTables(data, 'raw');
+  updateSingleEventTables(data, 'raw', currentSingleEventTableElo);
   populateSingleEventStats(data);
+
+  buildSingleEventTableElo(currentSingleEventRows, getSelectedEventAnalysisTypes())
+    .then(eloInsights => {
+      if (requestId !== singleEventAnalysisRequestId) {
+        return;
+      }
+
+      currentSingleEventTableElo = eloInsights || createEmptySingleEventTableElo();
+      const activeTableType = document.querySelector('#singleEventCharts .table-toggle-btn.active')?.dataset.table || 'raw';
+      if (activeTableType === 'raw') {
+        updateSingleEventTables(currentSingleEventRows, 'raw', currentSingleEventTableElo);
+      }
+    })
+    .catch(error => {
+      if (requestId === singleEventAnalysisRequestId) {
+        console.error('Failed to build single-event Elo table data.', error);
+      }
+    });
 }
 
 // Stores multi-event rows and refreshes cards/tables for the selected date span.
@@ -1373,15 +1671,64 @@ export function updateMultiEventAnalytics() {
   updateMultiEventAnalysis(filteredData);
 }
 
+function setSingleEventTableToggleState(tableType = 'raw') {
+  const toggleContainer = document.querySelector('#singleEventCharts .table-toggle');
+  if (!toggleContainer) {
+    return;
+  }
+
+  toggleContainer.querySelectorAll('.table-toggle-btn').forEach(button => {
+    button.classList.toggle('active', button.dataset.table === tableType);
+  });
+}
+
+function setupSingleEventTableToggle() {
+  const toggleContainer = document.querySelector('#singleEventCharts .table-toggle');
+  if (!toggleContainer || toggleContainer.dataset.listenerAdded === 'true') {
+    return;
+  }
+
+  toggleContainer.addEventListener('click', event => {
+    const button = event.target.closest('.table-toggle-btn');
+    if (!button || !toggleContainer.contains(button)) {
+      return;
+    }
+
+    updateSingleEventTables(currentSingleEventRows, button.dataset.table, currentSingleEventTableElo);
+  });
+  toggleContainer.dataset.listenerAdded = 'true';
+}
+
+function renderSingleEventStandingsRows(rows = []) {
+  return rows.map(row => `
+    <tr>
+      <td>${row.rank}</td>
+      <td>${row.player}</td>
+      <td>${row.deck}</td>
+      <td>${row.wins}</td>
+      <td>${row.losses}</td>
+      <td>${row.winRate.toFixed(2)}%</td>
+      <td>${formatEloDelta(row.seasonEloDelta)}</td>
+      <td>${formatEloRating(row.seasonElo)}</td>
+      <td>${formatEloDelta(row.runningEloDelta)}</td>
+      <td>${formatEloRating(row.runningElo)}</td>
+    </tr>
+  `).join("");
+}
+
 // Renders the single-event table in raw or aggregate mode.
-export function updateSingleEventTables(eventData, tableType = 'raw') {
+export function updateSingleEventTables(eventData, tableType = 'raw', tableElo = currentSingleEventTableElo) {
+  const tableElement = document.getElementById("singleEventTable");
   const tableHead = document.getElementById("singleEventTableHead");
   const tableBody = document.getElementById("singleEventTableBody");
   const tableTitle = document.getElementById("singleEventTableTitle");
-  if (!tableHead || !tableBody || !tableTitle) {
+  if (!tableElement || !tableHead || !tableBody || !tableTitle) {
     console.error("Single event table elements not found!");
     return;
   }
+
+  tableElement.dataset.view = tableType;
+  setSingleEventTableToggleState(tableType);
 
   if (tableType === 'raw') {
     updateElementHTML("singleEventTableHead", `
@@ -1392,32 +1739,35 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
         <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
         <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
         <th data-sort="winRate">Win Rate <span class="sort-arrow"></span></th>
+        <th data-sort="seasonEloDelta">Season Elo Gained <span class="sort-arrow"></span></th>
+        <th data-sort="seasonElo">Season Elo <span class="sort-arrow"></span></th>
+        <th data-sort="runningEloDelta">Running Elo Gained <span class="sort-arrow"></span></th>
+        <th data-sort="runningElo">Running Elo (${tableElo?.rangeLabel || '2024-2026'}) <span class="sort-arrow"></span></th>
       </tr>
     `);
     let rawEventName = eventData.length > 0 ? eventData[0].Event : "";
     const eventName = formatEventName(rawEventName);
-    updateElementText("singleEventTableTitle", eventName ? `Raw Data for ${eventName} on ${formatDate(eventData[0].Date)}` : "No Data Available");
+    updateElementText("singleEventTableTitle", eventName ? `Standings for ${eventName} on ${formatDate(eventData[0].Date)}` : "No Data Available");
 
-    const rows = calculateSingleEventRawTable(eventData);
-    updateElementHTML("singleEventTableBody", rows.length === 0 ? "<tr><td colspan='6'>No data available for the selected event.</td></tr>" : rows.map(row => `
-      <tr>
-        <td>${row.rank}</td>
-        <td>${row.player}</td>
-        <td>${row.deck}</td>
-        <td>${row.wins}</td>
-        <td>${row.losses}</td>
-        <td>${row.winRate.toFixed(2)}%</td>
-      </tr>
-    `).join(""));
+    const rows = calculateSingleEventRawTable(eventData, {
+      eloPlayerLookup: tableElo?.playerLookup
+    });
+    const renderTableBody = () => updateElementHTML(
+      "singleEventTableBody",
+      rows.length === 0 ? "<tr><td colspan='10'>No data available for the selected event.</td></tr>" : renderSingleEventStandingsRows(rows)
+    );
+
+    renderTableBody();
 
     currentSingleEventTableState = {
       group: 'single',
       tableType,
       title: tableTitle.textContent || 'single-event-table',
       rows,
-      displayMode: 'raw'
+      displayMode: 'raw',
+      runningEloLabel: tableElo?.rangeLabel || '2024-2026'
     };
-    setupTableSorting(tableHead, tableBody, rows, tableType);
+    setupTableSorting(tableHead, tableBody, rows, tableType, () => renderTableBody());
   } else if (tableType === 'aggregate') {
     updateElementHTML("singleEventTableHead", `
       <tr>
@@ -1475,16 +1825,7 @@ export function updateSingleEventTables(eventData, tableType = 'raw') {
   }
 
   setupEventTableExportActions();
-
-  const toggleContainer = document.querySelector('.table-toggle');
-  if (toggleContainer) {
-    const toggleButtons = toggleContainer.querySelectorAll('.table-toggle-btn');
-    toggleButtons.forEach(button => button.addEventListener('click', () => {
-      toggleButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      updateSingleEventTables(eventData, button.dataset.table);
-    }));
-  }
+  setupSingleEventTableToggle();
 }
 
 // Renders the multi-event table in aggregate mode or focused-deck timeline mode.
@@ -1783,25 +2124,27 @@ function setupTableSorting(tableHead, tableBody, rows, tableType, renderCallback
       const bVal = tableType === 'aggregate' && ['top8', 'top16', 'top32', 'belowTop32'].includes(sortKey) && tableHead.querySelector('.display-toggle-btn.active')?.dataset.display === 'percent' 
         ? b[sortKey + 'Percent'] 
         : b[sortKey];
-      const aSortVal = typeof aVal === 'string' ? aVal.toLowerCase() : aVal;
-      const bSortVal = typeof bVal === 'string' ? bVal.toLowerCase() : bVal;
-      return isAscending ? (aSortVal > bSortVal ? -1 : 1) : (aSortVal < bSortVal ? -1 : 1);
+      const aSortVal = typeof aVal === 'string'
+        ? aVal.toLowerCase()
+        : Number.isFinite(Number(aVal)) ? Number(aVal) : Number.NEGATIVE_INFINITY;
+      const bSortVal = typeof bVal === 'string'
+        ? bVal.toLowerCase()
+        : Number.isFinite(Number(bVal)) ? Number(bVal) : Number.NEGATIVE_INFINITY;
+
+      if (aSortVal === bSortVal) {
+        return 0;
+      }
+
+      return isAscending
+        ? (aSortVal > bSortVal ? -1 : 1)
+        : (aSortVal < bSortVal ? -1 : 1);
     });
     header.classList.add(isAscending ? 'desc' : 'asc');
-    header.querySelector('.sort-arrow').textContent = isAscending ? '↓' : '↑';
+    header.querySelector('.sort-arrow').textContent = isAscending ? '\u2193' : '\u2191';
     if (renderCallback) {
       renderCallback();
     } else {
-      updateElementHTML(tableBody.id, rows.map(row => tableType === 'raw' ? `
-        <tr>
-          <td>${row.rank}</td>
-          <td>${row.player}</td>
-          <td>${row.deck}</td>
-          <td>${row.wins}</td>
-          <td>${row.losses}</td>
-          <td>${row.winRate.toFixed(2)}%</td>
-        </tr>
-      ` : `
+      updateElementHTML(tableBody.id, rows.map(row => tableType === 'raw' ? renderSingleEventStandingsRows([row]) : `
         <tr>
           <td>${row.deck}</td>
           <td>${row.count || row.metaShare.toFixed(2) + '%'}</td>

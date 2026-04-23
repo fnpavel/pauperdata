@@ -213,6 +213,16 @@ th.asc .sort-arrow {
   font-size: 0.8rem;
 }
 
+#singleEventTable[data-view="raw"] {
+  min-width: 1120px;
+  table-layout: auto;
+}
+
+#singleEventTable[data-view="raw"] th,
+#singleEventTable[data-view="raw"] td {
+  white-space: nowrap;
+}
+
 #singleEventTable thead th,
 #multiEventTable thead th {
   position: sticky;

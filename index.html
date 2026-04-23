@@ -243,13 +243,16 @@
               <div id="eventFunnelChartLoading">Loading...</div>
               <canvas id="eventFunnelChart"></canvas>
             </div>
-            <div class="data-table-container">
+            <div class="data-table-container" id="singleEventTableContainer">
               <div class="leaderboard-table-toolbar">
-                <h2 class="chart-title" id="singleEventTableTitle">Raw Data</h2>
-                <button type="button" class="bubble-button" id="singleEventTableDownloadCsv">Export CSV</button>
+                <h2 class="chart-title" id="singleEventTableTitle">Standings</h2>
+                <div class="matchup-table-actions">
+                  <button type="button" class="bubble-button" id="singleEventTableFullscreenButton">Full Screen</button>
+                  <button type="button" class="bubble-button" id="singleEventTableDownloadCsv">Export CSV</button>
+                </div>
               </div>
               <div class="bubble-menu table-toggle">
-                <button class="bubble-button table-toggle-btn active" data-table="raw">Raw Data</button>
+                <button class="bubble-button table-toggle-btn active" data-table="raw">Standings</button>
                 <button class="bubble-button table-toggle-btn" data-table="aggregate">Aggregate Decks</button>
               </div>
               <div class="data-table-scroll event-analysis-table-scroll">

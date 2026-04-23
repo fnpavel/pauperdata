@@ -2534,11 +2534,16 @@ button.leaderboard-deck-result-card {
   display: flex;
 }
 
+.data-table-container:fullscreen .event-analysis-table-scroll,
 .data-table-container:fullscreen .player-data-table-scroll {
   flex: 1 1 auto;
   min-height: 0;
   height: auto;
   max-height: none;
+}
+
+#singleEventTableContainer:fullscreen #singleEventTable[data-view="raw"] {
+  min-width: 1280px;
 }
 
 #playerRawTableContainer:fullscreen #playerRawTable {

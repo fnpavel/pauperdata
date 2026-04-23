@@ -1,19 +1,32 @@
 // Table builders shared by the dashboard. The goal is to keep one stable row
 // contract per table type so sorting/export/rendering logic can stay generic.
 import { getAnalysisRows } from './analysis-data.js';
+import { getPlayerIdentityKey } from './player-names.js';
 
 // Single Event Tables
 // Converts one event's rows into the raw row shape used by the single-event
 // table and CSV export.
-export function calculateSingleEventRawTable(data) {
-  return data.map(row => ({
-    rank: row.Rank,
-    player: row.Player,
-    deck: row.Deck,
-    wins: row.Wins,
-    losses: row.Losses,
-    winRate: (row.Wins + row.Losses) > 0 ? (row.Wins / (row.Wins + row.Losses)) * 100 : 0
-  }));
+export function calculateSingleEventRawTable(data, {
+  eloPlayerLookup = new Map()
+} = {}) {
+  return data.map(row => {
+    const eloSummary = eloPlayerLookup instanceof Map
+      ? eloPlayerLookup.get(`${String(row.Date || '').trim()}|||${String(row.Event || '').trim()}|||${getPlayerIdentityKey(row.Player)}`) || null
+      : null;
+
+    return {
+      rank: row.Rank,
+      player: row.Player,
+      deck: row.Deck,
+      wins: row.Wins,
+      losses: row.Losses,
+      winRate: (row.Wins + row.Losses) > 0 ? (row.Wins / (row.Wins + row.Losses)) * 100 : 0,
+      seasonEloDelta: Number.isFinite(Number(eloSummary?.seasonEloDelta)) ? Number(eloSummary.seasonEloDelta) : Number.NaN,
+      seasonElo: Number.isFinite(Number(eloSummary?.seasonElo)) ? Number(eloSummary.seasonElo) : Number.NaN,
+      runningEloDelta: Number.isFinite(Number(eloSummary?.runningEloDelta)) ? Number(eloSummary.runningEloDelta) : Number.NaN,
+      runningElo: Number.isFinite(Number(eloSummary?.runningElo)) ? Number(eloSummary.runningElo) : Number.NaN
+    };
+  });
 }
 
 // Aggregates one event by deck for the single-event aggregate table.

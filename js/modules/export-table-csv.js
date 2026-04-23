@@ -213,7 +213,8 @@ export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-
     title = fallbackName,
     rows = [],
     displayMode = 'percent',
-    group = 'single'
+    group = 'single',
+    runningEloLabel = '2024-2026'
   } = tableState || {};
 
   if (!Array.isArray(rows) || rows.length === 0) {
@@ -231,7 +232,11 @@ export function downloadEventAnalysisCsv(tableState = {}, fallbackName = 'event-
       { header: 'Deck', key: 'deck' },
       { header: 'Wins', key: 'wins' },
       { header: 'Losses', key: 'losses' },
-      { header: 'Win Rate', value: row => `${Number(row.winRate || 0).toFixed(2)}%` }
+      { header: 'Win Rate', value: row => `${Number(row.winRate || 0).toFixed(2)}%` },
+      { header: 'Season Elo Gained', value: row => Number.isFinite(Number(row.seasonEloDelta)) ? `${Math.round(Number(row.seasonEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.seasonEloDelta))}` : '--' },
+      { header: 'Season Elo', value: row => Number.isFinite(Number(row.seasonElo)) ? String(Math.round(Number(row.seasonElo))) : '--' },
+      { header: 'Running Elo Gained', value: row => Number.isFinite(Number(row.runningEloDelta)) ? `${Math.round(Number(row.runningEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.runningEloDelta))}` : '--' },
+      { header: `Running Elo (${runningEloLabel})`, value: row => Number.isFinite(Number(row.runningElo)) ? String(Math.round(Number(row.runningElo))) : '--' }
     ];
   } else if ((group === 'single' && tableType === 'aggregate') || (group === 'multi' && tableType === 'aggregate')) {
     columnDefinitions = [
