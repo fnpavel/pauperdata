@@ -324,6 +324,27 @@ th.asc .sort-arrow {
   background: linear-gradient(145deg, rgba(52, 69, 92, 0.9), rgba(34, 46, 64, 0.96));
 }
 
+.matchup-matrix-table .matchup-deck-focus-row-cell {
+  box-shadow: inset 0 0 0 2px rgba(217, 164, 65, 0.42);
+}
+
+.matchup-matrix-table .matchup-deck-focus-column-cell {
+  outline: 2px solid rgba(22, 122, 114, 0.58);
+  outline-offset: -2px;
+}
+
+#matchupMatrixTable tbody tr.matchup-deck-focus-row > th,
+#matchupMatrixTable .matchup-matrix-column-header.matchup-deck-focus-column-cell {
+  background: linear-gradient(145deg, rgba(217, 164, 65, 0.24), rgba(22, 122, 114, 0.24)), linear-gradient(160deg, var(--surface-3), var(--surface-2));
+  color: var(--text-primary);
+}
+
+.matchup-matrix-table .matchup-deck-focus-primary-cell {
+  background: linear-gradient(145deg, rgba(217, 164, 65, 0.34), rgba(22, 122, 114, 0.32)) !important;
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 241, 0.58), 0 0 18px rgba(217, 164, 65, 0.18);
+  outline: none;
+}
+
 .matchup-matrix-cell-empty {
   background: rgba(255, 255, 255, 0.025);
 }

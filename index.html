@@ -690,6 +690,24 @@
             <div class="leaderboard-table-helper" id="matchupTableHelper">
               Each cell shows the row deck's match win rate against the column deck. Diagonal cells count mirrors.
             </div>
+            <div class="matchup-deck-search-panel" id="matchupDeckSearchPanel" hidden>
+              <label class="matchup-deck-search-label" for="matchupDeckSearchInput">Jump to deck</label>
+              <div class="player-search-select matchup-deck-search-select">
+                <input
+                  type="search"
+                  class="player-search-input"
+                  id="matchupDeckSearchInput"
+                  list="matchupDeckSearchOptions"
+                  placeholder="Search decks in this matrix..."
+                  autocomplete="off"
+                />
+              </div>
+              <datalist id="matchupDeckSearchOptions"></datalist>
+              <button type="button" class="bubble-button matchup-deck-search-clear" id="matchupDeckSearchClearButton" disabled>Clear</button>
+              <div class="matchup-deck-search-status" id="matchupDeckSearchStatus" aria-live="polite">
+                Search a deck to center and highlight its row and column.
+              </div>
+            </div>
             <div class="data-table-scroll matchup-matrix-scroll">
               <table class="data-table matchup-matrix-table" id="matchupMatrixTable">
                 <thead id="matchupMatrixTableHead"></thead>

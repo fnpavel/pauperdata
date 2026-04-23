@@ -61,6 +61,8 @@ let currentMatchupPlayerFocus = null;
 let activeMatchupDrilldownCategory = '';
 let activeMatchupPlayerFocusKey = '';
 let activeMatchupPlayerFocusLabel = '';
+let activeMatchupDeckFocusKey = '';
+let activeMatchupDeckFocusLabel = '';
 let hasAppliedDefaultMatchupPlayerFocus = false;
 let matchupAnalyticsRequestId = 0;
 let matchupCatalogUiPromise = null;
@@ -276,6 +278,8 @@ function renderMatchupLoadingState(message = 'Loading matchup archive...') {
   if (tableBody) {
     tableBody.innerHTML = "<tr><td colspan='2'>Loading matchup data...</td></tr>";
   }
+
+  syncMatchupDeckSearchControls(null, { message: 'Loading deck list...' });
 }
 
 function renderMatchupErrorState(message = 'Unable to load matchup data.') {
@@ -303,6 +307,8 @@ function renderMatchupErrorState(message = 'Unable to load matchup data.') {
   if (tableBody) {
     tableBody.innerHTML = `<tr><td colspan='2'>${escapeHtml(message)}</td></tr>`;
   }
+
+  syncMatchupDeckSearchControls(null, { message: 'Deck search is unavailable until matchup data loads.' });
 }
 
 async function ensureMatchupCatalogUiReady() {
@@ -416,6 +422,18 @@ function getMatchupPlayerTableElements() {
     secondaryHead: document.getElementById('matchupSecondaryMatrixTableHead'),
     secondaryBody: document.getElementById('matchupSecondaryMatrixTableBody'),
     secondaryFullscreenButton: document.getElementById('matchupSecondaryFullscreenButton')
+  };
+}
+
+function getMatchupDeckSearchElements() {
+  return {
+    panel: document.getElementById('matchupDeckSearchPanel'),
+    input: document.getElementById('matchupDeckSearchInput'),
+    optionsList: document.getElementById('matchupDeckSearchOptions'),
+    clearButton: document.getElementById('matchupDeckSearchClearButton'),
+    status: document.getElementById('matchupDeckSearchStatus'),
+    scrollContainer: document.querySelector('#matchupPrimaryTableContainer .matchup-matrix-scroll'),
+    table: document.getElementById('matchupMatrixTable')
   };
 }
 
@@ -904,6 +922,289 @@ function initMatchupPlayerSearchDropdown() {
   syncInputFromSelect();
 }
 
+function normalizeMatchupSearchText(value) {
+  return String(value || '').trim().toLowerCase().replace(/\s+/g, ' ');
+}
+
+function getMatchupDeckSearchOptions(matchupMatrix = currentMatchupMatrix) {
+  if (!matchupMatrix?.deckOrder?.length) {
+    return [];
+  }
+
+  return matchupMatrix.deckOrder
+    .map(deckKey => {
+      const deckStats = matchupMatrix.deckStatsMap.get(deckKey);
+      if (!deckStats?.deck) {
+        return null;
+      }
+
+      const recordLabel = deckStats.decisiveMatches > 0
+        ? `${deckStats.wins}-${deckStats.losses} | ${formatMatchupPercentage((deckStats.wins / deckStats.decisiveMatches) * 100)} WR`
+        : deckStats.mirrors > 0
+          ? `${deckStats.mirrors} ${pluralize(deckStats.mirrors, 'mirror')}`
+          : 'No decisive matches';
+
+      return {
+        key: deckKey,
+        label: deckStats.deck,
+        detail: `${deckStats.matches} ${pluralize(deckStats.matches, 'match')} | ${recordLabel}`,
+        searchText: normalizeMatchupSearchText(deckStats.deck)
+      };
+    })
+    .filter(Boolean);
+}
+
+function setMatchupDeckSearchStatus(message = '') {
+  const { status } = getMatchupDeckSearchElements();
+  if (status) {
+    status.textContent = message;
+  }
+}
+
+function clearMatchupDeckFocusHighlights() {
+  const { table } = getMatchupDeckSearchElements();
+  if (!table) {
+    return;
+  }
+
+  table
+    .querySelectorAll(
+      '.matchup-deck-focus-row, .matchup-deck-focus-row-cell, .matchup-deck-focus-column-cell, .matchup-deck-focus-primary-cell'
+    )
+    .forEach(element => {
+      element.classList.remove(
+        'matchup-deck-focus-row',
+        'matchup-deck-focus-row-cell',
+        'matchup-deck-focus-column-cell',
+        'matchup-deck-focus-primary-cell'
+      );
+    });
+}
+
+function getMatchupTableElementsByDataKey(attributeName, key = '') {
+  const { table } = getMatchupDeckSearchElements();
+  if (!table || !key) {
+    return [];
+  }
+
+  return Array.from(table.querySelectorAll(`[${attributeName}]`))
+    .filter(element => element.getAttribute(attributeName) === key);
+}
+
+function scrollMatchupMatrixToDeck(deckKey = '') {
+  const { scrollContainer, table } = getMatchupDeckSearchElements();
+  if (!scrollContainer || !table || !deckKey) {
+    return;
+  }
+
+  const focusedRow = Array.from(table.tBodies?.[0]?.rows || [])
+    .find(row => row.dataset.matchupRowKey === deckKey);
+  const focusedColumn = Array.from(table.tHead?.querySelectorAll('[data-matchup-column-key]') || [])
+    .find(header => header.dataset.matchupColumnKey === deckKey);
+
+  if (!focusedRow && !focusedColumn) {
+    return;
+  }
+
+  const stickyAxisWidth = table.querySelector('.matchup-axis-corner')?.offsetWidth || 0;
+  const targetTop = focusedRow
+    ? Math.max(0, focusedRow.offsetTop - (scrollContainer.clientHeight / 2) + (focusedRow.offsetHeight / 2))
+    : scrollContainer.scrollTop;
+  const targetLeft = focusedColumn
+    ? Math.max(0, focusedColumn.offsetLeft - stickyAxisWidth - 16)
+    : scrollContainer.scrollLeft;
+
+  scrollContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  scrollContainer.scrollTo({
+    top: targetTop,
+    left: targetLeft,
+    behavior: 'smooth'
+  });
+}
+
+function applyMatchupDeckFocusToTable({ scroll = false } = {}) {
+  clearMatchupDeckFocusHighlights();
+
+  if (!activeMatchupDeckFocusKey || isPlayerMatchupMode()) {
+    return;
+  }
+
+  const rowElements = getMatchupTableElementsByDataKey('data-matchup-row-key', activeMatchupDeckFocusKey);
+  const columnElements = getMatchupTableElementsByDataKey('data-matchup-column-key', activeMatchupDeckFocusKey);
+
+  rowElements.forEach(element => {
+    if (element.tagName === 'TR') {
+      element.classList.add('matchup-deck-focus-row');
+    } else {
+      element.classList.add('matchup-deck-focus-row-cell');
+    }
+  });
+
+  columnElements.forEach(element => {
+    element.classList.add('matchup-deck-focus-column-cell');
+  });
+
+  rowElements
+    .filter(element => element.getAttribute('data-matchup-column-key') === activeMatchupDeckFocusKey)
+    .forEach(element => element.classList.add('matchup-deck-focus-primary-cell'));
+
+  if (scroll) {
+    scrollMatchupMatrixToDeck(activeMatchupDeckFocusKey);
+  }
+}
+
+function setActiveMatchupDeckFocus(deckKey = '', {
+  scroll = false,
+  updateInput = true,
+  statusMessage = ''
+} = {}) {
+  const options = getMatchupDeckSearchOptions();
+  const selectedOption = options.find(option => option.key === deckKey) || null;
+  const { input, clearButton } = getMatchupDeckSearchElements();
+
+  activeMatchupDeckFocusKey = selectedOption?.key || '';
+  activeMatchupDeckFocusLabel = selectedOption?.label || '';
+
+  if (updateInput && input) {
+    input.value = activeMatchupDeckFocusLabel;
+  }
+
+  if (clearButton) {
+    clearButton.disabled = !activeMatchupDeckFocusKey;
+  }
+
+  applyMatchupDeckFocusToTable({ scroll });
+
+  if (statusMessage) {
+    setMatchupDeckSearchStatus(statusMessage);
+    return;
+  }
+
+  setMatchupDeckSearchStatus(
+    selectedOption
+      ? `Focused on ${selectedOption.label}. Row and column are highlighted.`
+      : 'Search a deck to center and highlight its row and column.'
+  );
+}
+
+function syncMatchupDeckSearchControls(matchupMatrix = currentMatchupMatrix, {
+  message = ''
+} = {}) {
+  const { panel, input, optionsList, clearButton } = getMatchupDeckSearchElements();
+  if (!panel || !input || !optionsList) {
+    return;
+  }
+
+  const isDeckMode = !isPlayerMatchupMode();
+  panel.hidden = !isDeckMode;
+
+  if (!isDeckMode) {
+    clearMatchupDeckFocusHighlights();
+    return;
+  }
+
+  const options = getMatchupDeckSearchOptions(matchupMatrix);
+  optionsList.innerHTML = options
+    .map(option => `<option value="${escapeHtml(option.label)}" label="${escapeHtml(option.detail)}"></option>`)
+    .join('');
+
+  input.disabled = options.length === 0;
+  input.placeholder = options.length > 0
+    ? 'Search decks in this matrix...'
+    : 'No decks in this matrix';
+
+  if (activeMatchupDeckFocusKey && !options.some(option => option.key === activeMatchupDeckFocusKey)) {
+    activeMatchupDeckFocusKey = '';
+    activeMatchupDeckFocusLabel = '';
+  }
+
+  if (document.activeElement !== input) {
+    input.value = activeMatchupDeckFocusLabel;
+  }
+
+  if (clearButton) {
+    clearButton.disabled = !activeMatchupDeckFocusKey || options.length === 0;
+  }
+
+  applyMatchupDeckFocusToTable({ scroll: false });
+
+  if (message) {
+    setMatchupDeckSearchStatus(message);
+  } else if (activeMatchupDeckFocusLabel) {
+    setMatchupDeckSearchStatus(`Focused on ${activeMatchupDeckFocusLabel}. Row and column are highlighted.`);
+  } else {
+    setMatchupDeckSearchStatus(
+      options.length > 0
+        ? `Search ${options.length} ${pluralize(options.length, 'deck')} in this matrix.`
+        : 'Deck search will appear when the matrix has data.'
+    );
+  }
+}
+
+function getMatchupDeckSearchMatches(searchTerm = '') {
+  const normalizedSearchTerm = normalizeMatchupSearchText(searchTerm);
+  if (!normalizedSearchTerm) {
+    return [];
+  }
+
+  return getMatchupDeckSearchOptions().filter(option => option.searchText.includes(normalizedSearchTerm));
+}
+
+function selectMatchupDeckSearchResult(searchTerm = '', { jumpToFirst = false } = {}) {
+  const normalizedSearchTerm = normalizeMatchupSearchText(searchTerm);
+  if (!normalizedSearchTerm) {
+    setActiveMatchupDeckFocus('', { updateInput: false });
+    return;
+  }
+
+  const matches = getMatchupDeckSearchMatches(searchTerm);
+  const exactMatch = matches.find(option => option.searchText === normalizedSearchTerm);
+  const selectedMatch = exactMatch || (jumpToFirst ? matches[0] : null);
+
+  if (selectedMatch) {
+    setActiveMatchupDeckFocus(selectedMatch.key, { scroll: true });
+    return;
+  }
+
+  setActiveMatchupDeckFocus('', {
+    updateInput: false,
+    statusMessage: matches.length > 0
+      ? `${matches.length} ${pluralize(matches.length, 'deck')} match "${searchTerm.trim()}". Choose one from the suggestions or press Enter to jump to the first match.`
+      : `No deck matched "${searchTerm.trim()}".`
+  });
+}
+
+function setupMatchupDeckSearchListeners() {
+  const { input, clearButton } = getMatchupDeckSearchElements();
+  if (!input || input.dataset.listenerAdded === 'true') {
+    return;
+  }
+
+  input.addEventListener('input', event => {
+    selectMatchupDeckSearchResult(event.target.value, { jumpToFirst: false });
+  });
+
+  input.addEventListener('keydown', event => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      selectMatchupDeckSearchResult(input.value, { jumpToFirst: true });
+      return;
+    }
+
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      setActiveMatchupDeckFocus('');
+    }
+  });
+
+  clearButton?.addEventListener('click', () => {
+    setActiveMatchupDeckFocus('', { scroll: false });
+    input.focus();
+  });
+
+  input.dataset.listenerAdded = 'true';
+}
+
 function buildPlayerMatchupFocusState(snapshot, resolvedMatches = []) {
   // Builds the focused-player model used by Player Matchup mode, including
   // opponent and deck-pair summaries from the selected player's perspective.
@@ -992,6 +1293,7 @@ function updateMatchupViewCopy() {
   const viewConfig = getActiveMatchupViewConfig();
   const { playerSection, matrixToolbar } = getMatchupPlayerFocusElements();
   const { secondaryContainer } = getMatchupPlayerTableElements();
+  const { panel: deckSearchPanel } = getMatchupDeckSearchElements();
   const isPlayerMode = isPlayerMatchupMode();
   const hasFocusedPlayer = Boolean(currentMatchupPlayerFocus?.selectedPlayerKey);
   const focusedPlayerLabel = currentMatchupPlayerFocus?.selectedPlayerLabel || 'Player';
@@ -1006,6 +1308,10 @@ function updateMatchupViewCopy() {
 
   if (secondaryContainer) {
     secondaryContainer.style.display = isPlayerMode ? 'block' : 'none';
+  }
+
+  if (deckSearchPanel) {
+    deckSearchPanel.hidden = isPlayerMode;
   }
 
   updateElementText(
@@ -2113,12 +2419,34 @@ function getMatchupCellTone(winRate, sampleSize) {
   };
 }
 
-function buildMatrixCellHtml(cell, rowDeck, columnDeck, { allowMirror = true } = {}) {
+function getMatchupMatrixCellAttributes({
+  rowKey = '',
+  columnKey = ''
+} = {}) {
+  const attributes = [];
+
+  if (rowKey) {
+    attributes.push(`data-matchup-row-key="${escapeHtml(rowKey)}"`);
+  }
+
+  if (columnKey) {
+    attributes.push(`data-matchup-column-key="${escapeHtml(columnKey)}"`);
+  }
+
+  return attributes.length > 0 ? ` ${attributes.join(' ')}` : '';
+}
+
+function buildMatrixCellHtml(cell, rowDeck, columnDeck, {
+  allowMirror = true,
+  rowKey = '',
+  columnKey = ''
+} = {}) {
   const viewConfig = getActiveMatchupViewConfig();
+  const cellAttributes = getMatchupMatrixCellAttributes({ rowKey, columnKey });
 
   if (!cell || cell.total === 0) {
     return `
-      <td class="matchup-matrix-cell matchup-matrix-cell-empty">
+      <td${cellAttributes} class="matchup-matrix-cell matchup-matrix-cell-empty">
         <span class="matchup-matrix-empty">--</span>
       </td>
     `;
@@ -2129,7 +2457,7 @@ function buildMatrixCellHtml(cell, rowDeck, columnDeck, { allowMirror = true } =
     const mirrorPairings = Math.max(cell.wins, cell.losses);
 
     return `
-      <td
+      <td${cellAttributes}
         class="matchup-matrix-cell matchup-matrix-cell-mirror"
         title="${escapeHtml(`${rowDeck} mirror: ${cell.wins}-${cell.losses} (${formatMatchupPercentage(mirrorWinRate)}) across ${mirrorPairings} ${pluralize(mirrorPairings, viewConfig.pairingSingular)}`)}"
       >
@@ -2143,7 +2471,7 @@ function buildMatrixCellHtml(cell, rowDeck, columnDeck, { allowMirror = true } =
   const tone = getMatchupCellTone(winRate, cell.total);
 
   return `
-    <td
+    <td${cellAttributes}
       class="matchup-matrix-cell matchup-matrix-cell-data"
       style="--matchup-cell-bg: ${tone.background}; --matchup-cell-border: ${tone.border};"
       title="${escapeHtml(`${rowDeck} vs ${columnDeck}: ${cell.wins}-${cell.losses} (${formatMatchupPercentage(winRate)}) across ${cell.total} ${pluralize(cell.total, 'match')}`)}"
@@ -3008,6 +3336,7 @@ function renderFocusedPlayerMatchupTables(resolvedMatches = [], focusState = cur
 function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusState = currentMatchupPlayerFocus) {
   // Renders the primary deck/player matrix table for the active matchup mode.
   if (isPlayerMatchupMode()) {
+    syncMatchupDeckSearchControls(null);
     renderFocusedPlayerMatchupTables(resolvedMatches, focusState);
     return;
   }
@@ -3047,6 +3376,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
       </tr>
     `;
     tableBody.innerHTML = "<tr><td colspan='2'>No matchup data available for the selected filters.</td></tr>";
+    syncMatchupDeckSearchControls(matchupMatrix);
     return;
   }
 
@@ -3055,7 +3385,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
       <th scope="col" class="matchup-axis-corner">${escapeHtml(viewConfig.entityTitleSingular)}</th>
       ${displayedDecks.map(deckKey => {
         const deckStats = matchupMatrix.deckStatsMap.get(deckKey);
-        return `<th scope="col" class="matchup-matrix-column-header">${buildDeckAxisLabel(deckStats)}</th>`;
+        return `<th scope="col" class="matchup-matrix-column-header" data-matchup-column-key="${escapeHtml(deckKey)}">${buildDeckAxisLabel(deckStats)}</th>`;
       }).join('')}
     </tr>
   `;
@@ -3067,18 +3397,28 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
         .map(columnDeck => {
           const rowLabel = matchupMatrix.deckStatsMap.get(rowDeck)?.deck || rowDeck;
           const columnLabel = matchupMatrix.deckStatsMap.get(columnDeck)?.deck || columnDeck;
-          return buildMatrixCellHtml(matchupMatrix.cellMap.get(rowDeck)?.get(columnDeck), rowLabel, columnLabel);
+          return buildMatrixCellHtml(
+            matchupMatrix.cellMap.get(rowDeck)?.get(columnDeck),
+            rowLabel,
+            columnLabel,
+            {
+              rowKey: rowDeck,
+              columnKey: columnDeck
+            }
+          );
         })
         .join('');
 
       return `
-        <tr>
-          <th scope="row" class="matchup-matrix-row-header">${buildDeckAxisLabel(rowStats)}</th>
+        <tr data-matchup-row-key="${escapeHtml(rowDeck)}">
+          <th scope="row" class="matchup-matrix-row-header" data-matchup-row-key="${escapeHtml(rowDeck)}">${buildDeckAxisLabel(rowStats)}</th>
           ${rowCells}
         </tr>
       `;
     })
     .join('');
+
+  syncMatchupDeckSearchControls(matchupMatrix);
 }
 
 function renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches = [], focusState = currentMatchupPlayerFocus) {
@@ -4233,6 +4573,7 @@ function setupMatchupFilterListeners() {
 // CSV exports.
 export function initMatchupAnalysis() {
   initMatchupPlayerSearchDropdown();
+  setupMatchupDeckSearchListeners();
   renderMatchupLoadingState();
   updateMatchupViewCopy();
   setupMatchupFilterListeners();

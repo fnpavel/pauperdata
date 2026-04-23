@@ -2413,6 +2413,47 @@ button.leaderboard-deck-result-card {
   gap: 10px;
 }
 
+.matchup-deck-search-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 14px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 18px;
+  background: linear-gradient(135deg, rgba(22, 122, 114, 0.12), rgba(217, 164, 65, 0.09));
+}
+
+.matchup-deck-search-panel[hidden] {
+  display: none;
+}
+
+.matchup-deck-search-label {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.matchup-deck-search-select {
+  flex: 1 1 300px;
+  min-width: 220px;
+}
+
+.matchup-deck-search-clear {
+  flex: 0 0 auto;
+}
+
+.matchup-deck-search-status {
+  flex: 1 0 100%;
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
 .matchup-matrix-table-container:fullscreen {
   width: 100%;
   height: 100%;
