@@ -67,7 +67,7 @@
   </script>
 
 </head>
-<body>
+<body data-top-mode="event">
   <header>
     <div class="container header-content">
       <div class="logo">
@@ -85,8 +85,7 @@
         <button class="bubble-button top-mode-button" data-top-mode="player-matchup">Player Matchup</button>
         <button class="bubble-button top-mode-button" data-top-mode="leaderboard">Leaderboards (Elo Ratings)</button>
         <button class="bubble-button" id="aboutButton">About</button>
-        <!-- Utility controls are global because theme and data-quality mode affect
-             every analysis surface, not just the active section. -->
+        <!-- Header utility controls show global theme and dataset-mode state. -->
         <div class="header-utility-stack">
           <div class="analysis-quality-status-chip" id="analysisQualityStatusChip" aria-live="polite">
             <span class="analysis-quality-status-chip-dot" aria-hidden="true"></span>
@@ -107,6 +106,7 @@
             data-tooltip="Ignore the events that are missing the data below top32"
             aria-label="Ignore the events that are missing the data below top32"
           >
+            <span class="analysis-filter-toggle-emoji" aria-hidden="true">🧹</span>
             <span class="analysis-filter-toggle-indicator" aria-hidden="true"></span>
             <span class="analysis-filter-toggle-copy">
               <span class="analysis-filter-toggle-label">Data Quality</span>
@@ -948,7 +948,7 @@
               Ratings are computed from matchup matches in chronological order. Use the filter panel to switch between seasonal resets and continuous multi-year ladders.
             </div>
             <div class="leaderboard-table-click-hint" id="leaderboardTableClickHint">
-              <br><b>Click any player row to open that leaderboard entry.</b> <br> <br> Elo ALWAYS considers UNKNOWN decks because it cares about Player vs Player.
+              <br><b>Click any player row to open that leaderboard entry.</b> <br> <br> Elo ALWAYS considers UNKNOWN decks because it cares about Player vs Player more than Deck vs Deck, thus the Data Quality toggle isn't available.
             </div>
             <div class="leaderboard-table-search-status" id="leaderboardTableSearchStatus" aria-live="polite"></div>
             <div class="data-table-scroll player-data-table-scroll" id="leaderboardTableScroll">

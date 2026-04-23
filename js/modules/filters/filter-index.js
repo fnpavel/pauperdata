@@ -101,6 +101,8 @@ let analysisQualityRefreshRequestId = 0;
 let analysisQualityRefreshFrameId = null;
 let analysisQualityRefreshTimeoutId = null;
 let analysisQualityRefreshIdleId = null;
+const ANALYSIS_QUALITY_BUBBLE_SCROLL_Y = 120;
+let analysisQualityScrollListenerBound = false;
 
 function getResolvedAnalysisRows(rows = getAnalysisRows()) {
   return Array.isArray(rows) ? rows : EMPTY_ANALYSIS_ROWS;
@@ -243,6 +245,50 @@ function getAnalysisQualityToggleButtons() {
   return Array.from(document.querySelectorAll('[data-analysis-quality-toggle="unknown-heavy-below-top32"]'));
 }
 
+function syncAnalysisQualityBubbleState() {
+  if (typeof window === 'undefined') {
+    return;
+  }
+
+  document.body.dataset.analysisQualityBubble = window.scrollY > ANALYSIS_QUALITY_BUBBLE_SCROLL_Y ? 'on' : 'off';
+}
+
+// The header owns the Data Quality toggle, but once the header scrolls away the
+// same control collapses into a small fixed bubble for quick access.
+function setupAnalysisQualityBubbleScrollListener() {
+  if (analysisQualityScrollListenerBound || typeof window === 'undefined') {
+    return;
+  }
+
+  syncAnalysisQualityBubbleState();
+  window.addEventListener('scroll', syncAnalysisQualityBubbleState, { passive: true });
+  window.addEventListener('resize', syncAnalysisQualityBubbleState);
+  analysisQualityScrollListenerBound = true;
+}
+
+// Tracks the active dashboard mode on <body> so CSS can hide Quality controls
+// and skip quality-mode styling on Elo Leaderboards, where the filter is unused.
+function syncAnalysisQualityControlAvailability(mode = '') {
+  const activeMode = (
+    mode
+    || document.querySelector('.top-mode-button.active')?.dataset.topMode
+    || document.body.dataset.topMode
+    || 'event'
+  );
+  const shouldHideQualityControls = activeMode === 'leaderboard';
+
+  document.body.dataset.topMode = activeMode;
+
+  getAnalysisQualityToggleButtons().forEach(button => {
+    button.disabled = shouldHideQualityControls;
+    if (shouldHideQualityControls) {
+      button.setAttribute('tabindex', '-1');
+    } else {
+      button.removeAttribute('tabindex');
+    }
+  });
+}
+
 function syncAnalysisQualityStatusChip(isEnabled) {
   const statusChip = document.getElementById('analysisQualityStatusChip');
   if (!statusChip) {
@@ -261,6 +307,7 @@ function syncAnalysisQualityStatusChip(isEnabled) {
 function syncAnalysisQualityToggleButtons() {
   const isEnabled = isUnknownHeavyBelowTop32FilterEnabled();
   document.body.dataset.analysisQualityMode = isEnabled ? 'on' : 'off';
+  syncAnalysisQualityControlAvailability();
   syncAnalysisQualityStatusChip(isEnabled);
 
   getAnalysisQualityToggleButtons().forEach(button => {
@@ -324,6 +371,8 @@ function refreshAnalysisQualityToggleState() {
 }
 
 function setupAnalysisQualityToggleListeners() {
+  setupAnalysisQualityBubbleScrollListener();
+
   getAnalysisQualityToggleButtons().forEach(button => {
     if (button.dataset.listenerAdded === 'true') {
       return;
@@ -669,6 +718,7 @@ export function setupTopModeListeners() {
 
       const mode = button.dataset.topMode;
       console.log('Top mode changed to:', mode);
+      syncAnalysisQualityControlAvailability(mode);
 
       hideAboutSection(mode);
 

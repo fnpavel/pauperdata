@@ -110,14 +110,14 @@ header {
 
 /* The quality-filter mode gets a distinct header glow to make the active dataset
    mode visible even before reading the status chip. */
-body[data-analysis-quality-mode="on"] header {
+body[data-analysis-quality-mode="on"]:not([data-top-mode="leaderboard"]) header {
   background-image:
     radial-gradient(circle at center, rgba(91, 189, 180, 0.28) 0%, transparent 48%),
     linear-gradient(145deg, rgba(91, 189, 180, 0.14), var(--header-shade));
   box-shadow: 0 14px 34px rgba(10, 46, 44, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
-html[data-theme="light"] body[data-analysis-quality-mode="on"] header {
+html[data-theme="light"] body[data-analysis-quality-mode="on"]:not([data-top-mode="leaderboard"]) header {
   background-image:
     radial-gradient(circle at center, rgba(91, 189, 180, 0.18) 0%, transparent 48%),
     linear-gradient(145deg, rgba(91, 189, 180, 0.1), rgba(255, 249, 239, 0.96));
