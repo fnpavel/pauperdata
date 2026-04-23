@@ -478,10 +478,13 @@
               <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
               <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
             </div>
-            <div class="data-table-container">
+            <div class="data-table-container" id="playerRawTableContainer">
               <div class="leaderboard-table-toolbar">
                 <h2 class="chart-title" id="playerRawTableTitle">--</h2>
-                <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+                <div class="matchup-table-actions">
+                  <button type="button" class="bubble-button" id="playerRawTableFullscreenButton">Full Screen</button>
+                  <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+                </div>
               </div>
               <div class="data-table-scroll player-data-table-scroll">
                 <table class="data-table" id="playerRawTable">

@@ -289,6 +289,10 @@ export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'playe
       { header: 'Number of Players', key: 'players' },
       { header: 'Rank', key: 'rank' },
       { header: 'Deck', key: 'deck' },
+      { header: 'Season Elo Gained', value: row => Number.isFinite(Number(row.seasonEloDelta)) ? `${Math.round(Number(row.seasonEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.seasonEloDelta))}` : '--' },
+      { header: 'Season Elo', value: row => Number.isFinite(Number(row.seasonElo)) ? String(Math.round(Number(row.seasonElo))) : '--' },
+      { header: 'Running Elo Gained', value: row => Number.isFinite(Number(row.runningEloDelta)) ? `${Math.round(Number(row.runningEloDelta)) > 0 ? '+' : ''}${Math.round(Number(row.runningEloDelta))}` : '--' },
+      { header: 'Running Elo (2024-2026)', value: row => Number.isFinite(Number(row.runningElo)) ? String(Math.round(Number(row.runningElo))) : '--' },
       { header: 'Wins', key: 'wins' },
       { header: 'Losses', key: 'losses' },
       { header: 'Player Win Rate', value: row => `${Number(row.winRate || 0).toFixed(1)}%` },
@@ -297,6 +301,7 @@ export function downloadPlayerAnalysisCsv(tableState = {}, fallbackName = 'playe
     ]
     : [
       { header: 'Deck', key: 'deck' },
+      { header: 'Elo Deck', value: row => Number.isFinite(Number(row.deckElo)) ? String(Math.round(Number(row.deckElo))) : '--' },
       { header: 'Number of Events', key: 'events' },
       { header: 'Wins', key: 'wins' },
       { header: 'Losses', key: 'losses' },

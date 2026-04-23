@@ -9,7 +9,7 @@ import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/da
 import { formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 import { isUnknownHeavyBelowTop32FilterEnabled } from '../utils/analysis-data.js';
-import { buildRankingsDataset } from '../utils/rankings-data.js';
+import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
 import { getPlayerIdentityKey, getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
 import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters/filter-index.js';
@@ -194,7 +194,12 @@ function createEmptyPlayerEloInsights() {
     selectedDeck: '',
     deckRows: [],
     deckGroups: [],
-    peakEntries: []
+    peakEntries: [],
+    tableElo: {
+      eventLookup: new Map(),
+      deckLookup: new Map(),
+      rangeLabel: '2024-2026'
+    }
   };
 }
 
@@ -209,6 +214,14 @@ function getPlayerRawTableDownloadButton() {
   return document.getElementById('playerRawTableDownloadCsv');
 }
 
+function getPlayerRawTableFullscreenButton() {
+  return document.getElementById('playerRawTableFullscreenButton');
+}
+
+function getPlayerRawTableContainer() {
+  return document.getElementById('playerRawTableContainer');
+}
+
 function exportPlayerRawTableCsv() {
   downloadPlayerAnalysisCsv(currentPlayerRawTableState, 'player-analysis-table');
 }
@@ -221,6 +234,53 @@ function setupPlayerRawTableExportAction() {
 
   downloadButton.addEventListener('click', exportPlayerRawTableCsv);
   downloadButton.dataset.listenerAdded = 'true';
+}
+
+function updatePlayerRawTableFullscreenButtonState() {
+  const button = getPlayerRawTableFullscreenButton();
+  const container = getPlayerRawTableContainer();
+  if (!button || !container) {
+    return;
+  }
+
+  button.textContent = document.fullscreenElement === container ? 'Exit Full Screen' : 'Full Screen';
+}
+
+async function togglePlayerRawTableFullscreen() {
+  const container = getPlayerRawTableContainer();
+  if (!container) {
+    return;
+  }
+
+  if (document.fullscreenElement === container) {
+    if (document.exitFullscreen) {
+      await document.exitFullscreen();
+    }
+    return;
+  }
+
+  if (container.requestFullscreen) {
+    await container.requestFullscreen();
+  }
+}
+
+function setupPlayerRawTableFullscreenAction() {
+  const button = getPlayerRawTableFullscreenButton();
+  if (button && button.dataset.listenerAdded !== 'true') {
+    button.addEventListener('click', () => {
+      togglePlayerRawTableFullscreen().catch(error => {
+        console.error('Failed to toggle player table fullscreen mode.', error);
+      });
+    });
+    button.dataset.listenerAdded = 'true';
+  }
+
+  if (document.body.dataset.playerRawTableFullscreenBound !== 'true') {
+    document.addEventListener('fullscreenchange', updatePlayerRawTableFullscreenButtonState);
+    document.body.dataset.playerRawTableFullscreenBound = 'true';
+  }
+
+  updatePlayerRawTableFullscreenButtonState();
 }
 
 function escapeHtml(value) {
@@ -915,6 +975,138 @@ function getPlayerEloDeckLookupKey(record = {}) {
   return `${getPlayerEloEventKey(record)}|||${String(record?.Deck || record?.deck || '').trim()}`;
 }
 
+function comparePlayerEloHistoryEntriesAscending(a, b) {
+  return (
+    String(a?.date || '').localeCompare(String(b?.date || '')) ||
+    String(a?.eventId || '').localeCompare(String(b?.eventId || '')) ||
+    String(a?.event || '').localeCompare(String(b?.event || '')) ||
+    Number(a?.round || 0) - Number(b?.round || 0)
+  );
+}
+
+function sortPlayerEloHistoryEntries(entries = [], direction = 'desc') {
+  const sortedEntries = [...(Array.isArray(entries) ? entries : [])].sort(comparePlayerEloHistoryEntriesAscending);
+  return direction === 'asc' ? sortedEntries : sortedEntries.reverse();
+}
+
+function getPlayerEloHistoryEntryKey(entry = {}) {
+  return `${String(entry?.date || '').trim()}|||${String(entry?.event || '').trim()}`;
+}
+
+function getFullPlayerEloDateWindow(eventTypes = []) {
+  const dates = getRankingsAvailableDates(eventTypes);
+  return {
+    startDate: dates[0] || '',
+    endDate: dates[dates.length - 1] || '',
+    rangeLabel: dates.length > 0
+      ? `${dates[0].slice(0, 4)}-${dates[dates.length - 1].slice(0, 4)}`
+      : '2024-2026'
+  };
+}
+
+function buildPlayerEloEventSummaryMap(entries = []) {
+  const eventSummaryMap = new Map();
+
+  sortPlayerEloHistoryEntries(entries, 'asc').forEach(entry => {
+    const eventKey = getPlayerEloHistoryEntryKey(entry);
+    if (!eventKey || eventKey === '|||') {
+      return;
+    }
+
+    if (!eventSummaryMap.has(eventKey)) {
+      eventSummaryMap.set(eventKey, {
+        eloDelta: 0,
+        finalElo: Number.NaN,
+        matchCount: 0
+      });
+    }
+
+    const summary = eventSummaryMap.get(eventKey);
+    const delta = Number(entry?.delta);
+    if (Number.isFinite(delta)) {
+      summary.eloDelta += delta;
+    }
+    if (Number.isFinite(Number(entry?.ratingAfter))) {
+      summary.finalElo = Number(entry.ratingAfter);
+    }
+    summary.matchCount += 1;
+  });
+
+  return eventSummaryMap;
+}
+
+function buildPlayerTableEloEventLookup({
+  runningHistoryEntries = [],
+  seasonalHistoryEntries = []
+} = {}) {
+  const runningSummaryMap = buildPlayerEloEventSummaryMap(runningHistoryEntries);
+  const seasonalSummaryMap = buildPlayerEloEventSummaryMap(seasonalHistoryEntries);
+  const eventLookup = new Map();
+
+  new Set([...runningSummaryMap.keys(), ...seasonalSummaryMap.keys()]).forEach(eventKey => {
+    const runningSummary = runningSummaryMap.get(eventKey) || {};
+    const seasonalSummary = seasonalSummaryMap.get(eventKey) || {};
+    eventLookup.set(eventKey, {
+      seasonEloDelta: Number(seasonalSummary.eloDelta),
+      runningElo: Number(runningSummary.finalElo),
+      runningEloDelta: Number(runningSummary.eloDelta),
+      seasonElo: Number(seasonalSummary.finalElo),
+      matchCount: Number(runningSummary.matchCount || seasonalSummary.matchCount || 0)
+    });
+  });
+
+  return eventLookup;
+}
+
+function buildPlayerTableDeckEloLookup({
+  deckDataset = null,
+  selectedPlayer = '',
+  playerRows = []
+} = {}) {
+  const normalizedPlayerKey = String(selectedPlayer || '').trim();
+  const deckEventKeys = new Map();
+
+  (Array.isArray(playerRows) ? playerRows : []).forEach(row => {
+    const deckName = String(row?.Deck || '').trim();
+    const eventKey = getPlayerEloEventKey(row);
+    if (!deckName || !eventKey || eventKey === '|||') {
+      return;
+    }
+
+    if (!deckEventKeys.has(deckName)) {
+      deckEventKeys.set(deckName, new Set());
+    }
+    deckEventKeys.get(deckName).add(eventKey);
+  });
+
+  const deckLookup = new Map();
+  (deckDataset?.seasonRows || [])
+    .filter(row => String(row?.basePlayerKey || '').trim() === normalizedPlayerKey)
+    .forEach(row => {
+      const deckName = String(row?.deck || '').trim();
+      const relevantEventKeys = deckEventKeys.get(deckName);
+      if (!isSelectablePlayerEloDeck(deckName) || !relevantEventKeys || relevantEventKeys.size === 0) {
+        return;
+      }
+
+      const latestEntry = sortPlayerEloHistoryEntries(deckDataset?.historyByPlayer?.get(row.playerKey) || [])
+        .find(entry => relevantEventKeys.has(getPlayerEloHistoryEntryKey(entry)));
+
+      if (!latestEntry || !Number.isFinite(Number(latestEntry.ratingAfter))) {
+        return;
+      }
+
+      deckLookup.set(deckName, {
+        deckElo: Number(latestEntry.ratingAfter),
+        latestDate: latestEntry.date || '',
+        latestEvent: latestEntry.event || '',
+        matchCount: relevantEventKeys.size
+      });
+    });
+
+  return deckLookup;
+}
+
 function buildPlayerEloRowSignature(rows = [], keyBuilder = getPlayerEloEventKey) {
   return (Array.isArray(rows) ? rows : [])
     .map(row => keyBuilder(row))
@@ -927,11 +1119,13 @@ function getCachedPlayerRankingsDataset({
   startDate = '',
   endDate = '',
   entityMode = 'player',
+  resetByYear = false,
   matchFilterKey = '',
   matchFilter = null
 } = {}) {
   const cacheKey = [
     entityMode,
+    resetByYear ? 'seasonal' : 'running',
     getNormalizedPlayerEventTypesKey(eventTypes),
     String(startDate || '').trim(),
     String(endDate || '').trim(),
@@ -952,7 +1146,7 @@ function getCachedPlayerRankingsDataset({
     endDate,
     matchFilter
   }, {
-    resetByYear: false,
+    resetByYear,
     entityMode
   }).catch(error => {
     playerRankingsDatasetCache.delete(cacheKey);
@@ -994,6 +1188,7 @@ async function buildPlayerEloInsights({
   }
 
   const insightsPromise = (async () => {
+    const fullEloWindow = getFullPlayerEloDateWindow(selectedEventTypes);
     const allowedDeckEventKeys = [...new Set(
       (Array.isArray(qualityScopedPlayerRows) ? qualityScopedPlayerRows : [])
         .map(row => getPlayerEloEventKey(row))
@@ -1006,7 +1201,13 @@ async function buildPlayerEloInsights({
 
     // Load all-decks and deck-specific Elo datasets together because every
     // refresh needs both for comparison and filter options.
-    const [overallDataset, deckDataset] = await Promise.all([
+    const [
+      overallDataset,
+      deckDataset,
+      runningAllTimeDataset,
+      seasonalDataset,
+      runningDeckDataset
+    ] = await Promise.all([
       getCachedPlayerRankingsDataset({
         eventTypes: selectedEventTypes,
         startDate,
@@ -1020,18 +1221,32 @@ async function buildPlayerEloInsights({
         entityMode: 'player_deck',
         matchFilterKey: allowedDeckEventKeys.join('@@'),
         matchFilter: deckMatchFilter
+      }),
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate: fullEloWindow.startDate,
+        endDate: fullEloWindow.endDate,
+        entityMode: 'player',
+        resetByYear: false
+      }),
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate: fullEloWindow.startDate,
+        endDate: fullEloWindow.endDate,
+        entityMode: 'player',
+        resetByYear: true
+      }),
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate: fullEloWindow.startDate,
+        endDate: fullEloWindow.endDate,
+        entityMode: 'player_deck',
+        resetByYear: false
       })
     ]);
     const overallPeriodRow = (overallDataset?.seasonRows || []).find(row => String(row.playerKey || '').trim() === String(selectedPlayer || '').trim()) || null;
-    const sortHistoryEntries = entries => [...entries].sort((a, b) => {
-      return (
-        String(b.date || '').localeCompare(String(a.date || '')) ||
-        Number(b.round || 0) - Number(a.round || 0) ||
-        String(b.eventId || '').localeCompare(String(a.eventId || ''))
-      );
-    });
     const overallHistoryEntries = overallPeriodRow
-      ? sortHistoryEntries(
+      ? sortPlayerEloHistoryEntries(
           (overallDataset?.historyByPlayer?.get(selectedPlayer) || [])
             .filter(entry => String(entry.seasonKey || '').trim() === String(overallPeriodRow.seasonKey || '').trim())
         )
@@ -1055,7 +1270,7 @@ async function buildPlayerEloInsights({
       ? (deckRows.find(row => String(row.deck || '').trim() === resolvedDeck) || null)
       : overallPeriodRow;
     const historyEntries = resolvedDeck && periodRow
-      ? sortHistoryEntries(
+      ? sortPlayerEloHistoryEntries(
           (deckDataset?.historyByPlayer?.get(periodRow.playerKey) || [])
             .filter(entry => String(entry.seasonKey || '').trim() === String(periodRow.seasonKey || '').trim())
         )
@@ -1072,7 +1287,7 @@ async function buildPlayerEloInsights({
         deck: fallbackDeck
       };
     });
-    const allDeckHistoryEntries = sortHistoryEntries(
+    const allDeckHistoryEntries = sortPlayerEloHistoryEntries(
       deckRows.flatMap(row => {
         const entries = deckDataset?.historyByPlayer?.get(row.playerKey) || [];
         return entries.filter(entry => String(entry.seasonKey || '').trim() === String(row.seasonKey || '').trim());
@@ -1083,6 +1298,8 @@ async function buildPlayerEloInsights({
       ? Math.max(...historyWithDeckFallbacks.map(entry => Number(entry.ratingAfter)).filter(Number.isFinite))
       : Number.NEGATIVE_INFINITY;
     const peakEntries = historyWithDeckFallbacks.filter(entry => Number(entry.ratingAfter) === peakRating);
+    const runningTableHistoryEntries = sortPlayerEloHistoryEntries(runningAllTimeDataset?.historyByPlayer?.get(selectedPlayer) || []);
+    const seasonalTableHistoryEntries = sortPlayerEloHistoryEntries(seasonalDataset?.historyByPlayer?.get(selectedPlayer) || []);
 
     return {
       dataset: resolvedDeck ? deckDataset : overallDataset,
@@ -1096,7 +1313,19 @@ async function buildPlayerEloInsights({
       selectedDeck: resolvedDeck,
       deckRows,
       deckGroups,
-      peakEntries
+      peakEntries,
+      tableElo: {
+        eventLookup: buildPlayerTableEloEventLookup({
+          runningHistoryEntries: runningTableHistoryEntries,
+          seasonalHistoryEntries: seasonalTableHistoryEntries
+        }),
+        deckLookup: buildPlayerTableDeckEloLookup({
+          deckDataset: runningDeckDataset,
+          selectedPlayer,
+          playerRows
+        }),
+        rangeLabel: fullEloWindow.rangeLabel
+      }
     };
   })().catch(error => {
     playerEloInsightsCache.delete(cacheKey);
@@ -2781,6 +3010,7 @@ function initPlayerSearchDropdown() {
 // Wires Player Analysis controls, drilldown modals, card handlers, and exports.
 export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
+  setupPlayerRawTableFullscreenAction();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();
@@ -2801,7 +3031,7 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
   currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
   updatePlayerWinRateChart();
   updatePlayerDeckPerformanceChart();
-  populatePlayerAnalysisRawData(data);
+  populatePlayerAnalysisRawData(data, currentPlayerEloInsights);
   populatePlayerStats(data, currentPlayerEloInsights);
 }
 
@@ -2869,13 +3099,110 @@ export async function updatePlayerAnalytics() {
   updatePlayerAnalysis(filteredData, eloInsights);
 }
 
+function renderPlayerEventTableRows(rows = []) {
+  return rows.map(row => `
+    <tr>
+      <td>${row.date}</td>
+      <td class="event-tooltip" data-tooltip="${row.tooltip}">${row.event}</td>
+      <td>${row.players}</td>
+      <td>${row.rank}</td>
+      <td>${row.deck}</td>
+      <td>${formatEloDelta(row.seasonEloDelta)}</td>
+      <td>${formatEloRating(row.seasonElo)}</td>
+      <td>${formatEloDelta(row.runningEloDelta)}</td>
+      <td>${formatEloRating(row.runningElo)}</td>
+      <td>${row.wins}</td>
+      <td>${row.losses}</td>
+      <td>${row.winRate.toFixed(1)}%</td>
+      <td>${row.deckWinRate.toFixed(1)}%</td>
+      <td>${row.deckMeta.toFixed(1)}%</td>
+    </tr>
+  `).join("");
+}
+
+function renderPlayerDeckTableRows(rows = []) {
+  return rows.map(row => `
+    <tr>
+      <td>${row.deck}</td>
+      <td>${formatEloRating(row.deckElo)}</td>
+      <td>${row.events}</td>
+      <td>${row.wins}</td>
+      <td>${row.losses}</td>
+      <td>${row.overallWinRate.toFixed(2)}%</td>
+      <td class="event-tooltip" data-tooltip="${row.bestDate} - ${row.bestEvent}">${row.bestWinRate.toFixed(2)}%</td>
+      <td class="event-tooltip" data-tooltip="${row.worstDate} - ${row.worstEvent}">${row.worstWinRate.toFixed(2)}%</td>
+    </tr>
+  `).join("");
+}
+
+function renderPlayerRawTableRows(rows = [], tableType = 'event') {
+  return tableType === 'event'
+    ? renderPlayerEventTableRows(rows)
+    : renderPlayerDeckTableRows(rows);
+}
+
+function getPlayerRawTableSortValue(row, sortKey) {
+  const value = row?.[sortKey];
+  if (typeof value === 'string') {
+    return value.toLowerCase();
+  }
+
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : Number.NEGATIVE_INFINITY;
+}
+
+function sortPlayerRawTableRows(rows = [], sortKey = 'date', direction = 'asc') {
+  const directionMultiplier = direction === 'desc' ? -1 : 1;
+
+  rows.sort((a, b) => {
+    const aVal = getPlayerRawTableSortValue(a, sortKey);
+    const bVal = getPlayerRawTableSortValue(b, sortKey);
+
+    if (aVal < bVal) {
+      return -1 * directionMultiplier;
+    }
+
+    if (aVal > bVal) {
+      return 1 * directionMultiplier;
+    }
+
+    return 0;
+  });
+
+  return rows;
+}
+
+function markPlayerRawTableSortHeader(tableHead, sortKey, direction) {
+  const headers = tableHead.querySelectorAll('th[data-sort]');
+  headers.forEach(header => {
+    header.classList.remove('asc', 'desc');
+    const arrow = header.querySelector('.sort-arrow');
+    if (arrow) {
+      arrow.textContent = '';
+    }
+  });
+
+  const activeHeader = tableHead.querySelector(`th[data-sort="${sortKey}"]`);
+  if (!activeHeader) {
+    return;
+  }
+
+  activeHeader.classList.add(direction);
+  const activeArrow = activeHeader.querySelector('.sort-arrow');
+  if (activeArrow) {
+    activeArrow.textContent = direction === 'desc' ? '\u2193' : '\u2191';
+  }
+}
+
 // Renders the Player Analysis raw/deck data table and table mode controls.
-export function populatePlayerAnalysisRawData(data) {
+export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerEloInsights) {
   const rawTableHead = document.getElementById("playerRawTableHead");
   const rawTableBody = document.getElementById("playerRawTableBody");
   const rawTableTitle = document.getElementById("playerRawTableTitle");
   const playerFilterMenu = document.getElementById("playerFilterMenu");
   const selectedPlayer = getSelectedPlayerLabel(playerFilterMenu) || "No Player Selected";
+  const tableElo = eloInsights?.tableElo || createEmptyPlayerEloInsights().tableElo;
+  const runningEloLabel = tableElo.rangeLabel || '2024-2026';
 
   rawTableTitle.textContent = `${selectedPlayer} - Event Data`;
   console.log("Setting initial table title:", rawTableTitle.textContent);
@@ -2902,6 +3229,10 @@ export function populatePlayerAnalysisRawData(data) {
           <th data-sort="players">Number of Players <span class="sort-arrow"></span></th>
           <th data-sort="rank">Rank <span class="sort-arrow"></span></th>
           <th data-sort="deck">Deck <span class="sort-arrow"></span></th>
+          <th data-sort="seasonEloDelta">Season Elo Gained <span class="sort-arrow"></span></th>
+          <th data-sort="seasonElo">Season Elo <span class="sort-arrow"></span></th>
+          <th data-sort="runningEloDelta">Running Elo Gained <span class="sort-arrow"></span></th>
+          <th data-sort="runningElo">Running Elo (${runningEloLabel}) <span class="sort-arrow"></span></th>
           <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
           <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
           <th data-sort="winRate">Player Win Rate <span class="sort-arrow"></span></th>
@@ -2910,33 +3241,27 @@ export function populatePlayerAnalysisRawData(data) {
         </tr>
       `;
 
-      const rows = calculatePlayerEventTable(data);
-      updateElementHTML("playerRawTableBody", rows.length === 0 ? "<tr><td colspan='10'>No data available</td></tr>" : rows.map(row => `
-        <tr>
-          <td>${row.date}</td>
-          <td class="event-tooltip" data-tooltip="${row.tooltip}">${row.event}</td>
-          <td>${row.players}</td>
-          <td>${row.rank}</td>
-          <td>${row.deck}</td>
-          <td>${row.wins}</td>
-          <td>${row.losses}</td>
-          <td>${row.winRate.toFixed(1)}%</td>
-          <td>${row.deckWinRate.toFixed(1)}%</td>
-          <td>${row.deckMeta.toFixed(1)}%</td>
-        </tr>
-      `).join(""));
+      const rows = sortPlayerRawTableRows(calculatePlayerEventTable(data, {
+        eloEventLookup: tableElo.eventLookup
+      }), 'date', 'desc');
+      updateElementHTML(
+        "playerRawTableBody",
+        rows.length === 0 ? "<tr><td colspan='14'>No data available</td></tr>" : renderPlayerRawTableRows(rows, tableType)
+      );
+      markPlayerRawTableSortHeader(rawTableHead, 'date', 'desc');
 
       currentPlayerRawTableState = {
         tableType,
         title: rawTableTitle.textContent || 'player-event-data',
         rows
       };
-      setupTableSorting(rawTableHead, rawTableBody, rows);
+      setupTableSorting(rawTableHead, rawTableBody, rows, tableType);
     } else if (tableType === 'deck') {
       rawTableTitle.textContent = `${selectedPlayer} - Deck Data`;
       rawTableHead.innerHTML = `
         <tr>
           <th data-sort="deck">Deck <span class="sort-arrow"></span></th>
+          <th data-sort="deckElo">Elo Deck <span class="sort-arrow"></span></th>
           <th data-sort="events">Number of Events <span class="sort-arrow"></span></th>
           <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
           <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
@@ -2946,25 +3271,20 @@ export function populatePlayerAnalysisRawData(data) {
         </tr>
       `;
 
-      const rows = calculatePlayerDeckTable(data);
-      updateElementHTML("playerRawTableBody", rows.length === 0 ? "<tr><td colspan='7'>No data available</td></tr>" : rows.map(row => `
-        <tr>
-          <td>${row.deck}</td>
-          <td>${row.events}</td>
-          <td>${row.wins}</td>
-          <td>${row.losses}</td>
-          <td>${row.overallWinRate.toFixed(2)}%</td>
-          <td class="event-tooltip" data-tooltip="${row.bestDate} - ${row.bestEvent}">${row.bestWinRate.toFixed(2)}%</td>
-          <td class="event-tooltip" data-tooltip="${row.worstDate} - ${row.worstEvent}">${row.worstWinRate.toFixed(2)}%</td>
-        </tr>
-      `).join(""));
+      const rows = calculatePlayerDeckTable(data, {
+        deckEloLookup: tableElo.deckLookup
+      });
+      updateElementHTML(
+        "playerRawTableBody",
+        rows.length === 0 ? "<tr><td colspan='8'>No data available</td></tr>" : renderPlayerRawTableRows(rows, tableType)
+      );
 
       currentPlayerRawTableState = {
         tableType,
         title: rawTableTitle.textContent || 'player-deck-data',
         rows
       };
-      setupTableSorting(rawTableHead, rawTableBody, rows);
+      setupTableSorting(rawTableHead, rawTableBody, rows, tableType);
     }
   };
 
@@ -3112,43 +3432,16 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
 }
 
 // Helper Function
-function setupTableSorting(tableHead, tableBody, rows) {
+function setupTableSorting(tableHead, tableBody, rows, tableType = 'event') {
   const headers = tableHead.querySelectorAll('th[data-sort]');
   headers.forEach(header => header.addEventListener('click', () => {
     const sortKey = header.dataset.sort;
     const isAscending = header.classList.contains('asc');
     headers.forEach(h => { h.classList.remove('asc', 'desc'); h.querySelector('.sort-arrow').textContent = ''; });
-    rows.sort((a, b) => {
-      const aVal = typeof a[sortKey] === 'string' ? a[sortKey].toLowerCase() : a[sortKey];
-      const bVal = typeof b[sortKey] === 'string' ? b[sortKey].toLowerCase() : b[sortKey];
-      return isAscending ? (aVal > bVal ? -1 : 1) : (aVal < bVal ? -1 : 1);
-    });
+    sortPlayerRawTableRows(rows, sortKey, isAscending ? 'desc' : 'asc');
     header.classList.add(isAscending ? 'desc' : 'asc');
     header.querySelector('.sort-arrow').textContent = isAscending ? '\u2193' : '\u2191';
-    updateElementHTML("playerRawTableBody", rows.map(row => row.hasOwnProperty('players') ? `
-      <tr>
-        <td>${row.date}</td>
-        <td class="event-tooltip" data-tooltip="${row.tooltip}">${row.event}</td>
-        <td>${row.players}</td>
-        <td>${row.rank}</td>
-        <td>${row.deck}</td>
-        <td>${row.wins}</td>
-        <td>${row.losses}</td>
-        <td>${row.winRate.toFixed(1)}%</td>
-        <td>${row.deckWinRate.toFixed(1)}%</td>
-        <td>${row.deckMeta.toFixed(1)}%</td>
-      </tr>
-    ` : `
-      <tr>
-        <td>${row.deck}</td>
-        <td>${row.events}</td>
-        <td>${row.wins}</td>
-        <td>${row.losses}</td>
-        <td>${row.overallWinRate.toFixed(2)}%</td>
-        <td class="event-tooltip" data-tooltip="${row.bestDate} - ${row.bestEvent}">${row.bestWinRate.toFixed(2)}%</td>
-        <td class="event-tooltip" data-tooltip="${row.worstDate} - ${row.worstEvent}">${row.worstWinRate.toFixed(2)}%</td>
-      </tr>
-    `).join(""));
+    updateElementHTML("playerRawTableBody", renderPlayerRawTableRows(rows, tableType));
   }));
 }
 

@@ -129,7 +129,9 @@ export function calculateMultiEventDeckTable(data, deckName) {
 
 // Player Tables
 // Builds the selected player's event-history table rows.
-export function calculatePlayerEventTable(data) {
+export function calculatePlayerEventTable(data, {
+  eloEventLookup = new Map()
+} = {}) {
   return data.map(row => {
     // Tooltips and deck meta need the full event field, not just the selected
     // player's rows, so this lookup intentionally goes back to analysis rows.
@@ -143,6 +145,9 @@ export function calculatePlayerEventTable(data) {
     const winnerWinRate = (winner.Wins + winner.Losses) > 0 ? (winner.Wins / (winner.Wins + winner.Losses)) * 100 : 0;
     const winnerDeckPlayers = eventData.filter(r => r.Deck === winner.Deck).length;
     const winnerMeta = eventData.length > 0 ? (winnerDeckPlayers / eventData.length) * 100 : 0;
+    const eloSummary = eloEventLookup instanceof Map
+      ? eloEventLookup.get(`${String(row.Date || '').trim()}|||${String(row.Event || '').trim()}`) || null
+      : null;
 
     return {
       date: row.Date,
@@ -150,6 +155,10 @@ export function calculatePlayerEventTable(data) {
       players: eventData.length,
       rank: row.Rank,
       deck: row.Deck,
+      seasonEloDelta: Number.isFinite(Number(eloSummary?.seasonEloDelta)) ? Number(eloSummary.seasonEloDelta) : Number.NaN,
+      seasonElo: Number.isFinite(Number(eloSummary?.seasonElo)) ? Number(eloSummary.seasonElo) : Number.NaN,
+      runningEloDelta: Number.isFinite(Number(eloSummary?.runningEloDelta)) ? Number(eloSummary.runningEloDelta) : Number.NaN,
+      runningElo: Number.isFinite(Number(eloSummary?.runningElo)) ? Number(eloSummary.runningElo) : Number.NaN,
       wins: row.Wins,
       losses: row.Losses,
       winRate: (row.Wins + row.Losses) > 0 ? (row.Wins / (row.Wins + row.Losses)) * 100 : 0,
@@ -161,7 +170,9 @@ export function calculatePlayerEventTable(data) {
 }
 
 // Aggregates the selected player's results by deck.
-export function calculatePlayerDeckTable(data) {
+export function calculatePlayerDeckTable(data, {
+  deckEloLookup = new Map()
+} = {}) {
   // Player deck tables collapse multiple event appearances into one row per deck
   // while preserving best/worst single-event snapshots for quick comparison.
   const deckStats = data.reduce((acc, row) => {
@@ -185,8 +196,10 @@ export function calculatePlayerDeckTable(data) {
     const overallWinRate = totalGames > 0 ? (stats.wins / totalGames) * 100 : 0;
     const bestEvent = stats.eventData.reduce((best, event) => event.winRate > (best.winRate || 0) ? event : best, {});
     const worstEvent = stats.eventData.length > 0 ? stats.eventData.reduce((worst, event) => event.winRate < worst.winRate ? event : worst, stats.eventData[0]) : { winRate: 0, event: "--", date: "--" };
+    const deckEloSummary = deckEloLookup instanceof Map ? deckEloLookup.get(deck) || null : null;
     return {
       deck,
+      deckElo: Number.isFinite(Number(deckEloSummary?.deckElo)) ? Number(deckEloSummary.deckElo) : Number.NaN,
       events: [...new Set(stats.events)].length,
       wins: stats.wins,
       losses: stats.losses,

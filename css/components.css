@@ -2541,6 +2541,10 @@ button.leaderboard-deck-result-card {
   max-height: none;
 }
 
+#playerRawTableContainer:fullscreen #playerRawTable {
+  min-width: 1560px;
+}
+
 .data-table-container:fullscreen .leaderboard-table-click-hint {
   display: none;
 }

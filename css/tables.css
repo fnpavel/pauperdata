@@ -226,6 +226,16 @@ th.asc .sort-arrow {
   z-index: 4;
 }
 
+#playerRawTable {
+  min-width: 1440px;
+  table-layout: auto;
+}
+
+#playerRawTable th,
+#playerRawTable td {
+  white-space: nowrap;
+}
+
 /* Matchup matrices can be both wide and tall, so they use separate sticky axis
    styles below for row and column labels. */
 .matchup-matrix-scroll {
