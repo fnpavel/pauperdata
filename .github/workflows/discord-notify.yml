@@ -51,7 +51,7 @@ jobs:
               )
 
           payload = {
-              "username": "MTG Tracker Updates",
+              "username": "Pauper Dashboard Updates",
               "content": message,
           }
 
