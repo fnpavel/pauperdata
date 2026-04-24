@@ -1,7 +1,7 @@
 export const eloManifest = {
-  "generatedAt": "2026-04-20T19:25:24",
-  "lastUpdatedDate": "2026-04-20",
-  "totalMatchCount": 61982,
+  "generatedAt": "2026-04-24T02:24:16",
+  "lastUpdatedDate": "2026-04-24",
+  "totalMatchCount": 62087,
   "years": [
     "2024",
     "2025",
@@ -15,7 +15,7 @@ export const eloManifest = {
   "matchCountsByYear": {
     "2024": 22200,
     "2025": 29852,
-    "2026": 9930
+    "2026": 10035
   },
   "availableDatesByEventType": {
     "online": [
@@ -357,7 +357,8 @@ export const eloManifest = {
       "2026-04-16",
       "2026-04-17",
       "2026-04-18",
-      "2026-04-19"
+      "2026-04-19",
+      "2026-04-23"
     ]
   }
 };
