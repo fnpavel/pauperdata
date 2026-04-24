@@ -38,7 +38,7 @@ jobs:
           except ValueError as exc:
               raise SystemExit(f"Invalid last_updated_event_date in aliases.json: {event_date}") from exc
 
-          message = f"Dashboard was updated with the {event_type} of {formatted_date}."
+          message = f"Dashboard was updated with the {event_type} of {formatted_date}. Check it out at https://fnpavel.github.io/pauperdata"
 
           payload = {
               "username": "MTG Tracker Updates",
