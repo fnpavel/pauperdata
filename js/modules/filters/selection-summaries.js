@@ -4,6 +4,7 @@ import { triggerUpdateAnimation } from '../../utils/dom.js';
 import { formatDate, formatEventName } from '../../utils/format.js';
 import { formatGroupDisplayLabel, getEventGroupInfo } from '../../utils/event-groups.js';
 import { rowMatchesPlayerKey } from '../../utils/player-names.js';
+import { getAnalysisRowsForDateRange } from '../../utils/analysis-data.js';
 import { getPlayerAnalysisActivePreset } from '../../utils/player-analysis-presets.js';
 import { filterState } from './state.js';
 import { filterRuntime } from './runtime.js';
@@ -105,14 +106,10 @@ function getBasePlayerAnalysisRows() {
     return [];
   }
 
-  return scopedRows.filter(row => {
-    return (
-      row.Date >= startDate &&
-      row.Date <= endDate &&
-      rowMatchesPlayerKey(row, selectedPlayer) &&
-      selectedEventTypes.includes(row.EventType.toLowerCase())
-    );
-  });
+  return getAnalysisRowsForDateRange({
+    startDate,
+    endDate
+  }, scopedRows).filter(row => rowMatchesPlayerKey(row, selectedPlayer));
 }
 
 function getPlayerSelectedEventEntries(rows = getBasePlayerAnalysisRows()) {
@@ -301,12 +298,11 @@ function getMultiEventSelectedEventEntries() {
 
   const events = new Map();
 
-  getScopedMultiEventRows(selectedEventTypes).forEach(row => {
-    if (
-      row.Date >= startDate &&
-      row.Date <= endDate &&
-      !events.has(row.Event)
-    ) {
+  getAnalysisRowsForDateRange({
+    startDate,
+    endDate
+  }, getScopedMultiEventRows(selectedEventTypes)).forEach(row => {
+    if (!events.has(row.Event)) {
       events.set(row.Event, row.Date || getEventDate(row.Event));
     }
   });
@@ -378,13 +374,10 @@ export function getFilteredMultiEventRows() {
   const groupSummaries = getMultiEventGroupSummaries();
   syncMultiEventGroupFilterState(groupSummaries);
 
-  return scopedRows.filter(row => {
-    return (
-      row.Date >= startDate &&
-      row.Date <= endDate &&
-      filterState.activeMultiEventGroupKeys.has(getEventGroupInfo(row.Event).key)
-    );
-  });
+  return getAnalysisRowsForDateRange({
+    startDate,
+    endDate
+  }, scopedRows).filter(row => filterState.activeMultiEventGroupKeys.has(getEventGroupInfo(row.Event).key));
 }
 
 function getFilteredMultiEventSelectedEventEntries() {

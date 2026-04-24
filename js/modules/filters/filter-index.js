@@ -23,7 +23,10 @@ import {
 } from '../../utils/player-analysis-presets.js';
 import { getMultiEventPresetSuggestedRange } from '../../utils/multi-event-presets.js';
 import {
+  getAnalysisDateValuesForEventTypes,
   getAnalysisRows,
+  getAnalysisRowsForEventTypes,
+  getAnalysisRowsForSingleEvent,
   isUnknownHeavyBelowTop32FilterEnabled,
   setUnknownHeavyBelowTop32FilterEnabled
 } from '../../utils/analysis-data.js';
@@ -87,10 +90,6 @@ export { setSelectedSingleEvent, setSingleEventType, updateEventFilter } from '.
 let filteredData = [];
 const EMPTY_ANALYSIS_ROWS = [];
 
-// These caches are keyed by the exact rows array instance. When the quality
-// toggle swaps datasets we get a new array identity, which naturally invalidates
-// the old cached slices without extra bookkeeping.
-const analysisRowsByEventTypesCache = new WeakMap();
 const rowDateValuesCache = new WeakMap();
 const playerRowDateValuesCache = new WeakMap();
 
@@ -108,43 +107,9 @@ function getResolvedAnalysisRows(rows = getAnalysisRows()) {
   return Array.isArray(rows) ? rows : EMPTY_ANALYSIS_ROWS;
 }
 
-function normalizeSelectedEventTypes(selectedEventTypes = []) {
-  return [...new Set(
-    (Array.isArray(selectedEventTypes) ? selectedEventTypes : [selectedEventTypes])
-      .map(value => String(value || '').trim().toLowerCase())
-      .filter(Boolean)
-  )].sort();
-}
-
-function getSelectedEventTypesCacheKey(selectedEventTypes = []) {
-  return normalizeSelectedEventTypes(selectedEventTypes).join('||');
-}
-
 function getRowsScopedToSelectedEventTypes(rows = getAnalysisRows(), selectedEventTypes = []) {
   const resolvedRows = getResolvedAnalysisRows(rows);
-  const cacheKey = getSelectedEventTypesCacheKey(selectedEventTypes);
-
-  if (!cacheKey) {
-    return EMPTY_ANALYSIS_ROWS;
-  }
-
-  let scopedRowsCache = analysisRowsByEventTypesCache.get(resolvedRows);
-  if (!scopedRowsCache) {
-    scopedRowsCache = new Map();
-    analysisRowsByEventTypesCache.set(resolvedRows, scopedRowsCache);
-  }
-
-  if (!scopedRowsCache.has(cacheKey)) {
-    // Event-type scoping is reused by menus, calendars, and preset logic. Cache
-    // it so those controls can be rebuilt without rescanning the same dataset.
-    const selectedEventTypeSet = new Set(cacheKey.split('||'));
-    scopedRowsCache.set(
-      cacheKey,
-      resolvedRows.filter(row => selectedEventTypeSet.has(String(row?.EventType || '').toLowerCase()))
-    );
-  }
-
-  return scopedRowsCache.get(cacheKey) || EMPTY_ANALYSIS_ROWS;
+  return getAnalysisRowsForEventTypes(selectedEventTypes, resolvedRows);
 }
 
 function getSortedUniqueDateValues(rows = []) {
@@ -612,8 +577,9 @@ export function updateAllCharts() {
 
       filteredData =
         selectedEventType && selectedEvent
-          ? getAnalysisRows().filter(row => {
-              return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+          ? getAnalysisRowsForSingleEvent({
+              eventType: selectedEventType,
+              eventName: selectedEvent
             })
           : [];
 
@@ -656,8 +622,9 @@ export function getFunnelChartData() {
   const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
   const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
 
-  const filtered = getAnalysisRows().filter(row => {
-    return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+  const filtered = getAnalysisRowsForSingleEvent({
+    eventType: selectedEventType,
+    eventName: selectedEvent
   });
 
   return filtered.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
@@ -668,8 +635,9 @@ export function getMetaWinRateChartData() {
   const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
 
-  return getAnalysisRows().filter(row => {
-    return row.EventType.toLowerCase() === selectedEventType && row.Event === selectedEvent;
+  return getAnalysisRowsForSingleEvent({
+    eventType: selectedEventType,
+    eventName: selectedEvent
   });
 }
 
@@ -1040,8 +1008,7 @@ export function updateDateOptions() {
 
   const selectedEventTypes = getEventAnalysisSelectedTypes();
   const activePreset = getActiveMultiEventPreset();
-  const eventTypeRows = getRowsScopedToSelectedEventTypes(getAnalysisRows(), selectedEventTypes);
-  const dates = selectedEventTypes.length > 0 ? getSortedUniqueDateValues(eventTypeRows) : [];
+  const dates = selectedEventTypes.length > 0 ? getAnalysisDateValuesForEventTypes(selectedEventTypes) : [];
 
   console.log('Available dates for Multi-Event:', dates, 'Active preset:', activePreset);
 
@@ -1310,9 +1277,7 @@ export function updatePlayerDateOptions() {
 
 // Populates date dropdown options for the given event type.
 export function populateDateDropdowns(eventType) {
-  const filteredDates = getSortedUniqueDateValues(
-    getRowsScopedToSelectedEventTypes(getAnalysisRows(), [eventType])
-  );
+  const filteredDates = getAnalysisDateValuesForEventTypes([eventType]);
 
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');

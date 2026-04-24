@@ -1,6 +1,9 @@
 // Renders the Event Analysis view for both single-event and multi-event modes:
 // stat cards, drilldowns, tables, and the data snapshots that support exports.
-import { getAnalysisRows } from '../utils/analysis-data.js';
+import {
+  getAnalysisRowsForDateRange,
+  getAnalysisRowsForSingleEvent
+} from '../utils/analysis-data.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
@@ -1650,10 +1653,15 @@ export function updateEventAnalytics() {
   console.log("Updating event analytics...");
   const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
   const eventFilterMenu = document.getElementById("eventFilterMenu");
-  const selectedEvents = eventFilterMenu && eventFilterMenu.value ? [eventFilterMenu.value] : [];
+  const selectedEvent = eventFilterMenu?.value || '';
   // Single-event mode always resolves to one event-type bucket plus one event
   // selection, even though the UI uses the shared analysis dataset underneath.
-  const eventData = getAnalysisRows().filter(row => row.EventType.toLowerCase() === selectedEventType && (selectedEvents.length === 0 || selectedEvents.includes(row.Event)));
+  const eventData = selectedEventType && selectedEvent
+    ? getAnalysisRowsForSingleEvent({
+        eventType: selectedEventType,
+        eventName: selectedEvent
+      })
+    : [];
   updateSingleEventAnalysis(eventData, eventData.length);
 }
 
@@ -1666,7 +1674,11 @@ export function updateMultiEventAnalytics() {
   // Multi-event mode keeps the broader date window and event-type scope so the
   // downstream cards and charts all aggregate over the same row subset.
   const filteredData = (startDate && endDate && selectedEventTypes.length > 0) 
-    ? getAnalysisRows().filter(row => row.Date >= startDate && row.Date <= endDate && selectedEventTypes.includes(row.EventType.toLowerCase()))
+    ? getAnalysisRowsForDateRange({
+        eventTypes: selectedEventTypes,
+        startDate,
+        endDate
+      })
     : [];
   updateMultiEventAnalysis(filteredData);
 }

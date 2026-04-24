@@ -5,7 +5,11 @@ import {
   primeEventFilterCalendarSelection
 } from './single-event-picker.js';
 import { getEventGroupInfo } from '../../utils/event-groups.js';
-import { getAnalysisRows } from '../../utils/analysis-data.js';
+import {
+  getAnalysisRowsForEvent,
+  getAnalysisSingleEventEntries,
+  getLatestAnalysisSingleEventEntry
+} from '../../utils/analysis-data.js';
 import { filterState } from './state.js';
 import { filterRuntime } from './runtime.js';
 import {
@@ -23,54 +27,28 @@ export function getEventDate(eventName) {
     return match[1];
   }
 
-  return getAnalysisRows().find(row => row.Event === eventName)?.Date || '';
+  return getAnalysisRowsForEvent(eventName)[0]?.Date || '';
 }
 
 // Builds calendar-picker entries for the active single-event event type.
 export function buildSingleEventCalendarEntries(selectedEventType) {
-  const entries = new Map();
+  return getAnalysisSingleEventEntries(selectedEventType).map(entry => {
+    const groupInfo = getEventGroupInfo(entry.name);
 
-  getAnalysisRows().forEach(row => {
-    if (row.EventType.toLowerCase() !== selectedEventType || entries.has(row.Event)) {
-      return;
-    }
-
-    const groupInfo = getEventGroupInfo(row.Event);
-
-    entries.set(row.Event, {
-      name: row.Event,
-      date: row.Date || getEventDate(row.Event),
+    return {
+      name: entry.name,
+      date: entry.date || getEventDate(entry.name),
       groupKey: groupInfo.key,
       groupLabel: groupInfo.label,
       groupOrder: groupInfo.order,
       shortLabel: groupInfo.shortLabel
-    });
-  });
-
-  return Array.from(entries.values()).sort((a, b) => {
-    return b.date.localeCompare(a.date) || a.name.localeCompare(b.name);
+    };
   });
 }
 
 // Finds the latest available single-event entry for default selection.
 export function getLatestSingleEventEntry() {
-  const entries = new Map();
-
-  getAnalysisRows().forEach(row => {
-    if (entries.has(row.Event)) {
-      return;
-    }
-
-    entries.set(row.Event, {
-      name: row.Event,
-      date: row.Date || getEventDate(row.Event),
-      eventType: row.EventType.toLowerCase()
-    });
-  });
-
-  return Array.from(entries.values()).sort((a, b) => {
-    return b.date.localeCompare(a.date) || a.name.localeCompare(b.name);
-  })[0] || null;
+  return getLatestAnalysisSingleEventEntry();
 }
 
 function populateEventFilterMenu(entries) {

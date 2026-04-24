@@ -1,6 +1,6 @@
 // Table builders shared by the dashboard. The goal is to keep one stable row
 // contract per table type so sorting/export/rendering logic can stay generic.
-import { getAnalysisRows } from './analysis-data.js';
+import { getAnalysisRowsForEvent } from './analysis-data.js';
 import { getPlayerIdentityKey } from './player-names.js';
 
 // Single Event Tables
@@ -148,7 +148,7 @@ export function calculatePlayerEventTable(data, {
   return data.map(row => {
     // Tooltips and deck meta need the full event field, not just the selected
     // player's rows, so this lookup intentionally goes back to analysis rows.
-    const eventData = getAnalysisRows().filter(r => r.Event === row.Event);
+    const eventData = getAnalysisRowsForEvent(row.Event);
     const deckData = eventData.filter(r => r.Deck === row.Deck);
     const totalWins = deckData.reduce((sum, r) => sum + r.Wins, 0);
     const totalLosses = deckData.reduce((sum, r) => sum + r.Losses, 0);

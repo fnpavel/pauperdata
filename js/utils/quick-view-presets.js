@@ -1,7 +1,11 @@
 // Defines and resolves quick-view presets shared by multi-event, player, and
 // matchup views. Presets can be static ranges, calendar years, or MTG set
 // windows derived from release dates.
-import { getAnalysisRows } from './analysis-data.js';
+import {
+  getAnalysisRows,
+  getAnalysisRowsForDateRange,
+  getAnalysisRowsForEventTypes
+} from './analysis-data.js';
 import { setReleaseWindows } from '../config/set-release-windows.js';
 
 const EMPTY_ROWS = [];
@@ -71,11 +75,7 @@ function getRowsScopedToEventTypes(rows = getAnalysisRows(), selectedEventTypes 
   }
 
   if (!cache.rowsByEventTypes.has(cacheKey)) {
-    const selectedEventTypeSet = new Set(cacheKey.split('||'));
-    cache.rowsByEventTypes.set(
-      cacheKey,
-      resolvedRows.filter(row => selectedEventTypeSet.has(String(row?.EventType || '').toLowerCase()))
-    );
+    cache.rowsByEventTypes.set(cacheKey, getAnalysisRowsForEventTypes(selectedEventTypes, resolvedRows));
   }
 
   return cache.rowsByEventTypes.get(cacheKey) || EMPTY_ROWS;
@@ -342,6 +342,17 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
   const calendarYearPresets = presets.filter(preset => preset.kind === 'calendar-year');
 
   if (calendarYearPresets.length > 0) {
+    if (calendarYearPresets.length === 1) {
+      const preset = calendarYearPresets[0];
+      const scopedRows = getAnalysisRowsForDateRange({
+        eventTypes: selectedEventTypes,
+        startDate: preset.startDate,
+        endDate: preset.endDate
+      }, resolvedRows);
+      cache.presetRows.set(cacheKey, scopedRows);
+      return scopedRows;
+    }
+
     const scopedRows = baseRows.filter(row => {
       return calendarYearPresets.some(preset => row.Date >= preset.startDate && row.Date <= preset.endDate);
     });
@@ -352,6 +363,17 @@ export function getQuickViewPresetRows(selectedEventTypes = [], presetId = '', r
   const setWindowPresets = presets.filter(preset => preset.kind === 'set-window');
 
   if (setWindowPresets.length > 0) {
+    if (setWindowPresets.length === 1) {
+      const preset = setWindowPresets[0];
+      const scopedRows = getAnalysisRowsForDateRange({
+        eventTypes: selectedEventTypes,
+        startDate: preset.releaseDate,
+        endDate: preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : ''
+      }, resolvedRows);
+      cache.presetRows.set(cacheKey, scopedRows);
+      return scopedRows;
+    }
+
     const scopedRows = baseRows.filter(row => {
       return setWindowPresets.some(preset => {
         return row.Date >= preset.releaseDate && (!preset.nextReleaseDate || row.Date < preset.nextReleaseDate);

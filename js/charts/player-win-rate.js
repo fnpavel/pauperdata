@@ -3,7 +3,7 @@
 import { setChartLoading, triggerUpdateAnimation } from '../utils/dom.js';
 import { getPlayerWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
-import { getAnalysisRows } from '../utils/analysis-data.js';
+import { getAnalysisRowsForEvent } from '../utils/analysis-data.js';
 import { getSelectedPlayerLabel } from '../utils/player-names.js';
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
@@ -220,7 +220,7 @@ function renderPlayerEventDetails(point, { pinned = false } = {}) {
     return;
   }
 
-  const fullEventData = getAnalysisRows().filter(row => row.Event === point.event);
+  const fullEventData = getAnalysisRowsForEvent(point.event);
   if (fullEventData.length === 0) {
     renderPlayerEventDetailsPlaceholder('Event data not found for the hovered point.');
     return;

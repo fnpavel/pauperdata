@@ -1,7 +1,7 @@
 // Loads the matchup archive in two phases: a lightweight catalog first, then
 // per-year match/round files for the active date window. This keeps initial page
 // load smaller while still allowing large matchup matrices when requested.
-import { getQuickViewPresetDefinitionsByIds } from './quick-view-presets.js';
+import { getQuickViewPresetDefinitionsByIds, shiftDateByDays } from './quick-view-presets.js';
 
 const MATCHUP_DATA_ROOT = new URL('../../data/matchups/', import.meta.url);
 
@@ -22,6 +22,7 @@ let loadedRoundYearsKey = '';
 
 const matchYearsCache = new Map();
 const roundYearsCache = new Map();
+const matchupRecordIndexCache = new WeakMap();
 
 function getRecordDate(record) {
   return String(record?.date || record?.Date || '').trim();
@@ -29,6 +30,223 @@ function getRecordDate(record) {
 
 function getRecordEventType(record) {
   return String(record?.event_type || record?.EventType || '').trim().toLowerCase();
+}
+
+function getNormalizedEventTypes(eventTypes = []) {
+  return [...new Set(
+    (Array.isArray(eventTypes) ? eventTypes : [eventTypes])
+      .map(value => String(value || '').trim().toLowerCase())
+      .filter(Boolean)
+  )].sort();
+}
+
+function lowerBound(values = [], target = '') {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const middle = Math.floor((left + right) / 2);
+    if (values[middle] < target) {
+      left = middle + 1;
+    } else {
+      right = middle;
+    }
+  }
+
+  return left;
+}
+
+function upperBound(values = [], target = '') {
+  let left = 0;
+  let right = values.length;
+
+  while (left < right) {
+    const middle = Math.floor((left + right) / 2);
+    if (values[middle] <= target) {
+      left = middle + 1;
+    } else {
+      right = middle;
+    }
+  }
+
+  return left;
+}
+
+function buildMatchupRecordIndex(records = []) {
+  const resolvedRecords = Array.isArray(records) ? records : [];
+  const index = {
+    rowOrder: new WeakMap(),
+    rowsByEventType: new Map(),
+    rowsByEventTypeAndDate: new Map(),
+    dateSetsByEventType: new Map(),
+    dateValuesByEventType: new Map(),
+    combinedRowsByEventTypes: new Map(),
+    rowsByDateRange: new Map()
+  };
+
+  resolvedRecords.forEach((record, recordIndex) => {
+    const eventType = getRecordEventType(record);
+    const recordDate = getRecordDate(record);
+
+    index.rowOrder.set(record, recordIndex);
+
+    if (!eventType) {
+      return;
+    }
+
+    if (!index.rowsByEventType.has(eventType)) {
+      index.rowsByEventType.set(eventType, []);
+    }
+    index.rowsByEventType.get(eventType).push(record);
+
+    if (!recordDate) {
+      return;
+    }
+
+    if (!index.rowsByEventTypeAndDate.has(eventType)) {
+      index.rowsByEventTypeAndDate.set(eventType, new Map());
+    }
+    if (!index.rowsByEventTypeAndDate.get(eventType).has(recordDate)) {
+      index.rowsByEventTypeAndDate.get(eventType).set(recordDate, []);
+    }
+    index.rowsByEventTypeAndDate.get(eventType).get(recordDate).push(record);
+
+    if (!index.dateSetsByEventType.has(eventType)) {
+      index.dateSetsByEventType.set(eventType, new Set());
+    }
+    index.dateSetsByEventType.get(eventType).add(recordDate);
+  });
+
+  index.dateSetsByEventType.forEach((dateSet, eventType) => {
+    index.dateValuesByEventType.set(
+      eventType,
+      Array.from(dateSet).sort((dateA, dateB) => dateA.localeCompare(dateB))
+    );
+  });
+
+  return index;
+}
+
+function getMatchupRecordIndex(records = []) {
+  const resolvedRecords = Array.isArray(records) ? records : [];
+  if (!matchupRecordIndexCache.has(resolvedRecords)) {
+    matchupRecordIndexCache.set(resolvedRecords, buildMatchupRecordIndex(resolvedRecords));
+  }
+
+  return matchupRecordIndexCache.get(resolvedRecords);
+}
+
+function compareMatchupRecordsByOriginalOrder(index, recordA, recordB) {
+  return (index.rowOrder.get(recordA) ?? 0) - (index.rowOrder.get(recordB) ?? 0);
+}
+
+function getMatchupRowsForEventTypes(records = [], eventTypes = []) {
+  const normalizedEventTypes = getNormalizedEventTypes(eventTypes);
+  if (normalizedEventTypes.length === 0) {
+    return Array.isArray(records) ? records : [];
+  }
+
+  const index = getMatchupRecordIndex(records);
+  const cacheKey = normalizedEventTypes.join('||');
+  if (index.combinedRowsByEventTypes.has(cacheKey)) {
+    return index.combinedRowsByEventTypes.get(cacheKey) || [];
+  }
+
+  if (normalizedEventTypes.length === 1) {
+    const eventTypeRows = index.rowsByEventType.get(normalizedEventTypes[0]) || [];
+    index.combinedRowsByEventTypes.set(cacheKey, eventTypeRows);
+    return eventTypeRows;
+  }
+
+  const combinedRows = normalizedEventTypes
+    .flatMap(eventType => index.rowsByEventType.get(eventType) || [])
+    .sort((recordA, recordB) => compareMatchupRecordsByOriginalOrder(index, recordA, recordB));
+
+  index.combinedRowsByEventTypes.set(cacheKey, combinedRows);
+  return combinedRows;
+}
+
+function getMatchupRowsForDateRange(records = [], { eventTypes = [], startDate = '', endDate = '' } = {}) {
+  const normalizedEventTypes = getNormalizedEventTypes(eventTypes);
+  const normalizedStartDate = String(startDate || '').trim();
+  const normalizedEndDate = String(endDate || '').trim();
+
+  if (!normalizedStartDate && !normalizedEndDate) {
+    return getMatchupRowsForEventTypes(records, normalizedEventTypes);
+  }
+
+  if (normalizedEventTypes.length === 0) {
+    return (Array.isArray(records) ? records : []).filter(record => {
+      const recordDate = getRecordDate(record);
+      if (!recordDate) {
+        return false;
+      }
+
+      if (normalizedStartDate && recordDate < normalizedStartDate) {
+        return false;
+      }
+
+      if (normalizedEndDate && recordDate > normalizedEndDate) {
+        return false;
+      }
+
+      return true;
+    });
+  }
+
+  const index = getMatchupRecordIndex(records);
+  const cacheKey = `${normalizedEventTypes.join('||')}::${normalizedStartDate}::${normalizedEndDate}`;
+  if (index.rowsByDateRange.has(cacheKey)) {
+    return index.rowsByDateRange.get(cacheKey) || [];
+  }
+
+  const rangedRows = normalizedEventTypes.flatMap(eventType => {
+    const dateValues = index.dateValuesByEventType.get(eventType) || [];
+    const rowsByDate = index.rowsByEventTypeAndDate.get(eventType) || new Map();
+    const startIndex = normalizedStartDate ? lowerBound(dateValues, normalizedStartDate) : 0;
+    const endIndex = normalizedEndDate ? upperBound(dateValues, normalizedEndDate) : dateValues.length;
+    const scopedRows = [];
+
+    for (let indexPosition = startIndex; indexPosition < endIndex; indexPosition += 1) {
+      scopedRows.push(...(rowsByDate.get(dateValues[indexPosition]) || []));
+    }
+
+    return scopedRows;
+  });
+
+  const sortedRows = normalizedEventTypes.length > 1
+    ? rangedRows.sort((recordA, recordB) => compareMatchupRecordsByOriginalOrder(index, recordA, recordB))
+    : rangedRows;
+
+  index.rowsByDateRange.set(cacheKey, sortedRows);
+  return sortedRows;
+}
+
+function getQuickViewPresetRange(presets = []) {
+  if (!Array.isArray(presets) || presets.length !== 1) {
+    return null;
+  }
+
+  const preset = presets[0];
+  if (!preset || preset.kind === 'static') {
+    return null;
+  }
+
+  if (preset.kind === 'calendar-year') {
+    return {
+      startDate: preset.startDate,
+      endDate: preset.endDate
+    };
+  }
+
+  if (preset.kind === 'set-window') {
+    return {
+      startDate: preset.releaseDate,
+      endDate: preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : ''
+    };
+  }
+
+  return null;
 }
 
 function getYearFromDate(dateValue = '') {
@@ -52,8 +270,7 @@ function getYearsForRange(startDate = '', endDate = '') {
   return availableYears.filter(year => year >= startYear && year <= endYear);
 }
 
-function matchesQuickViewPreset(record, presetId = '') {
-  const presets = getQuickViewPresetDefinitionsByIds(presetId);
+function matchesQuickViewPreset(record, presetId = '', presets = getQuickViewPresetDefinitionsByIds(presetId)) {
   if (presets.length === 0 || presets.some(preset => preset.kind === 'static')) {
     return true;
   }
@@ -222,32 +439,21 @@ export function filterMatchupRecords(
     quickViewPresetId = ''
   } = {}
 ) {
-  // The archive uses normalized ISO dates, so string comparisons are safe and
-  // faster than constructing Date objects for every record.
-  const selectedEventTypes = Array.isArray(eventTypes)
-    ? eventTypes.map(value => String(value || '').toLowerCase()).filter(Boolean)
-    : [];
+  const resolvedRecords = Array.isArray(records) ? records : [];
+  const selectedEventTypes = getNormalizedEventTypes(eventTypes);
+  const presets = quickViewPresetId ? getQuickViewPresetDefinitionsByIds(quickViewPresetId) : [];
+  const presetRange = (!startDate && !endDate) ? getQuickViewPresetRange(presets) : null;
+  const baseRecords = (startDate || endDate || selectedEventTypes.length > 0 || presetRange)
+    ? getMatchupRowsForDateRange(resolvedRecords, {
+        eventTypes: selectedEventTypes,
+        startDate: startDate || presetRange?.startDate || '',
+        endDate: endDate || presetRange?.endDate || ''
+      })
+    : resolvedRecords;
 
-  return (records || []).filter(record => {
-    const recordDate = getRecordDate(record);
-    const recordEventType = getRecordEventType(record);
+  if (!quickViewPresetId) {
+    return baseRecords;
+  }
 
-    if (selectedEventTypes.length > 0 && !selectedEventTypes.includes(recordEventType)) {
-      return false;
-    }
-
-    if (startDate && recordDate < startDate) {
-      return false;
-    }
-
-    if (endDate && recordDate > endDate) {
-      return false;
-    }
-
-    if (quickViewPresetId && !matchesQuickViewPreset(record, quickViewPresetId)) {
-      return false;
-    }
-
-    return true;
-  });
+  return baseRecords.filter(record => matchesQuickViewPreset(record, quickViewPresetId, presets));
 }
