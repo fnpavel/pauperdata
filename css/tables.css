@@ -404,6 +404,10 @@ th.asc .sort-arrow {
 #leaderboardTable {
   --leaderboard-rank-column-width: 72px;
   --leaderboard-player-column-width: 220px;
+  --leaderboard-sticky-cell-bg: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+  --leaderboard-sticky-cell-hover-bg: linear-gradient(160deg, var(--surface-hover), var(--surface-2));
+  --leaderboard-sticky-cell-search-bg: linear-gradient(135deg, var(--surface-3), var(--surface-2));
+  --leaderboard-sticky-cell-search-hover-bg: linear-gradient(135deg, var(--surface-hover), var(--surface-3));
 }
 
 #leaderboardTable thead th {
@@ -535,7 +539,8 @@ th.asc .sort-arrow {
 #leaderboardTable tbody td:first-child:not([colspan]),
 #leaderboardTable tbody td:nth-child(2):not([colspan]) {
   z-index: 2;
-  background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+  background: var(--leaderboard-sticky-cell-bg);
+  background-clip: padding-box;
 }
 
 #leaderboardTable tbody tr.leaderboard-player-row {
@@ -559,7 +564,7 @@ th.asc .sort-arrow {
 
 #leaderboardTable tbody tr.leaderboard-search-match td:first-child:not([colspan]),
 #leaderboardTable tbody tr.leaderboard-search-match td:nth-child(2):not([colspan]) {
-  background: linear-gradient(135deg, rgba(22, 122, 114, 0.24), rgba(217, 164, 65, 0.18));
+  background: var(--leaderboard-sticky-cell-search-bg);
 }
 
 #leaderboardTable tbody tr.leaderboard-search-match-primary {
@@ -581,7 +586,7 @@ th.asc .sort-arrow {
 
 #leaderboardTable tbody tr:hover td:first-child:not([colspan]),
 #leaderboardTable tbody tr:hover td:nth-child(2):not([colspan]) {
-  background: rgba(217, 164, 65, 0.12);
+  background: var(--leaderboard-sticky-cell-hover-bg);
 }
 
 #leaderboardTable tbody tr.leaderboard-search-match:hover td {
@@ -590,7 +595,7 @@ th.asc .sort-arrow {
 
 #leaderboardTable tbody tr.leaderboard-search-match:hover td:first-child:not([colspan]),
 #leaderboardTable tbody tr.leaderboard-search-match:hover td:nth-child(2):not([colspan]) {
-  background: linear-gradient(135deg, rgba(22, 122, 114, 0.28), rgba(217, 164, 65, 0.22));
+  background: var(--leaderboard-sticky-cell-search-hover-bg);
 }
 
 #multiEventTable[data-view="aggregate"] .multi-table-col-deck {
