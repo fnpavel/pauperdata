@@ -1,0 +1,66 @@
+name: Notify Discord on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'data/**'
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build Discord payload from aliases metadata
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime
+          from pathlib import Path
+
+          aliases_path = Path("data/aliases.json")
+          if not aliases_path.exists():
+              raise SystemExit(f"Aliases file not found: {aliases_path}")
+
+          aliases = json.loads(aliases_path.read_text(encoding="utf-8"))
+          event_type = str(aliases.get("last_updated_event_type") or "").strip()
+          event_date = str(aliases.get("last_updated_event_date") or "").strip()
+
+          if not event_type or not event_date:
+              raise SystemExit("aliases.json is missing last_updated_event_type or last_updated_event_date.")
+
+          try:
+              formatted_date = datetime.strptime(event_date, "%Y-%m-%d").strftime("%d %B %Y")
+          except ValueError as exc:
+              raise SystemExit(f"Invalid last_updated_event_date in aliases.json: {event_date}") from exc
+
+          message = f"Dashboard was updated with the {event_type} of {formatted_date}."
+
+          payload = {
+              "username": "MTG Tracker Updates",
+              "content": message,
+          }
+
+          Path("payload.json").write_text(
+              json.dumps(payload, ensure_ascii=False),
+              encoding="utf-8",
+          )
+          PY
+
+      - name: Send message to Discord
+        shell: bash
+        run: |
+          echo "$DISCORD_WEBHOOKS" | while IFS= read -r URL; do
+            [ -z "$URL" ] && continue
+
+            curl --fail \
+                 -H "Content-Type: application/json" \
+                 -d @payload.json \
+                 "$URL"
+          done
+        env:
+          DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}

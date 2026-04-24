@@ -4,12 +4,16 @@
 # Explicitly ignore raw source archives/workbooks.
 /data/staging
 
-# Explicitly ignoring the scrips
+# Explicitly ignoring the scripts
 /scripts
+/.github
 /oldPython
 
 # Keep this file itself.
 !/.gitignore
+!/.github/
+!/.github/workflows/
+!/.github/workflows/discord-notify.yml
 
 # Keep the app entrypoint.
 !/index.html
