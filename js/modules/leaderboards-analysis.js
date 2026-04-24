@@ -1348,6 +1348,21 @@ function formatResultLabel(resultType = '') {
   return `${normalizedResultType.charAt(0).toUpperCase()}${normalizedResultType.slice(1)}`;
 }
 
+function getHistoryResultTone(resultType = '') {
+  const normalizedResultType = String(resultType || '').trim().toLowerCase();
+  if (normalizedResultType === 'win') {
+    return 'above-average';
+  }
+  if (normalizedResultType === 'loss') {
+    return 'below-average';
+  }
+  if (normalizedResultType === 'draw') {
+    return 'mixed-average';
+  }
+
+  return '';
+}
+
 function buildHistoryContextLabel(entry = {}) {
   const roundLabel = Number.isFinite(Number(entry.round)) ? `Round ${Number(entry.round)}` : 'Unknown Round';
   const eventLabel = formatEventName(entry.event) || entry.event || 'Unknown Event';
@@ -2925,6 +2940,9 @@ function buildLeaderboardPlayerDeckOverviewHtml(model) {
   return `
     <div class="player-rank-drilldown-context">
       <div class="player-rank-drilldown-context-header leaderboard-player-results-header">
+        <div class="leaderboard-elo-ladder-disclaimer">
+          ${escapeHtml('Total Elo rates player vs player. Deck Elo rates player-on-deck vs opponent-on-deck, so deck and total ratings can differ even when a player only has one tracked deck.')}
+        </div>
         <div class="player-rank-drilldown-context-title">Deck Breakdown</div>
         <div class="leaderboard-table-search-status">
           ${escapeHtml(`Click a deck card to focus the chart and match summary. ${model.deckSummaries.length} tracked deck${model.deckSummaries.length === 1 ? '' : 's'} in this window.`)}
@@ -3140,7 +3158,7 @@ function buildLeaderboardPlayerDetailHtml(row, model) {
     </div>
     <div class="player-rank-drilldown-context">
       <div class="player-rank-drilldown-context-header leaderboard-player-results-header">
-        <div class="player-rank-drilldown-context-title">Full Rated Match History</div>
+        <div class="player-rank-drilldown-context-title">${escapeHtml(`Full Rated Match History (for ${activeScope.type === 'deck' ? `${activeScope.label} Elo` : 'Total Elo'})`)}</div>
         <div class="leaderboard-table-search-status">${escapeHtml(`${activeScope.historyEntries.length} matchup${activeScope.historyEntries.length === 1 ? '' : 's'} in this ${activeScope.type === 'deck' ? `${activeScope.label} deck` : 'total'} scope`)}</div>
       </div>
       ${buildHistoryListHtml(activeScope.historyEntries, { ratingLabel })}
@@ -3710,6 +3728,7 @@ function buildHistoryListHtml(entries = [], {
     <div class="player-event-history-list">
       ${entries.map(entry => {
         const resultLabel = formatResultLabel(entry.resultType);
+        const resultTone = getHistoryResultTone(entry.resultType);
         const roundLabel = Number.isFinite(Number(entry.round)) ? `Round ${Number(entry.round)}` : 'Round --';
         const eventLabel = formatEventName(entry.event) || entry.event || 'Unknown Event';
         const matchupLabel = [
@@ -3724,7 +3743,7 @@ function buildHistoryListHtml(entries = [], {
         ].join(' | ');
 
         return `
-          <div class="player-event-history-item leaderboard-history-item-static">
+          <div class="player-event-history-item leaderboard-history-item-static${resultTone ? ` player-event-history-item-${resultTone}` : ''}">
             <span class="player-event-history-item-date">${escapeHtml(entry.date ? formatDate(entry.date) : '--')}</span>
             <span class="player-event-history-item-main">${escapeHtml(eventLabel)}</span>
             <span class="player-event-history-item-meta">${escapeHtml(metaLabel)}</span>
