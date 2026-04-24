@@ -42,7 +42,7 @@ jobs:
           if event_type.lower() == "challenge":
               message = (
                   f"Dashboard was updated with the {event_type} of {formatted_date}. "
-                  f"Data provided by Kirblinxy.\nhttps://fnpavel.github.io/pauperdata/"
+                  f"\nData provided by Kirblinxy.\nhttps://fnpavel.github.io/pauperdata/"
               )
           else:
               message = (
