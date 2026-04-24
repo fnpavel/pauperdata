@@ -1,6 +1,8 @@
 {
   "generated_from": "data/events/manifest.json",
   "last_updated_date": "2026-04-24",
+  "last_updated_event_type": "Challenge",
+  "last_updated_event_date": "2026-04-23",
   "event_name_aliases": [],
   "player_aliases": [],
   "deck_aliases": []
