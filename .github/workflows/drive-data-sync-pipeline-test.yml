@@ -1,6 +1,9 @@
 name: Drive Data Sync Pipeline Test
 
 on:
+  push:
+    branches:
+      - test/drive-pipeline
   workflow_dispatch:
     inputs:
       drive_list_command:
