@@ -1649,13 +1649,13 @@ function applyActiveMatchupPresetDateRange() {
   if (!range.startDate || !range.endDate) {
     startDateSelect.value = '';
     endDateSelect.value = '';
-    updateMatchupDateOptions();
+    updateMatchupDateOptions({ syncCalendarView: true });
     return false;
   }
 
   startDateSelect.value = range.startDate;
   endDateSelect.value = range.endDate;
-  updateMatchupDateOptions();
+  updateMatchupDateOptions({ syncCalendarView: true });
   return true;
 }
 
@@ -2026,11 +2026,12 @@ function setMatchupDateSelection(type, value, options = {}) {
   }
 }
 
-function updateMatchupDateOptions() {
+function updateMatchupDateOptions(options = {}) {
   // Date selectors are constrained to dates that exist after event-type and
   // quick-view preset scoping, preventing impossible empty windows.
   const startDateSelect = getMatchupStartDateSelect();
   const endDateSelect = getMatchupEndDateSelect();
+  const { syncCalendarView = false } = options;
 
   if (!startDateSelect || !endDateSelect) {
     return;
@@ -2050,6 +2051,7 @@ function updateMatchupDateOptions() {
       startDate: '',
       endDate: '',
       emptyMessage: 'Select an Event Type first.',
+      syncViewToSelection: syncCalendarView,
       onSelectStartDate: dateString => setMatchupDateSelection('start', dateString, { clearPreset: true }),
       onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
     });
@@ -2124,6 +2126,7 @@ function updateMatchupDateOptions() {
     dates,
     startDate: currentStartDate,
     endDate: currentEndDate,
+    syncViewToSelection: syncCalendarView,
     onSelectStartDate: dateString => setMatchupDateSelection('start', dateString, { clearPreset: true }),
     onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
   });

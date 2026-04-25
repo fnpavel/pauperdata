@@ -366,13 +366,13 @@ export function applyActiveMultiEventPresetDateRange() {
   if (!range.startDate || !range.endDate) {
     startDateSelect.value = '';
     endDateSelect.value = '';
-    filterRuntime.updateDateOptions();
+    filterRuntime.updateDateOptions({ syncCalendarView: true });
     return false;
   }
 
   startDateSelect.value = range.startDate;
   endDateSelect.value = range.endDate;
-  filterRuntime.updateDateOptions();
+  filterRuntime.updateDateOptions({ syncCalendarView: true });
   return true;
 }
 
@@ -511,13 +511,13 @@ export function applyActivePlayerPresetDateRange() {
   if (!range.startDate || !range.endDate) {
     startDateSelect.value = '';
     endDateSelect.value = '';
-    filterRuntime.updatePlayerDateOptions();
+    filterRuntime.updatePlayerDateOptions({ syncCalendarView: true });
     return false;
   }
 
   startDateSelect.value = range.startDate;
   endDateSelect.value = range.endDate;
-  filterRuntime.updatePlayerDateOptions();
+  filterRuntime.updatePlayerDateOptions({ syncCalendarView: true });
   return true;
 }
 

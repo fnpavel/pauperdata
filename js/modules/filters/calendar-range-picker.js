@@ -252,6 +252,7 @@ export function renderDateRangeCalendar({
   startLabel = 'Start Date',
   endLabel = 'End Date',
   emptyMessage = 'Select an Event Type first.',
+  syncViewToSelection = false,
   onSelectStartDate,
   onSelectEndDate
 }) {
@@ -278,15 +279,22 @@ export function renderDateRangeCalendar({
   const endSelectableDates = new Set(startDate ? dates.filter(date => date >= startDate) : dates);
   const startMonths = buildMonthOptions([...startSelectableDates]);
   const endMonths = buildMonthOptions([...endSelectableDates]);
+  const preferredStartMonth = getMonthKey(startDate) || startMonths[0] || '';
+  const preferredEndMonth = getMonthKey(endDate) || endMonths[endMonths.length - 1] || '';
+
+  if (syncViewToSelection) {
+    calendarState.startViewMonth = preferredStartMonth;
+    calendarState.endViewMonth = preferredEndMonth;
+  }
 
   calendarState.startViewMonth = ensureViewMonth(
     calendarState.startViewMonth,
-    getMonthKey(startDate) || startMonths[0],
+    preferredStartMonth,
     startMonths
   );
   calendarState.endViewMonth = ensureViewMonth(
     calendarState.endViewMonth,
-    getMonthKey(endDate) || endMonths[endMonths.length - 1],
+    preferredEndMonth,
     endMonths
   );
 

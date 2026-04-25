@@ -998,9 +998,10 @@ export function setupMultiEventPresetListeners() {
 }
 
 // Rebuilds multi-event date controls after event type or preset changes.
-export function updateDateOptions() {
+export function updateDateOptions(options = {}) {
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');
+  const { syncCalendarView = false } = options;
 
   if (!startDateSelect || !endDateSelect) {
     return;
@@ -1019,6 +1020,7 @@ export function updateDateOptions() {
       dates: [],
       startDate: '',
       endDate: '',
+      syncViewToSelection: syncCalendarView,
       onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
       onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
     });
@@ -1098,6 +1100,7 @@ export function updateDateOptions() {
     dates,
     startDate: currentStartDate,
     endDate: currentEndDate,
+    syncViewToSelection: syncCalendarView,
     onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
     onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
   });
@@ -1107,10 +1110,11 @@ export function updateDateOptions() {
 
 // Rebuilds Player Analysis player/date controls after event type or preset
 // changes.
-export function updatePlayerDateOptions() {
+export function updatePlayerDateOptions(options = {}) {
   const startDateSelect = document.getElementById('playerStartDateSelect');
   const endDateSelect = document.getElementById('playerEndDateSelect');
   const playerFilterMenu = document.getElementById('playerFilterMenu');
+  const { syncCalendarView = false } = options;
 
   if (!startDateSelect || !endDateSelect || !playerFilterMenu) {
     return;
@@ -1132,6 +1136,7 @@ export function updatePlayerDateOptions() {
       startDate: '',
       endDate: '',
       emptyMessage: 'No dates available.',
+      syncViewToSelection: syncCalendarView,
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
@@ -1164,6 +1169,7 @@ export function updatePlayerDateOptions() {
       startDate: '',
       endDate: '',
       emptyMessage: 'No dates available.',
+      syncViewToSelection: syncCalendarView,
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
@@ -1185,6 +1191,7 @@ export function updatePlayerDateOptions() {
       startDate: '',
       endDate: '',
       emptyMessage: 'No dates available for this player.',
+      syncViewToSelection: syncCalendarView,
       onSelectStartDate: dateString => setPlayerDateSelection('start', dateString),
       onSelectEndDate: dateString => setPlayerDateSelection('end', dateString)
     });
@@ -1268,6 +1275,7 @@ export function updatePlayerDateOptions() {
     dates,
     startDate: currentStartDate,
     endDate: currentEndDate,
+    syncViewToSelection: syncCalendarView,
     onSelectStartDate: dateString => setPlayerDateSelection('start', dateString, { clearPreset: true }),
     onSelectEndDate: dateString => setPlayerDateSelection('end', dateString, { clearPreset: true })
   });
