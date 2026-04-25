@@ -328,6 +328,10 @@ function getLeaderboardEloThresholdControlsSection() {
   return document.getElementById('leaderboardEloThresholdControlsSection');
 }
 
+function getLeaderboardEloThresholdResetButton() {
+  return document.getElementById('leaderboardEloThresholdResetButton');
+}
+
 function getLeaderboardEloThresholdControls() {
   // The threshold UI has input, range, label, and quick buttons per metric; this
   // lookup keeps sync/setup functions generic across every metric.
@@ -557,6 +561,14 @@ function getActiveLeaderboardEloThresholds() {
 
 function hasActiveLeaderboardEloThresholds() {
   return Object.values(activeLeaderboardEloThresholds).some(value => Number(value) > 0);
+}
+
+function resetLeaderboardEloThresholds() {
+  activeLeaderboardEloThresholds = Object.keys(activeLeaderboardEloThresholds).reduce((thresholds, key) => {
+    thresholds[key] = 0;
+    return thresholds;
+  }, {});
+  syncLeaderboardEloThresholdInputs();
 }
 
 function getSelectedLeaderboardEventTypes() {
@@ -967,9 +979,13 @@ function buildLeaderboardEloThresholdSummary() {
 
 function renderLeaderboardEloThresholdControls() {
   const section = getLeaderboardEloThresholdControlsSection();
+  const resetButton = getLeaderboardEloThresholdResetButton();
   section?.classList.remove('hidden');
   syncLeaderboardFullscreenLayout();
   syncLeaderboardEloThresholdInputs();
+  if (resetButton) {
+    resetButton.disabled = !hasActiveLeaderboardEloThresholds();
+  }
   updateElementText('leaderboardEloThresholdSummary', buildLeaderboardEloThresholdSummary());
 }
 
@@ -4969,6 +4985,7 @@ function setupLeaderboardFilterListeners() {
   const rangeEndYearRoot = document.getElementById('leaderboardRangeEndYearButtons');
   const resetModeButtons = getLeaderboardResetModeButtons();
   const eloThresholdControls = getLeaderboardEloThresholdControls();
+  const eloThresholdResetButton = getLeaderboardEloThresholdResetButton();
 
   eventTypeButtons.forEach(button => {
     if (button.dataset.listenerAdded === 'true') {
@@ -5156,6 +5173,19 @@ function setupLeaderboardFilterListeners() {
 
     control.input.dataset.listenerAdded = 'true';
   });
+
+  if (eloThresholdResetButton && eloThresholdResetButton.dataset.listenerAdded !== 'true') {
+    eloThresholdResetButton.addEventListener('click', () => {
+      resetLeaderboardEloThresholds();
+      renderLeaderboardEloThresholdControls();
+
+      if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+        renderLeaderboardFromCurrentState();
+      }
+    });
+
+    eloThresholdResetButton.dataset.listenerAdded = 'true';
+  }
 }
 
 // Wires Leaderboard controls, table actions, drilldowns, and timeline

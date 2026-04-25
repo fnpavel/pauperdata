@@ -1483,6 +1483,18 @@ body.modal-open {
   gap: 14px;
 }
 
+.leaderboard-threshold-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.leaderboard-threshold-reset-button {
+  flex-shrink: 0;
+}
+
 .leaderboard-threshold-field {
   display: flex;
   flex-direction: column;
@@ -1559,6 +1571,10 @@ body.modal-open {
 
   .leaderboard-threshold-range {
     text-align: left;
+  }
+
+  .leaderboard-threshold-reset-button {
+    width: 100%;
   }
 }
 
