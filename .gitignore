@@ -14,6 +14,20 @@
 !/.github/
 !/.github/workflows/
 !/.github/workflows/discord-notify.yml
+!/.github/workflows/drive-data-sync-pipeline.yml
+
+!/scripts/
+/scripts/**
+!/scripts/automatedpipeline/
+!/scripts/automatedpipeline/**
+/scripts/automatedpipeline/__pycache__/
+/scripts/automatedpipeline/*.pyc
+/scripts/automatedpipeline/output/
+/scripts/automatedpipeline/github-actions-service-account.json
+/scripts/automatedpipeline/pipeline-config.json
+/scripts/automatedpipeline/pipeline-state.json
+/scripts/automatedpipeline/pipeline-run-summary.json
+/scripts/automatedpipeline/pipeline-watch-state.json
 
 # Keep the app entrypoint.
 !/index.html
