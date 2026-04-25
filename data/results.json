@@ -148520,6 +148520,422 @@
     "losses": 2
   },
   {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Enz091",
+    "deck": "Elves",
+    "rank": 1,
+    "wins": 8,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Ixidor29",
+    "deck": "Gruul Land Destruction",
+    "rank": 2,
+    "wins": 7,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "LuffyDoChapeuDePalha",
+    "deck": "Grixis Affinity",
+    "rank": 3,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "__Noob__",
+    "deck": "Golgari Gardens",
+    "rank": 4,
+    "wins": 5,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "fazparte",
+    "deck": "Mono Red Madness",
+    "rank": 5,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "outZEROo",
+    "deck": "Jund Wildfire",
+    "rank": 6,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "MisterTwin",
+    "deck": "Mono Red Madness",
+    "rank": 7,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "barff",
+    "deck": "Dimir Fae",
+    "rank": 8,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "_blaze66",
+    "deck": "Jund Wildfire",
+    "rank": 9,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "PiracciniChallenge",
+    "deck": "Jund Wildfire",
+    "rank": 10,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "PrimoShow1",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 11,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Scappie",
+    "deck": "Gruul Land Destruction",
+    "rank": 12,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "True-Name-Nemesis",
+    "deck": "Golgari Pestilence",
+    "rank": 13,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Purgatory_01",
+    "deck": "Mono Blue Terror",
+    "rank": 14,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Ely_Silva",
+    "deck": "Mono Red Madness",
+    "rank": 15,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "EiJunCHN",
+    "deck": "Jund Wildfire",
+    "rank": 16,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Duke_LukeM",
+    "deck": "Boros Gates",
+    "rank": 17,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Shiib",
+    "deck": "Elves",
+    "rank": 18,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "NickNorman",
+    "deck": "Golgari Gardens",
+    "rank": 19,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "A_AdeptoTerra",
+    "deck": "Turbofog",
+    "rank": 20,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Niederschatten",
+    "deck": "Gruul Land Destruction",
+    "rank": 21,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Mokemi",
+    "deck": "Gruul Land Destruction",
+    "rank": 22,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Deodato",
+    "deck": "White Weenie",
+    "rank": 23,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "PR0boszcz",
+    "deck": "Golgari Pestilence",
+    "rank": 24,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Maedhr0s",
+    "deck": "Mono Red Madness",
+    "rank": 25,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "wand_thief",
+    "deck": "Selesnya Gates",
+    "rank": 26,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Luminati",
+    "deck": "Mono Blue Terror",
+    "rank": 27,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "vini_torres",
+    "deck": "Red Deck Wins",
+    "rank": 28,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Magicofplayer1",
+    "deck": "Dimir Terror",
+    "rank": 29,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Keez",
+    "deck": "Mono Red Madness",
+    "rank": 30,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Denisevich",
+    "deck": "White Weenie",
+    "rank": 31,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "TSPJendrek",
+    "deck": "Jeskai Ephemerate",
+    "rank": 32,
+    "wins": 2,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "RavenDream",
+    "deck": "Izzet Fae",
+    "rank": 33,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "PNascimento",
+    "deck": "Few Land Spy",
+    "rank": 34,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "carvs",
+    "deck": "Jund Wildfire",
+    "rank": 35,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Fofondrik",
+    "deck": "Mono Red Madness",
+    "rank": 36,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "helvetti",
+    "deck": "Devoted Pizza Combo",
+    "rank": 37,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Leobertucci",
+    "deck": "Orzhov Blade",
+    "rank": 38,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "MyPotatoes",
+    "deck": "Cycle Storm",
+    "rank": 39,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "marzaboi",
+    "deck": "Boros Gates",
+    "rank": 40,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "medvedev",
+    "deck": "Boros Tribe",
+    "rank": 41,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Kurogi_Takehiko",
+    "deck": "Red Deck Wins",
+    "rank": 42,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "SaculSueahtam",
+    "deck": "Red Deck Wins",
+    "rank": 43,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Syns",
+    "deck": "Mono Red Madness",
+    "rank": 44,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "TheGrimLavamancer",
+    "deck": "Mono Red Madness",
+    "rank": 45,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Hamuda",
+    "deck": "Goblin Class Combo",
+    "rank": 46,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "Terminus0",
+    "deck": "Hexproof",
+    "rank": 47,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "DB_Kirblinxy",
+    "deck": "No Show",
+    "rank": 48,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "wolf777",
+    "deck": "Dimir Terror",
+    "rank": 49,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "DobleP",
+    "deck": "Golgari Gardens",
+    "rank": 50,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "TheNero1337",
+    "deck": "Elves",
+    "rank": 51,
+    "wins": 0,
+    "losses": 6
+  },
+  {
+    "event_id": "online-challenge-2026-04-24",
+    "player": "yahakara",
+    "deck": "Grixis Affinity",
+    "rank": 52,
+    "wins": 0,
+    "losses": 1
+  },
+  {
     "event_id": "online-challenge-64-2024-03-17",
     "player": "FerMTG",
     "deck": "Boros Synth",
