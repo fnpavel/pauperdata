@@ -1,0 +1,602 @@
+name: Drive Data Sync Pipeline Step Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_inspect:
+        description: Run inspect job
+        required: false
+        type: boolean
+        default: true
+      run_download:
+        description: Run download job
+        required: false
+        type: boolean
+        default: false
+      run_extract:
+        description: Run extract job
+        required: false
+        type: boolean
+        default: false
+      run_rebuild:
+        description: Run rebuild job
+        required: false
+        type: boolean
+        default: false
+      run_matchup_split:
+        description: Run matchup split job
+        required: false
+        type: boolean
+        default: false
+      run_elo_build:
+        description: Run Elo build job
+        required: false
+        type: boolean
+        default: false
+      run_discord_log:
+        description: Run Discord log job
+        required: false
+        type: boolean
+        default: false
+      drive_list_command:
+        description: Drive inspect command
+        required: false
+        default: list --drive --limit 10
+      local_list_command:
+        description: Local inspect command
+        required: false
+        default: list --latest --limit 10
+      download_command:
+        description: Download command
+        required: false
+        default: download --latest
+      rebuild_mode:
+        description: Rebuild mode
+        required: false
+        type: choice
+        default: incremental
+        options:
+          - incremental
+          - full
+
+permissions:
+  contents: read
+
+concurrency:
+  group: drive-data-sync-pipeline-step-test
+  cancel-in-progress: false
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r scripts/automatedpipeline/requirements.txt
+
+      - name: Install Node dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npm ci --prefix scripts
+
+      - name: Install Playwright browser
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npx --prefix scripts playwright install --with-deps chromium
+
+      - name: Validate secrets and write config
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          service_account = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+          drive_folder_id = os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "").strip()
+          webhook_urls = [line.strip() for line in os.environ.get("DISCORD_WEBHOOKS", "").splitlines() if line.strip()]
+
+          if not service_account:
+              raise SystemExit("Missing GOOGLE_SERVICE_ACCOUNT_JSON secret.")
+          if not drive_folder_id:
+              raise SystemExit("Missing GOOGLE_DRIVE_FOLDER_ID secret.")
+
+          payload = json.loads(service_account)
+          print("Service account JSON parsed successfully.")
+          print(f"client_email present: {bool(str(payload.get('client_email', '')).strip())}")
+          print(f"project_id present: {bool(str(payload.get('project_id', '')).strip())}")
+          print(f"Discord webhook count: {len(webhook_urls)}")
+
+          pipeline_root = Path("scripts/automatedpipeline")
+          pipeline_root.mkdir(parents=True, exist_ok=True)
+
+          service_account_path = pipeline_root / "github-actions-service-account.json"
+          service_account_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+          config_payload = {
+              "credentials_path": str(service_account_path.resolve()),
+              "drive_folder_id": drive_folder_id,
+              "remote": os.environ.get("PIPELINE_REMOTE", "origin"),
+              "data_branch": os.environ.get("PIPELINE_DATA_BRANCH", "data-updates"),
+              "main_branch": os.environ.get("PIPELINE_MAIN_BRANCH", "main"),
+              "commit_message_template": "chore(data): import {workbook_name}",
+              "discord_webhook_urls": webhook_urls,
+              "discord_log_path": "./output/discord-data-update-log.json",
+          }
+          Path("scripts/automatedpipeline/pipeline-config.json").write_text(
+              json.dumps(config_payload, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print("Wrote scripts/automatedpipeline/pipeline-config.json")
+          PY
+
+      - name: Syntax checks
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m py_compile \
+            scripts/automatedpipeline/pipeline_common.py \
+            scripts/automatedpipeline/pipeline_env.py \
+            scripts/automatedpipeline/import-google-drive-folder.py \
+            scripts/automatedpipeline/extract_input_csv.py \
+            scripts/automatedpipeline/rebuild_event_matchup_data.py \
+            scripts/automatedpipeline/build_discord_update_log.py \
+            scripts/automatedpipeline/publish_pipeline_changes.py \
+            scripts/automatedpipeline/sync_drive_and_rebuild_all.py \
+            scripts/automatedpipeline/run_github_action_pipeline.py
+          node --check scripts/automatedpipeline/build-matchup-split-data.mjs
+          node --check scripts/automatedpipeline/build-elo-data.mjs
+          node --check scripts/update-thumbnail.mjs
+
+      - name: Upload prepared workspace
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: |
+            .
+          if-no-files-found: error
+          retention-days: 1
+
+  inspect:
+    if: ${{ inputs.run_inspect }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Print workflow context
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "Running inspect job"
+          echo "drive_list_command=${{ inputs.drive_list_command }}"
+          echo "local_list_command=${{ inputs.local_list_command }}"
+          ls -la scripts/automatedpipeline
+          cat scripts/automatedpipeline/pipeline-config.json
+
+      - name: Run Drive inspect
+        env:
+          PIPELINE_ARGS: ${{ inputs.drive_list_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Drive inspect args: {args}")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run local inspect
+        env:
+          PIPELINE_ARGS: ${{ inputs.local_list_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Local inspect args: {args}")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+  download:
+    if: ${{ inputs.run_download }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Download args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Print state after download
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -f scripts/automatedpipeline/pipeline-state.json && cat scripts/automatedpipeline/pipeline-state.json || echo "No pipeline-state.json"
+          test -f scripts/automatedpipeline/pipeline-run-summary.json && cat scripts/automatedpipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
+          find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
+
+      - name: Upload workspace after download
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-after-download
+          path: .
+          if-no-files-found: error
+          retention-days: 1
+
+  extract:
+    if: ${{ inputs.run_extract }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download prerequisite
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Extract job download prerequisite args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run extract
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/extract_input_csv.py
+
+      - name: Print extracted CSVs
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -f scripts/automatedpipeline/pipeline-state.json && cat scripts/automatedpipeline/pipeline-state.json || true
+          find scripts/automatedpipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
+
+      - name: Upload workspace after extract
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-after-extract
+          path: .
+          if-no-files-found: error
+          retention-days: 1
+
+  rebuild:
+    if: ${{ inputs.run_rebuild }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download prerequisite
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Rebuild job download prerequisite args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run extract prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/extract_input_csv.py
+
+      - name: Run rebuild
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
+          else
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py
+          fi
+
+      - name: Print rebuild outputs
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -f data/import-summary.json && cat data/import-summary.json || echo "No data/import-summary.json"
+          test -f data/events.json && python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = json.loads(Path("data/events.json").read_text(encoding="utf-8"))
+          print(f"events.json rows: {len(rows)}")
+          for row in rows[-3:]:
+              print(row)
+          PY
+          test -f data/results.json && python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = json.loads(Path("data/results.json").read_text(encoding="utf-8"))
+          print(f"results.json rows: {len(rows)}")
+          for row in rows[-3:]:
+              print(row)
+          PY
+          find data/matchups -maxdepth 2 -type f | sort || true
+
+      - name: Upload workspace after rebuild
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-after-rebuild
+          path: .
+          if-no-files-found: error
+          retention-days: 1
+
+  matchup_split:
+    if: ${{ inputs.run_matchup_split }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download prerequisite
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Matchup split job download prerequisite args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run extract prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/extract_input_csv.py
+
+      - name: Run rebuild prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
+          else
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py
+          fi
+
+      - name: Run matchup split builder
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/build-matchup-split-data.mjs
+
+      - name: Print matchup split output
+        shell: bash
+        run: |
+          set -euxo pipefail
+          find data/matchups -maxdepth 2 -type f | sort || true
+          test -f data/matchups/manifest.json && cat data/matchups/manifest.json || true
+
+      - name: Upload workspace after matchup split
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-after-matchup-split
+          path: .
+          if-no-files-found: error
+          retention-days: 1
+
+  elo_build:
+    if: ${{ inputs.run_elo_build }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download prerequisite
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Elo job download prerequisite args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run extract prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/extract_input_csv.py
+
+      - name: Run rebuild prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
+          else
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py
+          fi
+
+      - name: Run matchup split prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/build-matchup-split-data.mjs
+
+      - name: Run Elo builder
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/build-elo-data.mjs
+
+      - name: Print Elo output
+        shell: bash
+        run: |
+          set -euxo pipefail
+          find data/elo-data -maxdepth 2 -type f | sort || true
+          test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
+
+      - name: Upload workspace after Elo build
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-after-elo-build
+          path: .
+          if-no-files-found: error
+          retention-days: 1
+
+  discord_log:
+    if: ${{ inputs.run_discord_log }}
+    needs: setup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: automatedpipeline-workspace
+          path: .
+
+      - name: Run download prerequisite
+        env:
+          PIPELINE_ARGS: ${{ inputs.download_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Discord log job download prerequisite args: {args}")
+          if not args or args[0] != "download":
+              raise SystemExit("download_command must start with 'download'.")
+          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run extract prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/extract_input_csv.py
+
+      - name: Run rebuild prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
+          else
+            python scripts/automatedpipeline/rebuild_event_matchup_data.py
+          fi
+
+      - name: Run matchup split prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/build-matchup-split-data.mjs
+
+      - name: Run Elo prerequisite
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/build-elo-data.mjs
+
+      - name: Build Discord log without posting
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/automatedpipeline/build_discord_update_log.py
+
+      - name: Print Discord log output
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -f scripts/automatedpipeline/output/discord-data-update-log.json && cat scripts/automatedpipeline/output/discord-data-update-log.json || echo "No discord log generated"
