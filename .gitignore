@@ -19,6 +19,9 @@
 !/index.html
 !/favicon.svg
 
+# Keep the test thumbnail page.
+!/test-thumbnail.html
+
 # Keep source folders.
 !/css/
 !/css/**
