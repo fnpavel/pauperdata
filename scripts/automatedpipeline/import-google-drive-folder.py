@@ -43,7 +43,7 @@ DEFAULT_EVENT_DATA_ROOT = PROJECT_ROOT / "data" / "events"
 DEFAULT_SUMMARY_PATH = PROJECT_ROOT / "data" / "import-summary.json"
 DEFAULT_MATCHUP_DATA_ROOT = PROJECT_ROOT / "data" / "matchups"
 LEGACY_MATCHUP_JSON_PATH = PROJECT_ROOT / "data" / "matchups.json"
-DEFAULT_NORMALIZED_BUILDER = PROJECT_ROOT / "scripts" / "build-normalized-dataset.mjs"
+DEFAULT_NORMALIZED_BUILDER = PROJECT_ROOT / "scripts" / "automatedpipeline" / "build-normalized-dataset.mjs"
 DEFAULT_PIPELINE_OVERRIDES_PATH = PROJECT_ROOT / "scripts" / "automatedpipeline" / "pipeline-overrides.json"
 
 MONTH_NUMBERS = {
