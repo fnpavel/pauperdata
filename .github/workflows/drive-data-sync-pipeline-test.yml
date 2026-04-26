@@ -334,12 +334,12 @@ jobs:
           set -euxo pipefail
           node pipeline/update-thumbnail.mjs
       
-      - name: Publish generated changes
-        if: ${{ inputs.run_publish }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python pipeline/publish_pipeline_changes.py
+     # - name: Publish generated changes
+     #   if: ${{ inputs.run_publish }}
+     #   shell: bash
+     #   run: |
+     #     set -euxo pipefail
+     #     python pipeline/publish_pipeline_changes.py
 
       - name: Test publish generated changes to current branch
         if: ${{ inputs.run_publish }}
