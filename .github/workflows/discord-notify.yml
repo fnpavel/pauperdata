@@ -1,20 +1,110 @@
-name: Notify Discord on push
+name: Deploy Pages and Notify Discord
 
 on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths:
-      - 'data/**'
-      - 'index.html'
-      - 'thumbnail.png'
 
 jobs:
-  notify:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      should_notify: ${{ steps.detect.outputs.should_notify }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect whether this push should notify Discord
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import fnmatch
+          import os
+          import subprocess
+
+          event_name = os.environ["EVENT_NAME"]
+          before_sha = os.environ.get("BEFORE_SHA", "").strip()
+          current_sha = os.environ["CURRENT_SHA"]
+          patterns = ["data/**", "index.html", "thumbnail.png"]
+
+          if event_name == "workflow_dispatch":
+              print("should_notify=true")
+              raise SystemExit(0)
+
+          if not before_sha or set(before_sha) == {"0"}:
+              diff_command = ["git", "ls-tree", "-r", "--name-only", current_sha]
+          else:
+              diff_command = ["git", "diff", "--name-only", before_sha, current_sha]
+
+          result = subprocess.run(
+              diff_command,
+              check=True,
+              capture_output=True,
+              text=True,
+          )
+          changed_files = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+          should_notify = any(
+              fnmatch.fnmatch(path, pattern)
+              for path in changed_files
+              for pattern in patterns
+          )
+
+          print(f"should_notify={'true' if should_notify else 'false'}")
+          PY
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: changes
     permissions:
       contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
 
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Prepare Pages artifact
+        shell: bash
+        run: |
+          rm -rf _site
+          mkdir -p _site
+          cp -R css _site/
+          cp -R data _site/
+          cp -R js _site/
+          cp index.html _site/
+          cp favicon.svg _site/
+          cp thumbnail.png _site/
+          touch _site/.nojekyll
+          if [ -f CNAME ]; then cp CNAME _site/; fi
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [changes, deploy]
+    if: ${{ needs.changes.outputs.should_notify == 'true' }}
+    permissions:
+      contents: read
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -33,62 +123,6 @@ jobs:
               raise SystemExit("Could not find thumbnail version in index.html.")
 
           print(f"version={match.group(1).strip()}")
-          PY
-
-      - name: Wait for GitHub Pages build for this commit
-        shell: bash
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          import time
-          import urllib.error
-          import urllib.request
-
-          repository = os.environ["GITHUB_REPOSITORY"]
-          expected_commit = os.environ["GITHUB_SHA"]
-          token = os.environ["GITHUB_TOKEN"]
-          url = f"https://api.github.com/repos/{repository}/pages/builds/latest"
-          headers = {
-              "Accept": "application/vnd.github+json",
-              "Authorization": f"Bearer {token}",
-              "X-GitHub-Api-Version": "2022-11-28",
-              "User-Agent": "pauper-dashboard-discord-notify",
-          }
-
-          deadline = time.time() + (20 * 60)
-          last_summary = None
-
-          while time.time() < deadline:
-              request = urllib.request.Request(url, headers=headers)
-              try:
-                  with urllib.request.urlopen(request, timeout=30) as response:
-                      payload = json.load(response)
-              except urllib.error.HTTPError as exc:
-                  details = exc.read().decode("utf-8", errors="replace")
-                  raise SystemExit(f"GitHub Pages status request failed: HTTP {exc.code} - {details}") from exc
-
-              status = str(payload.get("status") or "").strip()
-              commit = str(payload.get("commit") or "").strip()
-              error_message = str((payload.get("error") or {}).get("message") or "").strip()
-              summary = f"latest_pages_build_commit={commit or '<none>'} status={status or '<none>'}"
-
-              if summary != last_summary:
-                  print(summary)
-                  last_summary = summary
-
-              if commit == expected_commit and status == "built":
-                  print("GitHub Pages build is complete for the pushed commit.")
-                  break
-
-              if commit == expected_commit and status in {"errored", "canceled"}:
-                  raise SystemExit(error_message or f"GitHub Pages build ended with status '{status}'.")
-
-              time.sleep(10)
-          else:
-              raise SystemExit(f"Timed out waiting for GitHub Pages to build commit {expected_commit}.")
           PY
 
       - name: Wait for live site to serve the new thumbnail version
