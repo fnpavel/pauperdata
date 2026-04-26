@@ -353,7 +353,7 @@ jobs:
           git status --short
 
           if [ -n "$(git status --porcelain)" ]; then
-            git add data index.html thumbnail.png pipeline/processed-drive-workbooks.json
+            git add pipeline/processed-drive-workbooks.json data index.html thumbnail.png
             git commit -m "test: publish generated pipeline changes"
             git push origin HEAD:${GITHUB_REF_NAME}
           else
