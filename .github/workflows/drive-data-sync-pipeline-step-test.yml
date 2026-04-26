@@ -1,9 +1,6 @@
 name: Drive Data Sync Pipeline Step Test
 
 on:
-  push:
-    branches:
-      - test/drive-pipeline
   workflow_dispatch:
     inputs:
       run_inspect:
