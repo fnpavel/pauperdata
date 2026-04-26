@@ -32,7 +32,7 @@ jobs:
           event_name = os.environ["EVENT_NAME"]
           before_sha = os.environ.get("BEFORE_SHA", "").strip()
           current_sha = os.environ["CURRENT_SHA"]
-          patterns = ["data/**", "index.html", "thumbnail.png"]
+          patterns = ["data/**"]
 
           if event_name == "workflow_dispatch":
               print("should_notify=true")
