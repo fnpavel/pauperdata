@@ -18,6 +18,7 @@ PIPELINE_ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = PIPELINE_ROOT / "pipeline-config.json"
 STATE_PATH = PIPELINE_ROOT / "pipeline-state.json"
 PIPELINE_OVERRIDES_PATH = PIPELINE_ROOT / "pipeline-overrides.json"
+PROCESSED_DRIVE_WORKBOOKS_PATH = PIPELINE_ROOT / "processed-drive-workbooks.json"
 DOWNLOAD_ROOT = PIPELINE_ROOT / "output" / "downloaded-workbooks"
 EXTRACTED_ROOT = PIPELINE_ROOT / "output" / "extracted-csv"
 ARCHIVE_ROOT = PROJECT_ROOT / "dataGoogleDrive"
@@ -39,6 +40,7 @@ DEFAULT_COMMIT_PATHS = [
     PROJECT_ROOT / "data" / "aliases.json",
     PROJECT_ROOT / "data" / "matchups",
     PIPELINE_OVERRIDES_PATH,
+    PROCESSED_DRIVE_WORKBOOKS_PATH,
 ]
 
 DRIVE_REQUEST_METRICS: dict[str, int] = {

@@ -14,6 +14,7 @@ from pathlib import Path
 from typing import Any
 
 from pipeline_common import (
+    PROCESSED_DRIVE_WORKBOOKS_PATH,
     PIPELINE_OVERRIDES_PATH,
     archive_relative_path_candidates,
     build_drive_service,
@@ -107,6 +108,9 @@ class CandidateEventInfo:
     event_id: str
     source_event_name: str
     event_date: str
+
+
+PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION = 1
 
 
 def normalize_relative_path(value: object) -> str:
@@ -969,6 +973,66 @@ def write_summary(payload: dict[str, object]) -> None:
     SUMMARY_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
 
 
+def load_processed_drive_workbooks_manifest() -> dict[str, object]:
+    manifest = load_json_file(
+        PROCESSED_DRIVE_WORKBOOKS_PATH,
+        default={
+            "schema_version": PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION,
+            "processed_relative_paths": [],
+        },
+    )
+
+    schema_version = manifest.get("schema_version")
+    if schema_version != PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION:
+        raise SystemExit(
+            f"Unsupported processed Drive workbooks manifest schema in '{PROCESSED_DRIVE_WORKBOOKS_PATH}'. "
+            f"Expected {PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION}, got {schema_version!r}."
+        )
+
+    processed_relative_paths = manifest.get("processed_relative_paths")
+    if not isinstance(processed_relative_paths, list):
+        raise SystemExit(
+            f"Processed Drive workbooks manifest is invalid: "
+            f"'{PROCESSED_DRIVE_WORKBOOKS_PATH}' must contain a list at 'processed_relative_paths'."
+        )
+
+    normalized_paths = sorted(
+        {
+            normalize_relative_path(path)
+            for path in processed_relative_paths
+            if normalize_relative_path(path)
+        }
+    )
+    return {
+        "schema_version": PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION,
+        "processed_relative_paths": normalized_paths,
+    }
+
+
+def build_processed_relative_paths_set(manifest: dict[str, object]) -> set[str]:
+    raw_paths = manifest.get("processed_relative_paths", [])
+    if not isinstance(raw_paths, list):
+        return set()
+    return {
+        normalized_path
+        for path in raw_paths
+        if (normalized_path := normalize_relative_path(path))
+    }
+
+
+def save_processed_drive_workbooks_manifest(processed_paths: set[str]) -> None:
+    normalized_paths = sorted(
+        normalize_relative_path(path)
+        for path in processed_paths
+        if normalize_relative_path(path)
+    )
+    payload = {
+        "schema_version": PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION,
+        "processed_relative_paths": normalized_paths,
+    }
+    PROCESSED_DRIVE_WORKBOOKS_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
 def update_state_after_download(
     state: dict[str, object],
     downloaded_files: list[dict[str, str]],
@@ -1234,13 +1298,18 @@ def run_sync_command(args: argparse.Namespace) -> int:
     reset_drive_request_metrics()
     service = build_drive_service(settings.credentials_path)
     drive_files = list_drive_files(service, settings.drive_folder_id)
+    processed_manifest = load_processed_drive_workbooks_manifest()
+    processed_paths = build_processed_relative_paths_set(processed_manifest)
     archive_paths = list_archive_relative_paths(settings.archive_root)
     excluded_drive_files_count = sum(1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides))
     missing_files = [
         drive_file
         for drive_file in drive_files
         if not is_drive_file_excluded(drive_file, overrides)
-        and not any(candidate.as_posix() in archive_paths for candidate in archive_relative_path_candidates(drive_file))
+        and not any(
+            candidate.as_posix() in processed_paths
+            for candidate in archive_relative_path_candidates(drive_file)
+        )
     ]
     new_workbook_detected_at = datetime.now().isoformat(timespec="seconds") if missing_files else None
     selected_files = list(missing_files)
@@ -1290,6 +1359,8 @@ def run_sync_command(args: argparse.Namespace) -> int:
         "local_archive_file_count": len(archive_paths),
         "force_redownload": args.force_redownload,
         "force_redownload_source": forced_file_source,
+        "processed_manifest_path": str(PROCESSED_DRIVE_WORKBOOKS_PATH),
+        "processed_manifest_entries_count": len(processed_paths),
         "selected_file_count": len(selected_files),
         "missing_file_count": len(missing_files),
         "downloaded_files_count": len(downloaded_files),
@@ -1317,7 +1388,7 @@ def run_sync_command(args: argparse.Namespace) -> int:
         new_workbook_detected_at=new_workbook_detected_at,
     )
 
-    log(f"Sync complete. Downloaded {len(downloaded_files)} missing workbook(s).")
+    log(f"Sync complete. Downloaded {len(downloaded_files)} Drive workbook(s).")
     log(f"- summary: {SUMMARY_PATH}")
     if not downloaded_files:
         pipeline_finished_at = datetime.now()
@@ -1344,7 +1415,7 @@ def run_sync_command(args: argparse.Namespace) -> int:
         elif args.force_redownload and forced_file is None:
             log("No workbook was selected for forced redownload.")
         else:
-            log("No missing workbooks were found.")
+            log("No unprocessed Drive workbooks were found.")
         return 0
 
     prepare_data_updates_branch(settings)
@@ -1364,6 +1435,13 @@ def run_sync_command(args: argparse.Namespace) -> int:
         pipeline_started_monotonic=pipeline_started_monotonic,
         include_drive_metrics=True,
     )
+
+    processed_paths.update(
+        normalize_relative_path(item["relative_path"])
+        for item in downloaded_files
+        if normalize_relative_path(item.get("relative_path"))
+    )
+    save_processed_drive_workbooks_manifest(processed_paths)
 
     publish_pipeline_changes()
 
