@@ -39,3 +39,26 @@ export function formatEventName(eventName) {
     return `${firstChar.toUpperCase()}${rest.toLowerCase()}`;
   });
 }
+
+// Counts unique events from arbitrary row shapes by normalizing each row into a
+// stable "date + event id/name" key and discarding blanks.
+export function countUniqueEvents(rows = [], getEventParts = row => ({
+  date: row?.Date || row?.date || '',
+  event: row?.Event || row?.event || row?.event_id || row?.eventId || ''
+})) {
+  const resolvedRows = Array.isArray(rows) ? rows : [];
+  const eventKeys = new Set();
+
+  resolvedRows.forEach(row => {
+    const parts = typeof getEventParts === 'function' ? getEventParts(row) : null;
+    const date = String(parts?.date || '').trim();
+    const event = String(parts?.event || '').trim();
+    if (!date || !event) {
+      return;
+    }
+
+    eventKeys.add(`${date}:::${event}`);
+  });
+
+  return eventKeys.size;
+}
