@@ -102,9 +102,9 @@ def main() -> int:
 
     state.update(
         {
-            "phase_05_published_at": datetime.now().isoformat(timespec="seconds"),
+            "published_at": datetime.now().isoformat(timespec="seconds"),
             "published_commit_message": commit_message,
-            "phase_05_main_publish_completed": main_publish_completed,
+            "main_publish_completed": main_publish_completed,
         }
     )
     save_state(state)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 4: rebuild the real project data from dataGoogleDrive."""
+"""Rebuild the project data from the local workbook archive."""
 
 from __future__ import annotations
 
@@ -51,8 +51,8 @@ def resolve_incremental_cutoff(state: dict[str, object]) -> str | None:
         if last_updated_date:
             return str(last_updated_date)
 
-    if state.get("phase_04_last_imported_modified_time"):
-        return str(state["phase_04_last_imported_modified_time"])
+    if state.get("last_imported_modified_time"):
+        return str(state["last_imported_modified_time"])
 
     if SUMMARY_PATH.exists():
         try:
@@ -98,7 +98,7 @@ def main() -> int:
         log(f"Current git branch: {branch}")
         if branch != settings.data_branch:
             log(
-                f"Note: phase 5 is easiest if you run phases 4 and 5 from '{settings.data_branch}'."
+                f"Note: publishing is easiest if you run rebuild and publish from '{settings.data_branch}'."
             )
     except Exception:
         log("Could not read the current git branch. Continuing with the import step.")
@@ -163,11 +163,11 @@ def main() -> int:
 
     state.update(
         {
-            "phase_04_rebuilt_at": datetime.now().isoformat(timespec="seconds"),
+            "rebuild_completed_at": datetime.now().isoformat(timespec="seconds"),
             "import_summary_path": str(SUMMARY_PATH),
             "imported_workbooks_count": summary.get("imported_workbooks"),
             "combined_rows_count": summary.get("combined_rows"),
-            "phase_04_last_imported_modified_time": resolve_next_cutoff(
+            "last_imported_modified_time": resolve_next_cutoff(
                 state,
                 summary,
                 resolve_incremental_cutoff(state),
@@ -185,7 +185,7 @@ def main() -> int:
     log("- data/results.json")
     log("- data/aliases.json")
     log("- data/matchups/")
-    log("Next: if the changes look right, run 05-publish-to-git.py")
+    log("Next: if the changes look right, run publish_pipeline_changes.py")
     return 0
 
 

@@ -978,7 +978,7 @@ def update_state_after_download(
     latest_download = downloaded_files[-1] if downloaded_files else None
     state.update(
         {
-            "phase_01_downloaded_at": datetime.now().isoformat(timespec="seconds"),
+            "sync_downloaded_at": datetime.now().isoformat(timespec="seconds"),
             "downloaded_files": [
                 {
                     "drive_file_id": item["drive_file_id"],
@@ -1013,7 +1013,7 @@ def update_state_after_download(
                 "archive_relative_path": latest_download["relative_path"],
                 "archive_workbook_name": Path(latest_download["archive_path"]).name,
                 "archive_workbook_path": latest_download["archive_path"],
-                "phase_02_copied_at": datetime.now().isoformat(timespec="seconds"),
+                "archive_updated_at": datetime.now().isoformat(timespec="seconds"),
             }
         )
     save_state(state)
@@ -1209,12 +1209,12 @@ def finalize_pipeline_state(
 
     state.update(
         {
-            "phase_04_event_matchup_elo_rebuilt_at": datetime.now().isoformat(timespec="seconds"),
+            "data_refresh_completed_at": datetime.now().isoformat(timespec="seconds"),
             "elo_manifest_path": str(ELO_MANIFEST_PATH),
             "elo_manifest_snapshot": elo_snapshot,
             "thumbnail_snapshot": thumbnail_snapshot,
             "thumbnail_path": str(THUMBNAIL_OUTPUT_PATH),
-            "phase_05_thumbnail_updated_at": thumbnail_snapshot.get("updated_at"),
+            "thumbnail_updated_at": thumbnail_snapshot.get("updated_at"),
             "last_pipeline_duration_seconds": pipeline_duration_seconds,
         }
     )

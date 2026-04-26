@@ -53,9 +53,14 @@ on:
         options:
           - incremental
           - full
+      run_publish:
+        description: Commit and push generated changes
+        required: false
+        type: boolean
+        default: false
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: drive-data-sync-pipeline-step-test
@@ -321,3 +326,17 @@ jobs:
           path: .
           if-no-files-found: error
           retention-days: 1
+      
+      - name: Update thumbnail
+        if: ${{ inputs.run_elo_build || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node pipeline/update-thumbnail.mjs
+      
+      - name: Publish generated changes
+        if: ${{ inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python pipeline/publish_pipeline_changes.py

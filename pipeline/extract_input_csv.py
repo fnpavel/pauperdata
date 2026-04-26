@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Phase 3: extract the workbook Input sheet into an inspectable CSV."""
+"""Extract the workbook Input sheet into inspectable CSV files."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ try:
     import pandas as pd
 except ImportError as exc:
     raise SystemExit(
-        "This phase requires pandas and openpyxl.\n"
+        "This step requires pandas and openpyxl.\n"
         "Install them with:\n"
         "  python -m pip install pandas openpyxl"
     ) from exc
@@ -84,7 +84,7 @@ def main() -> int:
 
     state.update(
         {
-            "phase_03_extracted_at": datetime.now().isoformat(timespec="seconds"),
+            "csv_extracted_at": datetime.now().isoformat(timespec="seconds"),
             "extracted_csv_path": str(extracted_files[-1]["csv_path"]),
             "extracted_csv_relative_path": str(extracted_files[-1]["csv_relative_path"]),
             "extracted_csv_rows": int(extracted_files[-1]["rows"]),
