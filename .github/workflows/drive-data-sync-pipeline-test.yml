@@ -42,11 +42,11 @@ on:
         required: false
         default: list --latest --limit 10
       download_command:
-        description: Download command
+        description: Legacy input; ignored by the manifest sync test flow
         required: false
         default: download --latest
       rebuild_mode:
-        description: Rebuild mode
+        description: Legacy input; ignored by the manifest sync test flow
         required: false
         type: choice
         default: incremental
@@ -213,62 +213,20 @@ jobs:
           subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
           PY
 
-      - name: Run download
-        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
+      - name: Run full manifest sync
+        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Download args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
+          python pipeline/sync_drive_and_rebuild_all.py sync --yes
 
-      - name: Print state after download
-        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
+      - name: Print sync outputs
+        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
           test -f pipeline/pipeline-state.json && cat pipeline/pipeline-state.json || echo "No pipeline-state.json"
           test -f pipeline/pipeline-run-summary.json && cat pipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
-          find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
-
-      - name: Run extract
-        if: ${{ inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python pipeline/extract_input_csv.py
-
-      - name: Print extracted CSVs
-        if: ${{ inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          test -f pipeline/pipeline-state.json && cat pipeline/pipeline-state.json || true
-          find pipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
-
-      - name: Run rebuild
-        if: ${{ inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
-            python pipeline/rebuild_event_matchup_data.py --full-rebuild-online
-          else
-            python pipeline/rebuild_event_matchup_data.py
-          fi
-
-      - name: Print rebuild outputs
-        if: ${{ inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
           test -f data/import-summary.json && cat data/import-summary.json || echo "No data/import-summary.json"
           test -f data/events.json && python - <<'PY'
           import json
@@ -286,35 +244,10 @@ jobs:
           for row in rows[-3:]:
               print(row)
           PY
-          find data/matchups -maxdepth 2 -type f | sort || true
-
-      - name: Run matchup split builder
-        if: ${{ inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          node pipeline/build-matchup-split-data.mjs
-
-      - name: Print matchup split output
-        if: ${{ inputs.run_matchup_split || inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
+          find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
+          find pipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
           find data/matchups -maxdepth 2 -type f | sort || true
           test -f data/matchups/manifest.json && cat data/matchups/manifest.json || true
-
-      - name: Run Elo builder
-        if: ${{ inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          node pipeline/build-elo-data.mjs
-
-      - name: Print Elo output
-        if: ${{ inputs.run_elo_build }}
-        shell: bash
-        run: |
-          set -euxo pipefail
           find data/elo-data -maxdepth 2 -type f | sort || true
           test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
 
@@ -327,19 +260,15 @@ jobs:
           if-no-files-found: error
           retention-days: 1
       
-      - name: Update thumbnail
-        if: ${{ inputs.run_elo_build || inputs.run_publish }}
+      - name: Debug manifest and git status after sync
+        if: ${{ inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
-          node pipeline/update-thumbnail.mjs
-      
-     # - name: Publish generated changes
-     #   if: ${{ inputs.run_publish }}
-     #   shell: bash
-     #   run: |
-     #     set -euxo pipefail
-     #     python pipeline/publish_pipeline_changes.py
+          echo "Manifest after sync:"
+          cat pipeline/processed-drive-workbooks.json || true
+          echo "Git status after sync:"
+          git status --short
 
       - name: Test publish generated changes to current branch
         if: ${{ inputs.run_publish }}
@@ -353,7 +282,7 @@ jobs:
           git status --short
 
           if [ -n "$(git status --porcelain)" ]; then
-            git add pipeline/processed-drive-workbooks.json data index.html thumbnail.png
+            git add data index.html thumbnail.png pipeline/processed-drive-workbooks.json
             git commit -m "test: publish generated pipeline changes"
             git push origin HEAD:${GITHUB_REF_NAME}
           else
