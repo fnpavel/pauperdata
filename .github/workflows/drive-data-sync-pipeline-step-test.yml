@@ -81,11 +81,15 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: scripts/automatedpipeline/requirements.txt
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
+          cache: npm
+          cache-dependency-path: scripts/automatedpipeline/package-lock.json
 
       - name: Install Python dependencies
         shell: bash
