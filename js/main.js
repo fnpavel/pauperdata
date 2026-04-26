@@ -1,6 +1,6 @@
 // Bootstraps the dashboard after the shared dataset is loaded and keeps a small
 // set of globals available for legacy inline handlers declared in index.html.
-import { ensureEventDataLoaded, getLastUpdatedDate } from './utils/event-data.js';
+import { ensureEventDataLoaded, getLastUpdatedTimestamp } from './utils/event-data.js';
 import { setAnalysisDataRows } from './utils/analysis-data.js';
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
@@ -27,12 +27,78 @@ window.updatePlayerAnalytics = updatePlayerAnalytics;
 window.toggleDataset = (chart, index) => import('./utils/u-chart.js').then(module => module.toggleDataset(chart, index));
 window.updatePlayerDeckPerformanceChart = () => import('./charts/player-deck-performance.js').then(module => module.updatePlayerDeckPerformanceChart());
 
+function formatRelativeTimestamp(date) {
+  const now = new Date();
+  const diffMs = date.getTime() - now.getTime();
+  const absDiffMs = Math.abs(diffMs);
+  const minute = 60 * 1000;
+  const hour = 60 * minute;
+  const day = 24 * hour;
+
+  let value;
+  let unit;
+  if (absDiffMs < hour) {
+    value = Math.round(diffMs / minute);
+    unit = 'minute';
+  } else if (absDiffMs < day) {
+    value = Math.round(diffMs / hour);
+    unit = 'hour';
+  } else {
+    value = Math.round(diffMs / day);
+    unit = 'day';
+  }
+
+  if (value === 0) {
+    return 'just now';
+  }
+
+  return new Intl.RelativeTimeFormat(undefined, { numeric: 'auto' }).format(value, unit);
+}
+
+function formatAbsoluteTimestamp(date) {
+  return new Intl.DateTimeFormat(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit'
+  }).format(date);
+}
+
 // Function to update the Last Updated date
 function setLastUpdatedDate() {
   const dateElement = document.getElementById('lastUpdatedDate');
-  if (dateElement) {
-    dateElement.textContent = `Last updated: ${getLastUpdatedDate()}`;
+  const rawTimestamp = getLastUpdatedTimestamp();
+  if (!dateElement) {
+    return;
   }
+
+  if (!rawTimestamp) {
+    dateElement.textContent = 'Last updated: --';
+    dateElement.removeAttribute('title');
+    return;
+  }
+
+  const parsedDate = new Date(rawTimestamp);
+  if (Number.isNaN(parsedDate.getTime())) {
+    dateElement.textContent = `Last updated: ${rawTimestamp}`;
+    dateElement.removeAttribute('title');
+    return;
+  }
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(rawTimestamp)) {
+    dateElement.textContent = `Last updated: ${new Intl.DateTimeFormat(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric'
+    }).format(parsedDate)}`;
+    dateElement.removeAttribute('title');
+    return;
+  }
+
+  const relativeLabel = formatRelativeTimestamp(parsedDate);
+  const absoluteLabel = formatAbsoluteTimestamp(parsedDate);
+  dateElement.textContent = `Last updated: ${relativeLabel} (${absoluteLabel})`;
+  dateElement.title = parsedDate.toISOString();
 }
 
 async function initializeDashboard() {
@@ -42,7 +108,8 @@ async function initializeDashboard() {
   // cache needs to be populated before any module computes its initial state.
   const { rows } = await ensureEventDataLoaded();
   setAnalysisDataRows(rows);
-  setLastUpdatedDate(); // Call the function to set the date
+  setLastUpdatedDate();
+  window.setInterval(setLastUpdatedDate, 60 * 1000);
 
   // Initialize modules before wiring filters because many filter listeners call
   // back into these modules immediately.

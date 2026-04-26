@@ -660,6 +660,7 @@ def load_elo_manifest_snapshot() -> dict[str, object]:
     return {
         "manifest_path": str(ELO_MANIFEST_PATH),
         "generated_at": manifest.get("generatedAt"),
+        "last_updated_at": manifest.get("lastUpdatedAt"),
         "last_updated_date": manifest.get("lastUpdatedDate"),
         "total_match_count": manifest.get("totalMatchCount"),
         "years": manifest.get("years"),

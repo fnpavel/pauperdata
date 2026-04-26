@@ -100,6 +100,7 @@ async function loadSourcePayload() {
     return {
       generated_at: manifest.generated_at || '',
       generated_from: manifest.generated_from || 'pipeline/build-matchup-split-data.mjs',
+      last_updated_at: manifest.last_updated_at || manifest.last_updated_date || '',
       last_updated_date: manifest.last_updated_date || '',
       events: JSON.parse(eventsText),
       rounds,
@@ -132,6 +133,7 @@ async function main() {
   const manifest = {
     generated_at: payload.generated_at || '',
     generated_from: payload.generated_from || 'pipeline/build-matchup-split-data.mjs',
+    last_updated_at: payload.last_updated_at || payload.last_updated_date || '',
     last_updated_date: payload.last_updated_date || '',
     event_count: events.length,
     round_count: rounds.length,

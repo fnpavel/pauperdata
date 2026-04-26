@@ -62,6 +62,7 @@ function readSourceDataset() {
 
   return {
     generatedFrom: path.relative(projectRoot, sourceManifestPath).replace(/\\/g, '/'),
+    lastUpdatedAt: String(manifest?.last_updated_at || manifest?.last_updated_date || ''),
     lastUpdatedDate: String(manifest?.last_updated_date || ''),
     cleanedData
   };
@@ -176,7 +177,7 @@ function writePrettyJson(filePath, value) {
 }
 
 function main() {
-  const { generatedFrom, lastUpdatedDate, cleanedData } = readSourceDataset();
+  const { generatedFrom, lastUpdatedAt, lastUpdatedDate, cleanedData } = readSourceDataset();
 
   const eventAggregates = new Map();
   const eventNameAliases = new Map();
@@ -248,6 +249,7 @@ function main() {
 
   const aliases = {
     generated_from: generatedFrom,
+    last_updated_at: lastUpdatedAt,
     last_updated_date: lastUpdatedDate,
     last_updated_event_type: latestEvent?.display_name || '',
     last_updated_event_date: latestEvent?.date || '',
@@ -264,7 +266,7 @@ function main() {
   writePrettyJson(path.join(outputDir, 'aliases.json'), aliases);
 
   console.log(`Normalized dataset written to ${path.relative(projectRoot, outputDir)}`);
-  console.log(`- lastUpdatedDate: ${lastUpdatedDate}`);
+  console.log(`- lastUpdatedAt: ${lastUpdatedAt}`);
   console.log(`- events: ${events.length}`);
   console.log(`- results: ${results.length}`);
   console.log(`- event aliases: ${aliases.event_name_aliases.length}`);

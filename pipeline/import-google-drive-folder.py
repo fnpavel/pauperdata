@@ -1000,6 +1000,7 @@ def load_existing_matchup_payload(matchup_json_path: Path) -> dict[str, object]:
                 matches.extend(json.loads(match_path.read_text(encoding="utf-8-sig")))
 
         return {
+            "last_updated_at": str(manifest.get("last_updated_at") or ""),
             "last_updated_date": str(manifest.get("last_updated_date") or ""),
             "events": list(events or []),
             "rounds": rounds,
@@ -1009,6 +1010,7 @@ def load_existing_matchup_payload(matchup_json_path: Path) -> dict[str, object]:
     if LEGACY_MATCHUP_JSON_PATH.exists():
         payload = json.loads(LEGACY_MATCHUP_JSON_PATH.read_text(encoding="utf-8-sig"))
         return {
+            "last_updated_at": str(payload.get("last_updated_at") or ""),
             "last_updated_date": str(payload.get("last_updated_date") or ""),
             "events": list(payload.get("events") or []),
             "rounds": list(payload.get("rounds") or []),
@@ -1016,6 +1018,7 @@ def load_existing_matchup_payload(matchup_json_path: Path) -> dict[str, object]:
         }
 
     return {
+        "last_updated_at": "",
         "last_updated_date": "",
         "events": [],
         "rounds": [],
@@ -1050,6 +1053,7 @@ def write_compact_json_if_changed(path: Path, payload: object) -> bool:
 
 def write_matchup_split_payload(
     matchup_json_path: Path,
+    last_updated_at: str,
     last_updated_date: str,
     events: list[dict[str, object]],
     rounds: list[dict[str, object]],
@@ -1095,6 +1099,7 @@ def write_matchup_split_payload(
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "generated_from": "pipeline/import-google-drive-folder.py",
+        "last_updated_at": last_updated_at,
         "last_updated_date": last_updated_date,
         "event_count": len(events),
         "round_count": len(rounds),
@@ -1139,7 +1144,7 @@ def load_existing_event_dataset(
             payload = json.loads(file_path.read_text(encoding="utf-8-sig"))
             if isinstance(payload, list):
                 rows.extend(payload)
-        return str(manifest.get("last_updated_date") or ""), rows
+        return str(manifest.get("last_updated_at") or manifest.get("last_updated_date") or ""), rows
 
     if legacy_js_data_path and legacy_js_data_path.exists():
         return load_existing_js_dataset(legacy_js_data_path)
@@ -1150,7 +1155,12 @@ def load_existing_event_dataset(
     )
 
 
-def write_event_split_payload(event_data_root: Path, last_updated_date: str, rows: list[dict[str, object]]) -> None:
+def write_event_split_payload(
+    event_data_root: Path,
+    last_updated_at: str,
+    last_updated_date: str,
+    rows: list[dict[str, object]],
+) -> None:
     event_data_root.mkdir(parents=True, exist_ok=True)
 
     rows_by_year: dict[str, list[dict[str, object]]] = {}
@@ -1179,6 +1189,7 @@ def write_event_split_payload(event_data_root: Path, last_updated_date: str, row
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "generated_from": "pipeline/import-google-drive-folder.py",
+        "last_updated_at": last_updated_at,
         "last_updated_date": last_updated_date,
         "row_count": len(rows),
         "years": years,
@@ -1383,8 +1394,9 @@ def main() -> int:
         ),
     )
 
-    last_updated_date = date.today().isoformat()
-    write_event_split_payload(event_data_root, last_updated_date, combined_rows)
+    last_updated_at = datetime.now().astimezone().isoformat(timespec="seconds")
+    last_updated_date = last_updated_at[:10]
+    write_event_split_payload(event_data_root, last_updated_at, last_updated_date, combined_rows)
 
     reimported_matchup_event_ids = {
         str(workbook_record.get("event_id") or "")
@@ -1461,6 +1473,7 @@ def main() -> int:
 
     write_matchup_split_payload(
         matchup_data_root,
+        last_updated_at,
         last_updated_date,
         combined_matchup_events,
         combined_matchup_rounds,

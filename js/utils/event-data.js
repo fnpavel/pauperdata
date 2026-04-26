@@ -5,6 +5,7 @@ const EVENT_DATA_ROOT = new URL('../../data/events/', import.meta.url);
 
 const EMPTY_MANIFEST = Object.freeze({
   years: [],
+  last_updated_at: '',
   last_updated_date: '',
   event_files_by_year: {},
   event_counts_by_year: {}
@@ -92,7 +93,7 @@ export function getEventRows() {
   return eventRows;
 }
 
-// Returns the manifest's last-updated label for the header.
-export function getLastUpdatedDate() {
-  return String(eventManifest?.last_updated_date || '').trim();
+// Returns the manifest's last-updated timestamp for the header.
+export function getLastUpdatedTimestamp() {
+  return String(eventManifest?.last_updated_at || eventManifest?.last_updated_date || '').trim();
 }

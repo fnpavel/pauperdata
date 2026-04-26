@@ -212,6 +212,7 @@ async function main() {
 
   const manifest = {
     generatedAt: sourceManifest.generated_at || '',
+    lastUpdatedAt: sourceManifest.last_updated_at || sourceManifest.last_updated_date || '',
     lastUpdatedDate: sourceManifest.last_updated_date || '',
     totalMatchCount: minimalMatches.length,
     years: sortedYears,
