@@ -14,13 +14,12 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-LEARNING_ROOT = Path(__file__).resolve().parent
-CONFIG_PATH = LEARNING_ROOT / "pipeline-config.json"
-STATE_PATH = LEARNING_ROOT / "pipeline-state.json"
-PIPELINE_OVERRIDES_PATH = LEARNING_ROOT / "pipeline-overrides.json"
-DOWNLOAD_ROOT = LEARNING_ROOT / "output" / "downloaded-workbooks"
-EXTRACTED_ROOT = LEARNING_ROOT / "output" / "extracted-csv"
-DISCORD_LOG_PATH = LEARNING_ROOT / "output" / "discord-data-update-log.json"
+PIPELINE_ROOT = Path(__file__).resolve().parent
+CONFIG_PATH = PIPELINE_ROOT / "pipeline-config.json"
+STATE_PATH = PIPELINE_ROOT / "pipeline-state.json"
+PIPELINE_OVERRIDES_PATH = PIPELINE_ROOT / "pipeline-overrides.json"
+DOWNLOAD_ROOT = PIPELINE_ROOT / "output" / "downloaded-workbooks"
+EXTRACTED_ROOT = PIPELINE_ROOT / "output" / "extracted-csv"
 ARCHIVE_ROOT = PROJECT_ROOT / "dataGoogleDrive"
 IMPORT_SCRIPT = PROJECT_ROOT / "scripts" / "automatedpipeline" / "import-google-drive-folder.py"
 ACTIVE_DRIVE_YEAR_FOLDER = "2026"
@@ -51,42 +50,17 @@ DRIVE_REQUEST_METRICS: dict[str, int] = {
 
 
 @dataclass(frozen=True)
-class LearningSettings:
+class PipelineSettings:
     credentials_path: Path
     drive_folder_id: str
     download_root: Path
     extracted_root: Path
-    discord_log_path: Path
     archive_root: Path
     import_script: Path
     remote: str
     data_branch: str
     main_branch: str
     commit_message_template: str
-    discord_webhook_urls: tuple[str, ...]
-
-    @property
-    def discord_webhook_url(self) -> str:
-        return self.discord_webhook_urls[0] if self.discord_webhook_urls else ""
-
-
-def parse_discord_webhook_urls(*values: object) -> tuple[str, ...]:
-    urls: list[str] = []
-    for value in values:
-        if isinstance(value, (list, tuple)):
-            urls.extend(parse_discord_webhook_urls(*value))
-            continue
-
-        text = str(value or "").strip()
-        if not text:
-            continue
-
-        for line in text.splitlines():
-            normalized_line = line.strip()
-            if normalized_line:
-                urls.append(normalized_line)
-
-    return tuple(dict.fromkeys(urls))
 
 
 @dataclass(frozen=True)
@@ -142,7 +116,7 @@ def resolve_config_path(value: object, fallback: Path) -> Path:
     return candidate.resolve()
 
 
-def load_settings() -> LearningSettings:
+def load_settings() -> PipelineSettings:
     if not CONFIG_PATH.exists():
         raise SystemExit(
             "Missing pipeline config.\n"
@@ -163,12 +137,11 @@ def load_settings() -> LearningSettings:
             "Fill it in pipeline-config.json or set GOOGLE_DRIVE_FOLDER_ID."
         )
 
-    return LearningSettings(
+    return PipelineSettings(
         credentials_path=resolve_config_path(credentials_value, Path(str(credentials_value)).expanduser()),
         drive_folder_id=str(drive_folder_value).strip(),
         download_root=resolve_config_path(config.get("download_root"), DOWNLOAD_ROOT),
         extracted_root=resolve_config_path(config.get("extracted_root"), EXTRACTED_ROOT),
-        discord_log_path=resolve_config_path(config.get("discord_log_path"), DISCORD_LOG_PATH),
         archive_root=resolve_config_path(config.get("archive_root"), ARCHIVE_ROOT),
         import_script=resolve_config_path(config.get("import_script"), IMPORT_SCRIPT),
         remote=str(config.get("remote", "origin")),
@@ -176,12 +149,6 @@ def load_settings() -> LearningSettings:
         main_branch=str(config.get("main_branch", "main")),
         commit_message_template=str(
             config.get("commit_message_template", "chore(data): import {workbook_name}")
-        ),
-        discord_webhook_urls=parse_discord_webhook_urls(
-            config.get("discord_webhook_urls"),
-            config.get("discord_webhook_url"),
-            os.environ.get("DISCORD_WEBHOOKS"),
-            os.environ.get("DISCORD_WEBHOOK_URL"),
         ),
     )
 
@@ -202,7 +169,7 @@ def require_state_keys(*keys: str) -> dict[str, Any]:
         missing_list = ", ".join(missing)
         raise SystemExit(
             f"State is missing: {missing_list}\n"
-            "Run the earlier numbered learning scripts first."
+            "Run the earlier automated pipeline steps first."
         )
     return state
 

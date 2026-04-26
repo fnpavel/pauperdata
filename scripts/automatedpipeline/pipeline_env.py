@@ -10,8 +10,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from pipeline_common import parse_discord_webhook_urls
-
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 PIPELINE_ROOT = PROJECT_ROOT / "scripts" / "automatedpipeline"
 PIPELINE_CONFIG_PATH = PIPELINE_ROOT / "pipeline-config.json"
@@ -52,7 +50,6 @@ class AutomationSettings:
     data_branch: str
     main_branch: str
     commit_message_template: str
-    discord_webhook_urls: tuple[str, ...]
     service_account_payload: dict[str, Any]
 
 
@@ -65,10 +62,6 @@ def load_automation_settings() -> AutomationSettings:
         commit_message_template=_read_env(
             "PIPELINE_COMMIT_MESSAGE_TEMPLATE",
             default="chore(data): import {workbook_name}",
-        ),
-        discord_webhook_urls=parse_discord_webhook_urls(
-            _read_env("DISCORD_WEBHOOKS"),
-            _read_env("DISCORD_WEBHOOK_URL"),
         ),
         service_account_payload=_read_service_account_payload(),
     )
@@ -105,8 +98,6 @@ class ManagedPipelineConfig:
             "data_branch": self.settings.data_branch,
             "main_branch": self.settings.main_branch,
             "commit_message_template": self.settings.commit_message_template,
-            "discord_webhook_urls": list(self.settings.discord_webhook_urls),
-            "discord_log_path": "./output/discord-data-update-log.json",
         }
         PIPELINE_CONFIG_PATH.write_text(
             json.dumps(config_payload, indent=2) + "\n",

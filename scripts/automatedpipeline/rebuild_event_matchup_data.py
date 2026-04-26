@@ -21,8 +21,8 @@ from pipeline_common import (
 
 SUMMARY_PATH = Path(__file__).resolve().parents[2] / "data" / "import-summary.json"
 ALIASES_PATH = Path(__file__).resolve().parents[2] / "data" / "aliases.json"
-LEARNING_ROOT = Path(__file__).resolve().parent
-REBUILD_STAGING_ROOT = LEARNING_ROOT / "output" / "rebuild-staging"
+PIPELINE_ROOT = Path(__file__).resolve().parent
+REBUILD_STAGING_ROOT = PIPELINE_ROOT / "output" / "rebuild-staging"
 REBUILD_INPUT_CSV_ROOT = REBUILD_STAGING_ROOT / "google-drive-input"
 REBUILD_MATCHUP_CSV_ROOT = REBUILD_STAGING_ROOT / "google-drive-matchup-input"
 

@@ -34,17 +34,16 @@ from pipeline_common import (
     save_state,
 )
 
-LEARNING_ROOT = Path(__file__).resolve().parent
+PIPELINE_ROOT = Path(__file__).resolve().parent
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SUMMARY_PATH = LEARNING_ROOT / "pipeline-run-summary.json"
-EXTRACT_SCRIPT = LEARNING_ROOT / "extract_input_csv.py"
-REBUILD_SCRIPT = LEARNING_ROOT / "rebuild_event_matchup_data.py"
-MATCHUP_SPLIT_BUILD_SCRIPT = LEARNING_ROOT / "build-matchup-split-data.mjs"
-ELO_BUILD_SCRIPT = LEARNING_ROOT / "build-elo-data.mjs"
-DISCORD_UPDATE_SCRIPT = LEARNING_ROOT / "build_discord_update_log.py"
-PUBLISH_SCRIPT = LEARNING_ROOT / "publish_pipeline_changes.py"
+SUMMARY_PATH = PIPELINE_ROOT / "pipeline-run-summary.json"
+EXTRACT_SCRIPT = PIPELINE_ROOT / "extract_input_csv.py"
+REBUILD_SCRIPT = PIPELINE_ROOT / "rebuild_event_matchup_data.py"
+MATCHUP_SPLIT_BUILD_SCRIPT = PIPELINE_ROOT / "build-matchup-split-data.mjs"
+ELO_BUILD_SCRIPT = PIPELINE_ROOT / "build-elo-data.mjs"
+PUBLISH_SCRIPT = PIPELINE_ROOT / "publish_pipeline_changes.py"
 ELO_MANIFEST_PATH = PROJECT_ROOT / "data" / "elo-data" / "manifest.js"
-THUMBNAIL_UPDATE_SCRIPT = PROJECT_ROOT / "scripts" / "update-thumbnail.mjs"
+THUMBNAIL_UPDATE_SCRIPT = PIPELINE_ROOT / "update-thumbnail.mjs"
 THUMBNAIL_OUTPUT_PATH = PROJECT_ROOT / "thumbnail.png"
 EVENTS_PATH = PROJECT_ROOT / "data" / "events.json"
 
@@ -1156,14 +1155,12 @@ def prepare_data_updates_branch(settings) -> None:
 
 def publish_pipeline_changes() -> None:
     log("Publishing the refreshed data and merging it back into main...")
-    run_subprocess([sys.executable, str(PUBLISH_SCRIPT)], cwd=LEARNING_ROOT, stream_output=True)
+    run_subprocess([sys.executable, str(PUBLISH_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
 
 
 def run_pipeline_rebuild(
     *,
     full_rebuild_online: bool,
-    refresh_discord_log: bool,
-    post_discord_if_configured: bool,
 ) -> None:
     if full_rebuild_online:
         log("Rebuilding the project event and matchup data from the full workbook archive...")
@@ -1172,7 +1169,7 @@ def run_pipeline_rebuild(
         log("Rebuilding the project event and matchup data from the newly synced workbooks...")
         rebuild_command = [sys.executable, str(REBUILD_SCRIPT)]
 
-    run_subprocess(rebuild_command, cwd=LEARNING_ROOT, stream_output=True)
+    run_subprocess(rebuild_command, cwd=PIPELINE_ROOT, stream_output=True)
 
     log("Rebuilding the split matchup archive from the refreshed matchup source...")
     run_subprocess(["node", str(MATCHUP_SPLIT_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True)
@@ -1187,23 +1184,13 @@ def run_pipeline_rebuild(
         log("Thumbnail refresh failed, but the data rebuild completed successfully.")
         log(str(exc))
 
-    if refresh_discord_log:
-        log("Building the Discord update log from the refreshed event results, Elo data, and thumbnail...")
-        discord_command = [sys.executable, str(DISCORD_UPDATE_SCRIPT)]
-        if post_discord_if_configured:
-            discord_command.append("--post-discord-if-configured")
-        run_subprocess(discord_command, cwd=LEARNING_ROOT, stream_output=True)
-
-
 def finalize_pipeline_state(
     summary: dict[str, object],
     state: dict[str, object],
     *,
-    settings,
     pipeline_started_at: datetime,
     pipeline_started_monotonic: float,
     include_drive_metrics: bool,
-    include_discord_metadata: bool,
 ) -> None:
     elo_snapshot = load_elo_manifest_snapshot()
     thumbnail_snapshot = load_thumbnail_snapshot()
@@ -1218,9 +1205,6 @@ def finalize_pipeline_state(
     }
     summary["elo"] = elo_snapshot
     summary["thumbnail"] = thumbnail_snapshot
-    if include_discord_metadata:
-        summary["discord_update_log_path"] = str(settings.discord_log_path)
-        summary["discord_webhook_configured"] = bool(settings.discord_webhook_urls)
     write_summary(summary)
 
     state.update(
@@ -1234,8 +1218,6 @@ def finalize_pipeline_state(
             "last_pipeline_duration_seconds": pipeline_duration_seconds,
         }
     )
-    if include_discord_metadata:
-        state.update({"discord_update_log_path": str(settings.discord_log_path)})
     if include_drive_metrics:
         state["last_drive_request_metrics"] = summary.get("drive_request_metrics", {})
     save_state(state)
@@ -1367,29 +1349,25 @@ def run_sync_command(args: argparse.Namespace) -> int:
     prepare_data_updates_branch(settings)
 
     log("Extracting CSVs for the newly synced workbooks...")
-    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=LEARNING_ROOT, stream_output=True)
+    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
 
     run_pipeline_rebuild(
         full_rebuild_online=False,
-        refresh_discord_log=True,
-        post_discord_if_configured=True,
     )
 
     state = load_state()
     finalize_pipeline_state(
         summary,
         state,
-        settings=settings,
         pipeline_started_at=pipeline_started_at,
         pipeline_started_monotonic=pipeline_started_monotonic,
         include_drive_metrics=True,
-        include_discord_metadata=True,
     )
 
     publish_pipeline_changes()
 
     log("Sync, rebuild, and publish complete.")
-    log("This entrypoint refreshed the data pipeline, posted the Discord update, and merged the published result back into main.")
+    log("This entrypoint refreshed the data pipeline and merged the published result back into main.")
     return 0
 
 
@@ -1475,23 +1453,19 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
     prepare_data_updates_branch(settings)
 
     log("Extracting CSVs for the selected local workbooks...")
-    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=LEARNING_ROOT, stream_output=True)
+    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
 
     run_pipeline_rebuild(
         full_rebuild_online=False,
-        refresh_discord_log=True,
-        post_discord_if_configured=True,
     )
 
     state = load_state()
     finalize_pipeline_state(
         summary,
         state,
-        settings=settings,
         pipeline_started_at=pipeline_started_at,
         pipeline_started_monotonic=pipeline_started_monotonic,
         include_drive_metrics=False,
-        include_discord_metadata=True,
     )
 
     publish_pipeline_changes()
@@ -1755,8 +1729,6 @@ def run_rebuild_command(args: argparse.Namespace) -> int:
 
     run_pipeline_rebuild(
         full_rebuild_online=True,
-        refresh_discord_log=False,
-        post_discord_if_configured=False,
     )
 
     summary: dict[str, object] = {
@@ -1768,16 +1740,13 @@ def run_rebuild_command(args: argparse.Namespace) -> int:
     finalize_pipeline_state(
         summary,
         state,
-        settings=settings,
         pipeline_started_at=pipeline_started_at,
         pipeline_started_monotonic=pipeline_started_monotonic,
         include_drive_metrics=False,
-        include_discord_metadata=False,
     )
 
     log("Full rebuild complete.")
     log("This refreshed event data, matchup data, Elo data, and the site thumbnail from the local archive.")
-    log("Discord posting is skipped for manual rebuilds. Run build_discord_update_log.py manually if you want a refreshed summary.")
     log("Next: run publish_pipeline_changes.py to review with --dry-run or publish the changes.")
     return 0
 
