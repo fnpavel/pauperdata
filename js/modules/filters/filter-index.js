@@ -240,7 +240,7 @@ function syncAnalysisQualityControlAvailability(mode = '') {
     || document.body.dataset.topMode
     || 'event'
   );
-  const shouldHideQualityControls = activeMode === 'leaderboard';
+  const shouldHideQualityControls = activeMode === 'leaderboard' || activeMode === 'about';
 
   document.body.dataset.topMode = activeMode;
 
