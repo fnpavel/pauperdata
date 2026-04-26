@@ -4,7 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const projectRoot = path.resolve(__dirname, '..', "..");
+const projectRoot = path.resolve(__dirname, '..');
 const sourceRoot = path.join(projectRoot, 'data', 'events');
 const sourceManifestPath = path.join(sourceRoot, 'manifest.json');
 const outputDir = path.join(projectRoot, 'data');
