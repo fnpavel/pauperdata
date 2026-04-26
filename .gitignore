@@ -22,6 +22,7 @@
 !/scripts/automatedpipeline/**
 /scripts/automatedpipeline/__pycache__/
 /scripts/automatedpipeline/*.pyc
+/scripts/automatedpipeline/node_modules
 /scripts/automatedpipeline/output/
 /scripts/automatedpipeline/github-actions-service-account.json
 /scripts/automatedpipeline/pipeline-config.json
