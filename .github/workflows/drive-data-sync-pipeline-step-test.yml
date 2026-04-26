@@ -101,13 +101,13 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          npm ci --prefix scripts
+          npm ci --prefix scripts/automatedpipeline
 
       - name: Install Playwright browser
         shell: bash
         run: |
           set -euxo pipefail
-          npx --prefix scripts playwright install --with-deps chromium
+          npx --prefix scripts/automatedpipeline playwright install --with-deps chromium
 
       - name: Validate secrets and write config
         env:
@@ -179,7 +179,7 @@ jobs:
             scripts/automatedpipeline/run_github_action_pipeline.py
           node --check scripts/automatedpipeline/build-matchup-split-data.mjs
           node --check scripts/automatedpipeline/build-elo-data.mjs
-          node --check scripts/update-thumbnail.mjs
+          node --check scripts/automatedpipeline/update-thumbnail.mjs
 
       - name: Upload prepared workspace
         uses: actions/upload-artifact@v4
@@ -591,6 +591,12 @@ jobs:
         run: |
           set -euxo pipefail
           node scripts/automatedpipeline/build-elo-data.mjs
+
+      - name: Update thumbnail
+        shell: bash
+        run: |
+          set -euxo pipefail
+          node scripts/automatedpipeline/update-thumbnail.mjs
 
       - name: Build Discord log without posting
         shell: bash
