@@ -6,20 +6,167 @@ on:
     branches: [main]
     paths:
       - 'data/**'
+      - 'index.html'
+      - 'thumbnail.png'
 
 jobs:
   notify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Build Discord payload from aliases metadata
+      - name: Read thumbnail version from index.html
+        id: thumbnail_version
         shell: bash
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import re
+          from pathlib import Path
+
+          html = Path("index.html").read_text(encoding="utf-8")
+          match = re.search(r'thumbnail\.png\?v=([^"]+)', html)
+          if not match:
+              raise SystemExit("Could not find thumbnail version in index.html.")
+
+          print(f"version={match.group(1).strip()}")
+          PY
+
+      - name: Wait for GitHub Pages build for this commit
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python - <<'PY'
           import json
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          repository = os.environ["GITHUB_REPOSITORY"]
+          expected_commit = os.environ["GITHUB_SHA"]
+          token = os.environ["GITHUB_TOKEN"]
+          url = f"https://api.github.com/repos/{repository}/pages/builds/latest"
+          headers = {
+              "Accept": "application/vnd.github+json",
+              "Authorization": f"Bearer {token}",
+              "X-GitHub-Api-Version": "2022-11-28",
+              "User-Agent": "pauper-dashboard-discord-notify",
+          }
+
+          deadline = time.time() + (20 * 60)
+          last_summary = None
+
+          while time.time() < deadline:
+              request = urllib.request.Request(url, headers=headers)
+              try:
+                  with urllib.request.urlopen(request, timeout=30) as response:
+                      payload = json.load(response)
+              except urllib.error.HTTPError as exc:
+                  details = exc.read().decode("utf-8", errors="replace")
+                  raise SystemExit(f"GitHub Pages status request failed: HTTP {exc.code} - {details}") from exc
+
+              status = str(payload.get("status") or "").strip()
+              commit = str(payload.get("commit") or "").strip()
+              error_message = str((payload.get("error") or {}).get("message") or "").strip()
+              summary = f"latest_pages_build_commit={commit or '<none>'} status={status or '<none>'}"
+
+              if summary != last_summary:
+                  print(summary)
+                  last_summary = summary
+
+              if commit == expected_commit and status == "built":
+                  print("GitHub Pages build is complete for the pushed commit.")
+                  break
+
+              if commit == expected_commit and status in {"errored", "canceled"}:
+                  raise SystemExit(error_message or f"GitHub Pages build ended with status '{status}'.")
+
+              time.sleep(10)
+          else:
+              raise SystemExit(f"Timed out waiting for GitHub Pages to build commit {expected_commit}.")
+          PY
+
+      - name: Wait for live site to serve the new thumbnail version
+        shell: bash
+        env:
+          THUMBNAIL_VERSION: ${{ steps.thumbnail_version.outputs.version }}
+        run: |
+          python - <<'PY'
+          import os
+          import time
+          import urllib.error
+          import urllib.request
+
+          version = os.environ["THUMBNAIL_VERSION"]
+          expected_token = f"thumbnail.png?v={version}"
+          expected_thumbnail_url = f"https://fnpavel.github.io/pauperdata/thumbnail.png?v={version}"
+          index_url = "https://fnpavel.github.io/pauperdata/"
+          deadline = time.time() + (10 * 60)
+
+          def fetch_text(url: str) -> str:
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "Cache-Control": "no-cache",
+                      "Pragma": "no-cache",
+                      "User-Agent": "pauper-dashboard-discord-notify",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  return response.read().decode("utf-8", errors="replace")
+
+          def fetch_status(url: str) -> int:
+              request = urllib.request.Request(
+                  url,
+                  headers={
+                      "Cache-Control": "no-cache",
+                      "Pragma": "no-cache",
+                      "User-Agent": "pauper-dashboard-discord-notify",
+                  },
+              )
+              with urllib.request.urlopen(request, timeout=30) as response:
+                  response.read(1)
+                  return response.status
+
+          while time.time() < deadline:
+              try:
+                  index_html = fetch_text(index_url)
+                  index_ready = expected_token in index_html
+                  thumbnail_status = fetch_status(expected_thumbnail_url)
+                  thumbnail_ready = thumbnail_status == 200
+              except urllib.error.HTTPError as exc:
+                  print(f"Live-site check not ready yet: HTTP {exc.code}")
+              except urllib.error.URLError as exc:
+                  print(f"Live-site check not ready yet: {exc}")
+              else:
+                  print(
+                      f"live_index_has_version={index_ready} "
+                      f"live_thumbnail_status={thumbnail_status}"
+                  )
+                  if index_ready and thumbnail_ready:
+                      print("Live site is serving the expected thumbnail version.")
+                      break
+
+              time.sleep(10)
+          else:
+              raise SystemExit(
+                  f"Timed out waiting for the live site to serve thumbnail version {version}."
+              )
+          PY
+
+      - name: Build Discord payload from aliases metadata
+        shell: bash
+        env:
+          THUMBNAIL_VERSION: ${{ steps.thumbnail_version.outputs.version }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
           from datetime import datetime
           from pathlib import Path
 
@@ -39,15 +186,21 @@ jobs:
           except ValueError as exc:
               raise SystemExit(f"Invalid last_updated_event_date in aliases.json: {event_date}") from exc
 
+          thumbnail_version = str(os.environ.get("THUMBNAIL_VERSION") or "").strip()
+          if not thumbnail_version:
+              raise SystemExit("Missing THUMBNAIL_VERSION environment variable.")
+
+          dashboard_url = f"https://fnpavel.github.io/pauperdata/?v={thumbnail_version}"
+
           if event_type.lower() == "challenge":
               message = (
                   f"Dashboard was updated with the {event_type} of {formatted_date}. "
-                  f"\nData provided by Kirblinxy.\nhttps://fnpavel.github.io/pauperdata/"
+                  f"\nData provided by Kirblinxy.\n{dashboard_url}"
               )
           else:
               message = (
                   f"Dashboard was updated with the {event_type} of {formatted_date}.\n"
-                  f"https://fnpavel.github.io/pauperdata/"
+                  f"{dashboard_url}"
               )
 
           payload = {
