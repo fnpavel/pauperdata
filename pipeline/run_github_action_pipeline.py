@@ -11,8 +11,8 @@ from pathlib import Path
 
 from pipeline_env import ManagedPipelineConfig, load_automation_settings
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PIPELINE_ENTRYPOINT = PROJECT_ROOT / "scripts" / "automatedpipeline" / "sync_drive_and_rebuild_all.py"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PIPELINE_ENTRYPOINT = PROJECT_ROOT / "pipeline" / "sync_drive_and_rebuild_all.py"
 
 
 def resolve_pipeline_command(argv: list[str]) -> list[str]:

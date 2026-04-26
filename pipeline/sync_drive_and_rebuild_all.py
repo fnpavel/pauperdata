@@ -35,7 +35,7 @@ from pipeline_common import (
 )
 
 PIPELINE_ROOT = Path(__file__).resolve().parent
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 SUMMARY_PATH = PIPELINE_ROOT / "pipeline-run-summary.json"
 EXTRACT_SCRIPT = PIPELINE_ROOT / "extract_input_csv.py"
 REBUILD_SCRIPT = PIPELINE_ROOT / "rebuild_event_matchup_data.py"
@@ -295,11 +295,11 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -316,9 +316,9 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync --yes"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --yes"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -352,13 +352,13 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --year 2026\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --month 2026-04\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --match \"18 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --latest --yes"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --year 2026\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --month 2026-04\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --match \"18 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest --yes"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -411,10 +411,10 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py list\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py list --latest\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py list --match \"18 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py list --drive --match \"18 April\""
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --latest\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --match \"18 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --drive --match \"18 April\""
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -441,10 +441,10 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py download --latest\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py download --match \"18 April '26 Pauper Challenge 32 Matchups\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py download --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\" --redownload"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --latest\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April '26 Pauper Challenge 32 Matchups\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\" --redownload"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -464,9 +464,9 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py exclude --relative-path \"2026/04 - April/17 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --relative-path \"2026/04 - April/17 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -480,8 +480,8 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py include --match \"17 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py include --match \"17 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -496,9 +496,9 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py override-date --match \"18 April\" --date 2026-04-19\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py override-date --match \"18 April\" --date 2026-04-19\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -517,8 +517,8 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -533,9 +533,9 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild --full\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -554,9 +554,9 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild-local --full\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
-            "  python .\\scripts\\automatedpipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )

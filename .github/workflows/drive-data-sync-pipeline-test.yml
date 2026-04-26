@@ -77,33 +77,33 @@ jobs:
         with:
           python-version: "3.12"
           cache: "pip"
-          cache-dependency-path: scripts/automatedpipeline/requirements.txt
+          cache-dependency-path: pipeline/requirements.txt
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           cache: npm
-          cache-dependency-path: scripts/automatedpipeline/package-lock.json
+          cache-dependency-path: pipeline/package-lock.json
 
       - name: Install Python dependencies
         shell: bash
         run: |
           set -euxo pipefail
           python -m pip install --upgrade pip
-          python -m pip install -r scripts/automatedpipeline/requirements.txt
+          python -m pip install -r pipeline/requirements.txt
 
       - name: Install Node dependencies
         shell: bash
         run: |
           set -euxo pipefail
-          npm ci --prefix scripts/automatedpipeline
+          npm ci --prefix pipeline
 
       - name: Install Playwright browser
         shell: bash
         run: |
           set -euxo pipefail
-          npx --prefix scripts/automatedpipeline playwright install --with-deps chromium
+          npx --prefix pipeline playwright install --with-deps chromium
 
       - name: Validate secrets and write config
         env:
@@ -131,7 +131,7 @@ jobs:
           print("Service account JSON parsed successfully.")
           print(f"client_email present: {bool(str(payload.get('client_email', '')).strip())}")
           print(f"project_id present: {bool(str(payload.get('project_id', '')).strip())}")
-          pipeline_root = Path("scripts/automatedpipeline")
+          pipeline_root = Path("pipeline")
           pipeline_root.mkdir(parents=True, exist_ok=True)
 
           service_account_path = pipeline_root / "github-actions-service-account.json"
@@ -145,11 +145,11 @@ jobs:
               "main_branch": os.environ.get("PIPELINE_MAIN_BRANCH", "main"),
               "commit_message_template": "chore(data): import {workbook_name}",
           }
-          Path("scripts/automatedpipeline/pipeline-config.json").write_text(
+          Path("pipeline/pipeline-config.json").write_text(
               json.dumps(config_payload, indent=2) + "\n",
               encoding="utf-8",
           )
-          print("Wrote scripts/automatedpipeline/pipeline-config.json")
+          print("Wrote pipeline/pipeline-config.json")
           PY
 
       - name: Syntax checks
@@ -157,17 +157,17 @@ jobs:
         run: |
           set -euxo pipefail
           python -m py_compile \
-            scripts/automatedpipeline/pipeline_common.py \
-            scripts/automatedpipeline/pipeline_env.py \
-            scripts/automatedpipeline/import-google-drive-folder.py \
-            scripts/automatedpipeline/extract_input_csv.py \
-            scripts/automatedpipeline/rebuild_event_matchup_data.py \
-            scripts/automatedpipeline/publish_pipeline_changes.py \
-            scripts/automatedpipeline/sync_drive_and_rebuild_all.py \
-            scripts/automatedpipeline/run_github_action_pipeline.py
-          node --check scripts/automatedpipeline/build-matchup-split-data.mjs
-          node --check scripts/automatedpipeline/build-elo-data.mjs
-          node --check scripts/automatedpipeline/update-thumbnail.mjs
+            pipeline/pipeline_common.py \
+            pipeline/pipeline_env.py \
+            pipeline/import-google-drive-folder.py \
+            pipeline/extract_input_csv.py \
+            pipeline/rebuild_event_matchup_data.py \
+            pipeline/publish_pipeline_changes.py \
+            pipeline/sync_drive_and_rebuild_all.py \
+            pipeline/run_github_action_pipeline.py
+          node --check pipeline/build-matchup-split-data.mjs
+          node --check pipeline/build-elo-data.mjs
+          node --check pipeline/update-thumbnail.mjs
 
       - name: Print workflow context
         if: ${{ inputs.run_inspect }}
@@ -177,8 +177,8 @@ jobs:
           echo "Running inspect phase"
           echo "drive_list_command=${{ inputs.drive_list_command }}"
           echo "local_list_command=${{ inputs.local_list_command }}"
-          ls -la scripts/automatedpipeline
-          cat scripts/automatedpipeline/pipeline-config.json
+          ls -la pipeline
+          cat pipeline/pipeline-config.json
 
       - name: Run Drive inspect
         if: ${{ inputs.run_inspect }}
@@ -191,7 +191,7 @@ jobs:
           import os, shlex, subprocess, sys
           args = shlex.split(os.environ["PIPELINE_ARGS"])
           print(f"Drive inspect args: {args}")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
           PY
 
       - name: Run local inspect
@@ -205,7 +205,7 @@ jobs:
           import os, shlex, subprocess, sys
           args = shlex.split(os.environ["PIPELINE_ARGS"])
           print(f"Local inspect args: {args}")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
           PY
 
       - name: Run download
@@ -221,7 +221,7 @@ jobs:
           print(f"Download args: {args}")
           if not args or args[0] != "download":
               raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
           PY
 
       - name: Print state after download
@@ -229,8 +229,8 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          test -f scripts/automatedpipeline/pipeline-state.json && cat scripts/automatedpipeline/pipeline-state.json || echo "No pipeline-state.json"
-          test -f scripts/automatedpipeline/pipeline-run-summary.json && cat scripts/automatedpipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
+          test -f pipeline/pipeline-state.json && cat pipeline/pipeline-state.json || echo "No pipeline-state.json"
+          test -f pipeline/pipeline-run-summary.json && cat pipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
           find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
 
       - name: Run extract
@@ -238,15 +238,15 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          python scripts/automatedpipeline/extract_input_csv.py
+          python pipeline/extract_input_csv.py
 
       - name: Print extracted CSVs
         if: ${{ inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
         shell: bash
         run: |
           set -euxo pipefail
-          test -f scripts/automatedpipeline/pipeline-state.json && cat scripts/automatedpipeline/pipeline-state.json || true
-          find scripts/automatedpipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
+          test -f pipeline/pipeline-state.json && cat pipeline/pipeline-state.json || true
+          find pipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
 
       - name: Run rebuild
         if: ${{ inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build }}
@@ -254,9 +254,9 @@ jobs:
         run: |
           set -euxo pipefail
           if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
+            python pipeline/rebuild_event_matchup_data.py --full-rebuild-online
           else
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py
+            python pipeline/rebuild_event_matchup_data.py
           fi
 
       - name: Print rebuild outputs
@@ -288,7 +288,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          node scripts/automatedpipeline/build-matchup-split-data.mjs
+          node pipeline/build-matchup-split-data.mjs
 
       - name: Print matchup split output
         if: ${{ inputs.run_matchup_split || inputs.run_elo_build }}
@@ -303,7 +303,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          node scripts/automatedpipeline/build-elo-data.mjs
+          node pipeline/build-elo-data.mjs
 
       - name: Print Elo output
         if: ${{ inputs.run_elo_build }}
@@ -317,7 +317,7 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: automatedpipeline-final-workspace
+          name: pipeline-final-workspace
           path: .
           if-no-files-found: error
           retention-days: 1

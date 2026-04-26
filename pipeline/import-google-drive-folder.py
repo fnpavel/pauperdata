@@ -34,7 +34,7 @@ except ImportError as exc:  # pragma: no cover - dependency guidance
     ) from exc
 
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SOURCE_ROOT = PROJECT_ROOT / "dataGoogleDrive"
 DEFAULT_CSV_ROOT = PROJECT_ROOT / "data" / "staging" / "google-drive-input"
 DEFAULT_MATCHUP_CSV_ROOT = PROJECT_ROOT / "data" / "staging" / "google-drive-matchup-input"
@@ -43,8 +43,8 @@ DEFAULT_EVENT_DATA_ROOT = PROJECT_ROOT / "data" / "events"
 DEFAULT_SUMMARY_PATH = PROJECT_ROOT / "data" / "import-summary.json"
 DEFAULT_MATCHUP_DATA_ROOT = PROJECT_ROOT / "data" / "matchups"
 LEGACY_MATCHUP_JSON_PATH = PROJECT_ROOT / "data" / "matchups.json"
-DEFAULT_NORMALIZED_BUILDER = PROJECT_ROOT / "scripts" / "automatedpipeline" / "build-normalized-dataset.mjs"
-DEFAULT_PIPELINE_OVERRIDES_PATH = PROJECT_ROOT / "scripts" / "automatedpipeline" / "pipeline-overrides.json"
+DEFAULT_NORMALIZED_BUILDER = PROJECT_ROOT / "pipeline" / "build-normalized-dataset.mjs"
+DEFAULT_PIPELINE_OVERRIDES_PATH = PROJECT_ROOT / "pipeline" / "pipeline-overrides.json"
 
 MONTH_NUMBERS = {
     "January": "01",
@@ -1094,7 +1094,7 @@ def write_matchup_split_payload(
 
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "generated_from": "scripts/automatedpipeline/import-google-drive-folder.py",
+        "generated_from": "pipeline/import-google-drive-folder.py",
         "last_updated_date": last_updated_date,
         "event_count": len(events),
         "round_count": len(rounds),
@@ -1178,7 +1178,7 @@ def write_event_split_payload(event_data_root: Path, last_updated_date: str, row
 
     manifest = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
-        "generated_from": "scripts/automatedpipeline/import-google-drive-folder.py",
+        "generated_from": "pipeline/import-google-drive-folder.py",
         "last_updated_date": last_updated_date,
         "row_count": len(rows),
         "years": years,

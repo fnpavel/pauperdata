@@ -10,8 +10,8 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-PIPELINE_ROOT = PROJECT_ROOT / "scripts" / "automatedpipeline"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+PIPELINE_ROOT = PROJECT_ROOT / "pipeline"
 PIPELINE_CONFIG_PATH = PIPELINE_ROOT / "pipeline-config.json"
 
 

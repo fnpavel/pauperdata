@@ -19,8 +19,9 @@ from pipeline_common import (
     save_state,
 )
 
-SUMMARY_PATH = Path(__file__).resolve().parents[2] / "data" / "import-summary.json"
-ALIASES_PATH = Path(__file__).resolve().parents[2] / "data" / "aliases.json"
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+SUMMARY_PATH = PROJECT_ROOT / "data" / "import-summary.json"
+ALIASES_PATH = PROJECT_ROOT / "data" / "aliases.json"
 PIPELINE_ROOT = Path(__file__).resolve().parent
 REBUILD_STAGING_ROOT = PIPELINE_ROOT / "output" / "rebuild-staging"
 REBUILD_INPUT_CSV_ROOT = REBUILD_STAGING_ROOT / "google-drive-input"

@@ -8,6 +8,7 @@
 /scripts
 /.github
 /oldPython
+/pipeline
 
 # Keep this file itself.
 !/.gitignore
@@ -15,20 +16,20 @@
 !/.github/workflows/
 !/.github/workflows/discord-notify.yml
 !/.github/workflows/drive-data-sync-pipeline.yml
+!/.github/workflows/drive-data-sync-pipeline-test.yml
 
-!/scripts/
-/scripts/**
-!/scripts/automatedpipeline/
-!/scripts/automatedpipeline/**
-/scripts/automatedpipeline/__pycache__/
-/scripts/automatedpipeline/*.pyc
-/scripts/automatedpipeline/node_modules
-/scripts/automatedpipeline/output/
-/scripts/automatedpipeline/github-actions-service-account.json
-/scripts/automatedpipeline/pipeline-config.json
-/scripts/automatedpipeline/pipeline-state.json
-/scripts/automatedpipeline/pipeline-run-summary.json
-/scripts/automatedpipeline/pipeline-watch-state.json
+# Keep the pipeline workflow
+!/pipeline/
+!/pipeline/**
+/pipeline/__pycache__/
+/pipeline/*.pyc
+/pipeline/node_modules
+/pipeline/output/
+/pipeline/github-actions-service-account.json
+/pipeline/pipeline-config.json
+/pipeline/pipeline-state.json
+/pipeline/pipeline-run-summary.json
+/pipeline/pipeline-watch-state.json
 
 # Keep the app entrypoint.
 !/index.html

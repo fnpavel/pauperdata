@@ -13,7 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
 PIPELINE_ROOT = Path(__file__).resolve().parent
 CONFIG_PATH = PIPELINE_ROOT / "pipeline-config.json"
 STATE_PATH = PIPELINE_ROOT / "pipeline-state.json"
@@ -21,7 +21,7 @@ PIPELINE_OVERRIDES_PATH = PIPELINE_ROOT / "pipeline-overrides.json"
 DOWNLOAD_ROOT = PIPELINE_ROOT / "output" / "downloaded-workbooks"
 EXTRACTED_ROOT = PIPELINE_ROOT / "output" / "extracted-csv"
 ARCHIVE_ROOT = PROJECT_ROOT / "dataGoogleDrive"
-IMPORT_SCRIPT = PROJECT_ROOT / "scripts" / "automatedpipeline" / "import-google-drive-folder.py"
+IMPORT_SCRIPT = PROJECT_ROOT / "pipeline" / "import-google-drive-folder.py"
 ACTIVE_DRIVE_YEAR_FOLDER = "2026"
 
 GOOGLE_FOLDER_MIME = "application/vnd.google-apps.folder"
@@ -303,7 +303,7 @@ def build_drive_service(credentials_path: Path):
         raise SystemExit(
             "Google Drive libraries are missing.\n"
             "Install them with:\n"
-            "  python -m pip install -r .\\scripts\\automatedpipeline\\requirements.txt"
+            "  python -m pip install -r .\\pipeline\\requirements.txt"
         ) from exc
 
     if not credentials_path.exists():
@@ -480,7 +480,7 @@ def download_drive_file(service, drive_file: DriveFile, output_path: Path) -> No
         raise SystemExit(
             "Google Drive libraries are missing.\n"
             "Install them with:\n"
-            "  python -m pip install -r .\\scripts\\automatedpipeline\\requirements.txt"
+            "  python -m pip install -r .\\pipeline\\requirements.txt"
         ) from exc
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
