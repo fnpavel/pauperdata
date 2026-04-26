@@ -4,37 +4,37 @@ on:
   workflow_dispatch:
     inputs:
       run_inspect:
-        description: Run inspect job
+        description: Run inspect phase
         required: false
         type: boolean
         default: true
       run_download:
-        description: Run download job
+        description: Run download phase
         required: false
         type: boolean
         default: false
       run_extract:
-        description: Run extract job
+        description: Run extract phase
         required: false
         type: boolean
         default: false
       run_rebuild:
-        description: Run rebuild job
+        description: Run rebuild phase
         required: false
         type: boolean
         default: false
       run_matchup_split:
-        description: Run matchup split job
+        description: Run matchup split phase
         required: false
         type: boolean
         default: false
       run_elo_build:
-        description: Run Elo build job
+        description: Run Elo build phase
         required: false
         type: boolean
         default: false
       run_discord_log:
-        description: Run Discord log job
+        description: Run Discord log phase
         required: false
         type: boolean
         default: false
@@ -67,9 +67,9 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  setup:
+  pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
 
     steps:
       - name: Check out repository
@@ -182,38 +182,19 @@ jobs:
           node --check scripts/automatedpipeline/build-elo-data.mjs
           node --check scripts/automatedpipeline/update-thumbnail.mjs
 
-      - name: Upload prepared workspace
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: |
-            .
-          if-no-files-found: error
-          retention-days: 1
-
-  inspect:
-    if: ${{ inputs.run_inspect }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
       - name: Print workflow context
+        if: ${{ inputs.run_inspect }}
         shell: bash
         run: |
           set -euxo pipefail
-          echo "Running inspect job"
+          echo "Running inspect phase"
           echo "drive_list_command=${{ inputs.drive_list_command }}"
           echo "local_list_command=${{ inputs.local_list_command }}"
           ls -la scripts/automatedpipeline
           cat scripts/automatedpipeline/pipeline-config.json
 
       - name: Run Drive inspect
+        if: ${{ inputs.run_inspect }}
         env:
           PIPELINE_ARGS: ${{ inputs.drive_list_command }}
         shell: bash
@@ -227,6 +208,7 @@ jobs:
           PY
 
       - name: Run local inspect
+        if: ${{ inputs.run_inspect }}
         env:
           PIPELINE_ARGS: ${{ inputs.local_list_command }}
         shell: bash
@@ -239,19 +221,8 @@ jobs:
           subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
           PY
 
-  download:
-    if: ${{ inputs.run_download }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
       - name: Run download
+        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         env:
           PIPELINE_ARGS: ${{ inputs.download_command }}
         shell: bash
@@ -267,6 +238,7 @@ jobs:
           PY
 
       - name: Print state after download
+        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -274,96 +246,23 @@ jobs:
           test -f scripts/automatedpipeline/pipeline-run-summary.json && cat scripts/automatedpipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
           find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
 
-      - name: Upload workspace after download
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-after-download
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-
-  extract:
-    if: ${{ inputs.run_extract }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
-      - name: Run download prerequisite
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Extract job download prerequisite args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
-
       - name: Run extract
+        if: ${{ inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           python scripts/automatedpipeline/extract_input_csv.py
 
       - name: Print extracted CSVs
+        if: ${{ inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           test -f scripts/automatedpipeline/pipeline-state.json && cat scripts/automatedpipeline/pipeline-state.json || true
           find scripts/automatedpipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
 
-      - name: Upload workspace after extract
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-after-extract
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-
-  rebuild:
-    if: ${{ inputs.run_rebuild }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 45
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
-      - name: Run download prerequisite
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Rebuild job download prerequisite args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
-
-      - name: Run extract prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python scripts/automatedpipeline/extract_input_csv.py
-
       - name: Run rebuild
+        if: ${{ inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -374,6 +273,7 @@ jobs:
           fi
 
       - name: Print rebuild outputs
+        if: ${{ inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -396,217 +296,62 @@ jobs:
           PY
           find data/matchups -maxdepth 2 -type f | sort || true
 
-      - name: Upload workspace after rebuild
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-after-rebuild
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-
-  matchup_split:
-    if: ${{ inputs.run_matchup_split }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
-      - name: Run download prerequisite
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Matchup split job download prerequisite args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
-
-      - name: Run extract prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python scripts/automatedpipeline/extract_input_csv.py
-
-      - name: Run rebuild prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
-          else
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py
-          fi
-
       - name: Run matchup split builder
+        if: ${{ inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           node scripts/automatedpipeline/build-matchup-split-data.mjs
 
       - name: Print matchup split output
+        if: ${{ inputs.run_matchup_split || inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           find data/matchups -maxdepth 2 -type f | sort || true
           test -f data/matchups/manifest.json && cat data/matchups/manifest.json || true
 
-      - name: Upload workspace after matchup split
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-after-matchup-split
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-
-  elo_build:
-    if: ${{ inputs.run_elo_build }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
-      - name: Run download prerequisite
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Elo job download prerequisite args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
-
-      - name: Run extract prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python scripts/automatedpipeline/extract_input_csv.py
-
-      - name: Run rebuild prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
-          else
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py
-          fi
-
-      - name: Run matchup split prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          node scripts/automatedpipeline/build-matchup-split-data.mjs
-
       - name: Run Elo builder
+        if: ${{ inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           node scripts/automatedpipeline/build-elo-data.mjs
 
       - name: Print Elo output
+        if: ${{ inputs.run_elo_build || inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           find data/elo-data -maxdepth 2 -type f | sort || true
           test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
 
-      - name: Upload workspace after Elo build
-        uses: actions/upload-artifact@v4
-        with:
-          name: automatedpipeline-after-elo-build
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-
-  discord_log:
-    if: ${{ inputs.run_discord_log }}
-    needs: setup
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: automatedpipeline-workspace
-          path: .
-
-      - name: Run download prerequisite
-        env:
-          PIPELINE_ARGS: ${{ inputs.download_command }}
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Discord log job download prerequisite args: {args}")
-          if not args or args[0] != "download":
-              raise SystemExit("download_command must start with 'download'.")
-          subprocess.run([sys.executable, "scripts/automatedpipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
-
-      - name: Run extract prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          python scripts/automatedpipeline/extract_input_csv.py
-
-      - name: Run rebuild prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          if [ "${{ inputs.rebuild_mode }}" = "full" ]; then
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py --full-rebuild-online
-          else
-            python scripts/automatedpipeline/rebuild_event_matchup_data.py
-          fi
-
-      - name: Run matchup split prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          node scripts/automatedpipeline/build-matchup-split-data.mjs
-
-      - name: Run Elo prerequisite
-        shell: bash
-        run: |
-          set -euxo pipefail
-          node scripts/automatedpipeline/build-elo-data.mjs
-
       - name: Update thumbnail
+        if: ${{ inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           node scripts/automatedpipeline/update-thumbnail.mjs
 
       - name: Build Discord log without posting
+        if: ${{ inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           python scripts/automatedpipeline/build_discord_update_log.py
 
       - name: Print Discord log output
+        if: ${{ inputs.run_discord_log }}
         shell: bash
         run: |
           set -euxo pipefail
           test -f scripts/automatedpipeline/output/discord-data-update-log.json && cat scripts/automatedpipeline/output/discord-data-update-log.json || echo "No discord log generated"
+
+      - name: Upload final workspace
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatedpipeline-final-workspace
+          path: .
+          if-no-files-found: error
+          retention-days: 1
