@@ -269,6 +269,13 @@ jobs:
           cat pipeline/processed-drive-workbooks.json || true
           echo "Git status after sync:"
           git status --short
+    
+     # - name: Publish generated changes
+     #   if: ${{ inputs.run_publish }}
+     #   shell: bash
+     #   run: |
+     #     set -euxo pipefail
+     #     python pipeline/publish_pipeline_changes.py
 
       - name: Test publish generated changes to current branch
         if: ${{ inputs.run_publish }}
