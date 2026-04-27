@@ -250,14 +250,20 @@ jobs:
 
       - name: Send message to Discord
         shell: bash
+        env:
+          DISCORD_WEBHOOK_1: ${{ secrets.DISCORD_WEBHOOK_1 }}
+          DISCORD_WEBHOOK_2: ${{ secrets.DISCORD_WEBHOOK_2 }}
         run: |
-          echo "$DISCORD_WEBHOOKS" | while IFS= read -r URL; do
+          WEBHOOKS=(
+            "$DISCORD_WEBHOOK_1"
+            "$DISCORD_WEBHOOK_2"
+          )
+
+          for URL in "${WEBHOOKS[@]}"; do
             [ -z "$URL" ] && continue
 
             curl --fail \
-                 -H "Content-Type: application/json" \
-                 -d @payload.json \
-                 "$URL"
+                -H "Content-Type: application/json" \
+                -d @payload.json \
+                "$URL"
           done
-        env:
-          DISCORD_WEBHOOKS: ${{ secrets.DISCORD_WEBHOOKS }}
