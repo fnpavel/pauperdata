@@ -266,6 +266,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+      - name: Debug publish script version
+        run: |
+          set -euxo pipefail
+          grep -n "INDEX_COMMIT_PATH\|THUMBNAIL_COMMIT_PATH\|commit_paths" pipeline/publish_pipeline_changes.py || true
+          git branch --show-current
+          git log -1 --oneline
+
       - name: Publish generated changes
         if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
         shell: bash
