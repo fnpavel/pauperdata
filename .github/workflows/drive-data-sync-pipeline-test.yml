@@ -1,4 +1,4 @@
-name: Drive Data Sync Pipeline Step Test
+name: Drive Data Sync Pipeline
 
 on:
   workflow_dispatch:
@@ -41,29 +41,20 @@ on:
         description: Local inspect command
         required: false
         default: list --latest --limit 10
-      download_command:
-        description: Legacy input; ignored by the manifest sync test flow
-        required: false
-        default: download --latest
-      rebuild_mode:
-        description: Legacy input; ignored by the manifest sync test flow
-        required: false
-        type: choice
-        default: incremental
-        options:
-          - incremental
-          - full
       run_publish:
         description: Commit and push generated changes
         required: false
         type: boolean
         default: false
+  #schedule:
+  #  - cron: "*/30 * * * 5,6,0,1"  
+  #  - cron: "0 */3 * * 2-4"
 
 permissions:
   contents: write
 
 concurrency:
-  group: drive-data-sync-pipeline-step-test
+  group: drive-data-sync-pipeline
   cancel-in-progress: false
 
 jobs:
@@ -76,6 +67,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: data-updates
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -214,14 +206,14 @@ jobs:
           PY
 
       - name: Run full manifest sync
-        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
           python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish
 
       - name: Print sync outputs
-        if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -251,19 +243,8 @@ jobs:
           find data/elo-data -maxdepth 2 -type f | sort || true
           test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
 
-      - name: Upload final workspace
-        if: ${{ !env.ACT }}
-        uses: actions/upload-artifact@v4
-      # if: ${{ always() }}
-      # uses: actions/upload-artifact@v4
-        with:
-          name: pipeline-final-workspace
-          path: .
-          if-no-files-found: error
-          retention-days: 1
-      
       - name: Debug manifest and git status after sync
-        if: ${{ inputs.run_publish }}
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -271,29 +252,31 @@ jobs:
           cat pipeline/processed-drive-workbooks.json || true
           echo "Git status after sync:"
           git status --short
-    
-     # - name: Publish generated changes
-     #   if: ${{ inputs.run_publish }}
-     #   shell: bash
-     #   run: |
-     #     set -euxo pipefail
-     #     python pipeline/publish_pipeline_changes.py
 
-      - name: Test publish generated changes to current branch
-        if: ${{ inputs.run_publish }}
+      - name: Configure git identity
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
-
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-          git status --short
+      - name: Publish generated changes
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python pipeline/publish_pipeline_changes.py
 
-          if [ -n "$(git status --porcelain)" ]; then
-            git add data index.html thumbnail.png pipeline/processed-drive-workbooks.json
-            git commit -m "test: publish generated pipeline changes"
-            git push origin HEAD:${GITHUB_REF_NAME}
-          else
-            echo "No changes to publish."
-          fi
+      - name: Upload debug artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-debug-artifacts
+          path: |
+            pipeline/pipeline-state.json
+            pipeline/pipeline-run-summary.json
+            data/import-summary.json
+            pipeline/output/
+          if-no-files-found: ignore
+          retention-days: 7
