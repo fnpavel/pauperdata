@@ -2,8 +2,6 @@ name: Deploy Pages and Notify Discord
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
 
 jobs:
   changes:
