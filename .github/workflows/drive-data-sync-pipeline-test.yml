@@ -46,6 +46,11 @@ on:
         required: false
         type: boolean
         default: false
+      upload_debug_artifact:
+        description: Upload generated outputs for inspection
+        required: false
+        type: boolean
+        default: false
   #schedule:
   #  - cron: "*/30 * * * 5,6,0,1"  
   #  - cron: "0 */3 * * 2-4"
@@ -269,7 +274,7 @@ jobs:
           python pipeline/publish_pipeline_changes.py
 
       - name: Upload debug artifacts
-        if: ${{ failure() }}
+        if: ${{ failure() || inputs.upload_debug_artifact }}
         uses: actions/upload-artifact@v4
         with:
           name: pipeline-debug-artifacts
