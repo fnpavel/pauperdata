@@ -20,7 +20,7 @@ from pipeline_common import (
 )
 
 THUMBNAIL_COMMIT_PATH = PROJECT_ROOT / "thumbnail.png"
-
+INDEX_COMMIT_PATH = PROJECT_ROOT / "index.html"
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Commit the generated data update and publish it to git.")
@@ -38,7 +38,7 @@ def main() -> int:
     settings = load_settings()
     state = load_state()
     commit_paths = [
-        str(path.relative_to(PROJECT_ROOT)) for path in [*DEFAULT_COMMIT_PATHS, THUMBNAIL_COMMIT_PATH]
+        str(path.relative_to(PROJECT_ROOT)) for path in [*DEFAULT_COMMIT_PATHS, THUMBNAIL_COMMIT_PATH, INDEX_COMMIT_PATH]
     ]
 
     branch = current_branch()
