@@ -12,27 +12,27 @@ on:
         description: Run download phase
         required: false
         type: boolean
-        default: false
+        default: true
       run_extract:
         description: Run extract phase
         required: false
         type: boolean
-        default: false
+        default: true
       run_rebuild:
         description: Run rebuild phase
         required: false
         type: boolean
-        default: false
+        default: true
       run_matchup_split:
         description: Run matchup split phase
         required: false
         type: boolean
-        default: false
+        default: true
       run_elo_build:
         description: Run Elo build phase
         required: false
         type: boolean
-        default: false
+        default: true
       drive_list_command:
         description: Drive inspect command
         required: false
@@ -218,7 +218,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          python pipeline/sync_drive_and_rebuild_all.py sync --yes
+          python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish
 
       - name: Print sync outputs
         if: ${{ inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
@@ -252,8 +252,10 @@ jobs:
           test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
 
       - name: Upload final workspace
-        if: ${{ always() }}
+        if: ${{ !env.ACT }}
         uses: actions/upload-artifact@v4
+      # if: ${{ always() }}
+      # uses: actions/upload-artifact@v4
         with:
           name: pipeline-final-workspace
           path: .

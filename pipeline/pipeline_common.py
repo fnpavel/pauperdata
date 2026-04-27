@@ -7,6 +7,9 @@ import json
 import os
 import re
 import subprocess
+import socket
+import ssl
+import time
 from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
@@ -486,6 +489,7 @@ def download_drive_file(service, drive_file: DriveFile, output_path: Path) -> No
         ) from exc
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
+
     if drive_file.mime_type == GOOGLE_SHEETS_MIME:
         request = service.files().export_media(fileId=drive_file.file_id, mimeType=XLSX_MIME)
     else:
@@ -494,9 +498,29 @@ def download_drive_file(service, drive_file: DriveFile, output_path: Path) -> No
     with output_path.open("wb") as handle:
         downloader = MediaIoBaseDownload(handle, request)
         done = False
+        consecutive_failures = 0
+        max_consecutive_failures = 5
+
         while not done:
-            record_drive_request("media_download_requests")
-            _, done = downloader.next_chunk()
+            try:
+                record_drive_request("media_download_requests")
+                _, done = downloader.next_chunk()
+                consecutive_failures = 0
+
+            except (TimeoutError, socket.timeout, ssl.SSLError) as exc:
+                consecutive_failures += 1
+
+                if consecutive_failures >= max_consecutive_failures:
+                    raise
+
+                wait_seconds = min(60, 5 * consecutive_failures)
+                print(
+                    f"Drive download failed during chunk for {drive_file.export_name}: "
+                    f"{type(exc).__name__}. "
+                    f"Retrying {consecutive_failures}/{max_consecutive_failures} "
+                    f"in {wait_seconds}s..."
+                )
+                time.sleep(wait_seconds)
 
     timestamp = drive_file.modified_time.timestamp()
     os.utime(output_path, (timestamp, timestamp))

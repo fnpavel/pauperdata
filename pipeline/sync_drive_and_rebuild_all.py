@@ -340,6 +340,14 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Proceed without prompting if a selected workbook resolves to the current latest online event.",
     )
+    sync_parser.add_argument(
+        "--skip-publish",
+        action="store_true",
+        help=(
+            "Run the full sync, extraction, rebuild, thumbnail refresh, and manifest update without "
+            "switching branches or publishing git changes."
+        ),
+    )
 
     sync_local_parser = subparsers.add_parser(
         "sync-local",
@@ -1418,7 +1426,8 @@ def run_sync_command(args: argparse.Namespace) -> int:
             log("No unprocessed Drive workbooks were found.")
         return 0
 
-    prepare_data_updates_branch(settings)
+    if not args.skip_publish:
+        prepare_data_updates_branch(settings)
 
     log("Extracting CSVs for the newly synced workbooks...")
     run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
@@ -1442,6 +1451,11 @@ def run_sync_command(args: argparse.Namespace) -> int:
         if normalize_relative_path(item.get("relative_path"))
     )
     save_processed_drive_workbooks_manifest(processed_paths)
+
+    if args.skip_publish:
+        log("Sync and rebuild complete.")
+        log("Skipped branch switching and git publish because --skip-publish was provided.")
+        return 0
 
     publish_pipeline_changes()
 

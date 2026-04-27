@@ -1,6 +1,10 @@
 # Ignore everything by default at the repo root.
 /*
 
+#Explicitly ignoring the docker related files
+.secrets
+.act-cache/
+
 # Explicitly ignore raw source archives/workbooks.
 /data/staging
 
