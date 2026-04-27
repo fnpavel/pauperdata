@@ -17,7 +17,9 @@
 /* Elo Leaderboards do not use the event data-quality dataset, so the related
    status and toggle are hidden there instead of suggesting a fake filter. */
 body[data-top-mode="leaderboard"] .analysis-quality-status-chip,
-body[data-top-mode="leaderboard"] .header-analysis-filter-toggle {
+body[data-top-mode="leaderboard"] .header-analysis-filter-toggle,
+body[data-top-mode="about"] .analysis-quality-status-chip,
+body[data-top-mode="about"] .header-analysis-filter-toggle {
   display: none;
 }
 
@@ -3305,7 +3307,7 @@ html[data-theme="light"] .theme-toggle-indicator::after {
 
 /* After the header scrolls away, the same Data Quality toggle becomes a compact
    fixed bubble: emoji + switch only, no extra text. */
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle {
   position: fixed;
   top: 14px;
   right: max(14px, calc((100vw - 1200px) / 2 + 20px));
@@ -3324,16 +3326,16 @@ body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .head
   box-shadow: 0 14px 30px var(--shadow-color);
 }
 
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle .analysis-filter-toggle-copy {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle .analysis-filter-toggle-copy {
   display: none;
 }
 
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle .analysis-filter-toggle-emoji {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle .analysis-filter-toggle-emoji {
   display: inline-flex;
   align-items: center;
 }
 
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle .analysis-filter-toggle-indicator {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle .analysis-filter-toggle-indicator {
   margin-top: 0;
 }
 
@@ -3380,12 +3382,12 @@ body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .head
   z-index: 30;
 }
 
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle.analysis-filter-tooltip::after {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle.analysis-filter-tooltip::after {
   top: calc(100% + 10px);
   bottom: auto;
 }
 
-body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]) .header-analysis-filter-toggle.analysis-filter-tooltip::before {
+body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([data-top-mode="about"]) .header-analysis-filter-toggle.analysis-filter-tooltip::before {
   top: calc(100% + 2px);
   bottom: auto;
   border-top-color: transparent;

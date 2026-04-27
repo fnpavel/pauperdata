@@ -6,7 +6,7 @@ import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performa
 import { triggerUpdateAnimation, updateElementHTML } from '../utils/dom.js';
 import { calculatePlayerStats } from '../utils/data-cards.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
-import { formatDate, formatEventName } from '../utils/format.js';
+import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 import { isUnknownHeavyBelowTop32FilterEnabled } from '../utils/analysis-data.js';
 import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
@@ -739,7 +739,7 @@ function buildPlayerDeckGroups(data = currentPlayerAnalysisRows) {
       const sortedRows = sortPlayerAnalysisRows(rows);
       const wins = sortedRows.reduce((sum, row) => sum + (Number(row.Wins) || 0), 0);
       const losses = sortedRows.reduce((sum, row) => sum + (Number(row.Losses) || 0), 0);
-      const eventCount = new Set(sortedRows.map(row => `${row.Date || ''}::${row.Event || ''}`)).size;
+      const eventCount = countUniqueEvents(sortedRows);
       const averageFinish = sortedRows.reduce((sum, row) => sum + (Number(row.Rank) || 0), 0) / sortedRows.length;
 
       return {

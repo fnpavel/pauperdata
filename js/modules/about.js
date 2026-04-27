@@ -39,6 +39,7 @@ export function setupAboutListeners() {
     aboutButton.addEventListener('click', () => {
       console.log('Showing About section...');
       hideDashboardSections();
+      document.body.dataset.topMode = 'about';
       if (aboutSection) {
         aboutSection.style.display = 'block';
       }

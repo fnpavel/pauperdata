@@ -1,6 +1,10 @@
 # Ignore everything by default at the repo root.
 /*
 
+#Explicitly ignoring the docker related files
+.secrets
+.act-cache/
+
 # Explicitly ignore raw source archives/workbooks.
 /data/staging
 
@@ -8,12 +12,28 @@
 /scripts
 /.github
 /oldPython
+/pipeline
 
 # Keep this file itself.
 !/.gitignore
 !/.github/
 !/.github/workflows/
 !/.github/workflows/discord-notify.yml
+!/.github/workflows/drive-data-sync-pipeline.yml
+!/.github/workflows/drive-data-sync-pipeline-test.yml
+
+# Keep the pipeline workflow
+!/pipeline/
+!/pipeline/**
+/pipeline/__pycache__/
+/pipeline/*.pyc
+/pipeline/node_modules
+/pipeline/output/
+/pipeline/github-actions-service-account.json
+/pipeline/pipeline-config.json
+/pipeline/pipeline-state.json
+/pipeline/pipeline-run-summary.json
+/pipeline/pipeline-watch-state.json
 
 # Keep the app entrypoint.
 !/index.html

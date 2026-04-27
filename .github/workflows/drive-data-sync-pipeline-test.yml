@@ -1,0 +1,282 @@
+name: Drive Data Sync Pipeline
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_inspect:
+        description: Run inspect phase
+        required: false
+        type: boolean
+        default: true
+      run_download:
+        description: Run download phase
+        required: false
+        type: boolean
+        default: true
+      run_extract:
+        description: Run extract phase
+        required: false
+        type: boolean
+        default: true
+      run_rebuild:
+        description: Run rebuild phase
+        required: false
+        type: boolean
+        default: true
+      run_matchup_split:
+        description: Run matchup split phase
+        required: false
+        type: boolean
+        default: true
+      run_elo_build:
+        description: Run Elo build phase
+        required: false
+        type: boolean
+        default: true
+      drive_list_command:
+        description: Drive inspect command
+        required: false
+        default: list --drive --limit 10
+      local_list_command:
+        description: Local inspect command
+        required: false
+        default: list --latest --limit 10
+      run_publish:
+        description: Commit and push generated changes
+        required: false
+        type: boolean
+        default: false
+  #schedule:
+  #  - cron: "*/30 * * * 5,6,0,1"  
+  #  - cron: "0 */3 * * 2-4"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: drive-data-sync-pipeline
+  cancel-in-progress: false
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: data-updates
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+          cache-dependency-path: pipeline/requirements.txt
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: pipeline/package-lock.json
+
+      - name: Install Python dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r pipeline/requirements.txt
+
+      - name: Install Node dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npm ci --prefix pipeline
+
+      - name: Install Playwright browser
+        shell: bash
+        run: |
+          set -euxo pipefail
+          npx --prefix pipeline playwright install --with-deps chromium
+
+      - name: Validate secrets and write config
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          service_account = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
+          drive_folder_id = os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "").strip()
+          if not service_account:
+              raise SystemExit("Missing GOOGLE_SERVICE_ACCOUNT_JSON secret.")
+          if not drive_folder_id:
+              raise SystemExit("Missing GOOGLE_DRIVE_FOLDER_ID secret.")
+
+          payload = json.loads(service_account)
+          print("Service account JSON parsed successfully.")
+          print(f"client_email present: {bool(str(payload.get('client_email', '')).strip())}")
+          print(f"project_id present: {bool(str(payload.get('project_id', '')).strip())}")
+          pipeline_root = Path("pipeline")
+          pipeline_root.mkdir(parents=True, exist_ok=True)
+
+          service_account_path = pipeline_root / "github-actions-service-account.json"
+          service_account_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+          config_payload = {
+              "credentials_path": str(service_account_path.resolve()),
+              "drive_folder_id": drive_folder_id,
+              "remote": os.environ.get("PIPELINE_REMOTE", "origin"),
+              "data_branch": os.environ.get("PIPELINE_DATA_BRANCH", "data-updates"),
+              "main_branch": os.environ.get("PIPELINE_MAIN_BRANCH", "main"),
+              "commit_message_template": "chore(data): import {workbook_name}",
+          }
+          Path("pipeline/pipeline-config.json").write_text(
+              json.dumps(config_payload, indent=2) + "\n",
+              encoding="utf-8",
+          )
+          print("Wrote pipeline/pipeline-config.json")
+          PY
+
+      - name: Syntax checks
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m py_compile \
+            pipeline/pipeline_common.py \
+            pipeline/pipeline_env.py \
+            pipeline/import-google-drive-folder.py \
+            pipeline/extract_input_csv.py \
+            pipeline/rebuild_event_matchup_data.py \
+            pipeline/publish_pipeline_changes.py \
+            pipeline/sync_drive_and_rebuild_all.py \
+            pipeline/run_github_action_pipeline.py
+          node --check pipeline/build-matchup-split-data.mjs
+          node --check pipeline/build-elo-data.mjs
+          node --check pipeline/update-thumbnail.mjs
+
+      - name: Print workflow context
+        if: ${{ inputs.run_inspect }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "Running inspect phase"
+          echo "drive_list_command=${{ inputs.drive_list_command }}"
+          echo "local_list_command=${{ inputs.local_list_command }}"
+          ls -la pipeline
+          cat pipeline/pipeline-config.json
+
+      - name: Run Drive inspect
+        if: ${{ inputs.run_inspect }}
+        env:
+          PIPELINE_ARGS: ${{ inputs.drive_list_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Drive inspect args: {args}")
+          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run local inspect
+        if: ${{ inputs.run_inspect }}
+        env:
+          PIPELINE_ARGS: ${{ inputs.local_list_command }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import os, shlex, subprocess, sys
+          args = shlex.split(os.environ["PIPELINE_ARGS"])
+          print(f"Local inspect args: {args}")
+          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
+          PY
+
+      - name: Run full manifest sync
+        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish
+
+      - name: Print sync outputs
+        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          test -f pipeline/pipeline-state.json && cat pipeline/pipeline-state.json || echo "No pipeline-state.json"
+          test -f pipeline/pipeline-run-summary.json && cat pipeline/pipeline-run-summary.json || echo "No pipeline-run-summary.json"
+          test -f data/import-summary.json && cat data/import-summary.json || echo "No data/import-summary.json"
+          test -f data/events.json && python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = json.loads(Path("data/events.json").read_text(encoding="utf-8"))
+          print(f"events.json rows: {len(rows)}")
+          for row in rows[-3:]:
+              print(row)
+          PY
+          test -f data/results.json && python - <<'PY'
+          import json
+          from pathlib import Path
+          rows = json.loads(Path("data/results.json").read_text(encoding="utf-8"))
+          print(f"results.json rows: {len(rows)}")
+          for row in rows[-3:]:
+              print(row)
+          PY
+          find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
+          find pipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
+          find data/matchups -maxdepth 2 -type f | sort || true
+          test -f data/matchups/manifest.json && cat data/matchups/manifest.json || true
+          find data/elo-data -maxdepth 2 -type f | sort || true
+          test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
+
+      - name: Debug manifest and git status after sync
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          echo "Manifest after sync:"
+          cat pipeline/processed-drive-workbooks.json || true
+          echo "Git status after sync:"
+          git status --short
+
+      - name: Configure git identity
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Publish generated changes
+        if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python pipeline/publish_pipeline_changes.py
+
+      - name: Upload debug artifacts
+        if: ${{ failure() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: pipeline-debug-artifacts
+          path: |
+            pipeline/pipeline-state.json
+            pipeline/pipeline-run-summary.json
+            data/import-summary.json
+            pipeline/output/
+          if-no-files-found: ignore
+          retention-days: 7

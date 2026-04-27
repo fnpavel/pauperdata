@@ -2,7 +2,7 @@
 // player drilldowns, timeline charts, CSV exports, and PDF season reports.
 import { escapeHtml, getTopMode } from './filters/shared.js';
 import { updateElementHTML, updateElementText, triggerUpdateAnimation } from '../utils/dom.js';
-import { formatDate, formatEventName } from '../utils/format.js';
+import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import {
   DEFAULT_RANKINGS_OPTIONS,
   buildRankingsDataset,
@@ -35,7 +35,7 @@ const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
 const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
 const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
-  elo: new Set(['displayName', 'seasonYear', 'rating', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
+  elo: new Set(['displayName', 'seasonYear', 'rating', 'eventCount', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
 });
 // Threshold controls are generated from this config so adding a new Elo filter
 // only requires one key with DOM ids, label text, and a row-value accessor.
@@ -2012,8 +2012,35 @@ function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboard
 }
 
 function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
-  // Event-stat augmentation powers Top 8 conversion and first-place columns.
-  // Group by player identity + season so continuous and yearly modes both work.
+  // Event-stat augmentation powers the Elo Events column plus Top 8 / 1st-place
+  // summaries. Event participation comes from rated Elo history so it stays
+  // internally consistent with the ladder itself, while placement summaries
+  // still come from the standings dataset.
+  const processedMatches = Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : [];
+  const ratedEventLookup = new Map();
+  const registerRatedMatchEvent = (groupKey = '', match = null) => {
+    if (!groupKey || !match) {
+      return;
+    }
+
+    if (!ratedEventLookup.has(groupKey)) {
+      ratedEventLookup.set(groupKey, []);
+    }
+    ratedEventLookup.get(groupKey).push(match);
+  };
+
+  processedMatches.forEach(match => {
+    const seasonKey = String(match?.seasonKey || '').trim();
+    const playerBaseKey = String(match?.playerBaseKey || '').trim();
+    const opponentBaseKey = String(match?.opponentBaseKey || '').trim();
+    if (!seasonKey) {
+      return;
+    }
+
+    registerRatedMatchEvent(`${seasonKey}:::${playerBaseKey}`, match);
+    registerRatedMatchEvent(`${seasonKey}:::${opponentBaseKey}`, match);
+  });
+
   const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
@@ -2069,9 +2096,16 @@ function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
 
   return Array.from(groupedEventRows.entries()).reduce((lookup, [groupKey, eventMap]) => {
     const dedupedRows = Array.from(eventMap.values());
-    const eventCount = dedupedRows.length;
+    const ratedEventCount = countUniqueEvents(
+      ratedEventLookup.get(groupKey) || [],
+      match => ({
+        date: match?.date || match?.Date || '',
+        event: match?.event_id || match?.eventId || match?.event || ''
+      })
+    );
     const top8Count = dedupedRows.filter(row => Number(row?.Rank) >= 1 && Number(row?.Rank) <= 8).length;
     const challengeWins = dedupedRows.filter(row => Number(row?.Rank) === 1).length;
+    const eventCount = Math.max(ratedEventCount, top8Count);
 
     lookup.set(groupKey, {
       eventCount,
@@ -2091,7 +2125,19 @@ function augmentEloLeaderboardRowsWithEventStats(rows = [], dataset = currentLea
     const playerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
     const seasonKey = String(row?.seasonKey || '').trim() || getLeaderboardStatsSeasonKey(row?.lastActiveDate, dataset);
     const rowStats = statsLookup.get(`${seasonKey}:::${playerKey}`) || {
-      eventCount: 0,
+      eventCount: countUniqueEvents(
+        (Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : []).filter(match => {
+          const matchSeasonKey = String(match?.seasonKey || '').trim();
+          return matchSeasonKey === seasonKey && (
+            String(match?.playerBaseKey || '').trim() === playerKey
+            || String(match?.opponentBaseKey || '').trim() === playerKey
+          );
+        }),
+        match => ({
+          date: match?.date || match?.Date || '',
+          event: match?.event_id || match?.eventId || match?.event || ''
+        })
+      ),
       top8Count: 0,
       top8Conversion: 0,
       challengeWins: 0
@@ -2294,6 +2340,7 @@ function exportLeaderboardCsv() {
         header: `${year} Gains`,
         value: row => getLeaderboardRowYearGainValue(row, year)
       })),
+      { header: 'Events', value: row => row.eventCount },
       { header: 'Total Matches', value: row => row.matches },
       { header: 'Wins', value: row => row.wins },
       { header: 'Losses', value: row => row.losses },
@@ -4704,7 +4751,7 @@ function renderLeaderboardTable(dataset) {
 
   const yearGainColumns = getLeaderboardSelectedYearGainColumns(dataset);
   const yearGainHeaderCells = yearGainColumns.map(year => `<th>${escapeHtml(`${year} Elo Gains`)}</th>`).join('');
-  const totalColumns = 11 + yearGainColumns.length;
+  const totalColumns = 12 + yearGainColumns.length;
 
   updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
   updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
@@ -4717,6 +4764,7 @@ function renderLeaderboardTable(dataset) {
         <th data-sort="seasonYear"><span id="leaderboardEntryColumnLabel">${escapeHtml(entryFieldLabel)}</span> <span class="sort-arrow"></span></th>
         <th data-sort="rating">Elo <span class="sort-arrow"></span></th>
         ${yearGainHeaderCells}
+        <th data-sort="eventCount">Events <span class="sort-arrow"></span></th>
         <th data-sort="matches">Matches <span class="sort-arrow"></span></th>
         <th data-sort="wins">Wins <span class="sort-arrow"></span></th>
         <th data-sort="losses">Losses <span class="sort-arrow"></span></th>
@@ -4750,6 +4798,7 @@ function renderLeaderboardTable(dataset) {
           <td>${escapeHtml(getLeaderboardEntryLabel(row))}</td>
           <td>${formatRating(row.rating)}</td>
           ${yearGainColumns.map(year => `<td>${escapeHtml(getLeaderboardRowYearGainValue(row, year))}</td>`).join('')}
+          <td>${row.eventCount}</td>
           <td>${row.matches}</td>
           <td>${row.wins}</td>
           <td>${row.losses}</td>
