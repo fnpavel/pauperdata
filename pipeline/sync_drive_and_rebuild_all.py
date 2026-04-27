@@ -9,7 +9,7 @@ import re
 import sys
 import time
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
 
@@ -62,7 +62,9 @@ MONTH_NUMBERS = {
     "November": "11",
     "December": "12",
 }
-DATE_PREFIX_PATTERN = re.compile(r"^(?P<day>\d{1,2})\s+(?P<month>[A-Za-z]+)\s+[' _]?(?P<year>\d{2})\b")
+DATE_PREFIX_PATTERN = re.compile(
+    r"^(?P<day>\d{1,2})\s+(?P<month>[A-Za-z]+)\s+[' _]?(?P<year>\d{2})\b"
+)
 
 COMMAND_NAMES = {
     "sync",
@@ -122,13 +124,17 @@ def normalize_whitespace(value: object) -> str:
 
 
 def slugify(value: object) -> str:
-    return re.sub(r"^-+|-+$", "", re.sub(r"[^a-z0-9]+", "-", normalize_whitespace(value).lower()))
+    return re.sub(
+        r"^-+|-+$", "", re.sub(r"[^a-z0-9]+", "-", normalize_whitespace(value).lower())
+    )
 
 
 def normalize_year_selector(value: object) -> str:
     raw_value = normalize_whitespace(value)
     if not re.fullmatch(r"\d{4}", raw_value):
-        raise SystemExit(f"Invalid year selector '{raw_value}'. Expected YYYY, for example 2026.")
+        raise SystemExit(
+            f"Invalid year selector '{raw_value}'. Expected YYYY, for example 2026."
+        )
     return raw_value
 
 
@@ -136,10 +142,14 @@ def normalize_month_selector(value: object) -> str:
     raw_value = normalize_whitespace(value).replace("/", "-")
     match = re.fullmatch(r"(?P<year>\d{4})-(?P<month>\d{1,2})", raw_value)
     if not match:
-        raise SystemExit(f"Invalid month selector '{raw_value}'. Expected YYYY-MM, for example 2026-04.")
+        raise SystemExit(
+            f"Invalid month selector '{raw_value}'. Expected YYYY-MM, for example 2026-04."
+        )
     month_value = int(match.group("month"))
     if month_value < 1 or month_value > 12:
-        raise SystemExit(f"Invalid month selector '{raw_value}'. Expected a month between 01 and 12.")
+        raise SystemExit(
+            f"Invalid month selector '{raw_value}'. Expected a month between 01 and 12."
+        )
     return f"{match.group('year')}-{month_value:02d}"
 
 
@@ -179,7 +189,10 @@ def resolve_candidate_event_info(
         return None
 
     override_date = (
-        overrides.metadata_overrides_by_relative_path.get(normalized_relative_path, {}).get("date") or ""
+        overrides.metadata_overrides_by_relative_path.get(
+            normalized_relative_path, {}
+        ).get("date")
+        or ""
     ).strip()
     event_date = override_date or parsed_date
     try:
@@ -234,7 +247,9 @@ def load_latest_online_event() -> dict[str, str] | None:
         "event_id": normalize_whitespace(latest_event.get("event_id")),
         "date": normalize_whitespace(latest_event.get("date")),
         "source_event_name": normalize_whitespace(
-            latest_event.get("source_event_name") or latest_event.get("display_name") or latest_event.get("event_id")
+            latest_event.get("source_event_name")
+            or latest_event.get("display_name")
+            or latest_event.get("event_id")
         ),
     }
 
@@ -302,7 +317,7 @@ def parse_args() -> argparse.Namespace:
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match "18 April"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -368,8 +383,8 @@ def parse_args() -> argparse.Namespace:
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --year 2026\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --month 2026-04\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --match \"18 April\"\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --match "18 April"\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --relative-path "2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync-local --latest --yes"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -425,8 +440,8 @@ def parse_args() -> argparse.Namespace:
             "Examples:\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py list\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --latest\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --match \"18 April\"\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py list --drive --match \"18 April\""
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py list --match "18 April"\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py list --drive --match "18 April"'
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -454,9 +469,9 @@ def parse_args() -> argparse.Namespace:
         epilog=(
             "Examples:\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --latest\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April '26 Pauper Challenge 32 Matchups\"\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --relative-path \"2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match \"18 April\" --redownload"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match "18 April \'26 Pauper Challenge 32 Matchups"\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py download --relative-path "2026/04 - April/18 April _26 Pauper Challenge 32 Matchups.xlsx"\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py download --match "18 April" --redownload'
         ),
         formatter_class=PipelineHelpFormatter,
     )
@@ -476,8 +491,8 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --relative-path \"2026/04 - April/17 April _26 Pauper Challenge 32 Matchups.xlsx\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match "17 April"\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --relative-path "2026/04 - April/17 April _26 Pauper Challenge 32 Matchups.xlsx"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -492,7 +507,7 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py include --match \"17 April\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py include --match "17 April"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -508,8 +523,8 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py override-date --match \"18 April\" --date 2026-04-19\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py override-date --match "18 April" --date 2026-04-19\n'
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match "18 April"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -529,12 +544,14 @@ def parse_args() -> argparse.Namespace:
         ),
         epilog=(
             "Examples:\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match \"18 April\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py clear-override-date --match "18 April"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild-local --full"
         ),
         formatter_class=PipelineHelpFormatter,
     )
-    add_selection_arguments(clear_override_parser, require_selector=True, allow_latest=True)
+    add_selection_arguments(
+        clear_override_parser, require_selector=True, allow_latest=True
+    )
 
     rebuild_parser = subparsers.add_parser(
         "rebuild",
@@ -546,7 +563,7 @@ def parse_args() -> argparse.Namespace:
         epilog=(
             "Examples:\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full\n"
-            "  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match \"17 April\"\n"
+            '  python .\\pipeline\\sync_drive_and_rebuild_all.py exclude --match "17 April"\n'
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py rebuild --full"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -607,13 +624,17 @@ def add_selection_arguments(
 
 
 def default_overrides() -> PipelineOverrides:
-    return PipelineOverrides(excluded_relative_paths=set(), metadata_overrides_by_relative_path={})
+    return PipelineOverrides(
+        excluded_relative_paths=set(), metadata_overrides_by_relative_path={}
+    )
 
 
 def load_pipeline_overrides() -> PipelineOverrides:
     payload = load_json_file(PIPELINE_OVERRIDES_PATH, default={})
     if not isinstance(payload, dict):
-        raise SystemExit(f"Pipeline overrides file must contain a JSON object: {PIPELINE_OVERRIDES_PATH}")
+        raise SystemExit(
+            f"Pipeline overrides file must contain a JSON object: {PIPELINE_OVERRIDES_PATH}"
+        )
 
     overrides = default_overrides()
     raw_excluded = payload.get("excluded_relative_paths")
@@ -634,7 +655,9 @@ def load_pipeline_overrides() -> PipelineOverrides:
             if override_date:
                 normalized_override["date"] = override_date
             if normalized_override:
-                overrides.metadata_overrides_by_relative_path[normalized_path] = normalized_override
+                overrides.metadata_overrides_by_relative_path[normalized_path] = (
+                    normalized_override
+                )
 
     return overrides
 
@@ -644,11 +667,15 @@ def save_pipeline_overrides(overrides: PipelineOverrides) -> None:
         "schema_version": 1,
         "excluded_relative_paths": sorted(overrides.excluded_relative_paths),
         "metadata_overrides_by_relative_path": {
-            relative_path: dict(overrides.metadata_overrides_by_relative_path[relative_path])
+            relative_path: dict(
+                overrides.metadata_overrides_by_relative_path[relative_path]
+            )
             for relative_path in sorted(overrides.metadata_overrides_by_relative_path)
         },
     }
-    PIPELINE_OVERRIDES_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    PIPELINE_OVERRIDES_PATH.write_text(
+        json.dumps(payload, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def load_elo_manifest_snapshot() -> dict[str, object]:
@@ -660,7 +687,7 @@ def load_elo_manifest_snapshot() -> dict[str, object]:
     if not raw_text.startswith(prefix):
         return {}
 
-    manifest_text = raw_text[len(prefix):].strip()
+    manifest_text = raw_text[len(prefix) :].strip()
     if manifest_text.endswith(";"):
         manifest_text = manifest_text[:-1]
 
@@ -687,7 +714,9 @@ def load_thumbnail_snapshot() -> dict[str, object]:
     stats = THUMBNAIL_OUTPUT_PATH.stat()
     return {
         "thumbnail_path": str(THUMBNAIL_OUTPUT_PATH),
-        "updated_at": datetime.fromtimestamp(stats.st_mtime).isoformat(timespec="seconds"),
+        "updated_at": datetime.fromtimestamp(stats.st_mtime).isoformat(
+            timespec="seconds"
+        ),
         "size_bytes": stats.st_size,
     }
 
@@ -710,13 +739,21 @@ def list_local_archive_records(archive_root: Path) -> list[LocalArchiveRecord]:
             )
         )
 
-    return sorted(records, key=lambda record: (record.modified_time, record.relative_path), reverse=True)
+    return sorted(
+        records,
+        key=lambda record: (record.modified_time, record.relative_path),
+        reverse=True,
+    )
 
 
-def build_drive_records(drive_files: list[object], settings, archive_paths: set[str]) -> list[DriveArchiveRecord]:
+def build_drive_records(
+    drive_files: list[object], settings, archive_paths: set[str]
+) -> list[DriveArchiveRecord]:
     records: list[DriveArchiveRecord] = []
     for drive_file in reversed(drive_files):
-        archive_relative = resolve_archive_relative_path(drive_file, settings.archive_root, archive_paths).as_posix()
+        archive_relative = resolve_archive_relative_path(
+            drive_file, settings.archive_root, archive_paths
+        ).as_posix()
         records.append(
             DriveArchiveRecord(
                 drive_file=drive_file,
@@ -755,10 +792,14 @@ def resolve_force_redownload_target(
     drive_files: list[object], state: dict[str, object]
 ) -> tuple[object | None, str]:
     state_relative_path = str(
-        state.get("downloaded_relative_path") or state.get("archive_relative_path") or ""
+        state.get("downloaded_relative_path")
+        or state.get("archive_relative_path")
+        or ""
     ).strip()
     if state_relative_path:
-        matched_drive_file = match_drive_file_by_relative_path(state_relative_path, drive_files)
+        matched_drive_file = match_drive_file_by_relative_path(
+            state_relative_path, drive_files
+        )
         if matched_drive_file is not None:
             return matched_drive_file, "state"
 
@@ -778,13 +819,18 @@ def select_local_records(
     selected = list(records)
     normalized_relative_path = normalize_relative_path(relative_path)
     if normalized_relative_path:
-        selected = [record for record in selected if record.relative_path == normalized_relative_path]
+        selected = [
+            record
+            for record in selected
+            if record.relative_path == normalized_relative_path
+        ]
     elif match.strip():
         needle = match.casefold()
         selected = [
             record
             for record in selected
-            if needle in record.relative_path.casefold() or needle in record.workbook_name.casefold()
+            if needle in record.relative_path.casefold()
+            or needle in record.workbook_name.casefold()
         ]
 
     if latest:
@@ -797,7 +843,9 @@ def build_extracted_csv_path(extracted_root: Path, relative_path: str) -> Path:
 
 
 def is_local_record_missing_extracted_csv(settings, record: LocalArchiveRecord) -> bool:
-    return not build_extracted_csv_path(settings.extracted_root, record.relative_path).exists()
+    return not build_extracted_csv_path(
+        settings.extracted_root, record.relative_path
+    ).exists()
 
 
 def record_matches_year(record: LocalArchiveRecord, year_value: str) -> bool:
@@ -809,7 +857,9 @@ def record_matches_month(record: LocalArchiveRecord, month_value: str) -> bool:
     relative_parts = Path(record.relative_path).parts
     if len(relative_parts) < 2:
         return False
-    return relative_parts[0] == year_value and relative_parts[1].startswith(f"{month_number} -")
+    return relative_parts[0] == year_value and relative_parts[1].startswith(
+        f"{month_number} -"
+    )
 
 
 def resolve_local_sync_selection(
@@ -825,10 +875,14 @@ def resolve_local_sync_selection(
     missing: bool,
 ) -> tuple[list[LocalArchiveRecord], str, list[LocalArchiveRecord]]:
     available_records = [
-        record for record in records if record.relative_path not in overrides.excluded_relative_paths
+        record
+        for record in records
+        if record.relative_path not in overrides.excluded_relative_paths
     ]
     missing_records = [
-        record for record in available_records if is_local_record_missing_extracted_csv(settings, record)
+        record
+        for record in available_records
+        if is_local_record_missing_extracted_csv(settings, record)
     ]
 
     if normalize_relative_path(relative_path):
@@ -858,7 +912,11 @@ def resolve_local_sync_selection(
     if year.strip():
         normalized_year = normalize_year_selector(year)
         return (
-            [record for record in available_records if record_matches_year(record, normalized_year)],
+            [
+                record
+                for record in available_records
+                if record_matches_year(record, normalized_year)
+            ],
             f"year:{normalized_year}",
             missing_records,
         )
@@ -866,7 +924,11 @@ def resolve_local_sync_selection(
     if month.strip():
         normalized_month = normalize_month_selector(month)
         return (
-            [record for record in available_records if record_matches_month(record, normalized_month)],
+            [
+                record
+                for record in available_records
+                if record_matches_month(record, normalized_month)
+            ],
             f"month:{normalized_month}",
             missing_records,
         )
@@ -886,8 +948,12 @@ def build_candidate_events_from_drive_files(
 ) -> list[CandidateEventInfo]:
     candidates: list[CandidateEventInfo] = []
     for drive_file in selected_files:
-        relative_path = resolve_archive_relative_path(drive_file, settings.archive_root, archive_paths).as_posix()
-        candidate = resolve_candidate_event_info(relative_path, drive_file.export_name, overrides)
+        relative_path = resolve_archive_relative_path(
+            drive_file, settings.archive_root, archive_paths
+        ).as_posix()
+        candidate = resolve_candidate_event_info(
+            relative_path, drive_file.export_name, overrides
+        )
         if candidate is not None:
             candidates.append(candidate)
     return candidates
@@ -899,7 +965,9 @@ def build_candidate_events_from_local_records(
 ) -> list[CandidateEventInfo]:
     candidates: list[CandidateEventInfo] = []
     for record in records:
-        candidate = resolve_candidate_event_info(record.relative_path, record.workbook_name, overrides)
+        candidate = resolve_candidate_event_info(
+            record.relative_path, record.workbook_name, overrides
+        )
         if candidate is not None:
             candidates.append(candidate)
     return candidates
@@ -915,13 +983,18 @@ def select_drive_records(
     selected = list(records)
     normalized_relative_path = normalize_relative_path(relative_path)
     if normalized_relative_path:
-        selected = [record for record in selected if record.relative_path == normalized_relative_path]
+        selected = [
+            record
+            for record in selected
+            if record.relative_path == normalized_relative_path
+        ]
     elif match.strip():
         needle = match.casefold()
         selected = [
             record
             for record in selected
-            if needle in record.relative_path.casefold() or needle in record.workbook_name.casefold()
+            if needle in record.relative_path.casefold()
+            or needle in record.workbook_name.casefold()
         ]
 
     if latest:
@@ -951,7 +1024,9 @@ def require_single_local_record(
     action_label: str,
 ) -> LocalArchiveRecord:
     if not records:
-        raise SystemExit(f"No local archive workbook matched the requested selector for '{action_label}'.")
+        raise SystemExit(
+            f"No local archive workbook matched the requested selector for '{action_label}'."
+        )
     if len(records) > 1:
         preview = "\n".join(describe_local_record(record) for record in records[:10])
         suffix = "\n..." if len(records) > 10 else ""
@@ -967,7 +1042,9 @@ def require_single_drive_record(
     action_label: str,
 ) -> DriveArchiveRecord:
     if not records:
-        raise SystemExit(f"No Drive workbook matched the requested selector for '{action_label}'.")
+        raise SystemExit(
+            f"No Drive workbook matched the requested selector for '{action_label}'."
+        )
     if len(records) > 1:
         preview = "\n".join(describe_drive_record(record) for record in records[:10])
         suffix = "\n..." if len(records) > 10 else ""
@@ -1038,7 +1115,9 @@ def save_processed_drive_workbooks_manifest(processed_paths: set[str]) -> None:
         "schema_version": PROCESSED_DRIVE_WORKBOOKS_SCHEMA_VERSION,
         "processed_relative_paths": normalized_paths,
     }
-    PROCESSED_DRIVE_WORKBOOKS_PATH.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+    PROCESSED_DRIVE_WORKBOOKS_PATH.write_text(
+        json.dumps(payload, indent=2) + "\n", encoding="utf-8"
+    )
 
 
 def update_state_after_download(
@@ -1102,7 +1181,9 @@ def download_selected_workbooks(
     pending_files: list[dict[str, object]] = []
 
     for drive_file in selected_files:
-        archive_relative = resolve_archive_relative_path(drive_file, settings.archive_root, archive_paths)
+        archive_relative = resolve_archive_relative_path(
+            drive_file, settings.archive_root, archive_paths
+        )
         archive_path = settings.archive_root / archive_relative
         temp_download_path = settings.download_root / archive_relative
         log("Downloading candidate workbook:")
@@ -1121,7 +1202,9 @@ def download_selected_workbooks(
                 "issues": readiness["issues"],
             }
             pending_files.append(pending_record)
-            log("Workbook is not ready yet. Waiting for the next poll before extraction.")
+            log(
+                "Workbook is not ready yet. Waiting for the next poll before extraction."
+            )
             for issue in readiness["issues"]:
                 log(f"- pending reason: {issue}")
             try:
@@ -1228,7 +1311,9 @@ def prepare_data_updates_branch(settings) -> None:
 
 def publish_pipeline_changes() -> None:
     log("Publishing the refreshed data and merging it back into main...")
-    run_subprocess([sys.executable, str(PUBLISH_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
+    run_subprocess(
+        [sys.executable, str(PUBLISH_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True
+    )
 
 
 def run_pipeline_rebuild(
@@ -1236,26 +1321,37 @@ def run_pipeline_rebuild(
     full_rebuild_online: bool,
 ) -> None:
     if full_rebuild_online:
-        log("Rebuilding the project event and matchup data from the full workbook archive...")
+        log(
+            "Rebuilding the project event and matchup data from the full workbook archive..."
+        )
         rebuild_command = [sys.executable, str(REBUILD_SCRIPT), "--full-rebuild-online"]
     else:
-        log("Rebuilding the project event and matchup data from the newly synced workbooks...")
+        log(
+            "Rebuilding the project event and matchup data from the newly synced workbooks..."
+        )
         rebuild_command = [sys.executable, str(REBUILD_SCRIPT)]
 
     run_subprocess(rebuild_command, cwd=PIPELINE_ROOT, stream_output=True)
 
     log("Rebuilding the split matchup archive from the refreshed matchup source...")
-    run_subprocess(["node", str(MATCHUP_SPLIT_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True)
+    run_subprocess(
+        ["node", str(MATCHUP_SPLIT_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
+    )
 
     log("Regenerating Elo data from the refreshed matchup archive...")
-    run_subprocess(["node", str(ELO_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True)
+    run_subprocess(
+        ["node", str(ELO_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
+    )
 
     log("Refreshing the site thumbnail from the rebuilt project data...")
     try:
-        run_subprocess(["node", str(THUMBNAIL_UPDATE_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True)
+        run_subprocess(
+            ["node", str(THUMBNAIL_UPDATE_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
+        )
     except RuntimeError as exc:
         log("Thumbnail refresh failed, but the data rebuild completed successfully.")
         log(str(exc))
+
 
 def finalize_pipeline_state(
     summary: dict[str, object],
@@ -1268,7 +1364,9 @@ def finalize_pipeline_state(
     elo_snapshot = load_elo_manifest_snapshot()
     thumbnail_snapshot = load_thumbnail_snapshot()
     pipeline_finished_at = datetime.now()
-    pipeline_duration_seconds = round(time.perf_counter() - pipeline_started_monotonic, 3)
+    pipeline_duration_seconds = round(
+        time.perf_counter() - pipeline_started_monotonic, 3
+    )
 
     summary["generated_at"] = pipeline_finished_at.isoformat(timespec="seconds")
     summary["pipeline_timing"] = {
@@ -1309,8 +1407,12 @@ def run_sync_command(args: argparse.Namespace) -> int:
     processed_manifest = load_processed_drive_workbooks_manifest()
     processed_paths = build_processed_relative_paths_set(processed_manifest)
     archive_paths = list_archive_relative_paths(settings.archive_root)
-    excluded_drive_files_count = sum(1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides))
-    missing_files = [
+    current_utc_time = datetime.now(timezone.utc)
+    cutoff = current_utc_time - timedelta(minutes=30)
+    excluded_drive_files_count = sum(
+        1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides)
+    )
+    unprocessed_files = [
         drive_file
         for drive_file in drive_files
         if not is_drive_file_excluded(drive_file, overrides)
@@ -1319,24 +1421,57 @@ def run_sync_command(args: argparse.Namespace) -> int:
             for candidate in archive_relative_path_candidates(drive_file)
         )
     ]
-    new_workbook_detected_at = datetime.now().isoformat(timespec="seconds") if missing_files else None
+    missing_files = [
+        drive_file
+        for drive_file in unprocessed_files
+        if drive_file.modified_time <= cutoff
+    ]
+    too_recent_files = [
+        drive_file
+        for drive_file in unprocessed_files
+        if drive_file.modified_time > cutoff
+    ]
+    new_workbook_detected_at = (
+        datetime.now().isoformat(timespec="seconds") if missing_files else None
+    )
     selected_files = list(missing_files)
     forced_file = None
     forced_file_source = ""
 
+    if too_recent_files:
+        log(
+            "Skipping Drive workbook(s) modified less than 30 minutes ago for this sync run."
+        )
+        for drive_file in too_recent_files:
+            relative_path = resolve_archive_relative_path(
+                drive_file, settings.archive_root, archive_paths
+            )
+            log(f"- workbook: {drive_file.export_name}")
+            log(f"  drive file id: {drive_file.file_id}")
+            log(f"  relative path: {relative_path.as_posix()}")
+            log(f"  modified time: {drive_file.modified_time.isoformat()}")
+            log(f"  current cutoff: {cutoff.isoformat()}")
+
     if args.force_redownload:
-        forced_file, forced_file_source = resolve_force_redownload_target(drive_files, state)
+        forced_file, forced_file_source = resolve_force_redownload_target(
+            drive_files, state
+        )
         if forced_file is not None and is_drive_file_excluded(forced_file, overrides):
-            log("Force redownload is enabled, but the selected workbook is excluded by pipeline overrides.")
+            log(
+                "Force redownload is enabled, but the selected workbook is excluded by pipeline overrides."
+            )
             forced_file = None
             forced_file_source = ""
         elif forced_file is not None and all(
-            existing_drive_file.file_id != forced_file.file_id for existing_drive_file in selected_files
+            existing_drive_file.file_id != forced_file.file_id
+            for existing_drive_file in selected_files
         ):
             selected_files.append(forced_file)
 
     if forced_file is not None:
-        forced_relative = resolve_archive_relative_path(forced_file, settings.archive_root, archive_paths)
+        forced_relative = resolve_archive_relative_path(
+            forced_file, settings.archive_root, archive_paths
+        )
         log("Force redownload is enabled.")
         log(f"- selected workbook: {forced_file.export_name}")
         log(f"- relative path: {forced_relative.as_posix()}")
@@ -1367,10 +1502,25 @@ def run_sync_command(args: argparse.Namespace) -> int:
         "local_archive_file_count": len(archive_paths),
         "force_redownload": args.force_redownload,
         "force_redownload_source": forced_file_source,
+        "minimum_drive_file_age_minutes": 30,
         "processed_manifest_path": str(PROCESSED_DRIVE_WORKBOOKS_PATH),
         "processed_manifest_entries_count": len(processed_paths),
         "selected_file_count": len(selected_files),
         "missing_file_count": len(missing_files),
+        "too_recent_file_count": len(too_recent_files),
+        "too_recent_files": [
+            {
+                "workbook_name": drive_file.export_name,
+                "drive_file_id": drive_file.file_id,
+                "relative_path": resolve_archive_relative_path(
+                    drive_file,
+                    settings.archive_root,
+                    archive_paths,
+                ).as_posix(),
+                "modified_time": drive_file.modified_time.isoformat(),
+            }
+            for drive_file in too_recent_files
+        ],
         "downloaded_files_count": len(downloaded_files),
         "downloaded_files": downloaded_files,
         "pending_files_count": len(pending_files),
@@ -1400,7 +1550,9 @@ def run_sync_command(args: argparse.Namespace) -> int:
     log(f"- summary: {SUMMARY_PATH}")
     if not downloaded_files:
         pipeline_finished_at = datetime.now()
-        pipeline_duration_seconds = round(time.perf_counter() - pipeline_started_monotonic, 3)
+        pipeline_duration_seconds = round(
+            time.perf_counter() - pipeline_started_monotonic, 3
+        )
         summary["generated_at"] = pipeline_finished_at.isoformat(timespec="seconds")
         summary["pipeline_timing"] = {
             "started_at": pipeline_started_at.isoformat(timespec="seconds"),
@@ -1419,7 +1571,13 @@ def run_sync_command(args: argparse.Namespace) -> int:
         save_state(state)
 
         if pending_files:
-            log(f"Found {len(pending_files)} new workbook(s), but none are ready for extraction yet.")
+            log(
+                f"Found {len(pending_files)} new workbook(s), but none are ready for extraction yet."
+            )
+        elif too_recent_files:
+            log(
+                f"Found {len(too_recent_files)} unprocessed Drive workbook(s), but all were modified less than 30 minutes ago."
+            )
         elif args.force_redownload and forced_file is None:
             log("No workbook was selected for forced redownload.")
         else:
@@ -1430,7 +1588,9 @@ def run_sync_command(args: argparse.Namespace) -> int:
         prepare_data_updates_branch(settings)
 
     log("Extracting CSVs for the newly synced workbooks...")
-    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
+    run_subprocess(
+        [sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True
+    )
 
     run_pipeline_rebuild(
         full_rebuild_online=False,
@@ -1454,13 +1614,17 @@ def run_sync_command(args: argparse.Namespace) -> int:
 
     if args.skip_publish:
         log("Sync and rebuild complete.")
-        log("Skipped branch switching and git publish because --skip-publish was provided.")
+        log(
+            "Skipped branch switching and git publish because --skip-publish was provided."
+        )
         return 0
 
     publish_pipeline_changes()
 
     log("Sync, rebuild, and publish complete.")
-    log("This entrypoint refreshed the data pipeline and merged the published result back into main.")
+    log(
+        "This entrypoint refreshed the data pipeline and merged the published result back into main."
+    )
     return 0
 
 
@@ -1488,7 +1652,9 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
         assume_yes=args.yes,
     )
     prepared_files, pending_files = prepare_local_selected_workbooks(selected_records)
-    selection_detected_at = datetime.now().isoformat(timespec="seconds") if selected_records else None
+    selection_detected_at = (
+        datetime.now().isoformat(timespec="seconds") if selected_records else None
+    )
 
     summary: dict[str, object] = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
@@ -1498,7 +1664,9 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
         "excluded_local_files_count": len(overrides.excluded_relative_paths),
         "missing_local_file_count": len(missing_records),
         "selected_file_count": len(selected_records),
-        "selected_relative_paths": [record.relative_path for record in selected_records],
+        "selected_relative_paths": [
+            record.relative_path for record in selected_records
+        ],
         "downloaded_files_count": len(prepared_files),
         "downloaded_files": prepared_files,
         "pending_files_count": len(pending_files),
@@ -1516,13 +1684,17 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
         new_workbook_detected_at=selection_detected_at,
     )
 
-    log(f"Local sync selection complete. Prepared {len(prepared_files)} workbook(s) from dataGoogleDrive.")
+    log(
+        f"Local sync selection complete. Prepared {len(prepared_files)} workbook(s) from dataGoogleDrive."
+    )
     log(f"- selection mode: {selection_mode}")
     log(f"- summary: {SUMMARY_PATH}")
 
     if not prepared_files:
         pipeline_finished_at = datetime.now()
-        pipeline_duration_seconds = round(time.perf_counter() - pipeline_started_monotonic, 3)
+        pipeline_duration_seconds = round(
+            time.perf_counter() - pipeline_started_monotonic, 3
+        )
         summary["generated_at"] = pipeline_finished_at.isoformat(timespec="seconds")
         summary["pipeline_timing"] = {
             "started_at": pipeline_started_at.isoformat(timespec="seconds"),
@@ -1536,7 +1708,9 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
         save_state(state)
 
         if pending_files:
-            log(f"Found {len(pending_files)} selected local workbook(s), but none are ready for extraction yet.")
+            log(
+                f"Found {len(pending_files)} selected local workbook(s), but none are ready for extraction yet."
+            )
         elif selection_mode == "missing":
             log("No missing local workbooks were found.")
         else:
@@ -1546,7 +1720,9 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
     prepare_data_updates_branch(settings)
 
     log("Extracting CSVs for the selected local workbooks...")
-    run_subprocess([sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True)
+    run_subprocess(
+        [sys.executable, str(EXTRACT_SCRIPT)], cwd=PIPELINE_ROOT, stream_output=True
+    )
 
     run_pipeline_rebuild(
         full_rebuild_online=False,
@@ -1564,7 +1740,9 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
     publish_pipeline_changes()
 
     log("Local sync, rebuild, and publish complete.")
-    log("This entrypoint refreshed the pipeline from local archive inputs and merged the published result back into main.")
+    log(
+        "This entrypoint refreshed the pipeline from local archive inputs and merged the published result back into main."
+    )
     return 0
 
 
@@ -1591,15 +1769,24 @@ def run_list_command(args: argparse.Namespace) -> int:
         limit = max(1, int(args.limit))
         log("Drive workbook entries:")
         for record in selected_records[:limit]:
-            excluded = "yes" if record.relative_path in overrides.excluded_relative_paths else "no"
+            excluded = (
+                "yes"
+                if record.relative_path in overrides.excluded_relative_paths
+                else "no"
+            )
             override_date = (
-                overrides.metadata_overrides_by_relative_path.get(record.relative_path, {}).get("date") or "--"
+                overrides.metadata_overrides_by_relative_path.get(
+                    record.relative_path, {}
+                ).get("date")
+                or "--"
             )
             log(describe_drive_record(record))
             log(f"  excluded: {excluded}")
             log(f"  override-date: {override_date}")
         if len(selected_records) > limit:
-            log(f"... showing {limit} of {len(selected_records)} matching Drive entries.")
+            log(
+                f"... showing {limit} of {len(selected_records)} matching Drive entries."
+            )
         return 0
 
     records = list_local_archive_records(settings.archive_root)
@@ -1616,8 +1803,15 @@ def run_list_command(args: argparse.Namespace) -> int:
     limit = max(1, int(args.limit))
     log("Local archive entries:")
     for record in selected_records[:limit]:
-        excluded = "yes" if record.relative_path in overrides.excluded_relative_paths else "no"
-        override_date = overrides.metadata_overrides_by_relative_path.get(record.relative_path, {}).get("date") or "--"
+        excluded = (
+            "yes" if record.relative_path in overrides.excluded_relative_paths else "no"
+        )
+        override_date = (
+            overrides.metadata_overrides_by_relative_path.get(
+                record.relative_path, {}
+            ).get("date")
+            or "--"
+        )
         log(describe_local_record(record))
         log(f"  excluded: {excluded}")
         log(f"  override-date: {override_date}")
@@ -1689,7 +1883,9 @@ def run_download_command(args: argparse.Namespace) -> int:
         log("Specific workbook download complete.")
         log(f"- workbook: {selected_record.workbook_name}")
         log(f"- relative path: {selected_record.relative_path}")
-        log("Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the dataset from the archive.")
+        log(
+            "Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the dataset from the archive."
+        )
     elif pending_files:
         log("The selected workbook was found, but it is not ready for extraction yet.")
     return 0
@@ -1718,7 +1914,9 @@ def run_exclude_command(args: argparse.Namespace) -> int:
         log("Excluded workbook from future rebuilds.")
     log(f"- workbook: {record.workbook_name}")
     log(f"- relative path: {record.relative_path}")
-    log("Next: run sync_drive_and_rebuild_all.py rebuild --full to remove it from generated data.")
+    log(
+        "Next: run sync_drive_and_rebuild_all.py rebuild --full to remove it from generated data."
+    )
     return 0
 
 
@@ -1745,7 +1943,9 @@ def run_include_command(args: argparse.Namespace) -> int:
         log("That workbook was not excluded.")
     log(f"- workbook: {record.workbook_name}")
     log(f"- relative path: {record.relative_path}")
-    log("Next: run sync_drive_and_rebuild_all.py rebuild --full to bring it back into generated data.")
+    log(
+        "Next: run sync_drive_and_rebuild_all.py rebuild --full to bring it back into generated data."
+    )
     return 0
 
 
@@ -1766,18 +1966,26 @@ def run_override_date_command(args: argparse.Namespace) -> int:
     try:
         date.fromisoformat(override_date)
     except ValueError as exc:
-        raise SystemExit(f"Invalid --date value '{override_date}'. Expected YYYY-MM-DD.") from exc
+        raise SystemExit(
+            f"Invalid --date value '{override_date}'. Expected YYYY-MM-DD."
+        ) from exc
 
-    override_payload = dict(overrides.metadata_overrides_by_relative_path.get(record.relative_path, {}))
+    override_payload = dict(
+        overrides.metadata_overrides_by_relative_path.get(record.relative_path, {})
+    )
     override_payload["date"] = override_date
-    overrides.metadata_overrides_by_relative_path[record.relative_path] = override_payload
+    overrides.metadata_overrides_by_relative_path[record.relative_path] = (
+        override_payload
+    )
     save_pipeline_overrides(overrides)
 
     log("Saved event-date override.")
     log(f"- workbook: {record.workbook_name}")
     log(f"- relative path: {record.relative_path}")
     log(f"- override date: {override_date}")
-    log("Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the event with the new date.")
+    log(
+        "Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the event with the new date."
+    )
     return 0
 
 
@@ -1794,11 +2002,15 @@ def run_clear_override_date_command(args: argparse.Namespace) -> int:
         action_label="clear-override-date",
     )
 
-    override_payload = dict(overrides.metadata_overrides_by_relative_path.get(record.relative_path, {}))
+    override_payload = dict(
+        overrides.metadata_overrides_by_relative_path.get(record.relative_path, {})
+    )
     had_override = "date" in override_payload
     override_payload.pop("date", None)
     if override_payload:
-        overrides.metadata_overrides_by_relative_path[record.relative_path] = override_payload
+        overrides.metadata_overrides_by_relative_path[record.relative_path] = (
+            override_payload
+        )
     else:
         overrides.metadata_overrides_by_relative_path.pop(record.relative_path, None)
     save_pipeline_overrides(overrides)
@@ -1809,7 +2021,9 @@ def run_clear_override_date_command(args: argparse.Namespace) -> int:
         log("That workbook did not have a saved event-date override.")
     log(f"- workbook: {record.workbook_name}")
     log(f"- relative path: {record.relative_path}")
-    log("Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the event with the original date.")
+    log(
+        "Next: run sync_drive_and_rebuild_all.py rebuild --full to regenerate the event with the original date."
+    )
     return 0
 
 
@@ -1839,8 +2053,12 @@ def run_rebuild_command(args: argparse.Namespace) -> int:
     )
 
     log("Full rebuild complete.")
-    log("This refreshed event data, matchup data, Elo data, and the site thumbnail from the local archive.")
-    log("Next: run publish_pipeline_changes.py to review with --dry-run or publish the changes.")
+    log(
+        "This refreshed event data, matchup data, Elo data, and the site thumbnail from the local archive."
+    )
+    log(
+        "Next: run publish_pipeline_changes.py to review with --dry-run or publish the changes."
+    )
     return 0
 
 
