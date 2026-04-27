@@ -216,6 +216,35 @@ def collect_webhooks() -> list[str]:
         if (value := os.environ.get(key, "")).strip()
     ]
 
+def mask_secret(value: str) -> str:
+    if not value:
+        return "<missing>"
+    if len(value) <= 8:
+        return "<set>"
+    return f"{value[:4]}...{value[-4:]}"
+
+
+def debug_environment(args: argparse.Namespace) -> None:
+    log("Debug environment:")
+    log(f"- cwd: {Path.cwd()}")
+    log(f"- index_path: {Path(args.index_path).resolve()} exists={Path(args.index_path).exists()}")
+    log(f"- aliases_path: {Path(args.aliases_path).resolve()} exists={Path(args.aliases_path).exists()}")
+    log(f"- dashboard_base_url: {args.dashboard_base_url}")
+    log(f"- EVENT_NAME/GITHUB_EVENT_NAME: {os.environ.get('EVENT_NAME') or os.environ.get('GITHUB_EVENT_NAME') or '<missing>'}")
+    log(f"- BEFORE_SHA: {os.environ.get('BEFORE_SHA') or '<missing>'}")
+    log(f"- CURRENT_SHA/GITHUB_SHA: {os.environ.get('CURRENT_SHA') or os.environ.get('GITHUB_SHA') or '<missing>'}")
+
+    for key in ("DISCORD_WEBHOOK_1", "DISCORD_WEBHOOK_2", "DISCORD_WEBHOOK_3"):
+        log(f"- {key}: {mask_secret(os.environ.get(key, ''))}")
+
+    try:
+        branch = run_git("branch", "--show-current").strip()
+        commit = run_git("log", "-1", "--oneline").strip()
+        log(f"- git_branch: {branch or '<detached>'}")
+        log(f"- git_commit: {commit}")
+    except Exception as exc:
+        log(f"- git_info_error: {exc}")
+
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Notify Discord about a Pauper Dashboard update.")
@@ -226,11 +255,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--skip-live-site-wait", action="store_true")
     parser.add_argument("--timeout-seconds", type=int, default=600)
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--debug", action="store_true", help="Print Docker/CI diagnostics and the computed payload without sending.")
     return parser.parse_args()
 
 
 def main() -> int:
     args = parse_args()
+
+    if args.debug:
+        args.dry_run = True
+        args.skip_live_site_wait = True
+        debug_environment(args)
 
     event_name = os.environ.get("EVENT_NAME") or os.environ.get("GITHUB_EVENT_NAME") or ""
     before_sha = os.environ.get("BEFORE_SHA") or ""
