@@ -253,10 +253,12 @@ jobs:
         env:
           DISCORD_WEBHOOK_1: ${{ secrets.DISCORD_WEBHOOK_1 }}
           DISCORD_WEBHOOK_2: ${{ secrets.DISCORD_WEBHOOK_2 }}
+          DISCORD_WEBHOOK_3: ${{ secrets.DISCORD_WEBHOOK_3 }}
         run: |
           WEBHOOKS=(
             "$DISCORD_WEBHOOK_1"
             "$DISCORD_WEBHOOK_2"
+            "$DISCORD_WEBHOOK_3"
           )
 
           for URL in "${WEBHOOKS[@]}"; do
