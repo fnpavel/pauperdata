@@ -75,11 +75,19 @@ jobs:
           ref: main
 
       - name: Prepare data-updates branch
+        shell: bash
         run: |
           set -euxo pipefail
-          git fetch origin main data-updates || true
-          git switch -C data-updates origin/data-updates || git checkout -b data-updates
-          git merge --ff-only origin/main || git merge origin/main
+          git fetch origin main data-updates
+          git switch -C data-updates origin/data-updates
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "data-updates already contains origin/main"
+          else
+            git merge --no-edit origin/main
+          fi
+          echo "Prepared branch:"
+          git branch --show-current
+          git log -1 --oneline
 
       - name: Set up Python
         uses: actions/setup-python@v5
