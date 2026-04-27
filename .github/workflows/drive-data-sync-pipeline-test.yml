@@ -266,29 +266,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Publish generated changes (current branch only)
+      - name: Publish generated changes
         if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          echo "Current branch: $GITHUB_REF_NAME"
-          git status --short
-          if [ -n "$(git status --porcelain)" ]; then
-            git add data index.html thumbnail.png pipeline/processed-drive-workbooks.json
-            git commit -m "ci: publish generated pipeline changes"
-            git push origin HEAD:$GITHUB_REF_NAME
-          else
-            echo "No changes to publish."
-          fi
-
-    # - name: Publish generated changes
-    #   if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
-    #   shell: bash
-    #   run: |
-    #     set -euxo pipefail
-    #     python pipeline/publish_pipeline_changes.py
+          python pipeline/publish_pipeline_changes.py
 
       - name: Upload debug artifacts
         if: ${{ failure() || inputs.upload_debug_artifact }}
