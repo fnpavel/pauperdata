@@ -6,6 +6,7 @@ import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.
 import {
   DEFAULT_RANKINGS_OPTIONS,
   buildRankingsDataset,
+  getRankingsKFactor,
   getRankingsAvailableDates
 } from '../utils/rankings-data.js';
 import { buildYearlyEloRatings } from '../utils/elo-rating.js';
@@ -777,11 +778,20 @@ function buildLeaderboardRatingBadgeHtml(label, value) {
   return `<span class="leaderboard-info-badge">${escapeHtml(`${label}: ${value}`)}</span>`;
 }
 
-function buildLeaderboardRatingBadgeRowHtml() {
+function getLeaderboardResolvedKFactor(dataset = currentLeaderboardDataset, activeWindow = dataset?.period || null) {
+  const datasetKFactor = Number(dataset?.kFactor);
+  if (Number.isFinite(datasetKFactor)) {
+    return datasetKFactor;
+  }
+
+  return getRankingsKFactor({ resetByYear: activeWindow?.resetByYear });
+}
+
+function buildLeaderboardRatingBadgeRowHtml(dataset = currentLeaderboardDataset) {
   return `
     <div class="leaderboard-info-badge-row">
       ${buildLeaderboardRatingBadgeHtml('Starting Rating', DEFAULT_RANKINGS_OPTIONS.startingRating)}
-      ${buildLeaderboardRatingBadgeHtml('K-Factor', DEFAULT_RANKINGS_OPTIONS.kFactor)}
+      ${buildLeaderboardRatingBadgeHtml('K-Factor', getLeaderboardResolvedKFactor(dataset))}
     </div>
   `;
 }
@@ -800,7 +810,7 @@ function renderLeaderboardTitleBadgeRow(dataset = currentLeaderboardDataset) {
     return;
   }
 
-  badgeRow.innerHTML = buildLeaderboardRatingBadgeRowHtml();
+  badgeRow.innerHTML = buildLeaderboardRatingBadgeRowHtml(dataset);
   badgeRow.hidden = false;
 }
 
@@ -1153,19 +1163,21 @@ function buildLeaderboardSystemSummary(activeWindow = null) {
     return `Performance mode ranks players by Top 8 conversion inside the selected window. Players need at least ${minEvents} event${minEvents === 1 ? '' : 's'} to qualify.`;
   }
 
+  const kFactor = getLeaderboardResolvedKFactor(currentLeaderboardDataset, activeWindow);
+
   if (!activeWindow) {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards)`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${kFactor}. (same as the Vintage Leaderboards)`;
   }
 
   if (activeWindow.windowMode === 'seasonal') {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Seasonal Elo resets on January 1.`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${kFactor}. (same as the Vintage Leaderboards) Seasonal Elo resets on January 1.`;
   }
 
   if (activeWindow.resetMode === 'continuous') {
-    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Ratings carry across the selected multi-year range with no January reset inside that window.`;
+    return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${kFactor}. (same as the Vintage Leaderboards) Ratings carry across the selected multi-year range with no January reset inside that window.`;
   }
 
-  return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Multi-Year Elo resets on January 1, so seasons stay separate.`;
+  return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${kFactor}. (same as the Vintage Leaderboards) Multi-Year Elo resets on January 1, so seasons stay separate.`;
 }
 
 function buildLeaderboardSystemSummaryHtml(activeWindow = null, dataset = currentLeaderboardDataset) {
@@ -1244,7 +1256,7 @@ function getLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboardD
   if (!isPerformanceLeaderboardMode()) {
     badges.push(
       `Starting Rating: ${DEFAULT_RANKINGS_OPTIONS.startingRating}`,
-      `K-Factor: ${DEFAULT_RANKINGS_OPTIONS.kFactor}`
+      `K-Factor: ${getLeaderboardResolvedKFactor(currentLeaderboardDataset, activeWindow)}`
     );
   }
 
@@ -2479,7 +2491,7 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
 
   const metadataRows = [
     ['Starting Rating', String(DEFAULT_RANKINGS_OPTIONS.startingRating)],
-    ['kFactor', String(DEFAULT_RANKINGS_OPTIONS.kFactor)],
+    ['kFactor', String(getLeaderboardResolvedKFactor(dataset, dataset.period))],
     ['View', getLeaderboardViewTitle(dataset)],
     ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
     ['Rating Continuity', getLeaderboardContinuityLabel(dataset)],
@@ -2733,6 +2745,7 @@ function buildLeaderboardPlayerHistoryCsvMetadata(row, scope = null) {
     ['History Rows', String(historyEntries.length || 0)],
     ['Window Type', getLeaderboardWindowModeLabel(currentLeaderboardDataset.period)],
     ['Rating Continuity', getLeaderboardContinuityLabel(currentLeaderboardDataset)],
+    ['K-Factor', String(getLeaderboardResolvedKFactor(currentLeaderboardDataset, currentLeaderboardDataset.period))],
     ['Leaderboard Window', getWindowLabel(currentLeaderboardDataset.period, currentLeaderboardDataset.summary.selectedYears, currentLeaderboardDataset.startDate, currentLeaderboardDataset.endDate)],
     ['Date Range', formatWindowRange(currentLeaderboardDataset.startDate, currentLeaderboardDataset.endDate)],
     ['Event Types', (currentLeaderboardDataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE]
@@ -5568,6 +5581,7 @@ export async function updateLeaderboardAnalytics() {
   const deckDataset = buildYearlyEloRatings(dataset.filteredMatches || [], {
     // Build a second Elo model where each player/deck combination is its own
     // entity. Player drilldowns use it for deck-specific Elo comparisons.
+    kFactor: getRankingsKFactor({ resetByYear: activeWindow?.resetByYear }),
     resetByYear: activeWindow?.resetByYear,
     entityMode: 'player_deck'
   });

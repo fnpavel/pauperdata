@@ -6,7 +6,10 @@ import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-dat
 
 export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
   startingRating: 1500,
-  kFactor: 16,
+  kFactor: Object.freeze({
+    multiYear: 16,
+    seasonal: 16
+  }),
   resetByYear: true,
   entityMode: 'player'
 });
@@ -90,6 +93,13 @@ function getYearRangeLabel(years = []) {
   return `${normalizedYears[0]}-${normalizedYears[normalizedYears.length - 1]}`;
 }
 
+export function getRankingsKFactor(options = {}) {
+  const resetByYear = options?.resetByYear !== false;
+  return resetByYear
+    ? DEFAULT_RANKINGS_OPTIONS.kFactor.seasonal
+    : DEFAULT_RANKINGS_OPTIONS.kFactor.multiYear;
+}
+
 // Exposes the event types available to ranking/leaderboard consumers.
 export function getRankingsEventTypes() {
   return getEloEventTypes();
@@ -134,6 +144,11 @@ export async function buildRankingsDataset(
   } = {},
   options = {}
 ) {
+  const resolvedOptions = {
+    ...DEFAULT_RANKINGS_OPTIONS,
+    ...options,
+    kFactor: getRankingsKFactor(options)
+  };
   const normalizedEventTypes = normalizeEventTypes(eventTypes);
   const availableDates = getRankingsAvailableDates(normalizedEventTypes);
   const defaultRange = getDefaultRankingsRange(availableDates);
@@ -146,8 +161,7 @@ export async function buildRankingsDataset(
     // Return the full dataset shape even when no files are available. Callers can
     // render empty states without checking for missing properties.
     const eloResults = buildYearlyEloRatings([], {
-      ...DEFAULT_RANKINGS_OPTIONS,
-      ...options
+      ...resolvedOptions
     });
 
     return {
@@ -192,8 +206,7 @@ export async function buildRankingsDataset(
     : loadedMatches;
 
   const eloResults = buildYearlyEloRatings(filteredMatches, {
-    ...DEFAULT_RANKINGS_OPTIONS,
-    ...options
+    ...resolvedOptions
   });
   const selectedYears = [...new Set(
     filteredMatches
