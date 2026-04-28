@@ -421,7 +421,7 @@ export function renderEventFilterCalendar({
 
   calendarState.entries = entries
     .map(entry => {
-      const dateObject = new Date(`${entry.date}T00:00:00`);
+      const dateObject = new Date(`${entry.date}T00:00:00Z`);
       return {
         ...entry,
         year: dateObject.getUTCFullYear(),
