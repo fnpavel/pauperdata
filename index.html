@@ -1105,43 +1105,63 @@
     <div id="aboutSection" style="display: none;">
       <div class="about-content">
         <h2>About Pauper MTG Analytics</h2>
-        <p>Created in late March 2025, stopped being updated in June 2025 because MTGO replays were broken and I restarted the project in April 2026 doin a huge overhaul.</p>
-        <p class="about-lead">Project is active again and data is up to date. <br>Almost everything can be clicked now. <b>Give it a try!</p>
-        <p class="about-meta">Made with help from the AIs: Claude and Grok3 (original project) and then Codex for the overhaul</p>
-        <p>MTGO data gathered by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a></p>
-        <p>Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</a></p>
-        <p>Upstate NY data by <a href="https://m.facebook.com/profile.php?id=61558575774196" target="_blank">Upstate NY Pauper</a> <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">(Bluesky)</a></p>
+        <p class="about-lead">
+          An actively maintained dashboard for analyzing competitive Pauper data across events, players, and matchups.
+        </p>
 
-        <p>Contact (for bugs or to send data): <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)</p>
+        <ul class="about-copy-list">
+          <li class="about-copy">
+            The project was originally created in March 2025 and rebuilt in April 2026 with a redesigned data pipeline, improved performance, and expanded analytical tools.
+          </li>
+          <li class="about-copy">
+            Core MTGO data is made possible by <a href="https://twitter.com/Kirblinxy" target="_blank">Kirblinxy</a>, who manually rewatches replays and maintains a structured Google Drive archive with standings and matchup data. This project builds on that work through automated processing and analysis.
+          </li>
+          <li class="about-copy">
+            Data is updated regularly through an automated pipeline that ingests new files, transforms them into structured datasets, rebuilds derived data (Elo, matchups, etc.), and deploys updates to the site.
+          </li>
+        </ul>
 
-        <h3>Recent Improvements</h3>
-        <p>Event Analysis and Player Analysis overhaul: Improved filtering (including the ability to filter the recent sets), few bug fixes and more ways to see the data. The dataset/archive workflow was also improved. Theme was changed and now we have light and dark modes.</p>
-        <p>Matchup Matrix (Head-to-Head) added, Elo system added. It is missing some minor functionalities from the quick cards (stat-cards), but the core functionality is there.</p>
+        <p class="about-meta">
+          Built with assistance from Claude and Grok (original version) and Codex (2026 overhaul).
+        </p>
+
+        <p class="about-source">Paupergeddon data by <a href="https://www.legapauperitalia.it/" target="_blank">Lega Pauper Italia</a></p>
+        <p class="about-source">Upstate NY data by <a href="https://m.facebook.com/profile.php?id=61558575774196" target="_blank">Upstate NY Pauper</a> <a href="https://bsky.app/profile/upstatenypauper.bsky.social" target="_blank">(Bluesky)</a></p>
+
+        <p class="about-contact">
+          Contact (bugs or data contributions):
+          <a href="https://twitter.com/PyotrPavel" target="_blank">X/Twitter</a> or Discord (ppavel)
+        </p>
+
+        <h3>Features</h3>
+        <ul>
+          <li>Event and player analysis with advanced filtering</li>
+          <li>Head-to-head matchup matrix</li>
+          <li>Elo ratings (seasonal, continuous, and reset modes)</li>
+          <li>CSV export and interactive dashboard components</li>
+        </ul>
+
         <h3>Known Issues</h3>
         <ul>
-          <li>The dashboard still needs more work for smaller screens and full mobile optimization.</li>
-          <li>Some decks are classified as <b>UNKNOWN</b> because they could not be labeled cleanly from the source data. In MTGO this is either due to replays being unavailable because of a bug in MTGO or Kirb couldn't watch the replays for whatever other reason.</li>
-          <li>We do not have a real database pipeline yet, so things are still a little laggy, but the data refresh flow was improved.</li>
+          <li>Mobile and small-screen layout still needs refinement</li>
+          <li>Some decks are labeled <b>UNKNOWN</b> due to missing or unavailable replay data</li>
+          <li>No full database backend yet; performance improvements are ongoing</li>
         </ul>
 
-        <h3>Next Up in Priority Order</h3>
+        <h3>Next Steps</h3>
         <ul>
-          <li><s>Add the player vs player matchup matrix and keep expanding matchup tooling</s>.</li>
-          <li><s>Create Elo ratings for players with the Vintage-style starting point and K-factor, plus an option to reset every season</s></li>
-          <li><s>Add Export as CSV functionality</s></li>
-          <li><s>Improve the mobile and small-screen layout.</s></li>
-          <li><s>Continue the move from one large frontend dataset file toward a cleaner JSON.</s></li>
-          <li>Add more formats beyond Pauper.</li>
-          <li>Rework the mobile layout (do a full overhaul: Change statistics cards, less cluttered charts and tables, etc.)</li>
+          <li>Add support for formats beyond Pauper</li>
+          <li>Full mobile layout overhaul</li>
         </ul>
 
-        <h3>Recent Data Additions</h3>
+        <h3>Recent Data</h3>
         <ul>
-          <li>Ongoing MTGO archive rebuild from Kirb's Google Drive workbook collection</li>
+          <li>Ongoing MTGO archive rebuild from Kirblinxy's dataset</li>
           <li>2023 Paupergeddon Pisa</li>
           <li>2025 Upstate New York Open</li>
         </ul>
-        <p><a href="#" id="backToApp">Back to Dashboard</a></p>
+
+        <p class="about-actions"><a href="#" id="backToApp">Back to Dashboard</a></p>
       </div>
     </div>
   </div>

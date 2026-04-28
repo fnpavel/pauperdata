@@ -2966,38 +2966,94 @@ button.leaderboard-deck-result-card {
 
 /* About page content is hidden by default and shown through modules/about.js. */
 #aboutSection {
-  padding: 20px;
-  background: #1a1a1a;
-  color: #fff;
-  border-radius: 8px;
-  margin: 20px 0;
+  padding: 28px;
+  background: linear-gradient(145deg, var(--surface-2), var(--surface-1));
+  color: var(--text-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: 20px;
+  box-shadow: 0 18px 40px var(--shadow-color);
+  margin: 24px 0;
+}
+
+.about-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.about-content > * + * {
+  margin-top: 12px;
 }
 
 .about-content h2 {
-  font-size: 1.8em;
-  margin-bottom: 15px;
+  font-size: clamp(2rem, 3vw, 2.45rem);
+  line-height: 1.1;
+  margin: 0 0 8px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-subtle);
   font-family: 'Bitter', serif;
+  text-align: left;
+  letter-spacing: 0.01em;
+  color: var(--text-primary);
 }
 
 .about-content p {
-  font-size: 1.1em;
-  line-height: 1.5;
-  margin-bottom: 10px;
+  font-size: 1.04rem;
+  line-height: 1.55;
+  margin: 0;
+  color: var(--text-secondary);
+  text-align: left;
 }
 
 .about-content .about-lead {
+  font-size: 1.18rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  font-weight: 700;
+  max-width: 68ch;
+  text-align: left;
+}
+
+.about-content .about-copy-list {
+  padding-left: 26px;
+  margin: 2px 0 0;
+}
+
+.about-content .about-copy {
+  text-align: justify;
+  text-justify: inter-word;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.about-content .about-copy-list .about-copy:last-child {
+  margin-bottom: 0;
+}
+
+.about-content .about-source,
+.about-content .about-contact {
+  font-size: 0.98rem;
   color: var(--text-secondary);
-  max-width: 72ch;
 }
 
 .about-content .about-meta {
+  font-size: 0.98rem;
   color: var(--text-muted);
+  font-style: italic;
+  text-align: left;
+  padding: 10px 14px;
+  border-left: 3px solid var(--accent);
+  background: rgba(217, 164, 65, 0.08);
+  border-radius: 0 12px 12px 0;
 }
 
 .about-content h3 {
-  font-size: 1.4em;
-  margin: 15px 0 10px;
+  font-size: 1.25rem;
+  margin: 18px 0 2px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border-subtle);
   font-family: 'Bitter', serif;
+  text-align: left;
+  color: var(--text-primary);
 }
 
 .about-content h4 {
@@ -3009,23 +3065,56 @@ button.leaderboard-deck-result-card {
 
 .about-content ul {
   list-style-type: disc;
-  padding-left: 20px;
-  margin-bottom: 15px;
+  padding-left: 24px;
+  margin: 4px 0 0;
+  text-align: left;
 }
 
 .about-content li {
-  font-size: 1.1em;
-  line-height: 1.4;
-  margin-bottom: 5px;
+  font-size: 1rem;
+  line-height: 1.65;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
 }
 
 .about-content a {
-  color: #00CED1;
-  text-decoration: none;
+  color: var(--link-color);
+  text-decoration: underline;
+  text-decoration-color: rgba(111, 168, 255, 0.35);
+  text-underline-offset: 0.16em;
+  font-weight: 700;
 }
 
 .about-content a:hover {
-  text-decoration: underline;
+  color: var(--text-primary);
+  text-decoration-color: currentColor;
+}
+
+.about-content b,
+.about-content strong {
+  color: var(--text-primary);
+}
+
+.about-actions {
+  margin-top: 22px;
+  text-align: left;
+}
+
+.about-actions a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.72rem 1rem;
+  border-radius: 999px;
+  background: var(--primary);
+  color: #fffaf1;
+  text-decoration: none;
+  box-shadow: 0 10px 24px var(--shadow-color);
+}
+
+.about-actions a:hover {
+  background: var(--accent);
+  color: var(--dark);
 }
 
 #aboutButton.active {
