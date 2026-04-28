@@ -2223,6 +2223,8 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   }
 
   const metadataRows = [
+    ['Starting Rating', String(DEFAULT_RANKINGS_OPTIONS.startingRating)],
+    ['kFactor', String(DEFAULT_RANKINGS_OPTIONS.kFactor)],
     ['View', getLeaderboardViewTitle(dataset)],
     ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
     ['Rating Continuity', getLeaderboardContinuityLabel(dataset)],
