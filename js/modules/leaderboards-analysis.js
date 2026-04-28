@@ -34,6 +34,7 @@ const DEFAULT_LEADERBOARD_RESET_MODE = 'continuous';
 const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
 const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
 const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
+const LEADERBOARD_ELO_UNKNOWN_DECK_NOTE = 'Elo always includes UNKNOWN decks (player vs player), so the Data Quality toggle is not available.';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
   elo: new Set(['displayName', 'seasonYear', 'rating', 'eventCount', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
 });
@@ -755,18 +756,78 @@ function buildLeaderboardTableHelperText(dataset = currentLeaderboardDataset) {
   }
 
   const yearsLabel = getLeaderboardSelectedYearsLabel(dataset) || 'the selected years';
-  const thresholdNote = hasActiveLeaderboardEloThresholds()
-    ? ' Visible rows must also meet the current Elo minimum filters.'
-    : '';
   if (dataset?.period?.windowMode === 'seasonal') {
-    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Top 8 conversion and first-place finishes are shown from the same window.${thresholdNote}`;
+    return `Rows are ranked by Elo for the ${yearsLabel} season only. Ratings start at ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Top 8 conversion and first-place finishes are shown from the same window.`;
   }
 
   if (dataset.resetByYear) {
-    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season. Top 8 conversion and first-place finishes are scoped to each row's season.${thresholdNote}`;
+    return `Rows are ranked across ${yearsLabel} with a January 1 reset each year, so players can appear once per season. Top 8 conversion and first-place finishes are scoped to each row's season.`;
   }
 
-  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range. Top 8 conversion and first-place finishes cover the same selected window.${thresholdNote}`;
+  return `Rows are ranked across ${yearsLabel} as one continuous ladder, so each player appears once for the selected range. Top 8 conversion and first-place finishes cover the same selected window.`;
+}
+
+function buildLeaderboardRatingBadgeHtml(label, value) {
+  return `<span class="leaderboard-info-badge">${escapeHtml(`${label}: ${value}`)}</span>`;
+}
+
+function buildLeaderboardRatingBadgeRowHtml() {
+  return `
+    <div class="leaderboard-info-badge-row">
+      ${buildLeaderboardRatingBadgeHtml('Starting Rating', DEFAULT_RANKINGS_OPTIONS.startingRating)}
+      ${buildLeaderboardRatingBadgeHtml('K-Factor', DEFAULT_RANKINGS_OPTIONS.kFactor)}
+    </div>
+  `;
+}
+
+function buildLeaderboardEloModeSentence(dataset = currentLeaderboardDataset) {
+  const yearsLabel = getLeaderboardSelectedYearsLabel(dataset) || 'the selected years';
+
+  if (dataset?.period?.windowMode === 'seasonal') {
+    return `Ranked for the ${yearsLabel} season with a January 1 reset (one entry per player).`;
+  }
+
+  if (dataset?.resetByYear) {
+    return `Ranked across ${yearsLabel} with a January 1 reset each season (players may appear once per year).`;
+  }
+
+  return `Ranked across ${yearsLabel} as a single continuous ladder (one entry per player).`;
+}
+
+function buildLeaderboardEloBehaviorNotes(dataset = currentLeaderboardDataset) {
+  const notes = [];
+
+  if (dataset?.period?.windowMode === 'seasonal') {
+    notes.push('Top 8 conversions and wins use the same season.');
+  } else if (dataset?.resetByYear) {
+    notes.push('Top 8 conversions and wins are scoped per season.');
+  } else {
+    notes.push('Top 8 conversions and wins use the same window.');
+  }
+
+  if (hasActiveLeaderboardEloThresholds()) {
+    notes.push('Current Elo minimum filters also apply to visible rows.');
+  }
+
+  return notes;
+}
+
+function buildLeaderboardTableHelperHtml(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return escapeHtml(buildLeaderboardTableHelperText(dataset));
+  }
+
+  if ((dataset?.summary?.ratedMatches || 0) === 0) {
+    return escapeHtml(buildEmptyStateMessage(dataset?.eventTypes));
+  }
+
+  return `
+    <div class="leaderboard-info-stack">
+      <div class="leaderboard-info-title">Chronological Elo ladder</div>
+      <div class="leaderboard-info-copy">Players are ranked by Elo from rated matches in chronological order.</div>
+      <div class="leaderboard-info-copy">${escapeHtml(buildLeaderboardEloModeSentence(dataset))}</div>
+    </div>
+  `;
 }
 
 function ensureActiveLeaderboardWindow() {
@@ -1043,7 +1104,7 @@ function buildLeaderboardResetModeSummary(activeWindow = null) {
   }
 
   if (!activeWindow || activeWindow.windowMode !== 'range') {
-    return 'Seasonal view always resets to 1500 on January 1. Switch to Multi-Year to choose between yearly resets and a continuous ladder.';
+    return `Seasonal view always resets to ${DEFAULT_RANKINGS_OPTIONS.startingRating} on January 1. Switch to Multi-Year to choose between yearly resets and a continuous ladder.`;
   }
 
   const selectedYears = activeWindow.years || [];
@@ -1081,6 +1142,32 @@ function buildLeaderboardSystemSummary(activeWindow = null) {
   }
 
   return `Starting rating ${DEFAULT_RANKINGS_OPTIONS.startingRating}, K-factor ${DEFAULT_RANKINGS_OPTIONS.kFactor}. (same as the Vintage Leaderboards) Multi-Year Elo resets on January 1, so seasons stay separate.`;
+}
+
+function buildLeaderboardSystemSummaryHtml(activeWindow = null, dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return escapeHtml(buildLeaderboardSystemSummary(activeWindow));
+  }
+
+  return `
+    <div class="leaderboard-info-stack leaderboard-info-stack-compact">
+      ${buildLeaderboardRatingBadgeRowHtml()}
+      ${buildLeaderboardEloBehaviorNotes(dataset).map(note => `<div class="leaderboard-info-copy">${escapeHtml(note)}</div>`).join('')}
+    </div>
+  `;
+}
+
+function buildLeaderboardTableClickHintHtml(dataset = currentLeaderboardDataset) {
+  if (dataset?.mode === 'performance') {
+    return '<strong>Click a player row to open details.</strong>';
+  }
+
+  return `
+    <div class="leaderboard-info-stack leaderboard-info-stack-compact">
+      <div class="leaderboard-info-copy"><strong>Click a player row to open details.</strong></div>
+      <div class="leaderboard-info-copy">${escapeHtml(LEADERBOARD_ELO_UNKNOWN_DECK_NOTE)}</div>
+    </div>
+  `;
 }
 
 function buildLeaderboardPerformanceSummary(activeWindow = null) {
@@ -1189,7 +1276,7 @@ function renderLeaderboardWindowControls() {
   updateElementText('leaderboardWindowModeSummary', buildLeaderboardWindowModeSummary(activeWindow));
   updateElementText('leaderboardRangeSummary', buildLeaderboardRangeSummary(activeWindow));
   updateElementText('leaderboardResetModeSummary', buildLeaderboardResetModeSummary(activeWindow));
-  updateElementText('leaderboardSystemSummary', buildLeaderboardSystemSummary(activeWindow));
+  updateElementHTML('leaderboardSystemSummary', buildLeaderboardSystemSummaryHtml(activeWindow));
   renderLeaderboardFullscreenFilterBadges(activeWindow);
 
   return activeWindow;
@@ -1295,7 +1382,7 @@ function buildSummaryText(dataset) {
     : '';
   const selectedYearsLabel = getLeaderboardSelectedYearsLabel(dataset);
   const resetNote = resetByYear
-    ? 'Rating resets to 1500 when the calendar year changes.'
+    ? `Rating resets to ${DEFAULT_RANKINGS_OPTIONS.startingRating} when the calendar year changes.`
     : 'Rating carries across the full selected window.';
   const modeNote = dataset?.period?.windowMode === 'seasonal'
     ? (selectedYearsLabel ? ` This view isolates the ${selectedYearsLabel} season.` : '')
@@ -1827,6 +1914,7 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   destroyLeaderboardTimelineChart();
   updateElementText('leaderboardTableTitle', 'Elo Leaderboard');
   updateElementText('leaderboardTableHelper', message);
+  updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml());
   updateElementText('leaderboardEntryColumnLabel', 'Season');
   updateElementHTML(
     'leaderboardTableBody',
@@ -1842,6 +1930,7 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
   destroyLeaderboardTimelineChart();
   updateElementText('leaderboardTableHelper', message);
+  updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml());
   updateElementHTML('leaderboardTableBody', `<tr><td colspan='11'>${escapeHtml(message)}</td></tr>`);
   updateLeaderboardSearchStatus(message);
   const timelineSection = getLeaderboardTimelineSection();
@@ -4707,6 +4796,7 @@ function renderLeaderboardTable(dataset) {
   if (dataset?.mode === 'performance') {
     updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
     updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
+    updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml(dataset));
     updateElementHTML(
       'leaderboardTableHead',
       `
@@ -4756,7 +4846,8 @@ function renderLeaderboardTable(dataset) {
   const totalColumns = 12 + yearGainColumns.length;
 
   updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
-  updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
+  updateElementHTML('leaderboardTableHelper', buildLeaderboardTableHelperHtml(dataset));
+  updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml(dataset));
   updateElementHTML(
     'leaderboardTableHead',
     `

@@ -2324,6 +2324,48 @@ button.leaderboard-deck-result-card {
   line-height: 1.4;
 }
 
+.leaderboard-info-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.leaderboard-info-stack-compact {
+  gap: 4px;
+}
+
+.leaderboard-info-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.leaderboard-info-copy {
+  margin: 0;
+}
+
+.leaderboard-info-badge-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 2px;
+}
+
+.leaderboard-info-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgba(217, 164, 65, 0.16);
+  border: 1px solid rgba(217, 164, 65, 0.24);
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .leaderboard-history-item-static {
   cursor: default;
 }
