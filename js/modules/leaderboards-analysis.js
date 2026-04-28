@@ -225,6 +225,10 @@ function getLeaderboardTableToolbar() {
   return document.getElementById('leaderboardTableToolbar');
 }
 
+function getLeaderboardTitleBadgeRow() {
+  return document.getElementById('leaderboardTitleBadgeRow');
+}
+
 function getLeaderboardFullscreenBadgeStrip() {
   return document.getElementById('leaderboardFullscreenBadgeStrip');
 }
@@ -780,6 +784,24 @@ function buildLeaderboardRatingBadgeRowHtml() {
   `;
 }
 
+function renderLeaderboardTitleBadgeRow(dataset = currentLeaderboardDataset) {
+  const badgeRow = getLeaderboardTitleBadgeRow();
+  const container = getLeaderboardTableContainer();
+  if (!badgeRow || !container) {
+    return;
+  }
+
+  const isFullscreen = document.fullscreenElement === container;
+  if (dataset?.mode === 'performance' || isFullscreen) {
+    badgeRow.innerHTML = '';
+    badgeRow.hidden = true;
+    return;
+  }
+
+  badgeRow.innerHTML = buildLeaderboardRatingBadgeRowHtml();
+  badgeRow.hidden = false;
+}
+
 function buildLeaderboardEloModeSentence(dataset = currentLeaderboardDataset) {
   const yearsLabel = getLeaderboardSelectedYearsLabel(dataset) || 'the selected years';
 
@@ -1151,7 +1173,6 @@ function buildLeaderboardSystemSummaryHtml(activeWindow = null, dataset = curren
 
   return `
     <div class="leaderboard-info-stack leaderboard-info-stack-compact">
-      ${buildLeaderboardRatingBadgeRowHtml()}
       ${buildLeaderboardEloBehaviorNotes(dataset).map(note => `<div class="leaderboard-info-copy">${escapeHtml(note)}</div>`).join('')}
     </div>
   `;
@@ -1218,7 +1239,26 @@ function getLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboardD
     badges.push(activeWindow.resetMode === 'continuous' ? 'Carry Across Range' : 'Reset Each Year');
   }
 
+  if (!isPerformanceLeaderboardMode()) {
+    badges.push(
+      `Starting Rating: ${DEFAULT_RANKINGS_OPTIONS.startingRating}`,
+      `K-Factor: ${DEFAULT_RANKINGS_OPTIONS.kFactor}`
+    );
+  }
+
   return badges.filter(Boolean);
+}
+
+function getLeaderboardFullscreenBadgeTooltip(label = '') {
+  if (label === 'Carry Across Range') {
+    return 'Maintains a single continuous Elo rating for each player across the selected years, carrying results forward from the first year to the last.';
+  }
+
+  if (label === 'Reset Each Year') {
+    return 'Resets Elo at the start of each year, allowing direct comparison of players\' peak seasonal performance across different years.';
+  }
+
+  return '';
 }
 
 function renderLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboardDataset?.period || ensureActiveLeaderboardWindow().activeWindow) {
@@ -1230,11 +1270,19 @@ function renderLeaderboardFullscreenFilterBadges(activeWindow = currentLeaderboa
 
   const isFullscreen = document.fullscreenElement === container;
   const badges = isFullscreen ? getLeaderboardFullscreenFilterBadges(activeWindow) : [];
+  renderLeaderboardTitleBadgeRow(currentLeaderboardDataset);
 
   badgeStrip.hidden = badges.length === 0;
   updateElementHTML(
     'leaderboardFullscreenBadgeStrip',
-    badges.map(label => `<span class="leaderboard-fullscreen-filter-badge">${escapeHtml(label)}</span>`).join('')
+    badges.map(label => {
+      const tooltip = getLeaderboardFullscreenBadgeTooltip(label);
+      const tooltipAttributes = tooltip
+        ? ` data-tooltip="${escapeHtml(tooltip)}" aria-label="${escapeHtml(`${label}. ${tooltip}`)}"`
+        : '';
+      const tooltipClassName = tooltip ? ' analysis-filter-tooltip' : '';
+      return `<span class="leaderboard-fullscreen-filter-badge${tooltipClassName}"${tooltipAttributes}>${escapeHtml(label)}</span>`;
+    }).join('')
   );
 }
 
@@ -1913,6 +1961,7 @@ function comparePerformanceLeaderboardRows(a = {}, b = {}) {
 function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   destroyLeaderboardTimelineChart();
   updateElementText('leaderboardTableTitle', 'Elo Leaderboard');
+  renderLeaderboardTitleBadgeRow();
   updateElementText('leaderboardTableHelper', message);
   updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml());
   updateElementText('leaderboardEntryColumnLabel', 'Season');
@@ -1929,6 +1978,7 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
 
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
   destroyLeaderboardTimelineChart();
+  renderLeaderboardTitleBadgeRow();
   updateElementText('leaderboardTableHelper', message);
   updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml());
   updateElementHTML('leaderboardTableBody', `<tr><td colspan='11'>${escapeHtml(message)}</td></tr>`);
@@ -4795,6 +4845,7 @@ function renderLeaderboardTable(dataset) {
 
   if (dataset?.mode === 'performance') {
     updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
+    renderLeaderboardTitleBadgeRow(dataset);
     updateElementText('leaderboardTableHelper', buildLeaderboardTableHelperText(dataset));
     updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml(dataset));
     updateElementHTML(
@@ -4846,6 +4897,7 @@ function renderLeaderboardTable(dataset) {
   const totalColumns = 12 + yearGainColumns.length;
 
   updateElementText('leaderboardTableTitle', getLeaderboardViewTitle(dataset));
+  renderLeaderboardTitleBadgeRow(dataset);
   updateElementHTML('leaderboardTableHelper', buildLeaderboardTableHelperHtml(dataset));
   updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml(dataset));
   updateElementHTML(

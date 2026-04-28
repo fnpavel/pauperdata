@@ -2439,6 +2439,11 @@ button.leaderboard-deck-result-card {
   line-height: 1.45;
 }
 
+#leaderboardTitleBadgeRow .leaderboard-info-badge-row {
+  margin-top: -4px;
+  margin-bottom: 12px;
+}
+
 .leaderboard-table-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -2620,6 +2625,10 @@ button.leaderboard-deck-result-card {
 
 .data-table-container:fullscreen .leaderboard-fullscreen-badge-strip {
   display: flex;
+}
+
+.data-table-container:fullscreen #leaderboardTitleBadgeRow {
+  display: none;
 }
 
 .data-table-container:fullscreen .event-analysis-table-scroll,
