@@ -27,6 +27,7 @@ import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
 import { getAnalysisRows } from '../utils/analysis-data.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
+import { getEventGroupInfo } from '../utils/event-groups.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
@@ -77,6 +78,7 @@ const LEADERBOARD_ELO_THRESHOLD_CONFIG = Object.freeze({
 const LEADERBOARD_ELO_THRESHOLD_QUICK_VIEW_OPTIONS = Object.freeze([1, 10, 50, 90, 99]);
 const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardDateRangeCard',
+  'leaderboardEventsCard',
   'leaderboardRatedMatchesCard',
   'leaderboardTrackedPlayersCard',
   'leaderboardTopEloCard',
@@ -1345,6 +1347,120 @@ function formatRatingDelta(value) {
 function formatWinRate(value) {
   const numericValue = Number(value);
   return Number.isFinite(numericValue) ? `${(numericValue * 100).toFixed(1)}%` : '0.0%';
+}
+
+function pluralizeLeaderboardEventLabel(label = '', count = 0) {
+  const safeLabel = String(label || '').trim() || 'Event';
+  if (count === 1) {
+    return safeLabel;
+  }
+  if (/[^aeiou]y$/i.test(safeLabel)) {
+    return `${safeLabel.slice(0, -1)}ies`;
+  }
+  if (/(s|x|z|ch|sh)$/i.test(safeLabel)) {
+    return `${safeLabel}es`;
+  }
+  return `${safeLabel}s`;
+}
+
+function resolveLeaderboardEventTypeMeta(eventName = '') {
+  const rawName = String(eventName || '').trim();
+  const normalizedName = rawName.toLowerCase();
+
+  if (normalizedName.includes('challenge')) {
+    return { key: 'challenge', label: 'Challenge', order: 0 };
+  }
+  if (normalizedName.includes('qualifier')) {
+    return { key: 'qualifier', label: 'Qualifier', order: 1 };
+  }
+  if (normalizedName.includes('showcase')) {
+    return { key: 'showcase', label: 'Showcase', order: 2 };
+  }
+  if (normalizedName.includes('super')) {
+    return { key: 'super', label: 'Super', order: 3 };
+  }
+
+  const groupInfo = getEventGroupInfo(rawName);
+  return {
+    key: String(groupInfo?.key || rawName || 'event').trim(),
+    label: String(groupInfo?.label || rawName || 'Event').trim() || 'Event',
+    order: Number.isFinite(Number(groupInfo?.order)) ? Number(groupInfo.order) : 100
+  };
+}
+
+function buildLeaderboardEventSummary(dataset = currentLeaderboardDataset) {
+  const uniqueEvents = new Map();
+
+  if (dataset?.mode === 'performance') {
+    const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+    const selectedEventTypes = new Set(
+      (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
+        .map(type => String(type || '').trim().toLowerCase())
+        .filter(Boolean)
+    );
+
+    eventRows.forEach(row => {
+      const rowDate = String(row?.Date || '').trim();
+      const eventName = String(row?.Event || '').trim();
+      const eventType = String(row?.EventType || '').trim().toLowerCase();
+      if (!rowDate || !eventName) {
+        return;
+      }
+      if (dataset?.startDate && rowDate < dataset.startDate) {
+        return;
+      }
+      if (dataset?.endDate && rowDate > dataset.endDate) {
+        return;
+      }
+      if (selectedEventTypes.size > 0 && !selectedEventTypes.has(eventType)) {
+        return;
+      }
+
+      uniqueEvents.set(`${rowDate}:::${eventName}`, resolveLeaderboardEventTypeMeta(eventName));
+    });
+  } else {
+    const processedMatches = Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : [];
+    processedMatches.forEach(match => {
+      const matchDate = String(match?.date || match?.Date || '').trim();
+      const eventKey = String(match?.event_id || match?.eventId || match?.event || '').trim();
+      const eventName = String(match?.event || match?.Event || eventKey).trim();
+      if (!matchDate || !eventName) {
+        return;
+      }
+
+      uniqueEvents.set(`${matchDate}:::${eventKey || eventName}`, resolveLeaderboardEventTypeMeta(eventName));
+    });
+  }
+
+  const groupedCounts = new Map();
+  uniqueEvents.forEach(eventTypeMeta => {
+    const groupKey = String(eventTypeMeta?.key || eventTypeMeta?.label || 'event').trim();
+    if (!groupedCounts.has(groupKey)) {
+      groupedCounts.set(groupKey, {
+        count: 0,
+        label: eventTypeMeta?.label || 'Event',
+        order: Number.isFinite(Number(eventTypeMeta?.order)) ? Number(eventTypeMeta.order) : 100
+      });
+    }
+
+    groupedCounts.get(groupKey).count += 1;
+  });
+
+  const breakdown = [...groupedCounts.values()]
+    .sort((left, right) => {
+      return (
+        Number(left.order) - Number(right.order) ||
+        Number(right.count) - Number(left.count) ||
+        String(left.label).localeCompare(String(right.label), undefined, { sensitivity: 'base' })
+      );
+    })
+    .map(item => `${item.count} ${pluralizeLeaderboardEventLabel(item.label, item.count)}`)
+    .join(', ');
+
+  return {
+    total: uniqueEvents.size,
+    breakdown: breakdown || 'No events in selected window'
+  };
 }
 
 function formatWindowRange(startDate = '', endDate = '') {
@@ -4616,6 +4732,7 @@ function populateLeaderboardStats(dataset) {
   // Fills the leaderboard stat cards from the current Elo dataset summary.
   if (dataset?.mode === 'performance') {
     const { summary } = dataset;
+    const eventSummary = buildLeaderboardEventSummary(dataset);
     const topConversionRows = getRowsAtMaxValue(currentLeaderboardRows, 'top8Conversion')
       .filter(row => Number(row.eventCount) >= (Number(summary.minEvents) || 1));
     const mostTop8Rows = getRowsAtMaxValue(currentLeaderboardRows, 'top8Count')
@@ -4636,6 +4753,7 @@ function populateLeaderboardStats(dataset) {
     };
 
     setCardTitle('leaderboardDateRangeCard', 'Selected Range');
+    setCardTitle('leaderboardEventsCard', 'Events');
     setCardTitle('leaderboardRatedMatchesCard', 'Minimum Events');
     setCardTitle('leaderboardTrackedPlayersCard', 'Tracked Players');
     setCardTitle('leaderboardTopEloCard', 'Best Top 8 Conversion');
@@ -4645,6 +4763,8 @@ function populateLeaderboardStats(dataset) {
 
     updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
     updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
+    updateElementText('leaderboardEventsValue', String(eventSummary.total || 0));
+    updateElementText('leaderboardEventsBreakdown', eventSummary.breakdown);
     updateElementText('leaderboardRatedMatches', String(summary.minEvents || 0));
     updateElementText(
       'leaderboardRatedMatchesDetails',
@@ -4717,6 +4837,7 @@ function populateLeaderboardStats(dataset) {
   }
 
   const { summary } = dataset;
+  const eventSummary = buildLeaderboardEventSummary(dataset);
   const topEloRows = getRowsAtMaxValue(currentLeaderboardRows, 'rating').filter(row => Number.isFinite(Number(row.rating)));
   const mostActiveRows = getRowsAtMaxValue(currentLeaderboardRows, 'matches').filter(row => Number(row.matches) > 0);
   const topEloNames = topEloRows.map(row => row.displayName).filter(Boolean);
@@ -4754,6 +4875,7 @@ function populateLeaderboardStats(dataset) {
   };
 
   setCardTitle('leaderboardDateRangeCard', 'Selected Range');
+  setCardTitle('leaderboardEventsCard', 'Events');
   setCardTitle('leaderboardRatedMatchesCard', 'Rated Matches');
   setCardTitle('leaderboardTrackedPlayersCard', 'Tracked Players');
   setCardTitle('leaderboardTopEloCard', 'Current Top Elo');
@@ -4763,6 +4885,8 @@ function populateLeaderboardStats(dataset) {
 
   updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
   updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
+  updateElementText('leaderboardEventsValue', String(eventSummary.total || 0));
+  updateElementText('leaderboardEventsBreakdown', eventSummary.breakdown);
   updateElementText('leaderboardRatedMatches', String(summary.ratedMatches || 0));
   updateElementText('leaderboardRatedMatchesDetails', selectedPairingsLabel);
   updateElementText('leaderboardTrackedPlayers', String(visiblePlayerCount || 0));
