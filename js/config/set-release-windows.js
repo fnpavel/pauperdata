@@ -120,5 +120,23 @@ export const setReleaseWindows = [
     label: 'Magic: The Gathering | Marvel Super Heroes',
     buttonLabel: 'Marvel Heroes',
     releaseDate: '2026-06-26'
+  },
+  {
+  slug: 'the-hobbit',
+  label: 'Magic: The Gathering | The Hobbit',
+  buttonLabel: 'The Hobbit',
+  releaseDate: '2026-08-14'
+  },
+  {
+    slug: 'reality-fracture',
+    label: 'Reality Fracture',
+    buttonLabel: 'Reality Fracture',
+    releaseDate: '2026-10-02'
+  },
+  {
+    slug: 'star-trek',
+    label: 'Magic: The Gathering | Star Trek',
+    buttonLabel: 'Star Trek',
+    releaseDate: '2026-11-20'
   }
 ];
