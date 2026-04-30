@@ -76,9 +76,9 @@ function getEntityDetails(match, side = 'a', entityMode = DEFAULT_ENTITY_MODE) {
 
   if (isPlayerDeckMode(entityMode)) {
     // Deck-scoped Elo treats "player on deck" as a separate ladder identity from
-    // the same player on a different deck.
+    // the same player on a different deck, but names should remain player-only.
     const entityKey = basePlayerKey && deck ? `${basePlayerKey}:::${deck}` : '';
-    const displayName = [basePlayerName || basePlayerKey, deck].filter(Boolean).join(' - ');
+    const displayName = basePlayerName || basePlayerKey;
 
     return {
       entityKey,
