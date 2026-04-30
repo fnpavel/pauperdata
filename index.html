@@ -959,7 +959,46 @@
 
         <div class="charts-and-tables" id="leaderboardChartsAndTables">
           <div class="data-table-container" id="leaderboardTableContainer">
-            <h2 class="chart-title" id="leaderboardTableTitle">Seasonal Elo Leaderboard</h2>
+            <div class="leaderboard-title-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 class="chart-title" id="leaderboardTableTitle" style="margin:0;">Seasonal Elo Leaderboard</h2>
+              <div class="leaderboard-deck-control">
+                <button
+                  type="button"
+                  class="bubble-button"
+                  id="leaderboardDeckSelectButton"
+                  title="Select a deck for the Elo leaderboard"
+                >
+                  Deck: All Decks (Overall)
+                </button>
+                <button
+                  type="button"
+                  class="bubble-button leaderboard-deck-reset-button"
+                  id="leaderboardDeckResetButton"
+                  title="Clear deck selection"
+                  hidden
+                  aria-label="Clear deck selection"
+                >
+                  ✕
+                </button>
+              </div>
+            </div>
+            <div id="leaderboardDeckModalBackdrop" class="deck-selector-modal-backdrop" hidden>
+              <div class="deck-selector-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboardDeckModalTitle">
+                <div class="deck-selector-header">
+                  <h3 id="leaderboardDeckModalTitle">Select Deck</h3>
+                  <button type="button" class="bubble-button deck-selector-close-button" id="leaderboardDeckModalClose" aria-label="Close deck selector">Close</button>
+                </div>
+                <input
+                  type="search"
+                  class="player-search-input deck-selector-input"
+                  id="leaderboardDeckModalSearchInput"
+                  placeholder="Filter decks..."
+                  aria-label="Filter decks"
+                  autocomplete="off"
+                />
+                <div class="deck-selector-list" id="leaderboardDeckModalList"></div>
+              </div>
+            </div>
             <div id="leaderboardTitleBadgeRow"></div>
             <div class="leaderboard-table-toolbar" id="leaderboardTableToolbar">
               <div class="player-search-select leaderboard-table-search">
