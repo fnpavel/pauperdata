@@ -223,18 +223,23 @@ def inspect_workbook_readiness(workbook_path: Path) -> dict[str, Any]:
         else:
             input_sheet = workbook["Input"]
             for top32_position in range(1, 33):
-                row_index = top32_position + 1
-                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=3).value)
+                row_index = top32_position + 1 #header is row 1; players in column B (2) and decks in column E (5)
+                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=2).value)
                 deck_value = normalize_cell_text(input_sheet.cell(row=row_index, column=5).value)
                 if not name_value or not deck_value:
                     input_missing_positions.append(top32_position)
+            for row_index in range(34, input_sheet.max_row + 1 ):
+                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=2).value)
+                deck_value = normalize_cell_text(input_sheet.cell(row=row_index, column=5).value)
+                if bool(name_value) != bool(deck_value):
+                    issues.append(f"Input has mismatched Name/Deck rows at position {row_index}")
+                    break
 
             if input_missing_positions:
                 issues.append(
                     "Input Top 32 is incomplete for Name/Deck rows: "
                     f"{summarize_missing_positions(input_missing_positions)}"
                 )
-
         if "Match Up Input" not in workbook.sheetnames:
             issues.append("Match Up Input sheet is missing.")
         else:
