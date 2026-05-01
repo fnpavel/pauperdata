@@ -228,9 +228,10 @@ def inspect_workbook_readiness(workbook_path: Path) -> dict[str, Any]:
                 deck_value = normalize_cell_text(input_sheet.cell(row=row_index, column=5).value)
                 if not name_value or not deck_value:
                     input_missing_positions.append(top32_position)
-            for row_index in range(34, input_sheet.max_row + 1 ):
-                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=2).value)
-                deck_value = normalize_cell_text(input_sheet.cell(row=row_index, column=5).value)
+            for row_index, row in enumerate(input_sheet.iter_rows(min_row=34), start=34):
+                name_value = normalize_cell_text(row[1].value)  # column B
+                deck_value = normalize_cell_text(row[4].value)  # column E
+
                 if bool(name_value) != bool(deck_value):
                     issues.append(f"Input has mismatched Name/Deck rows at position {row_index}")
                     break
