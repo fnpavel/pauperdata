@@ -49,6 +49,11 @@ on:
         required: false
         type: boolean
         default: false
+      run_discord_notification:
+        description: Post summary to Discord channel via webhook
+        required: false
+        type: boolean
+        default: false
       upload_debug_artifact:
         description: Upload generated outputs for inspection
         required: false
@@ -299,6 +304,13 @@ jobs:
         run: |
           set -euxo pipefail
           python pipeline/publish_pipeline_changes.py
+      
+      - name: Discord notification
+        if: ${{ steps.publish.outcome == 'success' && (github.event_name == 'schedule' || inputs.run_discord_notification) }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python pipeline/discord_notify.py
 
       - name: Upload debug artifacts
         if: ${{ failure() || inputs.upload_debug_artifact }}
