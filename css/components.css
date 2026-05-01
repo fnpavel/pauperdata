@@ -1653,18 +1653,6 @@ button.leaderboard-deck-result-card {
   opacity: 0.8;
 }
 
-#leaderboardTableContainer.leaderboard-scope-deck {
-  background: linear-gradient(rgba(0, 0, 0, 0.04), rgba(0, 0, 0, 0.04)), var(--secondary);
-  border-color: rgba(0, 0, 0, 0.08);
-}
-
-#leaderboardTableContainer.leaderboard-scope-deck .data-table th {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-#leaderboardTableContainer.leaderboard-scope-deck .data-table tbody tr:hover {
-  background-color: rgba(255, 255, 255, 0.10);
-}
 
 .leaderboard-deck-result-stats {
   display: grid;
@@ -3853,7 +3841,7 @@ html[data-theme="light"] .range-calendar-day.active {
   width: min(600px, 100%);
   max-height: calc(100vh - 80px);
   overflow: hidden;
-  background: var(--surface, #fff);
+  background: var(--surface-1, #fff);
   color: var(--text-primary, #111);
   border: 1px solid var(--surface-hover, rgba(0, 0, 0, 0.08));
   border-radius: 16px;
@@ -3925,4 +3913,24 @@ html[data-theme="light"] .range-calendar-day.active {
   font-size: 1rem;
   line-height: 1;
   border-radius: 10px;
+}
+
+/* Keep title and deck selector together while allowing wrap on smaller screens */
+.leaderboard-deck-control {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+@media (max-width: 760px) {
+  .leaderboard-title-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .leaderboard-deck-control {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
 }

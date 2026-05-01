@@ -225,16 +225,6 @@ function getLeaderboardTableContainer() {
   return document.getElementById('leaderboardTableContainer');
 }
 
-function updateLeaderboardTableScopeClass() {
-  const container = getLeaderboardTableContainer();
-  if (!container) {
-    return;
-  }
-
-  container.classList.toggle('leaderboard-scope-deck', selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE);
-  container.classList.toggle('leaderboard-scope-overall', selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE);
-}
-
 function getLeaderboardTableToolbar() {
   return document.getElementById('leaderboardTableToolbar');
 }
@@ -683,7 +673,12 @@ function getLeaderboardRowYearGainValue(row = {}, year = '') {
     return '--';
   }
 
-  const historyEntries = currentLeaderboardDataset.historyByPlayer?.get(row.playerKey) || [];
+  const rowKey = String(row?.playerKey || '').trim();
+  const historyMap = currentLeaderboardDataset.deckDataset?.historyByPlayer?.has(rowKey)
+    ? currentLeaderboardDataset.deckDataset.historyByPlayer
+    : currentLeaderboardDataset.historyByPlayer;
+  const historyEntries = Array.isArray(historyMap?.get(rowKey)) ? historyMap.get(rowKey) : [];
+
   const yearTotals = historyEntries.reduce((totals, entry) => {
     const entryYear = String(entry.date || '').slice(0, 4);
     if (entryYear !== normalizedYear || !Number.isFinite(Number(entry.delta))) {
@@ -807,10 +802,6 @@ function buildLeaderboardRatingBadgeRowHtml(dataset = currentLeaderboardDataset)
   `;
 }
 
-function buildLeaderboardDeckContextBadgeHtml(deckName) {
-  return `<span class="leaderboard-info-badge leaderboard-deck-context-badge">${escapeHtml(`Deck: ${deckName}`)}</span>`;
-}
-
 function renderLeaderboardTitleBadgeRow(dataset = currentLeaderboardDataset) {
   const badgeRow = getLeaderboardTitleBadgeRow();
   const container = getLeaderboardTableContainer();
@@ -825,13 +816,8 @@ function renderLeaderboardTitleBadgeRow(dataset = currentLeaderboardDataset) {
     return;
   }
 
-  const deckBadge = selectedDeck && selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE
-    ? buildLeaderboardDeckContextBadgeHtml(getDeckDisplayName(selectedDeck))
-    : '';
-
   badgeRow.innerHTML = `
     <div class="leaderboard-info-badge-row">
-      ${deckBadge}
       ${buildLeaderboardRatingBadgeHtml('Starting Rating', DEFAULT_RANKINGS_OPTIONS.startingRating)}
       ${buildLeaderboardRatingBadgeHtml('K-Factor', getLeaderboardResolvedKFactor(dataset))}
     </div>
@@ -2180,7 +2166,6 @@ function renderLeaderboardFromCurrentState() {
     ? applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset)
     : applyLeaderboardRowFilters(buildDeckViewRows(selectedDeck, currentLeaderboardDataset), currentLeaderboardDataset);
   renderLeaderboardDeckButton();
-  updateLeaderboardTableScopeClass();
   renderLeaderboardEloThresholdControls();
 
   populateLeaderboardStats(currentLeaderboardDataset);
