@@ -1408,7 +1408,14 @@ def run_sync_command(args: argparse.Namespace) -> int:
     processed_paths = build_processed_relative_paths_set(processed_manifest)
     archive_paths = list_archive_relative_paths(settings.archive_root)
     current_utc_time = datetime.now(timezone.utc)
-    cutoff = current_utc_time - timedelta(minutes=30)
+    # Cutoff time for to avoid downloading files that were modified very recently, 
+    # which may still be in the process of being edited and saved by the user.
+    # This cutoff can be overridden with the --force flag for testing or exceptional cases
+    if args.force:
+        print("Force mode enabled: skipping 30-minute cutoff")
+        cutoff = current_utc_time
+    else:
+        cutoff = current_utc_time - timedelta(minutes=30)
     excluded_drive_files_count = sum(
         1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides)
     )
