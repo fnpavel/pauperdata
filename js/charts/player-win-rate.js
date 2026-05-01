@@ -7,6 +7,7 @@ import { getAnalysisRowsForEvent } from '../utils/analysis-data.js';
 import { getSelectedPlayerLabel } from '../utils/player-names.js';
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
+import { getSelectedPlayerDeck, setSelectedPlayerDeck, dispatchPlayerDeckFilterChange, getEloDeckOrder } from '../utils/player-deck-filter.js';
 
 export let playerWinRateChart = null;
 // Empty means the detail card follows hover; a value means a clicked event stays
@@ -40,36 +41,11 @@ function getPlayerWinRateDeckFilterRoot() {
 }
 
 function readSelectedPlayerWinRateDeck() {
-  const root = getPlayerWinRateDeckFilterRoot();
-  if (!root) {
-    return '';
-  }
-
-  const directSelection = String(root.dataset.selectedDeck || '').trim();
-  if (directSelection) {
-    return directSelection;
-  }
-
-  try {
-    // Older UI state stored this as a JSON array. Keep reading it so stale DOM
-    // state from a hot reload does not lose the user's selection.
-    const parsed = JSON.parse(root.dataset.selectedDecks || '[]');
-    return Array.isArray(parsed) ? String(parsed[0] || '').trim() : '';
-  } catch (error) {
-    console.warn('Unable to parse player win-rate deck filter state:', error);
-    return '';
-  }
+  return getSelectedPlayerDeck();
 }
 
 function writeSelectedPlayerWinRateDeck(selectedDeck) {
-  const root = getPlayerWinRateDeckFilterRoot();
-  if (!root) {
-    return;
-  }
-
-  const normalizedSelection = String(selectedDeck || '').trim();
-  root.dataset.selectedDeck = normalizedSelection;
-  root.dataset.selectedDecks = JSON.stringify(normalizedSelection ? [normalizedSelection] : []);
+  setSelectedPlayerDeck(selectedDeck);
 }
 
 function isSelectablePlayerWinRateDeck(deckName) {
@@ -91,18 +67,37 @@ function renderPlayerWinRateDeckFilter(baseData) {
     (baseData || [])
       .map(row => String(row.Deck || '').trim())
       .filter(isSelectablePlayerWinRateDeck)
-  )].sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+  )];
+
+  const eloDeckOrder = getEloDeckOrder();
+  const originalDeckIndex = new Map(availableDecks.map((deck, index) => [deck, index]));
+
+  availableDecks.sort((a, b) => {
+    const ai = eloDeckOrder.indexOf(a);
+    const bi = eloDeckOrder.indexOf(b);
+
+    if (ai !== -1 && bi !== -1) {
+      return ai - bi;
+    }
+    if (ai !== -1) {
+      return -1;
+    }
+    if (bi !== -1) {
+      return 1;
+    }
+
+    return (originalDeckIndex.get(a) || 0) - (originalDeckIndex.get(b) || 0);
+  });
 
   const currentSelectedDeck = readSelectedPlayerWinRateDeck();
   const validSelectedDeck = availableDecks.includes(currentSelectedDeck) ? currentSelectedDeck : '';
-  writeSelectedPlayerWinRateDeck(validSelectedDeck);
 
   if (availableDecks.length === 0) {
     root.innerHTML = `
       <div class="player-chart-filter-header">
         <div class="player-chart-filter-copy">
           <span class="player-chart-filter-label">Deck Filter</span>
-          <span class="player-chart-filter-note">Applies only to this chart.</span>
+          <span class="player-chart-filter-note">Shared player deck filter. Mirrors the selected Elo deck filter.</span>
         </div>
       </div>
       <div class="player-chart-filter-empty">${escapeHtml(PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE)}</div>
@@ -111,8 +106,8 @@ function renderPlayerWinRateDeckFilter(baseData) {
   }
 
   const filterSummary = validSelectedDeck
-    ? `Applies only to this chart. Showing only ${validSelectedDeck} in the current time span.`
-    : `Applies only to this chart. Showing all ${availableDecks.length} decks in the current time span.`;
+    ? `Shared deck filter. Showing only ${validSelectedDeck} in the current time span.`
+    : `Shared deck filter. Showing all ${availableDecks.length} decks in the current time span.`;
 
   root.innerHTML = `
     <div class="player-chart-filter-header">
@@ -146,6 +141,7 @@ function setupPlayerWinRateDeckFilterListeners() {
     const resetButton = event.target.closest('[data-player-win-rate-reset="true"]');
     if (resetButton) {
       writeSelectedPlayerWinRateDeck('');
+      dispatchPlayerDeckFilterChange();
       updatePlayerWinRateChart();
       return;
     }
@@ -162,6 +158,7 @@ function setupPlayerWinRateDeckFilterListeners() {
 
     const currentSelectedDeck = readSelectedPlayerWinRateDeck();
     writeSelectedPlayerWinRateDeck(currentSelectedDeck === deckName ? '' : deckName);
+    dispatchPlayerDeckFilterChange();
     updatePlayerWinRateChart();
   });
 

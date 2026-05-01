@@ -5,6 +5,7 @@ import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { triggerUpdateAnimation, updateElementHTML } from '../utils/dom.js';
 import { calculatePlayerStats } from '../utils/data-cards.js';
+import { getSelectedPlayerDeck, setSelectedPlayerDeck } from '../utils/player-deck-filter.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
 import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
@@ -312,21 +313,11 @@ function getPlayerEloDeckFilterRoot() {
 }
 
 function readSelectedPlayerEloDeck() {
-  const root = getPlayerEloDeckFilterRoot();
-  if (!root) {
-    return '';
-  }
-
-  return String(root.dataset.selectedDeck || '').trim();
+  return getSelectedPlayerDeck();
 }
 
 function writeSelectedPlayerEloDeck(selectedDeck) {
-  const root = getPlayerEloDeckFilterRoot();
-  if (!root) {
-    return;
-  }
-
-  root.dataset.selectedDeck = String(selectedDeck || '').trim();
+  setSelectedPlayerDeck(selectedDeck);
 }
 
 function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
@@ -343,7 +334,6 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
     : [];
   const selectedDeck = readSelectedPlayerEloDeck();
   const validSelectedDeck = availableDecks.includes(selectedDeck) ? selectedDeck : '';
-  writeSelectedPlayerEloDeck(validSelectedDeck);
 
   if (availableDecks.length === 0) {
     root.innerHTML = `
@@ -372,7 +362,7 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
     <div class="bubble-menu player-chart-filter-chips">
       <button
         type="button"
-        class="bubble-button player-elo-deck-chip analysis-filter-tooltip${!validSelectedDeck ? ' active' : ''}"
+        class="bubble-button player-elo-deck-chip player-elo-deck-chip-reset analysis-filter-tooltip${!validSelectedDeck ? ' active' : ''}"
         data-player-elo-deck-reset="true"
         data-tooltip="${escapeHtml(getPlayerEloDeckFilterTooltip(true))}"
         aria-label="${escapeHtml(`All Decks. ${getPlayerEloDeckFilterTooltip(true)}`)}"
@@ -3017,6 +3007,15 @@ export function initPlayerAnalysis() {
   setupPlayerSummaryDrilldownCards();
   setupPlayerSidebarDrilldownCards();
   setupPlayerEloDeckFilterListeners();
+  document.addEventListener('playerDeckFilterChanged', event => {
+    const requestedDeck = String(event?.detail?.selectedDeck || '').trim();
+    if (requestedDeck === readSelectedPlayerEloDeck()) {
+      return;
+    }
+
+    writeSelectedPlayerEloDeck(requestedDeck);
+    updatePlayerAnalytics();
+  });
   updatePlayerRankDrilldownCardStates();
   updatePlayerSummaryDrilldownCardStates();
   updatePlayerSidebarDrilldownCardStates();
