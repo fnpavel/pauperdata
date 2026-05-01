@@ -342,6 +342,11 @@ def parse_args() -> argparse.Namespace:
         formatter_class=PipelineHelpFormatter,
     )
     sync_parser.add_argument(
+        "--ignore_cutoff",
+        action="store_true",
+        help="Ignore cutoff validation and force execution"
+    )
+    sync_parser.add_argument(
         "--force-redownload",
         action="store_true",
         help=(
@@ -1410,9 +1415,9 @@ def run_sync_command(args: argparse.Namespace) -> int:
     current_utc_time = datetime.now(timezone.utc)
     # Cutoff time for to avoid downloading files that were modified very recently, 
     # which may still be in the process of being edited and saved by the user.
-    # This cutoff can be overridden with the --force flag for testing or exceptional cases
-    if args.force:
-        print("Force mode enabled: skipping 30-minute cutoff")
+    # This cutoff can be overridden with the --ignore_cutoff flag for testing or exceptional cases
+    if args.ignore_cutoff:
+        print("Ignore cutoff mode enabled: skipping 30-minute cutoff")
         cutoff = current_utc_time
     else:
         cutoff = current_utc_time - timedelta(minutes=30)
