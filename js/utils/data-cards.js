@@ -210,9 +210,21 @@ function formatDeckEventWinRateText(eventData) {
 export function calculatePlayerStats(data, options = {}) {
   const selectedTopFinishDeck = String(options?.selectedTopFinishDeck || '').trim();
   const totalEvents = data.length > 0 ? [...new Set(data.map(row => row.Event))].length : 0;
+  const selectedDeckEventCount = selectedTopFinishDeck
+    ? [...new Set(data
+      .filter(row => String(row?.Deck || '').trim() === selectedTopFinishDeck)
+      .map(row => row.Event))].length
+    : totalEvents;
+  const selectedDeckCoverage = totalEvents > 0
+    ? (selectedDeckEventCount / totalEvents) * 100
+    : 0;
+  const eventsTitle = selectedTopFinishDeck
+    ? `Total Events (${selectedTopFinishDeck})`
+    : 'Total Events';
 
   if (!data || data.length === 0) {
     return {
+      eventsTitle: 'Total Events',
       totalEvents: "N/A",
       eventsDetails: "",
       uniqueDecks: "N/A",
@@ -250,8 +262,11 @@ export function calculatePlayerStats(data, options = {}) {
   const minDate = new Date(Math.min(...dates));
   const maxDate = new Date(Math.max(...dates));
   const monthsSpan = (maxDate.getFullYear() - minDate.getFullYear()) * 12 + (maxDate.getMonth() - minDate.getMonth()) + 1;
-  const years = [...new Set(dates.map(date => date.getFullYear()))].sort().join(", ");
-  const eventsDetails = monthsSpan > 1 ? `${monthsSpan} Months (Years ${years})` : "Single Event";
+  const years = [...new Set(dates.map(date => date.getFullYear()))].sort();
+  const yearsLabel = years.length > 0 ? `${Math.min(...years)} to ${Math.max(...years)}` : '--';
+  const eventsDetails = selectedTopFinishDeck
+    ? `${selectedDeckCoverage.toFixed(0)}% of total events covered`
+    : `${monthsSpan} month${monthsSpan === 1 ? '' : 's'}, from ${yearsLabel}`;
 
   // Filter out "No Show" decks
   const filteredDataNoShow = data.filter(row => row.Deck !== "No Show");
@@ -401,7 +416,8 @@ export function calculatePlayerStats(data, options = {}) {
   const eventHistoryHTML = buildPlayerEventHistoryHTML(data);
 
   return {
-    totalEvents: totalEvents.toString(),
+    eventsTitle,
+    totalEvents: selectedDeckEventCount.toString(),
     eventsDetails,
     uniqueDecks,
     mostPlayedDecks: mostPlayedDecksStr,

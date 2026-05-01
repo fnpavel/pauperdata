@@ -3337,6 +3337,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   };
 
   // Simple Cards
+  updateQueryElement("playerEventsCard", ".stat-title", stats.eventsTitle);
   updateQueryElement("playerEventsCard", ".stat-value", stats.totalEvents);
   updateQueryElement("playerEventsCard", ".stat-change", stats.eventsDetails);
   updateQueryElement("playerPeriodEloCard", ".stat-title", eloScopeLabel);
