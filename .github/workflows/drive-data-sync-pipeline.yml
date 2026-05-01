@@ -54,6 +54,11 @@ on:
         required: false
         type: boolean
         default: false
+      force_run:
+        description: Ignore cutoff checks to avoid downloading and syncing files still being edited 
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -230,7 +235,7 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish
+          python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish \ ${{ inputs.force_run && '--force' || '' }}
 
       - name: Print sync outputs
         if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
