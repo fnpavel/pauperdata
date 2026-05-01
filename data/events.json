@@ -1,5 +1,17 @@
 [
   {
+    "event_id": "online-challenge-2026-04-30",
+    "source_event_name": "MTGO Challenge (2026-04-30)",
+    "display_name": "Challenge",
+    "series": "Challenge",
+    "source_system": "mtgo",
+    "event_type": "online",
+    "date": "2026-04-30",
+    "year": 2026,
+    "month": 4,
+    "total_players": 54
+  },
+  {
     "event_id": "online-challenge-2026-04-26",
     "source_event_name": "MTGO Challenge (2026-04-26)",
     "display_name": "Challenge",
