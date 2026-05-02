@@ -3813,6 +3813,22 @@ html[data-theme="light"] .range-calendar-day.active {
   margin-left: auto;
 }
 
+.leaderboard-chart-mode-actions {
+  flex: 0 0 auto;
+}
+
+.leaderboard-chart-cohort-actions[hidden] {
+  display: none;
+}
+
+.leaderboard-timeline-mode-button {
+  white-space: nowrap;
+}
+
+.leaderboard-timeline-cohort-button {
+  white-space: nowrap;
+}
+
 .leaderboard-timeline-visibility-button {
   white-space: nowrap;
 }

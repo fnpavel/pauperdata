@@ -1050,10 +1050,18 @@
           <div class="chart-container leaderboard-timeline-section" id="leaderboardTimelineSection" hidden>
             <div class="leaderboard-chart-panel-header">
               <div>
-                <h2 class="chart-title">Elo Timeline Across Events</h2>
+                <h2 class="chart-title" id="leaderboardTimelineTitle">Elo Timeline Across Events</h2>
                 <div class="leaderboard-table-helper" id="leaderboardTimelineHelper">
                   Tracking the selected players across the current Elo window. Top 8 are shown by default.
                 </div>
+              </div>
+              <div class="leaderboard-chart-toolbar-actions leaderboard-chart-mode-actions" id="leaderboardTimelineModeButtons" aria-label="Select leaderboard timeline chart view">
+                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="elo">
+                  Elo View
+                </button>
+                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="rank">
+                  Rank View
+                </button>
               </div>
             </div>
             <div class="leaderboard-chart-toolbar">
@@ -1083,6 +1091,8 @@
               <div class="leaderboard-table-search-status" id="leaderboardTimelineSearchStatus" aria-live="polite"></div>
             </div>
             <div class="leaderboard-timeline-chip-panel" id="leaderboardTimelineChipPanel"></div>
+            <div class="leaderboard-table-helper" id="leaderboardTimelineLoadingState" hidden>Loading chart...</div>
+            <div class="leaderboard-table-helper" id="leaderboardTimelineDebugFallback" hidden></div>
             <canvas id="leaderboardTimelineChart"></canvas>
           </div>
         </div>

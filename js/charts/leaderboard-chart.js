@@ -40,6 +40,7 @@ export function buildEventLevelEloPoints(historyEntries = []) {
     })
     .map((entry, index) => ({
       index,
+      seasonKey: entry.seasonKey,
       date: entry.date,
       event: entry.event,
       eventId: entry.eventId,
@@ -446,13 +447,28 @@ export function createLeaderboardTimelineChart(canvas, {
   timelineEntries = [],
   formatRating,
   showYearBoundaries = false,
-  onLegendToggle = null
+  onLegendToggle = null,
+  yAxis = {},
+  tooltipCallbacks = null,
+  datalabelsOptions = null
 } = {}) {
   if (!canvas || !globalThis.Chart || !labels.length || !datasets.length) {
     return null;
   }
 
   const theme = getChartThemeColors();
+  const resolvedYAxis = yAxis && typeof yAxis === 'object' ? yAxis : {};
+  const resolvedTooltipCallbacks = tooltipCallbacks && typeof tooltipCallbacks === 'object'
+    ? tooltipCallbacks
+    : null;
+  const resolvedTooltipLabel = typeof resolvedTooltipCallbacks?.label === 'function'
+    ? resolvedTooltipCallbacks.label
+    : context => {
+        if (!Number.isFinite(context.parsed.y)) {
+          return `${context.dataset.label}: no event result`;
+        }
+        return `${context.dataset.label}: ${formatRating(context.parsed.y)}`;
+      };
   const yearBands = showYearBoundaries
     ? buildLeaderboardYearBands(timelineEntries)
     : [];
@@ -504,17 +520,13 @@ export function createLeaderboardTimelineChart(canvas, {
             color: theme.text
           }
         },
-        datalabels: {
+        datalabels: datalabelsOptions || {
           display: false
         },
         tooltip: {
           callbacks: {
-            label(context) {
-              if (!Number.isFinite(context.parsed.y)) {
-                return `${context.dataset.label}: no event result`;
-              }
-              return `${context.dataset.label}: ${formatRating(context.parsed.y)}`;
-            }
+            ...(resolvedTooltipCallbacks || {}),
+            label: resolvedTooltipLabel
           }
         }
       },
@@ -530,9 +542,16 @@ export function createLeaderboardTimelineChart(canvas, {
           }
         },
         y: {
+          reverse: resolvedYAxis.reverse === true,
+          min: Number.isFinite(Number(resolvedYAxis.min)) ? Number(resolvedYAxis.min) : undefined,
+          max: Number.isFinite(Number(resolvedYAxis.max)) ? Number(resolvedYAxis.max) : undefined,
           ticks: {
             color: theme.muted,
+            stepSize: Number.isFinite(Number(resolvedYAxis.stepSize)) ? Number(resolvedYAxis.stepSize) : undefined,
             callback(value) {
+              if (typeof resolvedYAxis.tickFormatter === 'function') {
+                return resolvedYAxis.tickFormatter(value);
+              }
               return formatRating(value);
             }
           },
