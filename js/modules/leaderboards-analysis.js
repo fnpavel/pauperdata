@@ -1827,6 +1827,10 @@ function normalizeLeaderboardDeckScopeKey(value = '') {
   return normalizedValue || LEADERBOARD_PLAYER_TOTAL_SCOPE;
 }
 
+function normalizeLeaderboardDeckNameKey(value = '') {
+  return String(value ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function getLeaderboardDeckDisplayName(deck = '') {
   const normalizedDeck = String(deck || '').trim();
   return normalizedDeck || 'Unknown Deck';
@@ -1985,6 +1989,20 @@ function resolveActiveLeaderboardPlayerDeckScope(deckSummaries = []) {
     : LEADERBOARD_PLAYER_TOTAL_SCOPE;
 }
 
+function resolveLeaderboardPlayerDeckScopeForDeckName(deckSummaries = [], selectedDeckName = '') {
+  const normalizedSelectedDeckName = normalizeLeaderboardDeckNameKey(selectedDeckName);
+  if (!normalizedSelectedDeckName) {
+    return LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  }
+
+  const matchingScope = (Array.isArray(deckSummaries) ? deckSummaries : []).find(scope => {
+    const scopeDeckName = normalizeLeaderboardDeckNameKey(scope?.row?.deck || scope?.label || '');
+    return scopeDeckName && scopeDeckName === normalizedSelectedDeckName;
+  });
+
+  return matchingScope?.key || LEADERBOARD_PLAYER_TOTAL_SCOPE;
+}
+
 function getLeaderboardPlayerDrilldownModel(row) {
   // Player drilldowns always include an all-decks scope plus optional per-deck
   // scopes so users can compare total Elo against deck-specific Elo.
@@ -2011,6 +2029,12 @@ function getLeaderboardPlayerDrilldownModel(row) {
     activeScopeKey,
     activeScope
   };
+}
+
+function initializeLeaderboardPlayerDeckScope(row, selectedDeckName = '') {
+  const baseRow = getLeaderboardOverallPlayerRow(row);
+  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(baseRow);
+  activeLeaderboardPlayerDeckScope = resolveLeaderboardPlayerDeckScopeForDeckName(deckSummaries, selectedDeckName);
 }
 
 function normalizeLeaderboardSearchText(value) {
@@ -4830,7 +4854,15 @@ async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
     console.error('Failed to load detailed leaderboard Elo history.', error);
   }
 
-  activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  const row = getLeaderboardRowByKeys(playerKey, seasonKey);
+  if (!row) {
+    return;
+  }
+
+  initializeLeaderboardPlayerDeckScope(
+    row,
+    selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE ? String(selectedDeck || '').trim() : ''
+  );
   if (!renderLeaderboardPlayerDrilldown(playerKey, seasonKey)) {
     return;
   }
