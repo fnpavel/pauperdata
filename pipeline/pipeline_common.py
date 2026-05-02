@@ -37,11 +37,11 @@ SUPPORTED_FILE_MIME_TYPES = {GOOGLE_SHEETS_MIME, XLSX_MIME}
 WINDOWS_RESERVED_CHARS = re.compile(r'[<>:"/\\|?*]')
 DEFAULT_COMMIT_PATHS = [
     PROJECT_ROOT / "data" / "events",
-    PROJECT_ROOT / "data" / "elo-data",
     PROJECT_ROOT / "data" / "events.json",
     PROJECT_ROOT / "data" / "results.json",
     PROJECT_ROOT / "data" / "aliases.json",
     PROJECT_ROOT / "data" / "matchups",
+    PROJECT_ROOT / "data" / "precalculated-elo",
     PIPELINE_OVERRIDES_PATH,
     PROCESSED_DRIVE_WORKBOOKS_PATH,
 ]

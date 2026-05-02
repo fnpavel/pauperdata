@@ -41,9 +41,9 @@ SUMMARY_PATH = PIPELINE_ROOT / "pipeline-run-summary.json"
 EXTRACT_SCRIPT = PIPELINE_ROOT / "extract_input_csv.py"
 REBUILD_SCRIPT = PIPELINE_ROOT / "rebuild_event_matchup_data.py"
 MATCHUP_SPLIT_BUILD_SCRIPT = PIPELINE_ROOT / "build-matchup-split-data.mjs"
-ELO_BUILD_SCRIPT = PIPELINE_ROOT / "build-elo-data.mjs"
+PRECALCULATED_ELO_BUILD_SCRIPT = PIPELINE_ROOT / "build-precalculated-elo.mjs"
 PUBLISH_SCRIPT = PIPELINE_ROOT / "publish_pipeline_changes.py"
-ELO_MANIFEST_PATH = PROJECT_ROOT / "data" / "elo-data" / "manifest.js"
+MATCHUP_MANIFEST_PATH = PROJECT_ROOT / "data" / "matchups" / "manifest.json"
 THUMBNAIL_UPDATE_SCRIPT = PIPELINE_ROOT / "update-thumbnail.mjs"
 THUMBNAIL_OUTPUT_PATH = PROJECT_ROOT / "thumbnail.png"
 EVENTS_PATH = PROJECT_ROOT / "data" / "events.json"
@@ -679,31 +679,22 @@ def save_pipeline_overrides(overrides: PipelineOverrides) -> None:
 
 
 def load_elo_manifest_snapshot() -> dict[str, object]:
-    if not ELO_MANIFEST_PATH.exists():
+    if not MATCHUP_MANIFEST_PATH.exists():
         return {}
-
-    raw_text = ELO_MANIFEST_PATH.read_text(encoding="utf-8")
-    prefix = "export const eloManifest = "
-    if not raw_text.startswith(prefix):
-        return {}
-
-    manifest_text = raw_text[len(prefix) :].strip()
-    if manifest_text.endswith(";"):
-        manifest_text = manifest_text[:-1]
 
     try:
-        manifest = json.loads(manifest_text)
+        manifest = json.loads(MATCHUP_MANIFEST_PATH.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {}
 
     return {
-        "manifest_path": str(ELO_MANIFEST_PATH),
-        "generated_at": manifest.get("generatedAt"),
-        "last_updated_at": manifest.get("lastUpdatedAt"),
-        "last_updated_date": manifest.get("lastUpdatedDate"),
-        "total_match_count": manifest.get("totalMatchCount"),
+        "manifest_path": str(MATCHUP_MANIFEST_PATH),
+        "generated_at": manifest.get("generated_at"),
+        "last_updated_at": manifest.get("last_updated_at"),
+        "last_updated_date": manifest.get("last_updated_date"),
+        "total_match_count": manifest.get("match_count"),
         "years": manifest.get("years"),
-        "match_counts_by_year": manifest.get("matchCountsByYear"),
+        "match_counts_by_year": manifest.get("match_counts_by_year"),
     }
 
 
@@ -1338,9 +1329,11 @@ def run_pipeline_rebuild(
         ["node", str(MATCHUP_SPLIT_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
     )
 
-    log("Regenerating Elo data from the refreshed matchup archive...")
+    log("Rebuilding precomputed Elo leaderboards from the refreshed matchup archive...")
     run_subprocess(
-        ["node", str(ELO_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
+        ["node", str(PRECALCULATED_ELO_BUILD_SCRIPT)],
+        cwd=PROJECT_ROOT,
+        stream_output=True,
     )
 
     log("Refreshing the site thumbnail from the rebuilt project data...")
@@ -1381,7 +1374,7 @@ def finalize_pipeline_state(
     state.update(
         {
             "data_refresh_completed_at": datetime.now().isoformat(timespec="seconds"),
-            "elo_manifest_path": str(ELO_MANIFEST_PATH),
+            "elo_manifest_path": str(MATCHUP_MANIFEST_PATH),
             "elo_manifest_snapshot": elo_snapshot,
             "thumbnail_snapshot": thumbnail_snapshot,
             "thumbnail_path": str(THUMBNAIL_OUTPUT_PATH),
