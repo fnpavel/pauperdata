@@ -321,9 +321,18 @@ jobs:
         run: |
           set -euxo pipefail
           python pipeline/publish_pipeline_changes.py
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import json
+          from pathlib import Path
+
+          state_path = Path("pipeline/pipeline-state.json")
+          state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
+          should_run = bool(state.get("published_data_any_changes")) and int(state.get("published_data_changed_files_count") or 0) > 0
+          print(f"discord_should_run={'true' if should_run else 'false'}")
+          PY
 
       - name: Discord notification
-        if: ${{ steps.publish.outcome == 'success' && (github.event_name == 'schedule' || inputs.run_discord_notification) }}
+        if: ${{ steps.publish.outcome == 'success' && steps.publish.outputs.discord_should_run == 'true' && (github.event_name == 'schedule' || inputs.run_discord_notification) }}
         shell: bash
         env:
           DISCORD_WEBHOOK_1: ${{ secrets.DISCORD_WEBHOOK_1 }}

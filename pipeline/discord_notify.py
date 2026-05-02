@@ -112,19 +112,30 @@ def load_publish_context(state_path: Path) -> dict[str, object] | None:
     changed_files = payload.get("published_changed_files")
     if not isinstance(changed_files, list):
         changed_files = []
+    data_changed_files = payload.get("published_data_changed_files")
+    if not isinstance(data_changed_files, list):
+        data_changed_files = []
 
     normalized_changed_files = [
-        str(path).strip()
-        for path in changed_files
-        if str(path).strip()
+        str(path).strip() for path in changed_files if str(path).strip()
+    ]
+    normalized_data_changed_files = [
+        str(path).strip() for path in data_changed_files if str(path).strip()
     ]
     published_any_changes = bool(payload.get("published_any_changes"))
+    published_data_any_changes = bool(payload.get("published_data_any_changes"))
 
     return {
         "published_any_changes": published_any_changes,
         "published_changed_files": normalized_changed_files,
         "published_changed_files_count": int(
             payload.get("published_changed_files_count") or len(normalized_changed_files)
+        ),
+        "published_data_any_changes": published_data_any_changes,
+        "published_data_changed_files": normalized_data_changed_files,
+        "published_data_changed_files_count": int(
+            payload.get("published_data_changed_files_count")
+            or len(normalized_data_changed_files)
         ),
         "published_commit_message": str(payload.get("published_commit_message") or "").strip(),
         "published_at": str(payload.get("published_at") or "").strip(),
@@ -352,19 +363,30 @@ def main() -> int:
             log(
                 "Published change summary: "
                 f"any_changes={publish_context['published_any_changes']} "
-                f"changed_files_count={publish_context['published_changed_files_count']}"
+                f"changed_files_count={publish_context['published_changed_files_count']} "
+                f"data_any_changes={publish_context['published_data_any_changes']} "
+                f"data_changed_files_count={publish_context['published_data_changed_files_count']}"
             )
             changed_files = list(publish_context["published_changed_files"])
+            data_changed_files = list(publish_context["published_data_changed_files"])
             if changed_files:
                 log("Published changed files:")
                 for path in changed_files:
+                    log(f"- {path}")
+            if data_changed_files:
+                log("Published data changed files:")
+                for path in data_changed_files:
                     log(f"- {path}")
 
             if not publish_context["published_any_changes"]:
                 log("Publish recorded no tracked data changes. Discord notification skipped.")
                 return 0
 
-            if not should_notify(changed_files):
+            if not publish_context["published_data_any_changes"]:
+                log("Publish recorded no data/ changes. Discord notification skipped.")
+                return 0
+
+            if not should_notify(data_changed_files):
                 log("Publish did not include relevant data paths. Discord notification skipped.")
                 return 0
         else:

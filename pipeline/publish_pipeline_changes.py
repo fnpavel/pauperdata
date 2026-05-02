@@ -22,6 +22,41 @@ from pipeline_common import (
 THUMBNAIL_COMMIT_PATH = PROJECT_ROOT / "thumbnail.png"
 INDEX_COMMIT_PATH = PROJECT_ROOT / "index.html"
 
+
+def classify_changed_paths(changed_paths: set[str]) -> tuple[list[str], list[str], list[str]]:
+    changed_files = sorted(changed_paths)
+    data_changed_files = [
+        path for path in changed_files if path == "data" or path.startswith("data/")
+    ]
+    metadata_changed_files = [
+        path for path in changed_files if path not in data_changed_files
+    ]
+    return changed_files, data_changed_files, metadata_changed_files
+
+
+def update_publish_change_state(
+    state: dict[str, object],
+    *,
+    changed_paths: set[str],
+    publish_performed: bool,
+) -> None:
+    changed_files, data_changed_files, metadata_changed_files = classify_changed_paths(
+        changed_paths
+    )
+    state.update(
+        {
+            "published_changed_files": changed_files,
+            "published_changed_files_count": len(changed_files),
+            "published_any_changes": bool(changed_files),
+            "published_data_changed_files": data_changed_files,
+            "published_data_changed_files_count": len(data_changed_files),
+            "published_data_any_changes": bool(data_changed_files),
+            "published_metadata_changed_files": metadata_changed_files,
+            "published_metadata_changed_files_count": len(metadata_changed_files),
+            "published_was_noop": not publish_performed,
+        }
+    )
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Commit the generated data update and publish it to git.")
     parser.add_argument("--dry-run", action="store_true", help="Show what would happen without changing git state.")
@@ -75,13 +110,15 @@ def main() -> int:
     if not allowed_changed:
         # Downstream notification logic reads these state keys, so "nothing to
         # publish" still needs an explicit state update instead of an early silent exit.
+        update_publish_change_state(
+            state,
+            changed_paths=set(),
+            publish_performed=False,
+        )
         state.update(
             {
                 "published_at": None,
                 "published_commit_message": "",
-                "published_changed_files": [],
-                "published_changed_files_count": 0,
-                "published_any_changes": False,
                 "main_publish_completed": False,
             }
         )
@@ -91,7 +128,13 @@ def main() -> int:
 
     staged_paths = sorted(allowed_changed)
     commit_message = build_commit_message(settings.commit_message_template, state)
+    update_publish_change_state(
+        state,
+        changed_paths=allowed_changed,
+        publish_performed=True,
+    )
     if args.dry_run:
+        save_state(state)
         log("Dry run: the publish step would publish the following data changes.")
         log(f"- branch: {branch}")
         log(f"- files: {', '.join(staged_paths)}")
@@ -125,9 +168,6 @@ def main() -> int:
         {
             "published_at": datetime.now().isoformat(timespec="seconds"),
             "published_commit_message": commit_message,
-            "published_changed_files": staged_paths,
-            "published_changed_files_count": len(staged_paths),
-            "published_any_changes": True,
             "main_publish_completed": main_publish_completed,
         }
     )
