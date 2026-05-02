@@ -1,10 +1,11 @@
-// Provides lazy access to generated Elo match files. The manifest is imported
-// eagerly, while the per-year match modules are dynamic imports so Leaderboards
-// only loads the seasons required by the selected window.
-import { eloManifest } from '../../data/elo-data/manifest.js';
+// Provides lazy access to matchup-backed Elo match files. The metadata comes
+// from the split matchup manifest, while the per-year match datasets are loaded
+// on demand from data/matchups.
+import { ensureMatchupCatalogLoaded, getMatchupManifest } from './matchup-data.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const yearModuleCache = new Map();
+const MATCHUP_DATA_ROOT = new URL('../../data/matchups/', import.meta.url);
 
 function normalizeText(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
@@ -33,7 +34,8 @@ function getYearFromDate(dateValue = '') {
 }
 
 function getYearsForWindow(startDate = '', endDate = '') {
-  const availableYears = Array.isArray(eloManifest?.years) ? eloManifest.years : [];
+  const matchupManifest = getMatchupManifest();
+  const availableYears = Array.isArray(matchupManifest?.years) ? matchupManifest.years : [];
   if (!startDate || !endDate) {
     return availableYears;
   }
@@ -48,18 +50,27 @@ function getYearsForWindow(startDate = '', endDate = '') {
 }
 
 async function loadYearMatches(year = '') {
+  const matchupManifest = getMatchupManifest();
   const normalizedYear = String(year || '').trim();
   if (!normalizedYear) {
     return [];
   }
 
   if (!yearModuleCache.has(normalizedYear)) {
-    // Cache the import promise itself so overlapping leaderboard/player refreshes
-    // do not request the same generated year module twice.
+    const relativePath = String(matchupManifest?.match_files_by_year?.[normalizedYear] || '').trim();
     yearModuleCache.set(
       normalizedYear,
-      import(`../../data/elo-data/${normalizedYear}.js`)
-        .then(module => Array.isArray(module.eloMatches) ? module.eloMatches : [])
+      (relativePath
+        ? fetch(new URL(relativePath, MATCHUP_DATA_ROOT))
+            .then(response => {
+              if (!response.ok) {
+                throw new Error(`Failed to load matchup matches for ${normalizedYear}`);
+              }
+
+              return response.json();
+            })
+            .then(payload => Array.isArray(payload) ? payload : [])
+        : Promise.resolve([]))
         .catch(() => [])
     );
   }
@@ -69,18 +80,20 @@ async function loadYearMatches(year = '') {
 
 // Returns the generated manifest that lists available Elo years and dates.
 export function getEloManifest() {
-  return eloManifest;
+  return getMatchupManifest();
 }
 
 // Lists event-type buckets present in the generated Elo manifest.
 export function getEloEventTypes() {
-  return Object.keys(eloManifest?.availableDatesByEventType || {}).sort((a, b) => a.localeCompare(b));
+  const matchupManifest = getMatchupManifest();
+  return Object.keys(matchupManifest?.available_dates_by_event_type || {}).sort((a, b) => a.localeCompare(b));
 }
 
 // Returns the union of available Elo dates for the selected event types.
 export function getEloAvailableDates(eventTypes = [DEFAULT_EVENT_TYPE]) {
+  const matchupManifest = getMatchupManifest();
   const normalizedEventTypes = normalizeEventTypes(eventTypes);
-  const datesByEventType = eloManifest?.availableDatesByEventType || {};
+  const datesByEventType = matchupManifest?.available_dates_by_event_type || {};
 
   return [...new Set(
     normalizedEventTypes.flatMap(eventType => Array.isArray(datesByEventType[eventType]) ? datesByEventType[eventType] : [])
@@ -93,6 +106,7 @@ export async function getEloMatches({
   startDate = '',
   endDate = ''
 } = {}) {
+  await ensureMatchupCatalogLoaded();
   const normalizedEventTypes = normalizeEventTypes(eventTypes);
   const yearsToLoad = getYearsForWindow(startDate, endDate);
   const yearMatchGroups = await Promise.all(yearsToLoad.map(loadYearMatches));

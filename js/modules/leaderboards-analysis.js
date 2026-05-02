@@ -9,7 +9,6 @@ import {
   getRankingsKFactor,
   getRankingsAvailableDates
 } from '../utils/rankings-data.js';
-import { buildYearlyEloRatings } from '../utils/elo-rating.js';
 import {
   buildEventLevelEloPoints,
   buildLeaderboardTimeline,
@@ -154,6 +153,7 @@ let currentLeaderboardDataset = {
   },
   eventTypes: [DEFAULT_EVENT_TYPE],
   period: null,
+  detailsLoaded: false,
   processedMatches: [],
   historyByPlayer: new Map(),
   eventResultLookup: new Map(),
@@ -2434,7 +2434,7 @@ function augmentEloLeaderboardRowsWithEventStats(rows = [], dataset = currentLea
     const playerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
     const seasonKey = String(row?.seasonKey || '').trim() || getLeaderboardStatsSeasonKey(row?.lastActiveDate, dataset);
     const rowStats = statsLookup.get(`${seasonKey}:::${playerKey}`) || {
-      eventCount: countUniqueEvents(
+      eventCount: Number(row?.eventCount || 0) || countUniqueEvents(
         (Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : []).filter(match => {
           const matchSeasonKey = String(match?.seasonKey || '').trim();
           return matchSeasonKey === seasonKey && (
@@ -3851,9 +3851,13 @@ function renderLeaderboardTimelineChart() {
   const timeline = buildLeaderboardTimeline(currentLeaderboardDataset.processedMatches || []);
   const labels = timeline.map(point => point.label);
   const timelineIndexByKey = new Map(timeline.map(point => [point.key, point.index]));
+  const hasHistoryLoaded = Array.isArray(currentLeaderboardDataset.processedMatches)
+    && currentLeaderboardDataset.processedMatches.length > 0;
 
   if (helper) {
-    helper.textContent = selectedRows.length > 0
+    helper.textContent = !hasHistoryLoaded
+      ? 'Match-level Elo history loads on demand for drilldowns and timelines.'
+      : selectedRows.length > 0
       ? `Tracking ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
       : 'Select at least one player to draw the Elo timeline.';
   }
@@ -3866,7 +3870,7 @@ function renderLeaderboardTimelineChart() {
     searchInput.disabled = getSortedLeaderboardRowsWithRank().length === 0;
   }
 
-  if (!globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
+  if (!hasHistoryLoaded || !globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
     updateLeaderboardTimelineVisibilityButtons();
     return;
   }
@@ -3913,10 +3917,16 @@ function renderLeaderboardTimelineChart() {
   updateLeaderboardTimelineVisibilityButtons();
 }
 
-function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
+async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   const elements = getLeaderboardDrilldownElements();
   if (!elements.overlay) {
     return;
+  }
+
+  try {
+    await ensureLeaderboardDetailDataLoaded();
+  } catch (error) {
+    console.error('Failed to load detailed leaderboard Elo history.', error);
   }
 
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
@@ -4474,10 +4484,16 @@ function renderLeaderboardDrilldown(categoryKey) {
     : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
 }
 
-function openLeaderboardDrilldown(categoryKey) {
+async function openLeaderboardDrilldown(categoryKey) {
   const elements = getLeaderboardDrilldownElements();
   if (!elements.overlay || !LEADERBOARD_DRILLDOWN_CONFIG[categoryKey]) {
     return;
+  }
+
+  try {
+    await ensureLeaderboardDetailDataLoaded();
+  } catch (error) {
+    console.error('Failed to load detailed leaderboard Elo history.', error);
   }
 
   activeLeaderboardDrilldownCategory = categoryKey;
@@ -5834,6 +5850,56 @@ export function initLeaderboards() {
 }
 
 // Builds the active Elo dataset and refreshes every Leaderboards surface.
+async function ensureLeaderboardDetailDataLoaded() {
+  if (currentLeaderboardDataset?.detailsLoaded) {
+    return true;
+  }
+
+  const activeWindow = currentLeaderboardDataset?.period;
+  if (!activeWindow?.startDate || !activeWindow?.endDate) {
+    return false;
+  }
+
+  const requestId = leaderboardDatasetRequestId;
+  const [detailDataset, deckDetailDataset] = await Promise.all([
+    buildRankingsDataset({
+      eventTypes: currentLeaderboardDataset.eventTypes,
+      startDate: currentLeaderboardDataset.startDate,
+      endDate: currentLeaderboardDataset.endDate
+    }, {
+      resetByYear: activeWindow.resetByYear,
+      includeHistory: true
+    }),
+    buildRankingsDataset({
+      eventTypes: currentLeaderboardDataset.eventTypes,
+      startDate: currentLeaderboardDataset.startDate,
+      endDate: currentLeaderboardDataset.endDate
+    }, {
+      resetByYear: activeWindow.resetByYear,
+      entityMode: 'player_deck',
+      includeHistory: true
+    })
+  ]);
+
+  if (requestId !== leaderboardDatasetRequestId) {
+    return false;
+  }
+
+  currentLeaderboardDataset = {
+    ...currentLeaderboardDataset,
+    ...detailDataset,
+    mode: 'elo',
+    period: activeWindow,
+    detailsLoaded: true,
+    deckDataset: deckDetailDataset,
+    eventResultLookup: buildLeaderboardEventResultLookup(detailDataset)
+  };
+  currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(detailDataset.seasonRows, currentLeaderboardDataset);
+  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
+  renderLeaderboardFromCurrentState();
+  return true;
+}
+
 export async function updateLeaderboardAnalytics() {
   // Async requests can overlap when filters change quickly. Incrementing this id
   // lets stale responses exit before overwriting the latest rendered dataset.
@@ -5853,30 +5919,35 @@ export async function updateLeaderboardAnalytics() {
   renderLeaderboardLoadingState();
 
   try {
-    const dataset = await buildRankingsDataset({
-      eventTypes: getSelectedLeaderboardEventTypes(),
-      startDate: activeWindow?.startDate || '',
-      endDate: activeWindow?.endDate || ''
-    }, {
-      resetByYear: activeWindow?.resetByYear
-    });
+    const [dataset, deckDataset] = await Promise.all([
+      buildRankingsDataset({
+        eventTypes: getSelectedLeaderboardEventTypes(),
+        startDate: activeWindow?.startDate || '',
+        endDate: activeWindow?.endDate || ''
+      }, {
+        resetByYear: activeWindow?.resetByYear,
+        includeHistory: false
+      }),
+      buildRankingsDataset({
+        eventTypes: getSelectedLeaderboardEventTypes(),
+        startDate: activeWindow?.startDate || '',
+        endDate: activeWindow?.endDate || ''
+      }, {
+        resetByYear: activeWindow?.resetByYear,
+        entityMode: 'player_deck',
+        includeHistory: false
+      })
+    ]);
 
     if (requestId !== leaderboardDatasetRequestId) {
       return;
     }
 
-    const deckDataset = buildYearlyEloRatings(dataset.filteredMatches || [], {
-      // Build a second Elo model where each player/deck combination is its own
-      // entity. Player drilldowns use it for deck-specific Elo comparisons.
-      kFactor: getRankingsKFactor({ resetByYear: activeWindow?.resetByYear }),
-      resetByYear: activeWindow?.resetByYear,
-      entityMode: 'player_deck'
-    });
-
     currentLeaderboardDataset = {
       ...dataset,
       mode: 'elo',
       period: activeWindow,
+      detailsLoaded: false,
       eventResultLookup: buildLeaderboardEventResultLookup(dataset),
       deckDataset
     };

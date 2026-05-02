@@ -641,7 +641,8 @@ async function ensureDefaultMatchupPlayerFocus(resolvedMatches = []) {
       startDate: defaultRange.startDate,
       endDate: defaultRange.endDate
     }, {
-      resetByYear: true
+      resetByYear: true,
+      includeHistory: false
     });
     const defaultLeaderKey = String(
       rankingsDataset?.summary?.leader?.playerKey

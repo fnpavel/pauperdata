@@ -45,7 +45,7 @@ async function removeStaleSplitFiles(rootPath, desiredNames) {
     }
 
     if (
-      /^(manifest|events|matches-\d{4}|rounds-\d{4}|matches-unknown|rounds-unknown)\.json$/i.test(entry.name)
+      /^(manifest|events|matches-\d{4}|rounds-\d{4}|matches-unknown|rounds-unknown)\.(json|js)$/i.test(entry.name)
       && !desiredNames.has(entry.name)
     ) {
       await fs.unlink(path.join(rootPath, entry.name));
@@ -69,6 +69,10 @@ async function writeJsonFileIfChanged(filePath, payload) {
 
   await fs.writeFile(filePath, nextText, 'utf8');
   return true;
+}
+
+function sortDates(values = []) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
 }
 
 async function loadSourcePayload() {
@@ -130,6 +134,16 @@ async function main() {
   await removeStaleSplitFiles(outputRoot, desiredNames);
   await writeJsonFileIfChanged(path.join(outputRoot, 'events.json'), events);
 
+  const datesByEventType = new Map();
+  matches.forEach(match => {
+    const eventType = String(match?.event_type || '').trim().toLowerCase() || 'unknown';
+    const matchDate = String(match?.date || '').trim();
+    if (!datesByEventType.has(eventType)) {
+      datesByEventType.set(eventType, []);
+    }
+    datesByEventType.get(eventType).push(matchDate);
+  });
+
   const manifest = {
     generated_at: payload.generated_at || '',
     generated_from: payload.generated_from || 'pipeline/build-matchup-split-data.mjs',
@@ -140,6 +154,9 @@ async function main() {
     match_count: matches.length,
     years,
     events_file: 'events.json',
+    available_dates_by_event_type: Object.fromEntries(
+      [...datesByEventType.entries()].map(([eventType, dates]) => [eventType, sortDates(dates)])
+    ),
     round_files_by_year: Object.fromEntries(years.map(year => [year, `rounds-${year}.json`])),
     match_files_by_year: Object.fromEntries(years.map(year => [year, `matches-${year}.json`])),
     round_counts_by_year: Object.fromEntries(years.map(year => [year, (roundsByYear.get(year) || []).length])),
@@ -153,6 +170,8 @@ async function main() {
   await writeJsonFileIfChanged(path.join(outputRoot, 'manifest.json'), manifest);
 
   console.log(`Built split matchup data in ${path.relative(projectRoot, outputRoot)}`);
+  console.log(`Read source matchup payload from ${path.relative(projectRoot, legacyInputPath)}`);
+  console.log(`Wrote matchup manifest to ${path.relative(projectRoot, path.join(outputRoot, 'manifest.json'))}`);
   console.log(`Years: ${years.join(', ')}`);
   console.log(`Events: ${events.length}`);
   console.log(`Rounds: ${rounds.length}`);
