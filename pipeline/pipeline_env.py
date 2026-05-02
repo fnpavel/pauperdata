@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Helpers for running the data pipeline from GitHub Actions."""
+"""Helpers for running the data pipeline from GitHub Actions.
+
+This module backs the supported CI wrapper path. Keep workflow bootstrap logic
+here rather than duplicating config-writing behavior in workflow YAML.
+"""
 
 from __future__ import annotations
 

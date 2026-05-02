@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Backfill the processed Drive workbook manifest from local repository files."""
+"""Backfill the processed Drive workbook manifest from local repository files.
+
+Deprecated operationally: this is a manual recovery utility and is not part of
+the normal GitHub Actions pipeline path.
+"""
 
 from __future__ import annotations
 
@@ -64,6 +68,9 @@ def build_processed_relative_paths(workbook_files: list[Path], archive_root: Pat
 
 
 def main() -> int:
+    print(
+        "Manual recovery utility: backfill_processed_drive_workbooks.py is not part of the normal pipeline path."
+    )
     workbook_files = iter_workbook_files(PROJECT_ROOT)
     archive_root = detect_archive_root(workbook_files)
     processed_relative_paths = build_processed_relative_paths(workbook_files, archive_root)

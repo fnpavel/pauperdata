@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""GitHub Actions entrypoint for the Drive sync and rebuild pipeline."""
+"""GitHub Actions entrypoint for the Drive sync and rebuild pipeline.
+
+This remains the supported CI entrypoint. Keep GitHub Actions calling this
+wrapper so config/bootstrap logic stays in one place.
+"""
 
 from __future__ import annotations
 
@@ -28,6 +32,8 @@ def main() -> int:
     settings = load_automation_settings()
 
     print("Preparing temporary pipeline configuration for CI...")
+    print("- entrypoint: pipeline/run_github_action_pipeline.py")
+    print("- downstream script: pipeline/sync_drive_and_rebuild_all.py")
     print(f"- command: {' '.join(command_parts)}")
     print(f"- remote: {settings.remote}")
     print(f"- data branch: {settings.data_branch}")

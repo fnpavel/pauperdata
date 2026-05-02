@@ -18,7 +18,7 @@ Optional environment variables:
 - BEFORE_SHA
 - CURRENT_SHA
 - DASHBOARD_BASE_URL
-- WAIT_FOR_LIVE_SITE
+- PIPELINE_STATE_PATH
 """
 
 from __future__ import annotations
@@ -41,6 +41,7 @@ from typing import Iterable
 DEFAULT_DASHBOARD_BASE_URL = "https://fnpavel.github.io/pauperdata/"
 DEFAULT_USERNAME = "Pauper Dashboard Updates"
 DATA_PATTERNS = ("data/**",)
+DEFAULT_PIPELINE_STATE_PATH = "pipeline/pipeline-state.json"
 
 
 def log(message: str) -> None:
@@ -58,6 +59,11 @@ def run_git(*args: str) -> str:
 
 
 def get_changed_files(event_name: str, before_sha: str, current_sha: str) -> list[str]:
+    """Derive changed paths from explicit workflow git context.
+
+    - Manual dispatch is treated as a synthetic change event.
+    - This is the fallback path only; publish-state inspection is preferred when available.
+    """
     if event_name == "workflow_dispatch":
         return ["<manual-dispatch>"]
 
@@ -70,6 +76,11 @@ def get_changed_files(event_name: str, before_sha: str, current_sha: str) -> lis
 
 
 def should_notify(changed_files: Iterable[str], patterns: Iterable[str] = DATA_PATTERNS) -> bool:
+    """Return whether the observed changes should trigger notification.
+
+    Manual dispatch stays eligible, but normal runs are intentionally scoped to
+    data-path changes rather than arbitrary repo edits.
+    """
     changed_files = list(changed_files)
     if "<manual-dispatch>" in changed_files:
         return True
@@ -79,6 +90,45 @@ def should_notify(changed_files: Iterable[str], patterns: Iterable[str] = DATA_P
         for path in changed_files
         for pattern in patterns
     )
+
+
+def load_publish_context(state_path: Path) -> dict[str, object] | None:
+    """Read publish-step state as the preferred notification basis.
+
+    This avoids inferring changes from broad git state when a publish did not
+    actually happen.
+    """
+    if not state_path.exists():
+        return None
+
+    try:
+        payload = json.loads(state_path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return None
+
+    if not isinstance(payload, dict):
+        return None
+
+    changed_files = payload.get("published_changed_files")
+    if not isinstance(changed_files, list):
+        changed_files = []
+
+    normalized_changed_files = [
+        str(path).strip()
+        for path in changed_files
+        if str(path).strip()
+    ]
+    published_any_changes = bool(payload.get("published_any_changes"))
+
+    return {
+        "published_any_changes": published_any_changes,
+        "published_changed_files": normalized_changed_files,
+        "published_changed_files_count": int(
+            payload.get("published_changed_files_count") or len(normalized_changed_files)
+        ),
+        "published_commit_message": str(payload.get("published_commit_message") or "").strip(),
+        "published_at": str(payload.get("published_at") or "").strip(),
+    }
 
 
 def read_thumbnail_version(index_path: Path) -> str:
@@ -119,6 +169,11 @@ def fetch_status(url: str) -> int:
 
 
 def wait_for_live_site(base_url: str, thumbnail_version: str, timeout_seconds: int = 600) -> None:
+    """Wait until the live site serves the expected thumbnail version.
+
+    - Polls both the index and cache-busted thumbnail URL.
+    - Prevents Discord from announcing a publish before the deployed site is actually visible.
+    """
     base_url = base_url.rstrip("/") + "/"
     index_url = base_url
     expected_token = f"thumbnail.png?v={thumbnail_version}"
@@ -152,6 +207,11 @@ def wait_for_live_site(base_url: str, thumbnail_version: str, timeout_seconds: i
 
 
 def build_payload(aliases_path: Path, thumbnail_version: str, dashboard_base_url: str) -> dict[str, str]:
+    """Build the Discord payload from the latest aliases metadata.
+
+    Reads the generated event/date fields and adds the cache-busted dashboard URL
+    so the message points at the same version the live-site check waited for.
+    """
     if not aliases_path.exists():
         raise FileNotFoundError(f"Aliases file not found: {aliases_path}")
 
@@ -229,6 +289,10 @@ def debug_environment(args: argparse.Namespace) -> None:
     log(f"- cwd: {Path.cwd()}")
     log(f"- index_path: {Path(args.index_path).resolve()} exists={Path(args.index_path).exists()}")
     log(f"- aliases_path: {Path(args.aliases_path).resolve()} exists={Path(args.aliases_path).exists()}")
+    log(
+        f"- pipeline_state_path: {Path(args.pipeline_state_path).resolve()} "
+        f"exists={Path(args.pipeline_state_path).exists()}"
+    )
     log(f"- dashboard_base_url: {args.dashboard_base_url}")
     log(f"- EVENT_NAME/GITHUB_EVENT_NAME: {os.environ.get('EVENT_NAME') or os.environ.get('GITHUB_EVENT_NAME') or '<missing>'}")
     log(f"- BEFORE_SHA: {os.environ.get('BEFORE_SHA') or '<missing>'}")
@@ -250,6 +314,10 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Notify Discord about a Pauper Dashboard update.")
     parser.add_argument("--index-path", default="index.html")
     parser.add_argument("--aliases-path", default="data/aliases.json")
+    parser.add_argument(
+        "--pipeline-state-path",
+        default=os.environ.get("PIPELINE_STATE_PATH", DEFAULT_PIPELINE_STATE_PATH),
+    )
     parser.add_argument("--dashboard-base-url", default=os.environ.get("DASHBOARD_BASE_URL", DEFAULT_DASHBOARD_BASE_URL))
     parser.add_argument("--skip-change-detection", action="store_true")
     parser.add_argument("--skip-live-site-wait", action="store_true")
@@ -260,6 +328,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    """Run the Discord notification decision and delivery flow.
+
+    - Prefers publish-state over git inference, and skips when no relevant published data changed.
+    - Waits for live-site freshness unless explicitly skipped, then dry-runs or sends to each configured webhook.
+    """
     args = parse_args()
 
     if args.debug:
@@ -272,14 +345,41 @@ def main() -> int:
     current_sha = os.environ.get("CURRENT_SHA") or os.environ.get("GITHUB_SHA") or "HEAD"
 
     if not args.skip_change_detection:
-        changed_files = get_changed_files(event_name, before_sha, current_sha)
-        log("Changed files:")
-        for path in changed_files:
-            log(f"- {path}")
+        publish_context = load_publish_context(Path(args.pipeline_state_path))
+        if publish_context is not None:
+            # The publish state file is the authoritative notification contract in CI.
+            log(f"Notification basis: publish state file at {Path(args.pipeline_state_path).resolve()}")
+            log(
+                "Published change summary: "
+                f"any_changes={publish_context['published_any_changes']} "
+                f"changed_files_count={publish_context['published_changed_files_count']}"
+            )
+            changed_files = list(publish_context["published_changed_files"])
+            if changed_files:
+                log("Published changed files:")
+                for path in changed_files:
+                    log(f"- {path}")
 
-        if not should_notify(changed_files):
-            log("No data changes detected. Discord notification skipped.")
-            return 0
+            if not publish_context["published_any_changes"]:
+                log("Publish recorded no tracked data changes. Discord notification skipped.")
+                return 0
+
+            if not should_notify(changed_files):
+                log("Publish did not include relevant data paths. Discord notification skipped.")
+                return 0
+        else:
+            log("Notification basis: git comparison from explicit workflow context.")
+            log(f"- event_name: {event_name or '<missing>'}")
+            log(f"- before_sha: {before_sha or '<missing>'}")
+            log(f"- current_sha: {current_sha or '<missing>'}")
+            changed_files = get_changed_files(event_name, before_sha, current_sha)
+            log("Changed files:")
+            for path in changed_files:
+                log(f"- {path}")
+
+            if not should_notify(changed_files):
+                log("No data changes detected. Discord notification skipped.")
+                return 0
 
     thumbnail_version = read_thumbnail_version(Path(args.index_path))
     log(f"thumbnail_version={thumbnail_version}")
@@ -305,9 +405,29 @@ def main() -> int:
     if not webhooks:
         raise RuntimeError("No Discord webhooks found. Set DISCORD_WEBHOOK_1, DISCORD_WEBHOOK_2, or DISCORD_WEBHOOK_3.")
 
+    successful_deliveries = 0
+    failures: list[str] = []
     for index, webhook_url in enumerate(webhooks, start=1):
-        send_to_discord(webhook_url, payload)
+        try:
+            send_to_discord(webhook_url, payload)
+        except Exception as exc:
+            failures.append(f"webhook {index}: {exc}")
+            log(f"Failed to send Discord notification to webhook {index}: {exc}")
+            continue
+        successful_deliveries += 1
         log(f"Sent Discord notification to webhook {index}.")
+
+    if successful_deliveries == 0:
+        raise RuntimeError(
+            "All configured Discord webhook deliveries failed.\n"
+            + "\n".join(f"- {failure}" for failure in failures)
+        )
+
+    if failures:
+        log(
+            f"Discord notification succeeded for {successful_deliveries} webhook(s); "
+            f"{len(failures)} delivery attempt(s) failed."
+        )
 
     return 0
 

@@ -34,9 +34,17 @@ def untracked_files() -> set[str]:
 
 
 def main() -> int:
+    """Publish generated pipeline outputs from the data branch into main.
+
+    - Refuses wrong-branch, unrelated-change, or untracked-file publishes.
+    - Records explicit publish results in pipeline state so Discord can trust the outcome.
+    - `--dry-run` shows the exact git path without mutating repository state.
+    """
     args = parse_args()
     settings = load_settings()
     state = load_state()
+    # Publish is intentionally narrow: only generated pipeline outputs plus the
+    # derived thumbnail/index changes are allowed through this step.
     commit_paths = [
         str(path.relative_to(PROJECT_ROOT)) for path in [*DEFAULT_COMMIT_PATHS, THUMBNAIL_COMMIT_PATH, INDEX_COMMIT_PATH]
     ]
@@ -65,6 +73,19 @@ def main() -> int:
         )
 
     if not allowed_changed:
+        # Downstream notification logic reads these state keys, so "nothing to
+        # publish" still needs an explicit state update instead of an early silent exit.
+        state.update(
+            {
+                "published_at": None,
+                "published_commit_message": "",
+                "published_changed_files": [],
+                "published_changed_files_count": 0,
+                "published_any_changes": False,
+                "main_publish_completed": False,
+            }
+        )
+        save_state(state)
         log("No tracked data changes were found to publish.")
         return 0
 
@@ -104,6 +125,9 @@ def main() -> int:
         {
             "published_at": datetime.now().isoformat(timespec="seconds"),
             "published_commit_message": commit_message,
+            "published_changed_files": staged_paths,
+            "published_changed_files_count": len(staged_paths),
+            "published_any_changes": True,
             "main_publish_completed": main_publish_completed,
         }
     )
