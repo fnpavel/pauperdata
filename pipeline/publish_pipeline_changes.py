@@ -22,6 +22,36 @@ from pipeline_common import (
 THUMBNAIL_COMMIT_PATH = PROJECT_ROOT / "thumbnail.png"
 INDEX_COMMIT_PATH = PROJECT_ROOT / "index.html"
 
+
+def classify_changed_paths(changed_paths: set[str]) -> tuple[list[str], list[str], list[str]]:
+    sorted_paths = sorted(changed_paths)
+    data_paths = [path for path in sorted_paths if path == "data" or path.startswith("data/")]
+    metadata_paths = [path for path in sorted_paths if path not in data_paths]
+    return sorted_paths, data_paths, metadata_paths
+
+
+def update_publish_change_state(
+    state: dict[str, object],
+    *,
+    changed_paths: set[str],
+    publish_performed: bool,
+) -> dict[str, object]:
+    changed_files, data_changed_files, metadata_changed_files = classify_changed_paths(changed_paths)
+    state.update(
+        {
+            "publish_any_changes": bool(changed_files),
+            "publish_changed_files_count": len(changed_files),
+            "publish_changed_files": changed_files,
+            "publish_data_changed_files_count": len(data_changed_files),
+            "publish_data_changed_files": data_changed_files,
+            "publish_metadata_changed_files_count": len(metadata_changed_files),
+            "publish_metadata_changed_files": metadata_changed_files,
+            "publish_data_changed_this_run": bool(data_changed_files),
+            "publish_was_noop": not publish_performed,
+        }
+    )
+    return state
+
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Commit the generated data update and publish it to git.")
     parser.add_argument("--dry-run", action="store_true", help="Show what would happen without changing git state.")
@@ -65,12 +95,23 @@ def main() -> int:
         )
 
     if not allowed_changed:
+        update_publish_change_state(state, changed_paths=set(), publish_performed=False)
+        state.update(
+            {
+                "published_at": None,
+                "published_commit_message": None,
+                "main_publish_completed": False,
+            }
+        )
+        save_state(state)
         log("No tracked data changes were found to publish.")
         return 0
 
     staged_paths = sorted(allowed_changed)
     commit_message = build_commit_message(settings.commit_message_template, state)
+    update_publish_change_state(state, changed_paths=allowed_changed, publish_performed=True)
     if args.dry_run:
+        save_state(state)
         log("Dry run: the publish step would publish the following data changes.")
         log(f"- branch: {branch}")
         log(f"- files: {', '.join(staged_paths)}")

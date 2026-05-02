@@ -41,6 +41,7 @@ from typing import Iterable
 DEFAULT_DASHBOARD_BASE_URL = "https://fnpavel.github.io/pauperdata/"
 DEFAULT_USERNAME = "Pauper Dashboard Updates"
 DATA_PATTERNS = ("data/**",)
+PIPELINE_STATE_PATH = Path("pipeline/pipeline-state.json")
 
 
 def log(message: str) -> None:
@@ -79,6 +80,42 @@ def should_notify(changed_files: Iterable[str], patterns: Iterable[str] = DATA_P
         for path in changed_files
         for pattern in patterns
     )
+
+
+def read_pipeline_state(path: Path) -> dict[str, object]:
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise RuntimeError(f"Pipeline state file is not valid JSON: {path}") from exc
+
+
+def should_notify_from_pipeline_state(state: dict[str, object]) -> bool | None:
+    required_keys = (
+        "publish_any_changes",
+        "publish_changed_files_count",
+        "publish_data_changed_files_count",
+        "publish_data_changed_files",
+    )
+    if not any(key in state for key in required_keys):
+        return None
+
+    publish_any_changes = bool(state.get("publish_any_changes"))
+    changed_files_count = int(state.get("publish_changed_files_count") or 0)
+    data_changed_files_count = int(state.get("publish_data_changed_files_count") or 0)
+    raw_data_changed_files = state.get("publish_data_changed_files") or []
+    data_changed_files = [
+        str(path).strip()
+        for path in raw_data_changed_files
+        if str(path).strip()
+    ] if isinstance(raw_data_changed_files, list) else []
+
+    if not publish_any_changes or changed_files_count == 0:
+        return False
+    if data_changed_files_count == 0:
+        return False
+    return any(path == "data" or path.startswith("data/") for path in data_changed_files)
 
 
 def read_thumbnail_version(index_path: Path) -> str:
@@ -272,14 +309,33 @@ def main() -> int:
     current_sha = os.environ.get("CURRENT_SHA") or os.environ.get("GITHUB_SHA") or "HEAD"
 
     if not args.skip_change_detection:
-        changed_files = get_changed_files(event_name, before_sha, current_sha)
-        log("Changed files:")
-        for path in changed_files:
-            log(f"- {path}")
+        pipeline_state = read_pipeline_state(PIPELINE_STATE_PATH)
+        pipeline_state_decision = should_notify_from_pipeline_state(pipeline_state)
 
-        if not should_notify(changed_files):
-            log("No data changes detected. Discord notification skipped.")
-            return 0
+        if pipeline_state_decision is not None:
+            changed_files = pipeline_state.get("publish_changed_files") or []
+            data_changed_files = pipeline_state.get("publish_data_changed_files") or []
+            log("Publish change summary from pipeline state:")
+            log(f"- publish_any_changes={bool(pipeline_state.get('publish_any_changes'))}")
+            log(f"- publish_changed_files_count={int(pipeline_state.get('publish_changed_files_count') or 0)}")
+            log(f"- publish_data_changed_files_count={int(pipeline_state.get('publish_data_changed_files_count') or 0)}")
+            for path in changed_files:
+                log(f"- changed: {path}")
+            for path in data_changed_files:
+                log(f"- data_changed: {path}")
+
+            if not pipeline_state_decision:
+                log("No data changes from the current publish run. Discord notification skipped.")
+                return 0
+        else:
+            changed_files = get_changed_files(event_name, before_sha, current_sha)
+            log("Changed files:")
+            for path in changed_files:
+                log(f"- {path}")
+
+            if not should_notify(changed_files):
+                log("No data changes detected. Discord notification skipped.")
+                return 0
 
     thumbnail_version = read_thumbnail_version(Path(args.index_path))
     log(f"thumbnail_version={thumbnail_version}")
