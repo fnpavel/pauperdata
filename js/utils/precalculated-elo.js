@@ -110,8 +110,13 @@ function resolveDateWindowDescriptor(manifest, {
 }
 
 function mapPayloadRow(row = {}, descriptor = null) {
-  const seasonKey = normalizeText(row?.seasonKey)
-    || (descriptor?.type === 'seasonal' ? String(descriptor.year || '') : '');
+  const isContinuousMultiYear = descriptor?.type === 'multi-year' && descriptor?.mode === 'continuous';
+  const seasonKey = isContinuousMultiYear
+    ? 'all-time'
+    : (
+      normalizeText(row?.seasonKey)
+      || (descriptor?.type === 'seasonal' ? String(descriptor.year || '') : '')
+    );
   const seasonYear = normalizeText(row?.seasonYear)
     || (descriptor?.type === 'seasonal' ? String(descriptor.year || '') : '');
 

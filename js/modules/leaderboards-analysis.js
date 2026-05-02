@@ -178,6 +178,12 @@ let leaderboardPlayerEloChart = null;
 let leaderboardTimelineChart = null;
 let activeLeaderboardTimelineSelections = new Set();
 let activeLeaderboardTimelineSearchTerm = '';
+let leaderboardThresholdRenderTimer = null;
+let leaderboardDatasetCache = new Map();
+let leaderboardDeckRowsCache = new Map();
+
+const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
+const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
 
 function getLeaderboardsSection() {
   return document.getElementById('leaderboardsSection');
@@ -1499,16 +1505,35 @@ function formatWindowRange(startDate = '', endDate = '') {
 }
 
 function getWindowLabel(period, selectedYears = [], startDate = '', endDate = '') {
+  const resolvedYears = [...new Set((Array.isArray(selectedYears) ? selectedYears : []).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  if (period?.windowMode === 'seasonal') {
+    if (resolvedYears.length === 1) {
+      return resolvedYears[0];
+    }
+
+    if (period?.year) {
+      return String(period.year);
+    }
+  }
+
+  if (period?.windowMode === 'range' || resolvedYears.length > 1) {
+    const rangeLabel = resolvedYears.length > 1
+      ? `${resolvedYears[0]}\u2013${resolvedYears[resolvedYears.length - 1]}`
+      : (resolvedYears[0] || String(period?.startYear || period?.endYear || '').trim());
+    if (rangeLabel) {
+      return period?.resetMode === 'yearly'
+        ? `${rangeLabel} (reset each year)`
+        : rangeLabel;
+    }
+  }
+
   if (period?.label) {
     return period.label;
   }
 
-  if (selectedYears.length === 1) {
-    return `${selectedYears[0]} Season`;
-  }
-
-  if (selectedYears.length > 1) {
-    return `${selectedYears[0]}-${selectedYears[selectedYears.length - 1]}`;
+  if (resolvedYears.length === 1) {
+    return resolvedYears[0];
   }
 
   if (startDate && endDate) {
@@ -1617,6 +1642,70 @@ function formatNameList(names = [], maxVisible = 3) {
   }
 
   return `${cleanedNames.slice(0, maxVisible).join(', ')} +${cleanedNames.length - maxVisible} more`;
+}
+
+function getLeaderboardDatasetCacheKey({
+  eventTypes = [],
+  startDate = '',
+  endDate = '',
+  resetByYear = true,
+  entityMode = 'player',
+  includeHistory = false
+} = {}) {
+  const normalizedTypes = [...new Set((Array.isArray(eventTypes) ? eventTypes : [eventTypes]).filter(Boolean))].sort();
+  return JSON.stringify({
+    eventTypes: normalizedTypes,
+    startDate: String(startDate || '').trim(),
+    endDate: String(endDate || '').trim(),
+    resetByYear: resetByYear !== false,
+    entityMode: String(entityMode || 'player').trim(),
+    includeHistory: includeHistory === true
+  });
+}
+
+function pruneLeaderboardDatasetCache() {
+  if (leaderboardDatasetCache.size <= LEADERBOARD_DATASET_CACHE_LIMIT) {
+    return;
+  }
+
+  const oldestKey = leaderboardDatasetCache.keys().next().value;
+  if (oldestKey) {
+    leaderboardDatasetCache.delete(oldestKey);
+  }
+}
+
+async function loadLeaderboardDatasetCached(request = {}, options = {}) {
+  const cacheKey = getLeaderboardDatasetCacheKey({
+    eventTypes: request.eventTypes,
+    startDate: request.startDate,
+    endDate: request.endDate,
+    resetByYear: options.resetByYear,
+    entityMode: options.entityMode,
+    includeHistory: options.includeHistory
+  });
+
+  if (leaderboardDatasetCache.has(cacheKey)) {
+    return leaderboardDatasetCache.get(cacheKey);
+  }
+
+  const pendingRequest = buildRankingsDataset(request, options)
+    .then(dataset => {
+      leaderboardDatasetCache.set(cacheKey, dataset);
+      pruneLeaderboardDatasetCache();
+      return dataset;
+    })
+    .catch(error => {
+      leaderboardDatasetCache.delete(cacheKey);
+      throw error;
+    });
+
+  leaderboardDatasetCache.set(cacheKey, pendingRequest);
+  pruneLeaderboardDatasetCache();
+  return pendingRequest;
+}
+
+function clearLeaderboardStageBCaches() {
+  leaderboardDeckRowsCache = new Map();
 }
 
 function formatShortDate(dateString = '') {
@@ -2149,7 +2238,7 @@ function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard d
   }
 }
 
-function renderLeaderboardFromCurrentState() {
+function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
   // Re-render every dependent surface from the current dataset snapshot. This is
   // used after threshold changes, sorts, theme refreshes, and async data loads.
   const searchInput = getLeaderboardSearchInput();
@@ -2171,7 +2260,7 @@ function renderLeaderboardFromCurrentState() {
   populateLeaderboardStats(currentLeaderboardDataset);
   updateLeaderboardDrilldownCardStates();
   renderLeaderboardTable(currentLeaderboardDataset);
-  renderLeaderboardTimelineChart();
+  renderLeaderboardTimelineChart({ forceRecreate: !thresholdOnly });
 
   if (searchInput) {
     searchInput.disabled = currentLeaderboardRows.length === 0;
@@ -3815,12 +3904,9 @@ function renderLeaderboardTimelineSearchDropdown() {
   `).join('');
 }
 
-function renderLeaderboardTimelineChart() {
+function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   // Rebuilds the multi-player timeline chart from selected/visible leaderboard
   // rows.
-  destroyLeaderboardTimelineChart();
-  updateLeaderboardTimelineVisibilityButtons();
-
   const section = getLeaderboardTimelineSection();
   const canvas = getLeaderboardTimelineChartCanvas();
   const helper = getLeaderboardTimelineHelper();
@@ -3830,8 +3916,14 @@ function renderLeaderboardTimelineChart() {
     return;
   }
 
+  if (forceRecreate) {
+    destroyLeaderboardTimelineChart();
+  }
+  updateLeaderboardTimelineVisibilityButtons();
+
   if (!shouldShowLeaderboardTimelineSection()) {
     section.hidden = true;
+    destroyLeaderboardTimelineChart();
     if (dropdown) {
       dropdown.hidden = true;
       dropdown.classList.remove('open');
@@ -3871,6 +3963,7 @@ function renderLeaderboardTimelineChart() {
   }
 
   if (!hasHistoryLoaded || !globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
+    destroyLeaderboardTimelineChart();
     updateLeaderboardTimelineVisibilityButtons();
     return;
   }
@@ -3904,16 +3997,56 @@ function renderLeaderboardTimelineChart() {
     };
   });
 
-  leaderboardTimelineChart = createLeaderboardTimelineChart(canvas, {
-    labels,
-    datasets,
-    timelineEntries: timeline,
-    formatRating,
-    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers(),
-    onLegendToggle() {
-      updateLeaderboardTimelineVisibilityButtons();
+  const showYearBoundaries = shouldShowLeaderboardYearBoundaryMarkers();
+  if (
+    !forceRecreate
+    && leaderboardTimelineChart
+    && Array.isArray(leaderboardTimelineChart.data?.labels)
+    && leaderboardTimelineChart.data.labels.length === labels.length
+    && leaderboardTimelineChart.data.labels.every((label, index) => label === labels[index])
+  ) {
+    const visibilityByLabel = new Map(
+      (leaderboardTimelineChart.data.datasets || []).map((dataset, index) => [
+        String(dataset?.label || ''),
+        typeof leaderboardTimelineChart.isDatasetVisible === 'function'
+          ? leaderboardTimelineChart.isDatasetVisible(index)
+          : true
+      ])
+    );
+
+    leaderboardTimelineChart.data.labels = labels;
+    leaderboardTimelineChart.data.datasets = datasets;
+
+    if (leaderboardTimelineChart.options?.plugins?.leaderboardYearBoundaryPlugin) {
+      const yearBands = showYearBoundaries ? buildLeaderboardYearBands(timeline) : [];
+      leaderboardTimelineChart.options.plugins.leaderboardYearBoundaryPlugin.bands = yearBands.length > 1 ? yearBands : [];
     }
-  });
+
+    if (leaderboardTimelineChart.options?.plugins?.legend) {
+      leaderboardTimelineChart.options.plugins.legend.display = datasets.length > 1;
+    }
+
+    datasets.forEach((dataset, index) => {
+      const isVisible = visibilityByLabel.get(String(dataset?.label || ''));
+      if (typeof isVisible === 'boolean' && typeof leaderboardTimelineChart.setDatasetVisibility === 'function') {
+        leaderboardTimelineChart.setDatasetVisibility(index, isVisible);
+      }
+    });
+
+    leaderboardTimelineChart.update('none');
+  } else {
+    destroyLeaderboardTimelineChart();
+    leaderboardTimelineChart = createLeaderboardTimelineChart(canvas, {
+      labels,
+      datasets,
+      timelineEntries: timeline,
+      formatRating,
+      showYearBoundaries,
+      onLegendToggle() {
+        updateLeaderboardTimelineVisibilityButtons();
+      }
+    });
+  }
   updateLeaderboardTimelineVisibilityButtons();
 }
 
@@ -5401,6 +5534,30 @@ function setupLeaderboardTimelineInteractions() {
   updateLeaderboardTimelineVisibilityButtons();
 }
 
+function flushLeaderboardThresholdRender() {
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+    leaderboardThresholdRenderTimer = null;
+  }
+
+  if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+    renderLeaderboardFromCurrentState({ thresholdOnly: true });
+  }
+}
+
+function scheduleLeaderboardThresholdRender() {
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+  }
+
+  leaderboardThresholdRenderTimer = setTimeout(() => {
+    leaderboardThresholdRenderTimer = null;
+    if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+      renderLeaderboardFromCurrentState({ thresholdOnly: true });
+    }
+  }, LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS);
+}
+
 function setupLeaderboardFilterListeners() {
   // Wires event type, window mode, range/reset, and threshold controls.
   const eventTypeButtons = getLeaderboardEventTypeButtons();
@@ -5542,12 +5699,22 @@ function setupLeaderboardFilterListeners() {
   });
 
   Object.entries(eloThresholdControls).forEach(([key, control]) => {
-    const applyThreshold = value => {
+    const applyThreshold = (value, { immediate = false } = {}) => {
+      const sanitizedValue = sanitizeLeaderboardThresholdValue(key, value);
+      const currentValue = sanitizeLeaderboardThresholdValue(key, getActiveLeaderboardEloThresholds()[key] ?? 0);
+      if (sanitizedValue === currentValue) {
+        return;
+      }
+
       setLeaderboardEloThreshold(key, value);
       renderLeaderboardEloThresholdControls();
 
       if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
-        renderLeaderboardFromCurrentState();
+        if (immediate) {
+          flushLeaderboardThresholdRender();
+        } else {
+          scheduleLeaderboardThresholdRender();
+        }
       }
     };
 
@@ -5561,7 +5728,7 @@ function setupLeaderboardFilterListeners() {
           const topPercent = Number(button.dataset.leaderboardThresholdTopPercent || 0);
           const quickValue = getLeaderboardEloThresholdQuickViewValue(key, topPercent);
           const activeValue = getActiveLeaderboardEloThresholds()[key] ?? 0;
-          applyThreshold(areLeaderboardThresholdValuesEqual(key, quickValue, activeValue) ? 0 : quickValue);
+          applyThreshold(areLeaderboardThresholdValuesEqual(key, quickValue, activeValue) ? 0 : quickValue, { immediate: true });
         });
 
         button.dataset.listenerAdded = 'true';
@@ -5580,11 +5747,11 @@ function setupLeaderboardFilterListeners() {
     }
 
     control.input.addEventListener('change', () => {
-      applyThreshold(control.input.value);
+      applyThreshold(control.input.value, { immediate: true });
     });
 
     control.input.addEventListener('blur', () => {
-      applyThreshold(control.input.value);
+      applyThreshold(control.input.value, { immediate: true });
     });
 
     control.input.addEventListener('keydown', event => {
@@ -5605,7 +5772,7 @@ function setupLeaderboardFilterListeners() {
       renderLeaderboardEloThresholdControls();
 
       if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
-        renderLeaderboardFromCurrentState();
+        flushLeaderboardThresholdRender();
       }
     });
 
@@ -5652,10 +5819,25 @@ function buildDeckViewRows(selectedDeckName = '', dataset = currentLeaderboardDa
     return [];
   }
 
+  const datasetKey = getLeaderboardDatasetCacheKey({
+    eventTypes: dataset?.eventTypes,
+    startDate: dataset?.startDate,
+    endDate: dataset?.endDate,
+    resetByYear: dataset?.resetByYear,
+    entityMode: 'player_deck',
+    includeHistory: dataset?.detailsLoaded === true
+  });
+  const cacheKey = `${datasetKey}:::${normalizedDeckName}`;
+  if (leaderboardDeckRowsCache.has(cacheKey)) {
+    return leaderboardDeckRowsCache.get(cacheKey);
+  }
+
   const deckRows = (Array.isArray(dataset?.deckDataset?.seasonRows) ? dataset.deckDataset.seasonRows : [])
     .filter(row => String(row?.deck || '').trim() === normalizedDeckName);
 
-  return augmentEloLeaderboardRowsWithEventStats(deckRows, dataset);
+  const augmentedRows = augmentEloLeaderboardRowsWithEventStats(deckRows, dataset);
+  leaderboardDeckRowsCache.set(cacheKey, augmentedRows);
+  return augmentedRows;
 }
 
 function getLeaderboardPlayerDeckRank(scope = {}, dataset = currentLeaderboardDataset) {
@@ -5862,7 +6044,7 @@ async function ensureLeaderboardDetailDataLoaded() {
 
   const requestId = leaderboardDatasetRequestId;
   const [detailDataset, deckDetailDataset] = await Promise.all([
-    buildRankingsDataset({
+    loadLeaderboardDatasetCached({
       eventTypes: currentLeaderboardDataset.eventTypes,
       startDate: currentLeaderboardDataset.startDate,
       endDate: currentLeaderboardDataset.endDate
@@ -5870,7 +6052,7 @@ async function ensureLeaderboardDetailDataLoaded() {
       resetByYear: activeWindow.resetByYear,
       includeHistory: true
     }),
-    buildRankingsDataset({
+    loadLeaderboardDatasetCached({
       eventTypes: currentLeaderboardDataset.eventTypes,
       startDate: currentLeaderboardDataset.startDate,
       endDate: currentLeaderboardDataset.endDate
@@ -5894,6 +6076,7 @@ async function ensureLeaderboardDetailDataLoaded() {
     deckDataset: deckDetailDataset,
     eventResultLookup: buildLeaderboardEventResultLookup(detailDataset)
   };
+  clearLeaderboardStageBCaches();
   currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(detailDataset.seasonRows, currentLeaderboardDataset);
   currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
   renderLeaderboardFromCurrentState();
@@ -5903,6 +6086,11 @@ async function ensureLeaderboardDetailDataLoaded() {
 export async function updateLeaderboardAnalytics() {
   // Async requests can overlap when filters change quickly. Incrementing this id
   // lets stale responses exit before overwriting the latest rendered dataset.
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+    leaderboardThresholdRenderTimer = null;
+  }
+
   const requestId = leaderboardDatasetRequestId + 1;
   leaderboardDatasetRequestId = requestId;
   const activeWindow = renderLeaderboardWindowControls();
@@ -5920,7 +6108,7 @@ export async function updateLeaderboardAnalytics() {
 
   try {
     const [dataset, deckDataset] = await Promise.all([
-      buildRankingsDataset({
+      loadLeaderboardDatasetCached({
         eventTypes: getSelectedLeaderboardEventTypes(),
         startDate: activeWindow?.startDate || '',
         endDate: activeWindow?.endDate || ''
@@ -5928,7 +6116,7 @@ export async function updateLeaderboardAnalytics() {
         resetByYear: activeWindow?.resetByYear,
         includeHistory: false
       }),
-      buildRankingsDataset({
+      loadLeaderboardDatasetCached({
         eventTypes: getSelectedLeaderboardEventTypes(),
         startDate: activeWindow?.startDate || '',
         endDate: activeWindow?.endDate || ''
@@ -5951,10 +6139,12 @@ export async function updateLeaderboardAnalytics() {
       eventResultLookup: buildLeaderboardEventResultLookup(dataset),
       deckDataset
     };
+    clearLeaderboardStageBCaches();
     currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(dataset.seasonRows, currentLeaderboardDataset);
     currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
 
     renderLeaderboardFromCurrentState();
+    await ensureLeaderboardDetailDataLoaded();
   } catch (error) {
     if (requestId !== leaderboardDatasetRequestId) {
       return;
