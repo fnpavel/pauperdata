@@ -1988,15 +1988,16 @@ function resolveActiveLeaderboardPlayerDeckScope(deckSummaries = []) {
 function getLeaderboardPlayerDrilldownModel(row) {
   // Player drilldowns always include an all-decks scope plus optional per-deck
   // scopes so users can compare total Elo against deck-specific Elo.
+  const baseRow = getLeaderboardOverallPlayerRow(row);
   const totalScope = buildLeaderboardScopeData({
     key: LEADERBOARD_PLAYER_TOTAL_SCOPE,
     type: 'all',
     label: getDeckDisplayName(LEADERBOARD_PLAYER_TOTAL_SCOPE),
-    row,
-    historyEntries: getPlayerHistoryForRow(row),
-    totalRow: row
+    row: baseRow,
+    historyEntries: getPlayerHistoryForRow(baseRow),
+    totalRow: baseRow
   });
-  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(row);
+  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(baseRow);
   totalScope.uniqueDeckCount = deckSummaries.length || totalScope.uniqueDeckCount;
   const activeScopeKey = resolveActiveLeaderboardPlayerDeckScope(deckSummaries);
   const activeScope = activeScopeKey === LEADERBOARD_PLAYER_TOTAL_SCOPE
@@ -2004,7 +2005,7 @@ function getLeaderboardPlayerDrilldownModel(row) {
     : deckSummaries.find(scope => scope.key === activeScopeKey) || totalScope;
 
   return {
-    row,
+    row: baseRow,
     totalScope,
     deckSummaries,
     activeScopeKey,
@@ -2900,8 +2901,23 @@ function getLeaderboardRowByKeys(playerKey = '', seasonKey = '') {
   }) || null;
 }
 
+function isLeaderboardDeckEntityRow(row = {}, dataset = currentLeaderboardDataset) {
+  const normalizedPlayerKey = String(row?.playerKey || '').trim();
+  if (!normalizedPlayerKey) {
+    return false;
+  }
+
+  return dataset?.deckDataset?.historyByPlayer?.has(normalizedPlayerKey) === true;
+}
+
+function getLeaderboardHistoryMapForRow(row = {}, dataset = currentLeaderboardDataset) {
+  return isLeaderboardDeckEntityRow(row, dataset)
+    ? dataset?.deckDataset?.historyByPlayer
+    : dataset?.historyByPlayer;
+}
+
 function getPlayerHistoryForRow(row) {
-  const historyEntries = currentLeaderboardDataset.historyByPlayer?.get(row.playerKey) || [];
+  const historyEntries = getLeaderboardHistoryMapForRow(row)?.get(row?.playerKey) || [];
 
   return [...historyEntries]
     .filter(entry => String(entry.seasonKey || '') === String(row.seasonKey || ''))
@@ -2919,6 +2935,19 @@ function getLeaderboardRowsBySelectionKeys(selectionKeys = activeLeaderboardTime
 
 function getLeaderboardPlayerHistoryAscending(row) {
   return getPlayerHistoryForRow(row).slice().sort(compareHistoryEntriesAscending);
+}
+
+function getLeaderboardOverallPlayerRow(row = {}) {
+  const normalizedSeasonKey = String(row?.seasonKey || '').trim();
+  const normalizedBasePlayerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
+  if (!normalizedSeasonKey || !normalizedBasePlayerKey) {
+    return row || null;
+  }
+
+  return currentLeaderboardBaseRows.find(candidate => {
+    return String(candidate?.seasonKey || '').trim() === normalizedSeasonKey
+      && String(candidate?.playerKey || '').trim() === normalizedBasePlayerKey;
+  }) || row || null;
 }
 
 function destroyLeaderboardPlayerEloChart() {
@@ -3769,13 +3798,14 @@ function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   }
 
   const model = getLeaderboardPlayerDrilldownModel(row);
+  const displayRow = model.row || row;
   activeLeaderboardPlayerDeckScope = model.activeScopeKey;
-  elements.title.textContent = row.displayName || row.playerKey || 'Elo Player';
-  elements.subtitle.textContent = buildLeaderboardPlayerScopeSubtitle(row, model);
-  elements.content.innerHTML = buildLeaderboardPlayerDetailHtml(row, model);
+  elements.title.textContent = displayRow.displayName || displayRow.playerKey || 'Elo Player';
+  elements.subtitle.textContent = buildLeaderboardPlayerScopeSubtitle(displayRow, model);
+  elements.content.innerHTML = buildLeaderboardPlayerDetailHtml(displayRow, model);
   renderLeaderboardPlayerEloChart(model);
-  updateLeaderboardPlayerReportDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
-  updateLeaderboardPlayerHistoryDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
+  updateLeaderboardPlayerReportDownloadButton(displayRow.playerKey, displayRow.seasonKey, model.activeScopeKey);
+  updateLeaderboardPlayerHistoryDownloadButton(displayRow.playerKey, displayRow.seasonKey, model.activeScopeKey);
   return true;
 }
 
@@ -4164,15 +4194,21 @@ function buildLeaderboardRankMonthlyTimeline(eventTimeline = []) {
 }
 
 function normalizeLeaderboardTimelineDataForChart(dataset = currentLeaderboardDataset, {
+  rows = getSortedLeaderboardRowsWithRank(),
   chartMode = getLeaderboardTimelineChartMode(),
   rankCohortGranularity = getLeaderboardTimelineRankCohortGranularity()
 } = {}) {
-  const processedMatches = Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : [];
+  const timelineRows = Array.isArray(rows) ? rows : [];
+  const shouldUseDeckTimeline = timelineRows.length > 0 && timelineRows.every(row => isLeaderboardDeckEntityRow(row, dataset));
+  const processedMatches = shouldUseDeckTimeline
+    ? (Array.isArray(dataset?.deckDataset?.processedMatches) ? dataset.deckDataset.processedMatches : [])
+    : (Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : []);
   logLeaderboardTimelineDebug('raw input', processedMatches);
   logLeaderboardTimelineDebug('shape summary', {
     isArray: Array.isArray(processedMatches),
     keys: processedMatches && typeof processedMatches === 'object' ? Object.keys(processedMatches).slice(0, 20) : null,
-    firstItem: Array.isArray(processedMatches) ? processedMatches[0] : null
+    firstItem: Array.isArray(processedMatches) ? processedMatches[0] : null,
+    shouldUseDeckTimeline
   });
   const eventTimeline = buildLeaderboardTimeline(processedMatches).filter(entry => {
     return Boolean(String(entry?.key || '').trim()) && Boolean(String(entry?.date || '').trim());
@@ -4464,6 +4500,7 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
     hasHistoryLoaded,
     timelineIndexByKey
   } = normalizeLeaderboardTimelineDataForChart(currentLeaderboardDataset, {
+    rows: selectedRows.length > 0 ? selectedRows : getSortedLeaderboardRowsWithRank(),
     chartMode,
     rankCohortGranularity
   });
