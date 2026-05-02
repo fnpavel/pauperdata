@@ -96,6 +96,32 @@ function getYearRangeLabel(years = []) {
   return `${normalizedYears[0]}-${normalizedYears[normalizedYears.length - 1]}`;
 }
 
+function getYearsFromResolvedWindow(startDate = '', endDate = '') {
+  const startYear = /^\d{4}-\d{2}-\d{2}$/.test(String(startDate || '').trim())
+    ? String(startDate).slice(0, 4)
+    : '';
+  const endYear = /^\d{4}-\d{2}-\d{2}$/.test(String(endDate || '').trim())
+    ? String(endDate).slice(0, 4)
+    : '';
+
+  if (!startYear || !endYear) {
+    return [];
+  }
+
+  const startNumericYear = Number(startYear);
+  const endNumericYear = Number(endYear);
+  if (!Number.isInteger(startNumericYear) || !Number.isInteger(endNumericYear)) {
+    return [];
+  }
+
+  const years = [];
+  for (let year = Math.min(startNumericYear, endNumericYear); year <= Math.max(startNumericYear, endNumericYear); year += 1) {
+    years.push(String(year));
+  }
+
+  return years;
+}
+
 function getNow() {
   return typeof globalThis.performance?.now === 'function'
     ? globalThis.performance.now()
@@ -134,13 +160,18 @@ function finalizeRankingsDataset({
       .map(getMatchYear)
       .filter(Boolean)
   )].sort();
+  const resolvedWindowYears = getYearsFromResolvedWindow(resolvedStartDate, resolvedEndDate);
   const fallbackSelectedYears = selectedYears.length > 0
     ? selectedYears
-    : [...new Set(
-        (Array.isArray(seasonRowsSource) ? seasonRowsSource : [])
-          .map(row => String(row?.seasonYear || '').trim())
-          .filter(value => /^\d{4}$/.test(value))
-      )].sort();
+    : (
+      resolvedWindowYears.length > 0
+        ? resolvedWindowYears
+        : [...new Set(
+            (Array.isArray(seasonRowsSource) ? seasonRowsSource : [])
+              .map(row => String(row?.seasonYear || '').trim())
+              .filter(value => /^\d{4}$/.test(value))
+          )].sort()
+    );
   const selectedYearRangeLabel = getYearRangeLabel(fallbackSelectedYears);
   const seasonRows = [...(Array.isArray(seasonRowsSource) ? seasonRowsSource : [])]
     .map(row => ({
