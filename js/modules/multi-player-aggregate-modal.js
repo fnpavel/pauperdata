@@ -7,7 +7,7 @@ import {
   buildRankingsDataset,
   getRankingsAvailableDates
 } from '../utils/rankings-data.js';
-import { getChartTheme } from '../utils/theme.js';
+import { getActiveTheme, getChartTheme } from '../utils/theme.js';
 
 const MAX_MULTI_EVENT_ELO_CACHE_ENTRIES = 12;
 const multiEventAggregateRankingsDatasetCache = new Map();
@@ -712,6 +712,15 @@ function destroyMultiPlayerAggregateModalChart() {
   }
 }
 
+function formatChartLabelPercentage(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return '';
+  }
+
+  return `${numericValue.toFixed(2)}%`;
+}
+
 function renderMultiPlayerAggregateModalChart(model) {
   destroyMultiPlayerAggregateModalChart();
 
@@ -721,6 +730,7 @@ function renderMultiPlayerAggregateModalChart(model) {
   }
 
   const theme = getChartTheme();
+  const activeTheme = getActiveTheme();
   multiPlayerAggregateModalChart = new Chart(canvas, {
     type: 'line',
     data: {
@@ -802,11 +812,26 @@ function renderMultiPlayerAggregateModalChart(model) {
                 `Date: ${point.date}`,
                 `Deck: ${point.deck || 'N/A'}`,
                 `Record: ${point.record}`,
-                `Win Rate: ${point.winRate.toFixed(1)}%`,
+                `Win Rate: ${formatChartLabelPercentage(point.winRate)}`,
                 `Finish: ${point.finish}`
               ];
             }
           }
+        },
+        datalabels: {
+          display: true,
+          color: activeTheme === 'dark' ? '#ffffff' : theme.text,
+          font: {
+            size: 11,
+            weight: '700',
+            family: "'Bitter', serif"
+          },
+          align: 'top',
+          anchor: 'end',
+          offset: 8,
+          clamp: true,
+          clip: false,
+          formatter: value => formatChartLabelPercentage(value)
         }
       }
     }
