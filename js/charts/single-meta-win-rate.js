@@ -5,6 +5,7 @@ import { getMetaWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 import { openSingleEventDeckDrilldown, updateSingleEventTables } from '../modules/event-analysis.js';
 import { getChartTheme } from '../utils/theme.js';
+import { renderSingleEventSummaryBadge } from '../utils/single-event-badge.js';
 
 export let metaWinRateEventChart = null;
 
@@ -15,6 +16,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
   const theme = getChartTheme();
 
   const eventData = getMetaWinRateChartData();
+  const selectedEvent = document.getElementById('eventFilterMenu')?.value || eventData[0]?.Event || '';
   if (eventData.length === 0) {
     console.log("No data, skipping chart creation...");
     if (metaWinRateEventChart) metaWinRateEventChart.destroy();
@@ -217,6 +219,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
 
   // Add searchable dropdown
   const chartContainer = metaWinRateCtx.parentElement;
+  const chartPanel = metaWinRateCtx.closest('.chart-container');
   let searchContainer = chartContainer.querySelector('.deck-search-container');
   if (!searchContainer) {
     searchContainer = document.createElement('div');
@@ -388,6 +391,16 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
     // Update search functionality if container already exists?
     // This might be needed if the function is called multiple times without page refresh
     // For now, assume the listeners persist
+  }
+
+  if (chartPanel) {
+    renderSingleEventSummaryBadge({
+      container: chartPanel,
+      insertAfter: searchContainer,
+      badgeId: 'singleEventScatterBadgeRow',
+      eventName: selectedEvent,
+      rows: eventData
+    });
   }
 
   try {

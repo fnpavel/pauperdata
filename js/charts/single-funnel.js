@@ -5,10 +5,13 @@ import { getFunnelChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from '../utils/data-chart.js';
 import { openSingleEventDeckDrilldown } from '../modules/event-analysis.js';
 import { getActiveTheme, getChartTheme } from '../utils/theme.js';
+import { exportTopConversionCsv } from '../modules/export-table-csv.js';
+import { renderSingleEventSummaryBadge } from '../utils/single-event-badge.js';
 
 export let eventFunnelChart = null;
 let activeEventFunnelGroupingMode = 'detailed';
 let activeEventFunnelLabelMode = 'copies';
+let currentEventFunnelChartData = [];
 
 const FUNNEL_BUCKETS = Object.freeze([
   {
@@ -326,6 +329,9 @@ function ensureEventFunnelGroupingControls() {
         <span class="event-funnel-toolbar-label">Label View</span>
         <div class="bubble-menu event-funnel-label-menu" id="eventFunnelLabelMenu" aria-label="Select event funnel label display mode"></div>
       </div>
+      <div class="event-funnel-toolbar-group">
+        <button type="button" class="bubble-button" id="eventFunnelExportCsvButton">Export CSV</button>
+      </div>
     `;
     const title = chartContainer.querySelector('.chart-title');
     if (title) {
@@ -337,7 +343,8 @@ function ensureEventFunnelGroupingControls() {
 
   const menu = toolbar.querySelector('#eventFunnelGroupingMenu');
   const labelMenu = toolbar.querySelector('#eventFunnelLabelMenu');
-  if (!menu || !labelMenu) {
+  const exportButton = toolbar.querySelector('#eventFunnelExportCsvButton');
+  if (!menu || !labelMenu || !exportButton) {
     return;
   }
 
@@ -398,6 +405,36 @@ function ensureEventFunnelGroupingControls() {
     });
     labelMenu.dataset.listenerBound = 'true';
   }
+
+  if (exportButton.dataset.listenerBound !== 'true') {
+    exportButton.addEventListener('click', () => {
+      const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
+      exportTopConversionCsv(currentEventFunnelChartData, {
+        entityType: 'deck',
+        scope: 'single',
+        eventName: selectedEvent
+      });
+    });
+    exportButton.dataset.listenerBound = 'true';
+  }
+}
+
+function renderEventFunnelSummaryBadge(rows = []) {
+  const canvas = document.getElementById('eventFunnelChart');
+  const chartContainer = canvas?.closest('.chart-container');
+  const toolbar = chartContainer?.querySelector('#eventFunnelGroupingToolbar');
+  const selectedEvent = document.getElementById('eventFilterMenu')?.value || rows?.[0]?.Event || '';
+  if (!chartContainer || !toolbar) {
+    return;
+  }
+
+  renderSingleEventSummaryBadge({
+    container: chartContainer,
+    insertAfter: toolbar,
+    badgeId: 'singleEventFunnelBadgeRow',
+    eventName: selectedEvent,
+    rows
+  });
 }
 
 function ensureEventFunnelColumnHeader(bucketLabels = []) {
@@ -552,11 +589,14 @@ export function updateEventFunnelChart() {
   ensureEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
 
   const chartData = getFunnelChartData();
+  currentEventFunnelChartData = Array.isArray(chartData) ? [...chartData] : [];
   if (chartData.length === 0) {
     if (eventFunnelChart) eventFunnelChart.destroy();
     setChartLoading('eventFunnelChart', false);
     return;
   }
+
+  renderEventFunnelSummaryBadge(chartData);
 
   const sortedDecksData = calculateDeckConversionStats(chartData);
   const maxBucketCount = Math.max(

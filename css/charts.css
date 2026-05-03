@@ -446,6 +446,7 @@ canvas {
 .chart-search-container {
   margin-bottom: 15px;
   position: relative;
+  flex: 1 1 260px;
 }
 
 .chart-search-input {

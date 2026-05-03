@@ -1919,7 +1919,6 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
   const startDate = document.getElementById("startDateSelect")?.value;
   const endDate = document.getElementById("endDateSelect")?.value;
   if (!tableElement || !tableHead || !tableBody || !tableTitle) {
-    console.error("Multi event table elements not found!");
     return;
   }
 

@@ -8,6 +8,7 @@ import { openMultiEventPlayerAggregateModal } from './modules/multi-player-aggre
 import { getActiveTheme, getChartTheme } from './utils/theme.js';
 import { getPlayerIdentityKey } from './utils/player-names.js';
 import { renderMultiEventPeriodSummaryBadge } from './utils/multi-event-period-badge.js';
+import { exportTopConversionCsv } from './modules/export-table-csv.js';
 
 export let multiEventFunnelChart = null;
 let activeMultiEventFunnelGroupingMode = 'detailed';
@@ -21,6 +22,7 @@ let activeMultiEventFunnelHighlightedEntityNames = {
   deck: '',
   player: ''
 };
+let currentMultiEventFunnelChartData = [];
 let currentMultiEventFunnelSourceRows = [];
 let currentMultiEventFunnelRows = [];
 let multiEventFunnelRenderFrame = 0;
@@ -702,6 +704,9 @@ function ensureMultiEventFunnelControls() {
         <span class="event-funnel-toolbar-label">Label View</span>
         <div class="bubble-menu event-funnel-label-menu" id="multiEventFunnelLabelMenu" aria-label="Select multi-event funnel label display mode"></div>
       </div>
+      <div class="event-funnel-toolbar-group">
+        <button type="button" class="bubble-button" id="multiEventFunnelExportCsvButton">Export CSV</button>
+      </div>
     `;
     const title = chartContainer.querySelector('.chart-title');
     if (title) {
@@ -723,7 +728,8 @@ function ensureMultiEventFunnelControls() {
   const searchInput = toolbar.querySelector('#multiEventFunnelSearchInput');
   const searchGroup = toolbar.querySelector('.multi-event-funnel-search-group');
   const searchDropdown = toolbar.querySelector('#multiEventFunnelSearchDropdown');
-  if (!menu || !labelMenu || !entityMenu || !searchInput || !searchGroup || !searchDropdown) {
+  const exportButton = toolbar.querySelector('#multiEventFunnelExportCsvButton');
+  if (!menu || !labelMenu || !entityMenu || !searchInput || !searchGroup || !searchDropdown || !exportButton) {
     return;
   }
 
@@ -861,6 +867,18 @@ function ensureMultiEventFunnelControls() {
     });
 
     searchInput.dataset.listenerBound = 'true';
+  }
+
+  if (exportButton.dataset.listenerBound !== 'true') {
+    exportButton.addEventListener('click', () => {
+      exportTopConversionCsv(currentMultiEventFunnelChartData, {
+        entityType: activeMultiEventFunnelEntityMode,
+        scope: 'multi',
+        startDate: document.getElementById('startDateSelect')?.value || '',
+        endDate: document.getElementById('endDateSelect')?.value || ''
+      });
+    });
+    exportButton.dataset.listenerBound = 'true';
   }
 
   syncMultiEventFunnelSearchState();
@@ -1396,6 +1414,7 @@ export function updateMultiEventFunnelChart() {
   ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
 
   const filteredData = getMultiEventChartData();
+  currentMultiEventFunnelChartData = Array.isArray(filteredData) ? [...filteredData] : [];
   renderMultiEventFunnelPeriodBadge(filteredData);
   if (filteredData.length === 0) {
     currentMultiEventFunnelSourceRows = [];
