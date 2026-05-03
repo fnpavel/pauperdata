@@ -152,6 +152,26 @@ canvas {
   text-align: center;
 }
 
+.multi-event-shared-chart-toolbar {
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.multi-event-scatter-toggle-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0 12px;
+}
+
+.multi-event-shared-chart-panel[hidden] {
+  display: none !important;
+}
+
+.multi-event-shared-chart-panel.active {
+  display: block;
+}
+
+
 #multiPlayerWinRateChart {
   max-height: 400px !important;
 }

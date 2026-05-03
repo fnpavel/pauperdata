@@ -5,6 +5,7 @@ import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
+import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
 
 export let multiPlayerWinRateChart = null;
 // Empty means hover controls the details panel; a value means the clicked point
@@ -390,7 +391,7 @@ export function updateMultiPlayerWinRateChart() {
         multiPlayerWinRateChart.options.scales.x.min = 0;
         multiPlayerWinRateChart.options.scales.x.max = Math.max(...(searchState.eventCounts.length ? searchState.eventCounts : [0])) + 2;
         multiPlayerWinRateChart.options.scales.y.min = 0;
-        multiPlayerWinRateChart.options.scales.y.max = Math.min(100, Math.ceil(Math.max(...(searchState.winRates.length ? searchState.winRates : [0])) / 10) * 10 + 10);
+        multiPlayerWinRateChart.options.scales.y.max = 100;
         
         multiPlayerWinRateChart.update();
         dropdown.style.display = 'none';
@@ -519,24 +520,7 @@ export function updateMultiPlayerWinRateChart() {
             min: 0,
             max: Math.max(...eventCounts) + 1
           },
-          y: {
-            type: 'linear',
-            title: {
-              display: true,
-              text: "Win Rate %",
-              color: theme.text,
-              font: { size: 14, weight: 'bold', family: "'Bitter', serif" }
-            },
-            ticks: {
-              color: theme.text,
-              font: { size: 12, family: "'Bitter', serif" },
-              callback: value => `${value}%`,
-              stepSize: 10
-            },
-            grid: { color: theme.grid },
-            min: 0,
-            max: Math.min(100, Math.ceil(Math.max(...winRates) / 10) * 10 + 10)
-          }
+          y: buildSharedMultiScatterYAxis(theme)
         },
         plugins: {
           legend: {
@@ -612,7 +596,7 @@ export function updateMultiPlayerWinRateChart() {
             pan: { enabled: false },
             limits: {
               x: { min: 0, max: Math.max(...eventCounts) + 1 },
-              y: { min: 0, max: Math.min(100, Math.ceil(Math.max(...winRates) / 10) * 10 + 10) }
+              y: { min: 0, max: 100 }
             }
           }
         },

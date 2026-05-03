@@ -279,23 +279,28 @@
               <div id="multiEventDateRangeCalendar" class="range-calendar-container"></div>
               <select id="startDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
               <select id="endDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
-              <div id="metaWinRateChartLegend" class="custom-legend"></div>
-              <div id="metaWinRateChartLoading">Loading...</div>
-              <!-- Chart modules inject search controls into this wrapper before the canvas. -->
-              <div id="metaWinRateChartContainer">
-                <canvas id="metaWinRateChart"></canvas>
+              <div class="bubble-menu multi-event-scatter-toggle-footer" id="multiEventScatterModeButtons" aria-label="Select multi-event scatter chart">
+                <button type="button" class="bubble-button multi-event-scatter-mode-button active" data-multi-event-scatter-mode="deck">Deck</button>
+                <button type="button" class="bubble-button multi-event-scatter-mode-button" data-multi-event-scatter-mode="player">Player</button>
+              </div>
+              <div id="multiEventDeckScatterPanel" class="multi-event-shared-chart-panel active" data-multi-event-scatter-panel="deck">
+                <div id="metaWinRateChartLegend" class="custom-legend"></div>
+                <div id="metaWinRateChartLoading">Loading...</div>
+                <!-- Chart modules inject search controls into this wrapper before the canvas. -->
+                <div id="metaWinRateChartContainer">
+                  <canvas id="metaWinRateChart"></canvas>
+                </div>
+              </div>
+              <div id="multiEventPlayerScatterPanel" class="multi-event-shared-chart-panel" data-multi-event-scatter-panel="player" hidden>
+                <div id="multiPlayerWinRateChartLoading">Loading...</div>
+                <canvas id="multiPlayerWinRateChart"></canvas>
+                <div id="multiPlayerWinRateDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
               </div>
             </div>
             <div class="chart-container">
               <h2 class="chart-title">Aggregate Event Top 8/16/32 Conversion</h2>
               <div id="multiEventFunnelChartLoading">Loading...</div>
               <canvas id="multiEventFunnelChart"></canvas>
-            </div>
-            <div class="chart-container">
-              <h2 class="chart-title">Aggregate Player Win Rates</h2>
-              <div id="multiPlayerWinRateChartLoading">Loading...</div>
-              <canvas id="multiPlayerWinRateChart"></canvas>
-              <div id="multiPlayerWinRateDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
             </div>
             <div class="chart-container">
               <h2 class="chart-title">Deck Evolution: Meta and Win Rate</h2>
