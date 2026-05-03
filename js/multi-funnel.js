@@ -18,7 +18,7 @@ let activeMultiEventFunnelSearchTerms = {
   deck: '',
   player: ''
 };
-let activeMultiEventFunnelHighlightedEntityNames = {
+let activeMultiEventFunnelHighlightedEntityKeys = {
   deck: '',
   player: ''
 };
@@ -109,6 +109,8 @@ const FUNNEL_LABEL_MODES = Object.freeze([
   { key: 'percentage', label: 'Percentage' }
 ]);
 
+const ENABLE_PLAYER_TOP_CONVERSION = false;
+
 const FUNNEL_ENTITY_MODES = Object.freeze([
   { key: 'deck', label: 'Deck' },
   { key: 'player', label: 'Player' }
@@ -119,7 +121,8 @@ function getActiveFunnelGroupingMode() {
 }
 
 function getActiveFunnelEntityMode() {
-  return FUNNEL_ENTITY_MODES.find(mode => mode.key === activeMultiEventFunnelEntityMode) || FUNNEL_ENTITY_MODES[0];
+  const availableModes = FUNNEL_ENTITY_MODES.filter(mode => ENABLE_PLAYER_TOP_CONVERSION || mode.key !== 'player');
+  return availableModes.find(mode => mode.key === activeMultiEventFunnelEntityMode) || availableModes[0] || FUNNEL_ENTITY_MODES[0];
 }
 
 function normalizeMultiEventFunnelSearchTerm(searchTerm = '') {
@@ -247,7 +250,7 @@ function calculatePlayerConversionStats(data = []) {
 }
 
 function getMultiEventFunnelRows(data = []) {
-  return activeMultiEventFunnelEntityMode === 'player'
+  return ENABLE_PLAYER_TOP_CONVERSION && activeMultiEventFunnelEntityMode === 'player'
     ? calculatePlayerConversionStats(data)
     : calculateDeckConversionStats(data);
 }
@@ -260,8 +263,8 @@ function getActiveMultiEventFunnelSearchTerm() {
   return String(activeMultiEventFunnelSearchTerms?.[activeMultiEventFunnelEntityMode] || '');
 }
 
-function getActiveMultiEventFunnelHighlightedEntityName() {
-  return String(activeMultiEventFunnelHighlightedEntityNames?.[activeMultiEventFunnelEntityMode] || '');
+function getActiveMultiEventFunnelHighlightedEntityKey() {
+  return String(activeMultiEventFunnelHighlightedEntityKeys?.[activeMultiEventFunnelEntityMode] || '');
 }
 
 function getMultiEventFunnelSearchOptions() {
@@ -309,44 +312,69 @@ function syncMultiEventFunnelRows() {
 }
 
 function clearMultiEventFunnelHighlight({ preserveInput = false } = {}) {
-  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+  activeMultiEventFunnelHighlightedEntityKeys[activeMultiEventFunnelEntityMode] = '';
   if (!preserveInput) {
     activeMultiEventFunnelSearchTerms[activeMultiEventFunnelEntityMode] = '';
   }
 }
 
-function scrollMultiEventFunnelToRowIndex(rowIndex) {
-  const chartBody = document.getElementById('multiEventFunnelChartBody');
-  if (!chartBody || !Number.isFinite(rowIndex) || rowIndex < 0) {
+function scrollMultiEventFunnelRowIntoView(entityKey = '') {
+  const normalizedEntityKey = String(entityKey || '').trim();
+  if (!normalizedEntityKey) {
     return;
   }
 
-  const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
-  const targetScrollTop = Math.max(
-    0,
-    (rowIndex * MULTI_EVENT_FUNNEL_ROW_HEIGHT) - Math.max(0, (rowsViewportHeight / 2) - (MULTI_EVENT_FUNNEL_ROW_HEIGHT / 2))
-  );
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      const container = document.querySelector('[data-top-conversion-scroll-container]');
+      const rowAnchor = document.querySelector(`[data-top-conversion-row-key="${CSS.escape(normalizedEntityKey)}"]`);
+      if (!rowAnchor) {
+        return;
+      }
 
-  chartBody.scrollTo({
-    top: targetScrollTop,
-    behavior: 'smooth'
+      if (container && container.contains(rowAnchor)) {
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      rowAnchor.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      });
+
+      if (container && container.contains(rowAnchor)) {
+        requestAnimationFrame(() => {
+          const containerRect = container.getBoundingClientRect();
+          const rowRect = rowAnchor.getBoundingClientRect();
+          const isFullyVisible = rowRect.top >= containerRect.top && rowRect.bottom <= containerRect.bottom;
+          if (!isFullyVisible) {
+            container.scrollTop = container.scrollHeight;
+            rowAnchor.scrollIntoView({
+              behavior: 'smooth',
+              block: 'nearest',
+              inline: 'nearest'
+            });
+          }
+        });
+      }
+    });
   });
 }
 
 function setActiveMultiEventFunnelFocus(option = null, { scroll = true } = {}) {
-  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = option?.label || '';
+  activeMultiEventFunnelHighlightedEntityKeys[activeMultiEventFunnelEntityMode] = option?.key || '';
   if (option?.label) {
     activeMultiEventFunnelSearchTerms[activeMultiEventFunnelEntityMode] = option.label;
     updateMultiEventFunnelSearchStatus(`Focused on ${option.label}. The ${getMultiEventFunnelSearchEntityLabel()} row is highlighted.`);
-    if (scroll) {
-      scrollMultiEventFunnelToRowIndex(option.index);
-    }
   } else {
     updateMultiEventFunnelSearchStatus('');
   }
 
   renderMultiEventFunnelSuggestions('');
   renderMultiEventFunnelViewport();
+  if (scroll && option?.key) {
+    scrollMultiEventFunnelRowIntoView(option.key);
+  }
 }
 
 function renderMultiEventFunnelSuggestions(searchTerm = '') {
@@ -397,7 +425,7 @@ function selectMultiEventFunnelSearchResult(searchTerm = '', { jumpToFirst = fal
     return;
   }
 
-  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+  activeMultiEventFunnelHighlightedEntityKeys[activeMultiEventFunnelEntityMode] = '';
   const entityLabel = getMultiEventFunnelSearchEntityLabel();
   updateMultiEventFunnelSearchStatus(
     matches.length > 0
@@ -410,10 +438,11 @@ function selectMultiEventFunnelSearchResult(searchTerm = '', { jumpToFirst = fal
 function syncMultiEventFunnelSearchState() {
   const searchInput = document.getElementById('multiEventFunnelSearchInput');
   const activeSearchTerm = getActiveMultiEventFunnelSearchTerm();
-  const activeHighlightedEntityName = getActiveMultiEventFunnelHighlightedEntityName();
-  const hasHighlightedRow = getMultiEventFunnelSearchOptions().some(option => option.label === activeHighlightedEntityName);
+  const activeHighlightedEntityKey = getActiveMultiEventFunnelHighlightedEntityKey();
+  const activeHighlightedOption = getMultiEventFunnelSearchOptions().find(option => option.key === activeHighlightedEntityKey);
+  const hasHighlightedRow = Boolean(activeHighlightedOption);
   if (!hasHighlightedRow) {
-    activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+    activeMultiEventFunnelHighlightedEntityKeys[activeMultiEventFunnelEntityMode] = '';
   }
 
   if (searchInput && document.activeElement !== searchInput) {
@@ -421,8 +450,8 @@ function syncMultiEventFunnelSearchState() {
   }
 
   const entityLabel = getMultiEventFunnelSearchEntityLabel();
-  if (getActiveMultiEventFunnelHighlightedEntityName()) {
-    updateMultiEventFunnelSearchStatus(`Focused on ${getActiveMultiEventFunnelHighlightedEntityName()}. The ${entityLabel} row is highlighted.`);
+  if (activeHighlightedOption?.label) {
+    updateMultiEventFunnelSearchStatus(`Focused on ${activeHighlightedOption.label}. The ${entityLabel} row is highlighted.`);
   } else if (activeSearchTerm.trim()) {
     const matches = getMultiEventFunnelSearchMatches(activeSearchTerm);
     updateMultiEventFunnelSearchStatus(
@@ -443,7 +472,7 @@ function openMultiEventFunnelEntityModal(entityName = '') {
     return;
   }
 
-  if (activeMultiEventFunnelEntityMode === 'player') {
+  if (ENABLE_PLAYER_TOP_CONVERSION && activeMultiEventFunnelEntityMode === 'player') {
     openMultiEventPlayerAggregateModal(normalizedEntityName);
     return;
   }
@@ -624,8 +653,8 @@ const multiEventFunnelHeaderLayoutPlugin = {
 const multiEventFunnelHighlightPlugin = {
   id: 'multiEventFunnelHighlightRow',
   beforeDatasetsDraw(chart, _args, pluginOptions) {
-    const highlightedEntityName = String(pluginOptions?.highlightedEntityName || '').trim();
-    if (!highlightedEntityName) {
+    const highlightedEntityKey = String(pluginOptions?.highlightedEntityKey || '').trim();
+    if (!highlightedEntityKey) {
       return;
     }
 
@@ -638,7 +667,7 @@ const multiEventFunnelHighlightPlugin = {
 
     const matchingDataset = chart.data.datasets?.[0];
     const highlightedIndex = matchingDataset?.data?.findIndex(point => (
-      String(point?.entityName || point?.deckName || '').trim() === highlightedEntityName
+      String(point?.entityKey || '').trim() === highlightedEntityKey
     )) ?? -1;
     if (highlightedIndex < 0) {
       return;
@@ -743,7 +772,8 @@ function ensureMultiEventFunnelControls() {
   searchGroup.hidden = false;
   searchInput.disabled = false;
 
-  entityMenu.innerHTML = FUNNEL_ENTITY_MODES.map(mode => `
+  const availableEntityModes = FUNNEL_ENTITY_MODES.filter(mode => ENABLE_PLAYER_TOP_CONVERSION || mode.key !== 'player');
+  entityMenu.innerHTML = availableEntityModes.map(mode => `
     <button
       type="button"
       class="bubble-button multi-event-scatter-mode-button${mode.key === activeMultiEventFunnelEntityMode ? ' active' : ''}"
@@ -752,6 +782,7 @@ function ensureMultiEventFunnelControls() {
       ${mode.label}
     </button>
   `).join('');
+  entityMenu.closest('.event-funnel-toolbar-group').hidden = availableEntityModes.length <= 1;
 
   menu.innerHTML = FUNNEL_GROUPING_MODES.map(mode => `
     <button
@@ -785,7 +816,7 @@ function ensureMultiEventFunnelControls() {
         return;
       }
 
-      activeMultiEventFunnelEntityMode = nextMode === 'player' ? 'player' : 'deck';
+      activeMultiEventFunnelEntityMode = ENABLE_PLAYER_TOP_CONVERSION && nextMode === 'player' ? 'player' : 'deck';
       ensureMultiEventFunnelControls();
       updateMultiEventFunnelChart();
     });
@@ -914,6 +945,8 @@ function ensureMultiEventFunnelViewport() {
   }
 
   chartBody.style.maxHeight = `${MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT}px`;
+  chartBody.style.overflowY = 'auto';
+  chartBody.dataset.topConversionScrollContainer = 'true';
 
   let rowsLayer = chartBody.querySelector('#multiEventFunnelRowsLayer');
   if (!rowsLayer) {
@@ -921,6 +954,14 @@ function ensureMultiEventFunnelViewport() {
     rowsLayer.id = 'multiEventFunnelRowsLayer';
     rowsLayer.className = 'multi-event-funnel-rows-layer';
     chartBody.appendChild(rowsLayer);
+  }
+
+  let rowAnchorsLayer = rowsLayer.querySelector('#multiEventFunnelRowAnchorsLayer');
+  if (!rowAnchorsLayer) {
+    rowAnchorsLayer = document.createElement('div');
+    rowAnchorsLayer.id = 'multiEventFunnelRowAnchorsLayer';
+    rowAnchorsLayer.className = 'multi-event-funnel-row-anchors-layer';
+    rowsLayer.appendChild(rowAnchorsLayer);
   }
 
   if (canvas.parentElement !== rowsLayer) {
@@ -934,7 +975,23 @@ function ensureMultiEventFunnelViewport() {
     chartBody.dataset.listenerBound = 'true';
   }
 
-  return { chartBody, rowsLayer, canvas };
+  return { chartBody, rowsLayer, canvas, rowAnchorsLayer };
+}
+
+function syncMultiEventFunnelRowAnchors(rowsLayer, totalRows) {
+  const rowAnchorsLayer = rowsLayer?.querySelector('#multiEventFunnelRowAnchorsLayer');
+  if (!rowAnchorsLayer) {
+    return;
+  }
+
+  rowAnchorsLayer.innerHTML = currentMultiEventFunnelRows.map((row, index) => `
+    <div
+      class="multi-event-funnel-row-anchor"
+      data-top-conversion-row-key="${getNormalizedMultiEventFunnelEntityName(row?.deck)}"
+      style="top:${index * MULTI_EVENT_FUNNEL_ROW_HEIGHT}px;height:${MULTI_EVENT_FUNNEL_ROW_HEIGHT}px;"
+    ></div>
+  `).join('');
+  rowAnchorsLayer.style.height = `${Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT}px`;
 }
 
 function ensureMultiEventFunnelColumnHeader(bucketLabels = []) {
@@ -1031,6 +1088,7 @@ function buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeThe
       return {
         x: bucket.label,
         y: buildEntityRowLabel(item.deck),
+        entityKey: getNormalizedMultiEventFunnelEntityName(item.deck),
         entityName: item.deck,
         deckName: item.deck,
         bucketLabel: bucket.label,
@@ -1119,15 +1177,22 @@ function renderMultiEventFunnelViewport() {
 
   const totalRows = currentMultiEventFunnelRows.length;
   const headerHeight = Math.max(0, document.getElementById('multiEventFunnelColumnHeader')?.offsetHeight || 0);
+  const previewRowsViewportHeight = Math.max(
+    MULTI_EVENT_FUNNEL_ROW_HEIGHT,
+    Math.max(0, Math.min(MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT, chartBody.clientHeight || MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT) - headerHeight)
+  );
+  const bottomScrollSpacer = Math.max(MULTI_EVENT_FUNNEL_CHART_PADDING_Y, previewRowsViewportHeight);
   const desiredBodyHeight = totalRows === 0
     ? Math.min(MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT, MULTI_EVENT_FUNNEL_EMPTY_HEIGHT + headerHeight)
     : Math.min(
       MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT,
-      (Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y + headerHeight
+      (Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y + bottomScrollSpacer + headerHeight
     );
   chartBody.style.height = `${Math.max(desiredBodyHeight, headerHeight + MULTI_EVENT_FUNNEL_ROW_HEIGHT)}px`;
   const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
-  rowsLayer.style.height = `${Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT + MULTI_EVENT_FUNNEL_CHART_PADDING_Y}px`;
+  rowsLayer.style.height = `${Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT + MULTI_EVENT_FUNNEL_CHART_PADDING_Y + bottomScrollSpacer}px`;
+  rowsLayer.style.paddingBottom = `${bottomScrollSpacer}px`;
+  syncMultiEventFunnelRowAnchors(rowsLayer, totalRows);
 
   if (totalRows === 0) {
     if (multiEventFunnelChart) {
@@ -1249,7 +1314,7 @@ function renderMultiEventFunnelViewport() {
         },
         plugins: {
           multiEventFunnelHighlightRow: {
-            highlightedEntityName: getActiveMultiEventFunnelHighlightedEntityName(),
+            highlightedEntityKey: getActiveMultiEventFunnelHighlightedEntityKey(),
             highlightFill: 'rgba(217, 164, 65, 0.14)',
             highlightStroke: 'rgba(217, 164, 65, 0.52)'
           },
@@ -1408,6 +1473,9 @@ function scheduleMultiEventFunnelViewportRender() {
 export function updateMultiEventFunnelChart() {
   console.log('updateMultiEventFunnelChart called...');
   setChartLoading('multiEventFunnelChart', true);
+  if (!ENABLE_PLAYER_TOP_CONVERSION) {
+    activeMultiEventFunnelEntityMode = 'deck';
+  }
   ensureMultiEventFunnelControls();
   const { chartBody } = ensureMultiEventFunnelViewport();
   const groupingMode = getActiveFunnelGroupingMode();
