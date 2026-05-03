@@ -1524,7 +1524,11 @@ def run_sync_command(args: argparse.Namespace) -> int:
 
     reset_drive_request_metrics()
     service = build_drive_service(settings.credentials_path)
-    drive_files = list_drive_files(service, settings.drive_folder_id)
+    drive_files = list_drive_files(
+        service,
+        settings.drive_folder_id,
+        settings.ignored_drive_folders,
+    )
     processed_manifest = load_processed_drive_workbooks_manifest()
     processed_paths = build_processed_relative_paths_set(processed_manifest)
     archive_paths = list_archive_relative_paths(settings.archive_root)
@@ -1922,7 +1926,11 @@ def run_list_command(args: argparse.Namespace) -> int:
     if args.drive:
         reset_drive_request_metrics()
         service = build_drive_service(settings.credentials_path)
-        drive_files = list_drive_files(service, settings.drive_folder_id)
+        drive_files = list_drive_files(
+            service,
+            settings.drive_folder_id,
+            settings.ignored_drive_folders,
+        )
         archive_paths = list_archive_relative_paths(settings.archive_root)
         records = build_drive_records(drive_files, settings, archive_paths)
         selected_records = select_drive_records(
@@ -1997,7 +2005,11 @@ def run_download_command(args: argparse.Namespace) -> int:
 
     reset_drive_request_metrics()
     service = build_drive_service(settings.credentials_path)
-    drive_files = list_drive_files(service, settings.drive_folder_id)
+    drive_files = list_drive_files(
+        service,
+        settings.drive_folder_id,
+        settings.ignored_drive_folders,
+    )
     archive_paths = list_archive_relative_paths(settings.archive_root)
     records = build_drive_records(drive_files, settings, archive_paths)
     selected_record = require_single_drive_record(

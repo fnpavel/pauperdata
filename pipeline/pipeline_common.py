@@ -44,6 +44,7 @@ DEFAULT_COMMIT_PATHS = [
     PIPELINE_OVERRIDES_PATH,
     PROCESSED_DRIVE_WORKBOOKS_PATH,
 ]
+DEFAULT_IGNORED_DRIVE_FOLDERS = ("Combined Matchups",)
 
 DRIVE_REQUEST_METRICS: dict[str, int] = {
     "total_requests": 0,
@@ -65,6 +66,7 @@ class PipelineSettings:
     data_branch: str
     main_branch: str
     commit_message_template: str
+    ignored_drive_folders: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -141,6 +143,10 @@ def load_settings() -> PipelineSettings:
             "Fill it in pipeline-config.json or set GOOGLE_DRIVE_FOLDER_ID."
         )
 
+    ignored_drive_folders = normalize_ignored_drive_folders(
+        config.get("ignored_drive_folders", DEFAULT_IGNORED_DRIVE_FOLDERS)
+    )
+
     return PipelineSettings(
         credentials_path=resolve_config_path(credentials_value, Path(str(credentials_value)).expanduser()),
         drive_folder_id=str(drive_folder_value).strip(),
@@ -154,6 +160,7 @@ def load_settings() -> PipelineSettings:
         commit_message_template=str(
             config.get("commit_message_template", "chore(data): import {workbook_name}")
         ),
+        ignored_drive_folders=ignored_drive_folders,
     )
 
 
@@ -191,6 +198,27 @@ def normalize_cell_text(value: object) -> str:
     if value is None:
         return ""
     return str(value).strip()
+
+
+def normalize_ignored_drive_folders(values: object) -> tuple[str, ...]:
+    if values is None:
+        raw_values: Iterable[object] = DEFAULT_IGNORED_DRIVE_FOLDERS
+    elif isinstance(values, str):
+        raw_values = [values]
+    elif isinstance(values, Iterable):
+        raw_values = values
+    else:
+        raw_values = [values]
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_value in raw_values:
+        folder_name = str(raw_value).strip()
+        if not folder_name or folder_name in seen:
+            continue
+        seen.add(folder_name)
+        normalized.append(folder_name)
+    return tuple(normalized)
 
 
 def summarize_missing_positions(positions: Iterable[int], *, limit: int = 8) -> str:
@@ -383,10 +411,32 @@ def resolve_shortcut(service, item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
+def format_drive_folder_path(folder_segments: tuple[str, ...]) -> str:
+    return " / ".join(folder_segments) if folder_segments else "/"
+
+
+def should_skip_drive_folder(
+    folder_name: str,
+    folder_segments: tuple[str, ...],
+    ignored_drive_folders: set[str],
+) -> bool:
+    normalized_name = folder_name.strip()
+    if normalized_name not in ignored_drive_folders:
+        return False
+
+    log(f"Skipping ignored Drive folder: {format_drive_folder_path(folder_segments + (normalized_name,))}")
+    return True
+
+
+def find_latest_drive_file(
+    service,
+    root_folder_id: str,
+    ignored_drive_folders: Iterable[str] = DEFAULT_IGNORED_DRIVE_FOLDERS,
+) -> DriveFile:
     latest: DriveFile | None = None
     queue: list[tuple[str, tuple[str, ...]]] = [(root_folder_id, ())]
     seen_folders: set[str] = set()
+    ignored_folder_names = set(normalize_ignored_drive_folders(ignored_drive_folders))
 
     while queue:
         folder_id, folder_segments = queue.pop()
@@ -404,7 +454,10 @@ def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
 
             mime_type = str(candidate.get("mimeType", ""))
             if mime_type == GOOGLE_FOLDER_MIME:
-                queue.append((str(candidate["id"]), folder_segments + (str(candidate["name"]),)))
+                folder_name = str(candidate["name"]).strip()
+                if should_skip_drive_folder(folder_name, folder_segments, ignored_folder_names):
+                    continue
+                queue.append((str(candidate["id"]), folder_segments + (folder_name,)))
                 continue
             if mime_type not in SUPPORTED_FILE_MIME_TYPES:
                 continue
@@ -425,10 +478,15 @@ def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
     return latest
 
 
-def list_drive_files(service, root_folder_id: str) -> list[DriveFile]:
+def list_drive_files(
+    service,
+    root_folder_id: str,
+    ignored_drive_folders: Iterable[str] = DEFAULT_IGNORED_DRIVE_FOLDERS,
+) -> list[DriveFile]:
     drive_files: list[DriveFile] = []
     queue: list[tuple[str, tuple[str, ...]]] = [(root_folder_id, ())]
     seen_folders: set[str] = set()
+    ignored_folder_names = set(normalize_ignored_drive_folders(ignored_drive_folders))
 
     while queue:
         folder_id, folder_segments = queue.pop()
@@ -446,7 +504,10 @@ def list_drive_files(service, root_folder_id: str) -> list[DriveFile]:
 
             mime_type = str(candidate.get("mimeType", ""))
             if mime_type == GOOGLE_FOLDER_MIME:
-                queue.append((str(candidate["id"]), folder_segments + (str(candidate["name"]),)))
+                folder_name = str(candidate["name"]).strip()
+                if should_skip_drive_folder(folder_name, folder_segments, ignored_folder_names):
+                    continue
+                queue.append((str(candidate["id"]), folder_segments + (folder_name,)))
                 continue
             if mime_type not in SUPPORTED_FILE_MIME_TYPES:
                 continue
