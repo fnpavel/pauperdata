@@ -286,16 +286,17 @@ const leaderboardYearBoundaryPlugin = {
   }
 };
 
-function getFinalRankLabelIndex(dataset = {}) {
+function getFinalRankLabelIndexes(dataset = {}) {
   const finalPlayerLabels = Array.isArray(dataset?.finalPlayerLabels) ? dataset.finalPlayerLabels : [];
   const medalLabels = Array.isArray(dataset?.medalLabels) ? dataset.medalLabels : [];
   const finalLength = Math.max(finalPlayerLabels.length, medalLabels.length);
-  for (let index = finalLength - 1; index >= 0; index -= 1) {
+  const indexes = [];
+  for (let index = 0; index < finalLength; index += 1) {
     if (finalPlayerLabels[index] || medalLabels[index]) {
-      return index;
+      indexes.push(index);
     }
   }
-  return -1;
+  return indexes;
 }
 
 const leaderboardFinalRankLabelPlugin = {
@@ -328,43 +329,45 @@ const leaderboardFinalRankLabelPlugin = {
         return;
       }
 
-      const finalIndex = getFinalRankLabelIndex(dataset);
-      if (finalIndex < 0) {
+      const labelIndexes = getFinalRankLabelIndexes(dataset);
+      if (!labelIndexes.length) {
         return;
       }
 
-      const point = meta.data?.[finalIndex];
-      if (!point) {
-        return;
-      }
+      labelIndexes.forEach(finalIndex => {
+        const point = meta.data?.[finalIndex];
+        if (!point) {
+          return;
+        }
 
-      const { x, y } = typeof point.getProps === 'function'
-        ? point.getProps(['x', 'y'], true)
-        : point;
-      if (!Number.isFinite(x) || !Number.isFinite(y)) {
-        return;
-      }
+        const { x, y } = typeof point.getProps === 'function'
+          ? point.getProps(['x', 'y'], true)
+          : point;
+        if (!Number.isFinite(x) || !Number.isFinite(y)) {
+          return;
+        }
 
-      const medal = String(dataset?.medalLabels?.[finalIndex] || '').trim();
-      const playerName = String(dataset?.finalPlayerLabels?.[finalIndex] || '').trim();
-      if (!medal && !playerName) {
-        return;
-      }
+        const medal = String(dataset?.medalLabels?.[finalIndex] || '').trim();
+        const playerName = String(dataset?.finalPlayerLabels?.[finalIndex] || '').trim();
+        if (!medal && !playerName) {
+          return;
+        }
 
-      let labelX = Math.min(maxTextX, x + pointOffsetX);
-      if (medal) {
-        ctx.fillStyle = dataset?.rankColor || pluginOptions?.medalColor || '#f5f0e6';
-        ctx.font = pluginOptions?.medalFont || '600 12px Bitter, system-ui, sans-serif';
-        ctx.fillText(medal, labelX, y + medalOffsetY);
-        labelX = Math.min(maxTextX, labelX + medalGap);
-      }
+        let labelX = Math.min(maxTextX, x + pointOffsetX);
+        if (medal) {
+          ctx.fillStyle = dataset?.rankColor || pluginOptions?.medalColor || '#f5f0e6';
+          ctx.font = pluginOptions?.medalFont || '600 12px Bitter, system-ui, sans-serif';
+          ctx.fillText(medal, labelX, y + medalOffsetY);
+          labelX = Math.min(maxTextX, labelX + medalGap);
+        }
 
-      if (playerName) {
-        ctx.fillStyle = dataset?.rankColor || pluginOptions?.textColor || '#f5f0e6';
-        ctx.font = pluginOptions?.textFont || '600 11px Bitter, system-ui, sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(playerName, Math.min(maxTextX, labelX + nameGap), y);
-      }
+        if (playerName) {
+          ctx.fillStyle = dataset?.rankColor || pluginOptions?.textColor || '#f5f0e6';
+          ctx.font = pluginOptions?.textFont || '600 11px Bitter, system-ui, sans-serif';
+          ctx.textAlign = 'left';
+          ctx.fillText(playerName, Math.min(maxTextX, labelX + nameGap), y);
+        }
+      });
     });
 
     ctx.restore();

@@ -11,6 +11,7 @@ import {
 } from '../utils/rankings-data.js';
 import {
   buildEventLevelEloPoints,
+  buildLeaderboardYearBands,
   buildLeaderboardTimeline,
   createLeaderboardPlayerEloChart,
   createLeaderboardTimelineChart,
@@ -4300,6 +4301,35 @@ function buildLeaderboardRankFinalMedalLabels(pointMeta = [], timelineLength = 0
   return labels;
 }
 
+function buildLeaderboardRankBoundaryMedalLabels(pointMeta = [], timeline = []) {
+  const timelineLength = Array.isArray(timeline) ? timeline.length : 0;
+  const labels = new Array(timelineLength).fill('');
+  if (timelineLength <= 1) {
+    return labels;
+  }
+
+  const yearBands = buildLeaderboardYearBands(timeline);
+  if (yearBands.length <= 1) {
+    return labels;
+  }
+
+  yearBands.slice(0, -1).forEach(band => {
+    const boundaryIndex = Number(band?.endIndex);
+    if (!Number.isInteger(boundaryIndex) || boundaryIndex < 0 || boundaryIndex >= timelineLength - 1) {
+      return;
+    }
+
+    const boundaryPoint = Array.isArray(pointMeta) ? pointMeta[boundaryIndex] : null;
+    if (!boundaryPoint) {
+      return;
+    }
+
+    labels[boundaryIndex] = LEADERBOARD_TIMELINE_RANK_MEDALS[Number(boundaryPoint.rank)] || '';
+  });
+
+  return labels;
+}
+
 function buildLeaderboardRankFinalPlayerLabels(pointMeta = [], timelineLength = 0) {
   const labels = new Array(timelineLength).fill('');
   const finalIndex = Math.max(0, timelineLength - 1);
@@ -4525,7 +4555,16 @@ function buildLeaderboardRankTimelineDatasets(selectedRows = [], timeline = [], 
       borderWidth: 2,
       tension: 0.25,
       spanGaps: true,
-      medalLabels: buildLeaderboardRankFinalMedalLabels(datasetState.pointMeta, timeline.length),
+      medalLabels: (() => {
+        const labels = buildLeaderboardRankBoundaryMedalLabels(datasetState.pointMeta, timeline);
+        const finalLabels = buildLeaderboardRankFinalMedalLabels(datasetState.pointMeta, timeline.length);
+        finalLabels.forEach((label, index) => {
+          if (label) {
+            labels[index] = label;
+          }
+        });
+        return labels;
+      })(),
       finalPlayerLabels: buildLeaderboardRankFinalPlayerLabels(datasetState.pointMeta, timeline.length)
     };
   });
