@@ -84,7 +84,59 @@ canvas {
 }
 
 #multiEventFunnelChart {
-  max-height: 800px !important;
+  min-height: 220px;
+  max-height: none !important;
+  display: block;
+  position: absolute;
+  left: 0;
+  width: 100% !important;
+}
+
+.multi-event-funnel-scroll-frame {
+  width: 100%;
+}
+
+.multi-event-funnel-column-header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--secondary);
+  margin: 0;
+  padding: 0;
+}
+
+.multi-event-funnel-chart-body {
+  position: relative;
+  height: 680px;
+  max-height: 680px;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+.multi-event-funnel-rows-layer {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+.multi-event-funnel-column-header .event-funnel-column-header-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#multiEventFunnelChartLoading {
+  position: absolute;
+  inset: 0;
+  transform: none;
+  margin: auto;
+  z-index: 2;
+  width: fit-content;
+  height: fit-content;
 }
 
 .event-funnel-toolbar {

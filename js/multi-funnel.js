@@ -1,5 +1,5 @@
 // Multi-event conversion matrix. It mirrors the single-event funnel styling,
-// but aggregates deck copies and finish buckets across the selected event span.
+// but keeps the outer chart height bounded and scrolls the deck rows internally.
 import { setChartLoading } from './utils/dom.js';
 import { getMultiEventChartData } from './modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from './utils/data-chart.js';
@@ -8,6 +8,14 @@ import { getActiveTheme, getChartTheme } from './utils/theme.js';
 export let multiEventFunnelChart = null;
 let activeMultiEventFunnelGroupingMode = 'detailed';
 let activeMultiEventFunnelLabelMode = 'copies';
+let currentMultiEventFunnelRows = [];
+let multiEventFunnelRenderFrame = 0;
+
+const MULTI_EVENT_FUNNEL_MIN_HEIGHT = 220;
+const MULTI_EVENT_FUNNEL_ROW_HEIGHT = 22;
+const MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT = 680;
+const MULTI_EVENT_FUNNEL_BUFFER_ROWS = 6;
+const MULTI_EVENT_FUNNEL_CHART_PADDING_Y = 16;
 
 const FUNNEL_BUCKETS = Object.freeze([
   {
@@ -371,9 +379,42 @@ function ensureMultiEventFunnelControls() {
   }
 }
 
+function ensureMultiEventFunnelViewport() {
+  const chartBody = document.getElementById('multiEventFunnelChartBody');
+  const canvas = document.getElementById('multiEventFunnelChart');
+  if (!chartBody || !canvas) {
+    return { chartBody: null, rowsLayer: null, canvas: null };
+  }
+
+  chartBody.style.height = `${MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT}px`;
+
+  let rowsLayer = chartBody.querySelector('#multiEventFunnelRowsLayer');
+  if (!rowsLayer) {
+    rowsLayer = document.createElement('div');
+    rowsLayer.id = 'multiEventFunnelRowsLayer';
+    rowsLayer.className = 'multi-event-funnel-rows-layer';
+    chartBody.appendChild(rowsLayer);
+  }
+
+  if (canvas.parentElement !== rowsLayer) {
+    rowsLayer.appendChild(canvas);
+  }
+
+  if (chartBody.dataset.listenerBound !== 'true') {
+    chartBody.addEventListener('scroll', () => {
+      scheduleMultiEventFunnelViewportRender();
+    });
+    chartBody.dataset.listenerBound = 'true';
+  }
+
+  return { chartBody, rowsLayer, canvas };
+}
+
 function ensureMultiEventFunnelColumnHeader(bucketLabels = []) {
   const canvas = document.getElementById('multiEventFunnelChart');
   const chartContainer = canvas?.closest('.chart-container');
+  const chartBody = chartContainer?.querySelector('#multiEventFunnelChartBody');
+  const rowsLayer = chartBody?.querySelector('#multiEventFunnelRowsLayer');
   if (!chartContainer) {
     return;
   }
@@ -382,8 +423,12 @@ function ensureMultiEventFunnelColumnHeader(bucketLabels = []) {
   if (!header) {
     header = document.createElement('div');
     header.id = 'multiEventFunnelColumnHeader';
-    header.className = 'event-funnel-column-header';
-    canvas.insertAdjacentElement('beforebegin', header);
+    header.className = 'event-funnel-column-header multi-event-funnel-column-header';
+    if (chartBody) {
+      chartBody.insertBefore(header, rowsLayer || canvas);
+    } else {
+      canvas.insertAdjacentElement('beforebegin', header);
+    }
   }
 
   const cells = ['Deck', 'Copies', ...bucketLabels];
@@ -416,43 +461,49 @@ function syncMultiEventFunnelColumnHeaderLayout(chart, bucketLabels = []) {
   ].join(' ');
 }
 
-export function updateMultiEventFunnelChart() {
-  console.log('updateMultiEventFunnelChart called...');
-  setChartLoading('multiEventFunnelChart', true);
-  ensureMultiEventFunnelControls();
-  const theme = getChartTheme();
-  const activeTheme = getActiveTheme();
-  const groupingMode = getActiveFunnelGroupingMode();
-  const funnelCategories = getFunnelCategories(groupingMode);
-  ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
+function getMultiEventFunnelViewportMetrics() {
+  const chartBody = document.getElementById('multiEventFunnelChartBody');
+  const header = document.getElementById('multiEventFunnelColumnHeader');
+  const headerHeight = Math.max(0, header?.offsetHeight || 0);
+  const bodyHeight = Math.max(0, chartBody?.clientHeight || MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT);
+  const rowsViewportHeight = Math.max(MULTI_EVENT_FUNNEL_ROW_HEIGHT, bodyHeight - headerHeight);
 
-  const filteredData = getMultiEventChartData();
-  if (filteredData.length === 0) {
-    if (multiEventFunnelChart) {
-      multiEventFunnelChart.destroy();
-    }
-    setChartLoading('multiEventFunnelChart', false);
-    return;
-  }
+  return {
+    headerHeight,
+    bodyHeight,
+    rowsViewportHeight
+  };
+}
 
-  const sortedDecksData = calculateDeckConversionStats(filteredData);
-  const maxBucketCount = Math.max(
+function getVisibleMultiEventFunnelWindow(totalRows, scrollTop, rowsViewportHeight) {
+  const visibleRows = Math.max(1, Math.ceil(Math.max(rowsViewportHeight, MULTI_EVENT_FUNNEL_ROW_HEIGHT) / MULTI_EVENT_FUNNEL_ROW_HEIGHT));
+  const startIndex = Math.max(
     0,
-    ...sortedDecksData.flatMap(item => groupingMode.buckets.map(bucket => (
-      bucket.sourceKeys.reduce((sum, key) => sum + Number(item.counts?.[key] || 0), 0)
-    )))
+    Math.min(
+      Math.max(0, totalRows - visibleRows),
+      Math.floor(Math.max(Number(scrollTop) || 0, 0) / MULTI_EVENT_FUNNEL_ROW_HEIGHT)
+    )
   );
-  const deckLabels = sortedDecksData.map(item => buildDeckRowLabel(item.deck));
-  const datasets = groupingMode.buckets.map(bucket => ({
+  const bufferedStartIndex = Math.max(0, startIndex - Math.floor(MULTI_EVENT_FUNNEL_BUFFER_ROWS / 2));
+  const endIndex = Math.min(totalRows, bufferedStartIndex + visibleRows + MULTI_EVENT_FUNNEL_BUFFER_ROWS);
+  return {
+    startIndex: bufferedStartIndex,
+    endIndex,
+    visibleRows
+  };
+}
+
+function buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeTheme) {
+  return groupingMode.buckets.map(bucket => ({
     label: bucket.label,
     bucketKey: bucket.label,
     showLine: false,
-    data: sortedDecksData.map((item, deckIndex) => {
+    data: visibleDecksData.map(item => {
       const rawCount = bucket.sourceKeys.reduce((sum, key) => sum + Number(item.counts?.[key] || 0), 0);
       const totalCopies = Number(item.total || 0);
       return {
         x: bucket.label,
-        y: deckLabels[deckIndex],
+        y: buildDeckRowLabel(item.deck),
         deckName: item.deck,
         bucketLabel: bucket.label,
         rawCount,
@@ -470,20 +521,64 @@ export function updateMultiEventFunnelChart() {
     pointHitRadius: 18,
     pointHoverBorderWidth: 2
   }));
+}
+
+function renderMultiEventFunnelViewport() {
+  multiEventFunnelRenderFrame = 0;
+
+  const canvas = document.getElementById('multiEventFunnelChart');
+  const chartBody = document.getElementById('multiEventFunnelChartBody');
+  const rowsLayer = document.getElementById('multiEventFunnelRowsLayer');
+  if (!canvas || !chartBody || !rowsLayer) {
+    return;
+  }
+
+  const theme = getChartTheme();
+  const activeTheme = getActiveTheme();
+  const groupingMode = getActiveFunnelGroupingMode();
+  const funnelCategories = getFunnelCategories(groupingMode);
+  ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
+  const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
+
+  const totalRows = currentMultiEventFunnelRows.length;
+  rowsLayer.style.height = `${Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT + MULTI_EVENT_FUNNEL_CHART_PADDING_Y}px`;
+
+  if (totalRows === 0) {
+    if (multiEventFunnelChart) {
+      multiEventFunnelChart.destroy();
+      multiEventFunnelChart = null;
+    }
+    canvas.style.top = '0px';
+    canvas.style.height = `${MULTI_EVENT_FUNNEL_MIN_HEIGHT}px`;
+    canvas.height = MULTI_EVENT_FUNNEL_MIN_HEIGHT;
+    return;
+  }
+
+  const { startIndex, endIndex, visibleRows } = getVisibleMultiEventFunnelWindow(totalRows, chartBody.scrollTop, rowsViewportHeight);
+  const visibleDecksData = currentMultiEventFunnelRows.slice(startIndex, endIndex);
+  const visibleDeckLabels = visibleDecksData.map(item => buildDeckRowLabel(item.deck));
+  const chartHeight = Math.max(
+    MULTI_EVENT_FUNNEL_MIN_HEIGHT,
+    (Math.max(visibleRows, visibleDecksData.length) * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y
+  );
+  const maxBucketCount = Math.max(
+    0,
+    ...currentMultiEventFunnelRows.flatMap(item => groupingMode.buckets.map(bucket => (
+      bucket.sourceKeys.reduce((sum, key) => sum + Number(item.counts?.[key] || 0), 0)
+    )))
+  );
+  const datasets = buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeTheme);
+
+  canvas.style.top = `${startIndex * MULTI_EVENT_FUNNEL_ROW_HEIGHT}px`;
+  canvas.style.height = `${chartHeight}px`;
+  canvas.height = chartHeight;
 
   if (multiEventFunnelChart) {
     multiEventFunnelChart.destroy();
   }
 
-  const multiEventFunnelCtx = document.getElementById('multiEventFunnelChart');
-  if (!multiEventFunnelCtx) {
-    console.error('Multi-Event Funnel Chart canvas not found!');
-    setChartLoading('multiEventFunnelChart', false);
-    return;
-  }
-
   try {
-    multiEventFunnelChart = new Chart(multiEventFunnelCtx, {
+    multiEventFunnelChart = new Chart(canvas, {
       type: 'scatter',
       plugins: [fixedBucketBarPlugin, multiEventFunnelHeaderLayoutPlugin],
       data: { datasets },
@@ -511,7 +606,7 @@ export function updateMultiEventFunnelChart() {
             },
             ticks: {
               color: theme.text,
-              font: { size: 12, family: "'Bitter', serif" }
+              font: { size: 13, family: "'Bitter', serif" }
             },
             grid: {
               color: theme.grid,
@@ -522,7 +617,7 @@ export function updateMultiEventFunnelChart() {
           y: {
             type: 'category',
             offset: true,
-            labels: deckLabels,
+            labels: visibleDeckLabels,
             title: {
               display: true,
               text: 'Decks',
@@ -531,7 +626,8 @@ export function updateMultiEventFunnelChart() {
             },
             ticks: {
               color: theme.text,
-              font: { size: 12, family: "'Bitter', serif" }
+              autoSkip: false,
+              font: { size: 13, family: "'Bitter', serif" }
             },
             grid: {
               color: theme.grid,
@@ -608,8 +704,7 @@ export function updateMultiEventFunnelChart() {
           }
         },
         animation: {
-          duration: 1000,
-          easing: 'easeOutQuart'
+          duration: 0
         },
         elements: {
           point: {
@@ -621,6 +716,41 @@ export function updateMultiEventFunnelChart() {
   } catch (error) {
     console.error('Error initializing Multi-Event Funnel Chart:', error);
   }
+}
 
+function scheduleMultiEventFunnelViewportRender() {
+  if (multiEventFunnelRenderFrame) {
+    return;
+  }
+
+  multiEventFunnelRenderFrame = requestAnimationFrame(() => {
+    renderMultiEventFunnelViewport();
+  });
+}
+
+export function updateMultiEventFunnelChart() {
+  console.log('updateMultiEventFunnelChart called...');
+  setChartLoading('multiEventFunnelChart', true);
+  ensureMultiEventFunnelControls();
+  const { chartBody } = ensureMultiEventFunnelViewport();
+  const groupingMode = getActiveFunnelGroupingMode();
+  ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
+
+  const filteredData = getMultiEventChartData();
+  if (filteredData.length === 0) {
+    currentMultiEventFunnelRows = [];
+    if (chartBody) {
+      chartBody.scrollTop = 0;
+    }
+    renderMultiEventFunnelViewport();
+    setChartLoading('multiEventFunnelChart', false);
+    return;
+  }
+
+  currentMultiEventFunnelRows = calculateDeckConversionStats(filteredData);
+  if (chartBody) {
+    chartBody.scrollTop = 0;
+  }
+  renderMultiEventFunnelViewport();
   setChartLoading('multiEventFunnelChart', false);
 }
