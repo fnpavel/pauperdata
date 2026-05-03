@@ -597,7 +597,6 @@ export function updateAllCharts() {
       updateMultiMetaWinRateChart();
       updateMultiEventFunnelChart();
       updateMultiPlayerWinRateChart();
-      updateDeckEvolutionChart();
       updateMultiEventAnalytics();
     }
   } else if (activeTopMode === 'player') {

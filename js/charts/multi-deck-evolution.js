@@ -732,15 +732,15 @@ export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
 
 // Redraws the selected deck's date-by-date meta share and win-rate evolution.
 export function updateDeckEvolutionChart() {
+  const deckSelect = document.getElementById("deckEvolutionSelect");
+  const deckEvolutionCanvas = document.getElementById('deckEvolutionChart');
+  if (!deckSelect || !deckEvolutionCanvas) {
+    return;
+  }
+
   console.log("updateDeckEvolutionChart called...");
   setChartLoading("deckEvolutionChart", true);
   const filteredData = getDeckEvolutionChartData();
-  const deckSelect = document.getElementById("deckEvolutionSelect");
-  if (!deckSelect) {
-    console.error("Deck selection dropdown not found!");
-    setChartLoading("deckEvolutionChart", false);
-    return;
-  }
 
   const decks = [...new Set(filteredData.map(row => normalizeDeckName(row?.Deck)).filter(Boolean))]
     .sort((a, b) => a.localeCompare(b));

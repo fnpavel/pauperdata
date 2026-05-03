@@ -1712,7 +1712,6 @@ export function updateMultiEventAnalysis(data) {
   updateMultiMetaWinRateChart();
   updateMultiEventFunnelChart();
   updateMultiPlayerWinRateChart();
-  updateDeckEvolutionChart();
   updateMultiEventTables(data, 'aggregate');
   populateMultiEventStats(data);
   syncMultiEventScatterChartVisibility();
