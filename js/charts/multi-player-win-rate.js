@@ -7,6 +7,7 @@ import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
 import { openMultiEventPlayerAggregateModal } from '../modules/multi-player-aggregate-modal.js';
+import { renderMultiEventPeriodSummaryBadge } from '../utils/multi-event-period-badge.js';
 
 export let multiPlayerWinRateChart = null;
 // Empty means hover controls the details panel; a value means the clicked point
@@ -330,10 +331,24 @@ export function updateMultiPlayerWinRateChart() {
   console.log("updateMultiPlayerWinRateChart called...");
   setChartLoading("multiPlayerWinRateChart", true);
   const theme = getChartTheme();
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const panel = document.getElementById('multiEventPlayerScatterPanel');
   pinnedMultiPlayerPointKey = '';
   ensureMultiPlayerWinRateDetailsInteractions();
 
   const chartData = getDeckEvolutionChartData();
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: panel.querySelector('.player-search-container') || panel.querySelector('#multiPlayerWinRateChartLoading'),
+      badgeId: 'multiEventPlayerScatterPeriodBadge',
+      rows: chartData,
+      startDate,
+      endDate
+    });
+  }
+
   if (chartData.length === 0) {
     renderMultiPlayerWinRateDetailsPlaceholder('No player results are available for the current Multi-Event filters.');
     if (multiPlayerWinRateChart) multiPlayerWinRateChart.destroy();
@@ -491,6 +506,17 @@ export function updateMultiPlayerWinRateChart() {
   }
 
   searchContainer._playerSearchState = { labels, eventCounts, winRates, pointDetails };
+
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: searchContainer,
+      badgeId: 'multiEventPlayerScatterPeriodBadge',
+      rows: chartData,
+      startDate,
+      endDate
+    });
+  }
 
   renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to open the modal.');
 

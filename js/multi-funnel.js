@@ -4,15 +4,28 @@ import { setChartLoading } from './utils/dom.js';
 import { getMultiEventChartData } from './modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from './utils/data-chart.js';
 import { openMultiEventDeckEvolutionModal } from './charts/multi-deck-evolution.js';
+import { openMultiEventPlayerAggregateModal } from './modules/multi-player-aggregate-modal.js';
 import { getActiveTheme, getChartTheme } from './utils/theme.js';
+import { getPlayerIdentityKey } from './utils/player-names.js';
+import { renderMultiEventPeriodSummaryBadge } from './utils/multi-event-period-badge.js';
 
 export let multiEventFunnelChart = null;
 let activeMultiEventFunnelGroupingMode = 'detailed';
 let activeMultiEventFunnelLabelMode = 'copies';
+let activeMultiEventFunnelEntityMode = 'deck';
+let activeMultiEventFunnelSearchTerms = {
+  deck: '',
+  player: ''
+};
+let activeMultiEventFunnelHighlightedEntityNames = {
+  deck: '',
+  player: ''
+};
+let currentMultiEventFunnelSourceRows = [];
 let currentMultiEventFunnelRows = [];
 let multiEventFunnelRenderFrame = 0;
 
-const MULTI_EVENT_FUNNEL_MIN_HEIGHT = 220;
+const MULTI_EVENT_FUNNEL_EMPTY_HEIGHT = 220;
 const MULTI_EVENT_FUNNEL_ROW_HEIGHT = 22;
 const MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT = 680;
 const MULTI_EVENT_FUNNEL_BUFFER_ROWS = 6;
@@ -94,8 +107,25 @@ const FUNNEL_LABEL_MODES = Object.freeze([
   { key: 'percentage', label: 'Percentage' }
 ]);
 
+const FUNNEL_ENTITY_MODES = Object.freeze([
+  { key: 'deck', label: 'Deck' },
+  { key: 'player', label: 'Player' }
+]);
+
 function getActiveFunnelGroupingMode() {
   return FUNNEL_GROUPING_MODES.find(mode => mode.key === activeMultiEventFunnelGroupingMode) || FUNNEL_GROUPING_MODES[0];
+}
+
+function getActiveFunnelEntityMode() {
+  return FUNNEL_ENTITY_MODES.find(mode => mode.key === activeMultiEventFunnelEntityMode) || FUNNEL_ENTITY_MODES[0];
+}
+
+function normalizeMultiEventFunnelSearchTerm(searchTerm = '') {
+  return String(searchTerm || '').trim().toLowerCase();
+}
+
+function getNormalizedMultiEventFunnelEntityName(entityName = '') {
+  return normalizeMultiEventFunnelSearchTerm(entityName);
 }
 
 function getBucketThemeColors(bucketKey, activeTheme = getActiveTheme()) {
@@ -133,8 +163,312 @@ function formatEventFunnelLabel(point = {}, labelMode = activeMultiEventFunnelLa
   return `${Number(point?.rawCount || 0)}`;
 }
 
-function buildDeckRowLabel(deckName) {
-  return `${deckName}`;
+function buildEntityRowLabel(entityName) {
+  return `${entityName}`;
+}
+
+function getMultiEventFunnelPrimaryColumnLabel() {
+  return activeMultiEventFunnelEntityMode === 'player' ? 'Player' : 'Deck';
+}
+
+function getMultiEventFunnelMetricColumnLabel() {
+  return activeMultiEventFunnelEntityMode === 'player' ? 'Entries' : 'Copies';
+}
+
+function getMultiEventFunnelYAxisLabel() {
+  return activeMultiEventFunnelEntityMode === 'player' ? 'Players' : 'Decks';
+}
+
+function getMultiEventFunnelSearchPlaceholder() {
+  return activeMultiEventFunnelEntityMode === 'player'
+    ? 'Find a player in Top Conversion'
+    : 'Find a deck in Top Conversion';
+}
+
+function getMultiEventFunnelXAxisTitle(groupingMode = getActiveFunnelGroupingMode()) {
+  const metricLabel = getMultiEventFunnelMetricColumnLabel();
+  return groupingMode.key === 'detailed' ? `${metricLabel} and Finish Buckets` : `${metricLabel} and ${groupingMode.label}`;
+}
+
+function calculatePlayerConversionStats(data = []) {
+  const playerStats = data.reduce((acc, row) => {
+    const playerName = String(row?.Player || '').trim();
+    const playerKey = getPlayerIdentityKey(playerName);
+    if (!playerKey) {
+      return acc;
+    }
+
+    if (!acc[playerKey]) {
+      acc[playerKey] = {
+        player: playerName,
+        total: 0,
+        rank1_8: 0,
+        rank9_16: 0,
+        rank17_32: 0,
+        rank33_worse: 0
+      };
+    }
+
+    acc[playerKey].total += 1;
+    const rank = Number(row?.Rank);
+    if (rank >= 1 && rank <= 8) acc[playerKey].rank1_8 += 1;
+    else if (rank >= 9 && rank <= 16) acc[playerKey].rank9_16 += 1;
+    else if (rank >= 17 && rank <= 32) acc[playerKey].rank17_32 += 1;
+    else acc[playerKey].rank33_worse += 1;
+    return acc;
+  }, {});
+
+  return Object.values(playerStats)
+    .map(stats => {
+      const total = Number(stats.total || 0);
+      const percentages = {
+        rank1_8: total > 0 ? (Number(stats.rank1_8 || 0) / total) * 100 : 0,
+        rank9_16: total > 0 ? (Number(stats.rank9_16 || 0) / total) * 100 : 0,
+        rank17_32: total > 0 ? (Number(stats.rank17_32 || 0) / total) * 100 : 0,
+        rank33_worse: total > 0 ? (Number(stats.rank33_worse || 0) / total) * 100 : 0
+      };
+
+      return {
+        deck: stats.player,
+        total,
+        counts: {
+          rank1_8: Number(stats.rank1_8 || 0),
+          rank9_16: Number(stats.rank9_16 || 0),
+          rank17_32: Number(stats.rank17_32 || 0),
+          rank33_worse: Number(stats.rank33_worse || 0)
+        },
+        data: [percentages.rank1_8, percentages.rank9_16, percentages.rank17_32, percentages.rank33_worse],
+        rank1_8: percentages.rank1_8
+      };
+    })
+    .sort((a, b) => b.rank1_8 - a.rank1_8 || a.deck.localeCompare(b.deck));
+}
+
+function getMultiEventFunnelRows(data = []) {
+  return activeMultiEventFunnelEntityMode === 'player'
+    ? calculatePlayerConversionStats(data)
+    : calculateDeckConversionStats(data);
+}
+
+function getMultiEventFunnelSearchEntityLabel() {
+  return activeMultiEventFunnelEntityMode === 'player' ? 'player' : 'deck';
+}
+
+function getActiveMultiEventFunnelSearchTerm() {
+  return String(activeMultiEventFunnelSearchTerms?.[activeMultiEventFunnelEntityMode] || '');
+}
+
+function getActiveMultiEventFunnelHighlightedEntityName() {
+  return String(activeMultiEventFunnelHighlightedEntityNames?.[activeMultiEventFunnelEntityMode] || '');
+}
+
+function getMultiEventFunnelSearchOptions() {
+  return currentMultiEventFunnelSourceRows.map((row, index) => ({
+    key: getNormalizedMultiEventFunnelEntityName(row?.deck),
+    label: String(row?.deck || '').trim(),
+    searchText: normalizeMultiEventFunnelSearchTerm(row?.deck),
+    index
+  })).filter(option => option.key && option.label);
+}
+
+function getMultiEventFunnelSearchMatches(searchTerm = '') {
+  const normalizedSearchTerm = normalizeMultiEventFunnelSearchTerm(searchTerm);
+  if (!normalizedSearchTerm) {
+    return [];
+  }
+
+  return getMultiEventFunnelSearchOptions().filter(option => option.searchText.includes(normalizedSearchTerm));
+}
+
+function findMultiEventFunnelSearchSelection(searchTerm = '', { jumpToFirst = false } = {}) {
+  const normalizedSearchTerm = normalizeMultiEventFunnelSearchTerm(searchTerm);
+  if (!normalizedSearchTerm) {
+    return null;
+  }
+
+  const matches = getMultiEventFunnelSearchMatches(normalizedSearchTerm);
+  const exactMatch = matches.find(option => option.searchText === normalizedSearchTerm);
+  return exactMatch || (jumpToFirst ? matches[0] || null : null);
+}
+
+function updateMultiEventFunnelSearchStatus(message = '') {
+  const statusElement = document.getElementById('multiEventFunnelSearchStatus');
+  if (!statusElement) {
+    return;
+  }
+
+  statusElement.textContent = message;
+}
+
+function syncMultiEventFunnelRows() {
+  currentMultiEventFunnelRows = Array.isArray(currentMultiEventFunnelSourceRows)
+    ? [...currentMultiEventFunnelSourceRows]
+    : [];
+}
+
+function clearMultiEventFunnelHighlight({ preserveInput = false } = {}) {
+  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+  if (!preserveInput) {
+    activeMultiEventFunnelSearchTerms[activeMultiEventFunnelEntityMode] = '';
+  }
+}
+
+function scrollMultiEventFunnelToRowIndex(rowIndex) {
+  const chartBody = document.getElementById('multiEventFunnelChartBody');
+  if (!chartBody || !Number.isFinite(rowIndex) || rowIndex < 0) {
+    return;
+  }
+
+  const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
+  const targetScrollTop = Math.max(
+    0,
+    (rowIndex * MULTI_EVENT_FUNNEL_ROW_HEIGHT) - Math.max(0, (rowsViewportHeight / 2) - (MULTI_EVENT_FUNNEL_ROW_HEIGHT / 2))
+  );
+
+  chartBody.scrollTo({
+    top: targetScrollTop,
+    behavior: 'smooth'
+  });
+}
+
+function setActiveMultiEventFunnelFocus(option = null, { scroll = true } = {}) {
+  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = option?.label || '';
+  if (option?.label) {
+    activeMultiEventFunnelSearchTerms[activeMultiEventFunnelEntityMode] = option.label;
+    updateMultiEventFunnelSearchStatus(`Focused on ${option.label}. The ${getMultiEventFunnelSearchEntityLabel()} row is highlighted.`);
+    if (scroll) {
+      scrollMultiEventFunnelToRowIndex(option.index);
+    }
+  } else {
+    updateMultiEventFunnelSearchStatus('');
+  }
+
+  renderMultiEventFunnelSuggestions('');
+  renderMultiEventFunnelViewport();
+}
+
+function renderMultiEventFunnelSuggestions(searchTerm = '') {
+  const searchDropdown = document.getElementById('multiEventFunnelSearchDropdown');
+  if (!searchDropdown) {
+    return;
+  }
+
+  const matches = getMultiEventFunnelSearchMatches(searchTerm);
+  if (!searchTerm.trim()) {
+    searchDropdown.innerHTML = '';
+    searchDropdown.classList.remove('open');
+    return;
+  }
+
+  if (matches.length === 0) {
+    searchDropdown.innerHTML = `<div class="player-search-empty">No matching ${getMultiEventFunnelSearchEntityLabel()}s found.</div>`;
+    searchDropdown.classList.add('open');
+    return;
+  }
+
+  searchDropdown.innerHTML = matches.map(option => `
+    <div class="chart-search-option" data-multi-event-funnel-search-key="${option.key}">
+      ${option.label}
+    </div>
+  `).join('');
+  searchDropdown.classList.add('open');
+}
+
+function selectMultiEventFunnelSearchResult(searchTerm = '', { jumpToFirst = false } = {}) {
+  const normalizedSearchTerm = normalizeMultiEventFunnelSearchTerm(searchTerm);
+  activeMultiEventFunnelSearchTerms[activeMultiEventFunnelEntityMode] = String(searchTerm || '');
+
+  if (!normalizedSearchTerm) {
+    clearMultiEventFunnelHighlight({ preserveInput: false });
+    renderMultiEventFunnelSuggestions('');
+    updateMultiEventFunnelSearchStatus('');
+    renderMultiEventFunnelViewport();
+    return;
+  }
+
+  const matches = getMultiEventFunnelSearchMatches(searchTerm);
+  const selectedMatch = findMultiEventFunnelSearchSelection(searchTerm, { jumpToFirst });
+  renderMultiEventFunnelSuggestions(searchTerm);
+
+  if (selectedMatch) {
+    setActiveMultiEventFunnelFocus(selectedMatch, { scroll: true });
+    return;
+  }
+
+  activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+  const entityLabel = getMultiEventFunnelSearchEntityLabel();
+  updateMultiEventFunnelSearchStatus(
+    matches.length > 0
+      ? `${matches.length} ${entityLabel}${matches.length === 1 ? '' : 's'} match "${String(searchTerm || '').trim()}". Choose one from the suggestions or press Enter to jump to the first match.`
+      : `No ${entityLabel} matched "${String(searchTerm || '').trim()}".`
+  );
+  renderMultiEventFunnelViewport();
+}
+
+function syncMultiEventFunnelSearchState() {
+  const searchInput = document.getElementById('multiEventFunnelSearchInput');
+  const activeSearchTerm = getActiveMultiEventFunnelSearchTerm();
+  const activeHighlightedEntityName = getActiveMultiEventFunnelHighlightedEntityName();
+  const hasHighlightedRow = getMultiEventFunnelSearchOptions().some(option => option.label === activeHighlightedEntityName);
+  if (!hasHighlightedRow) {
+    activeMultiEventFunnelHighlightedEntityNames[activeMultiEventFunnelEntityMode] = '';
+  }
+
+  if (searchInput && document.activeElement !== searchInput) {
+    searchInput.value = activeSearchTerm;
+  }
+
+  const entityLabel = getMultiEventFunnelSearchEntityLabel();
+  if (getActiveMultiEventFunnelHighlightedEntityName()) {
+    updateMultiEventFunnelSearchStatus(`Focused on ${getActiveMultiEventFunnelHighlightedEntityName()}. The ${entityLabel} row is highlighted.`);
+  } else if (activeSearchTerm.trim()) {
+    const matches = getMultiEventFunnelSearchMatches(activeSearchTerm);
+    updateMultiEventFunnelSearchStatus(
+      matches.length > 0
+        ? `${matches.length} ${entityLabel}${matches.length === 1 ? '' : 's'} match "${activeSearchTerm.trim()}". Choose one from the suggestions or press Enter to jump to the first match.`
+        : `No ${entityLabel} matched "${activeSearchTerm.trim()}".`
+    );
+  } else {
+    updateMultiEventFunnelSearchStatus('');
+  }
+
+  renderMultiEventFunnelSuggestions(activeSearchTerm);
+}
+
+function openMultiEventFunnelEntityModal(entityName = '') {
+  const normalizedEntityName = String(entityName || '').trim();
+  if (!normalizedEntityName) {
+    return;
+  }
+
+  if (activeMultiEventFunnelEntityMode === 'player') {
+    openMultiEventPlayerAggregateModal(normalizedEntityName);
+    return;
+  }
+
+  openMultiEventDeckEvolutionModal(normalizedEntityName);
+}
+
+function getMultiEventFunnelPointerPosition(event) {
+  const nativeEvent = event?.native || event;
+  const x = Number(
+    event?.x
+    ?? nativeEvent?.offsetX
+    ?? nativeEvent?.layerX
+    ?? nativeEvent?.x
+  );
+  const y = Number(
+    event?.y
+    ?? nativeEvent?.offsetY
+    ?? nativeEvent?.layerY
+    ?? nativeEvent?.y
+  );
+
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  return { x, y };
 }
 
 function resolveCellRadius(context) {
@@ -285,6 +619,50 @@ const multiEventFunnelHeaderLayoutPlugin = {
   }
 };
 
+const multiEventFunnelHighlightPlugin = {
+  id: 'multiEventFunnelHighlightRow',
+  beforeDatasetsDraw(chart, _args, pluginOptions) {
+    const highlightedEntityName = String(pluginOptions?.highlightedEntityName || '').trim();
+    if (!highlightedEntityName) {
+      return;
+    }
+
+    const xScale = chart.scales?.x;
+    const yScale = chart.scales?.y;
+    const chartArea = chart.chartArea;
+    if (!xScale || !yScale || !chartArea) {
+      return;
+    }
+
+    const matchingDataset = chart.data.datasets?.[0];
+    const highlightedIndex = matchingDataset?.data?.findIndex(point => (
+      String(point?.entityName || point?.deckName || '').trim() === highlightedEntityName
+    )) ?? -1;
+    if (highlightedIndex < 0) {
+      return;
+    }
+
+    const yStep = yScale.ticks.length > 1
+      ? Math.abs(yScale.getPixelForTick(1) - yScale.getPixelForTick(0))
+      : chartArea.height;
+    const rowCenterY = yScale.getPixelForTick(highlightedIndex);
+    const rowHeight = Math.max(18, Math.min(MULTI_EVENT_FUNNEL_ROW_HEIGHT, yStep * 0.92));
+    const rowTop = rowCenterY - (rowHeight / 2);
+    const highlightLeft = Math.max(0, Number(yScale.left) || chartArea.left);
+    const highlightWidth = chartArea.right - highlightLeft;
+
+    chart.ctx.save();
+    chart.ctx.fillStyle = pluginOptions?.highlightFill || 'rgba(217, 164, 65, 0.16)';
+    chart.ctx.strokeStyle = pluginOptions?.highlightStroke || 'rgba(217, 164, 65, 0.55)';
+    chart.ctx.lineWidth = 1.5;
+    chart.ctx.beginPath();
+    chart.ctx.roundRect(highlightLeft + 2, rowTop + 1, Math.max(24, highlightWidth - 4), Math.max(16, rowHeight - 2), 8);
+    chart.ctx.fill();
+    chart.ctx.stroke();
+    chart.ctx.restore();
+  }
+};
+
 function ensureMultiEventFunnelControls() {
   const canvas = document.getElementById('multiEventFunnelChart');
   const chartContainer = canvas?.closest('.chart-container');
@@ -298,6 +676,24 @@ function ensureMultiEventFunnelControls() {
     toolbar.id = 'multiEventFunnelGroupingToolbar';
     toolbar.className = 'event-funnel-toolbar';
     toolbar.innerHTML = `
+      <div class="event-funnel-toolbar-group">
+        <span class="event-funnel-toolbar-label">Entity</span>
+        <div class="bubble-menu event-funnel-entity-menu" id="multiEventFunnelEntityMenu" aria-label="Select multi-event funnel entity type"></div>
+      </div>
+      <div class="event-funnel-toolbar-group multi-event-funnel-search-group">
+        <span class="event-funnel-toolbar-label">Search</span>
+        <div class="player-search-select leaderboard-table-search multi-event-funnel-search">
+          <input
+            type="search"
+            class="player-search-input"
+            id="multiEventFunnelSearchInput"
+            placeholder="Find a deck in Top Conversion"
+            aria-label="Find a deck in Top Conversion"
+            autocomplete="off"
+          />
+          <div class="player-search-dropdown chart-search-dropdown" id="multiEventFunnelSearchDropdown"></div>
+        </div>
+      </div>
       <div class="event-funnel-toolbar-group">
         <span class="event-funnel-toolbar-label">Bucket View</span>
         <div class="bubble-menu event-funnel-grouping-menu" id="multiEventFunnelGroupingMenu" aria-label="Select multi-event funnel bucket grouping"></div>
@@ -313,13 +709,43 @@ function ensureMultiEventFunnelControls() {
     } else {
       chartContainer.prepend(toolbar);
     }
+
+    const searchStatus = document.createElement('div');
+    searchStatus.id = 'multiEventFunnelSearchStatus';
+    searchStatus.className = 'leaderboard-table-search-status multi-event-funnel-search-status';
+    searchStatus.setAttribute('aria-live', 'polite');
+    toolbar.insertAdjacentElement('afterend', searchStatus);
   }
 
   const menu = toolbar.querySelector('#multiEventFunnelGroupingMenu');
   const labelMenu = toolbar.querySelector('#multiEventFunnelLabelMenu');
-  if (!menu || !labelMenu) {
+  const entityMenu = toolbar.querySelector('#multiEventFunnelEntityMenu');
+  const searchInput = toolbar.querySelector('#multiEventFunnelSearchInput');
+  const searchGroup = toolbar.querySelector('.multi-event-funnel-search-group');
+  const searchDropdown = toolbar.querySelector('#multiEventFunnelSearchDropdown');
+  if (!menu || !labelMenu || !entityMenu || !searchInput || !searchGroup || !searchDropdown) {
     return;
   }
+
+  const searchPlaceholder = getMultiEventFunnelSearchPlaceholder();
+  searchInput.placeholder = searchPlaceholder;
+  searchInput.setAttribute('aria-label', searchPlaceholder);
+  const expectedSearchValue = getActiveMultiEventFunnelSearchTerm();
+  if (searchInput.value !== expectedSearchValue) {
+    searchInput.value = expectedSearchValue;
+  }
+  searchGroup.hidden = false;
+  searchInput.disabled = false;
+
+  entityMenu.innerHTML = FUNNEL_ENTITY_MODES.map(mode => `
+    <button
+      type="button"
+      class="bubble-button multi-event-scatter-mode-button${mode.key === activeMultiEventFunnelEntityMode ? ' active' : ''}"
+      data-multi-event-funnel-entity-mode="${mode.key}"
+    >
+      ${mode.label}
+    </button>
+  `).join('');
 
   menu.innerHTML = FUNNEL_GROUPING_MODES.map(mode => `
     <button
@@ -337,9 +763,28 @@ function ensureMultiEventFunnelControls() {
       class="bubble-button event-funnel-label-button${mode.key === activeMultiEventFunnelLabelMode ? ' active' : ''}"
       data-multi-event-funnel-label-mode="${mode.key}"
     >
-      ${mode.label}
+      ${mode.key === 'copies' ? getMultiEventFunnelMetricColumnLabel() : mode.label}
     </button>
   `).join('');
+
+  if (entityMenu.dataset.listenerBound !== 'true') {
+    entityMenu.addEventListener('click', event => {
+      const button = event.target.closest('[data-multi-event-funnel-entity-mode]');
+      if (!button) {
+        return;
+      }
+
+      const nextMode = String(button.dataset.multiEventFunnelEntityMode || '').trim();
+      if (!nextMode || nextMode === activeMultiEventFunnelEntityMode) {
+        return;
+      }
+
+      activeMultiEventFunnelEntityMode = nextMode === 'player' ? 'player' : 'deck';
+      ensureMultiEventFunnelControls();
+      updateMultiEventFunnelChart();
+    });
+    entityMenu.dataset.listenerBound = 'true';
+  }
 
   if (menu.dataset.listenerBound !== 'true') {
     menu.addEventListener('click', event => {
@@ -378,6 +823,69 @@ function ensureMultiEventFunnelControls() {
     });
     labelMenu.dataset.listenerBound = 'true';
   }
+
+  if (searchInput.dataset.listenerBound !== 'true') {
+    searchInput.addEventListener('input', event => {
+      selectMultiEventFunnelSearchResult(String(event.target.value || ''), { jumpToFirst: false });
+    });
+
+    searchInput.addEventListener('keydown', event => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        selectMultiEventFunnelSearchResult(searchInput.value || '', { jumpToFirst: true });
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        clearMultiEventFunnelHighlight({ preserveInput: false });
+        renderMultiEventFunnelSuggestions('');
+        updateMultiEventFunnelSearchStatus('');
+        renderMultiEventFunnelViewport();
+      }
+    });
+
+    searchDropdown.addEventListener('click', event => {
+      const option = event.target.closest('[data-multi-event-funnel-search-key]');
+      if (!option) {
+        return;
+      }
+
+      const optionKey = String(option.dataset.multiEventFunnelSearchKey || '').trim();
+      const selectedOption = getMultiEventFunnelSearchOptions().find(entry => entry.key === optionKey);
+      if (!selectedOption) {
+        return;
+      }
+
+      setActiveMultiEventFunnelFocus(selectedOption, { scroll: true });
+    });
+
+    searchInput.dataset.listenerBound = 'true';
+  }
+
+  syncMultiEventFunnelSearchState();
+}
+
+function renderMultiEventFunnelPeriodBadge(rows = []) {
+  const canvas = document.getElementById('multiEventFunnelChart');
+  const chartContainer = canvas?.closest('.chart-container');
+  const toolbar = chartContainer?.querySelector('#multiEventFunnelGroupingToolbar');
+  const searchStatus = chartContainer?.querySelector('#multiEventFunnelSearchStatus');
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+
+  if (!chartContainer) {
+    return;
+  }
+
+  renderMultiEventPeriodSummaryBadge({
+    container: chartContainer,
+    insertAfter: searchStatus || toolbar || chartContainer.querySelector('.chart-title'),
+    badgeId: 'multiEventFunnelPeriodBadge',
+    rows,
+    startDate,
+    endDate
+  });
 }
 
 function ensureMultiEventFunnelViewport() {
@@ -387,7 +895,7 @@ function ensureMultiEventFunnelViewport() {
     return { chartBody: null, rowsLayer: null, canvas: null };
   }
 
-  chartBody.style.height = `${MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT}px`;
+  chartBody.style.maxHeight = `${MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT}px`;
 
   let rowsLayer = chartBody.querySelector('#multiEventFunnelRowsLayer');
   if (!rowsLayer) {
@@ -432,7 +940,7 @@ function ensureMultiEventFunnelColumnHeader(bucketLabels = []) {
     }
   }
 
-  const cells = ['Deck', 'Copies', ...bucketLabels];
+  const cells = [getMultiEventFunnelPrimaryColumnLabel(), getMultiEventFunnelMetricColumnLabel(), ...bucketLabels];
   header.innerHTML = cells.map((label, index) => `
     <span class="event-funnel-column-header-cell${index === 0 ? ' event-funnel-column-header-cell-deck' : ''}${index === 1 ? ' event-funnel-column-header-cell-copies' : ''}">${label}</span>
   `).join('');
@@ -504,7 +1012,8 @@ function buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeThe
       const totalCopies = Number(item.total || 0);
       return {
         x: bucket.label,
-        y: buildDeckRowLabel(item.deck),
+        y: buildEntityRowLabel(item.deck),
+        entityName: item.deck,
         deckName: item.deck,
         bucketLabel: bucket.label,
         rawCount,
@@ -532,11 +1041,11 @@ function getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event) {
     return null;
   }
 
-  const x = Number(event?.x);
-  const y = Number(event?.y);
-  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+  const pointer = getMultiEventFunnelPointerPosition(event);
+  if (!pointer) {
     return null;
   }
+  const { x, y } = pointer;
 
   const xStep = xScale.ticks.length > 1
     ? Math.abs(xScale.getPixelForTick(1) - xScale.getPixelForTick(0))
@@ -566,6 +1075,10 @@ function getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event) {
     return { type: 'copies', row };
   }
 
+  if (x > copiesRight && x <= chartArea.right && y >= chartArea.top && y <= chartArea.bottom) {
+    return { type: 'bucket', row };
+  }
+
   return null;
 }
 
@@ -584,9 +1097,18 @@ function renderMultiEventFunnelViewport() {
   const groupingMode = getActiveFunnelGroupingMode();
   const funnelCategories = getFunnelCategories(groupingMode);
   ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
-  const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
+  const emptyState = ensureMultiEventFunnelEmptyState();
 
   const totalRows = currentMultiEventFunnelRows.length;
+  const headerHeight = Math.max(0, document.getElementById('multiEventFunnelColumnHeader')?.offsetHeight || 0);
+  const desiredBodyHeight = totalRows === 0
+    ? Math.min(MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT, MULTI_EVENT_FUNNEL_EMPTY_HEIGHT + headerHeight)
+    : Math.min(
+      MULTI_EVENT_FUNNEL_VIEWPORT_HEIGHT,
+      (Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y + headerHeight
+    );
+  chartBody.style.height = `${Math.max(desiredBodyHeight, headerHeight + MULTI_EVENT_FUNNEL_ROW_HEIGHT)}px`;
+  const { rowsViewportHeight } = getMultiEventFunnelViewportMetrics();
   rowsLayer.style.height = `${Math.max(totalRows, 1) * MULTI_EVENT_FUNNEL_ROW_HEIGHT + MULTI_EVENT_FUNNEL_CHART_PADDING_Y}px`;
 
   if (totalRows === 0) {
@@ -595,18 +1117,24 @@ function renderMultiEventFunnelViewport() {
       multiEventFunnelChart = null;
     }
     canvas.style.top = '0px';
-    canvas.style.height = `${MULTI_EVENT_FUNNEL_MIN_HEIGHT}px`;
-    canvas.height = MULTI_EVENT_FUNNEL_MIN_HEIGHT;
+    canvas.style.minHeight = '0px';
+    canvas.style.height = `${MULTI_EVENT_FUNNEL_EMPTY_HEIGHT}px`;
+    canvas.height = MULTI_EVENT_FUNNEL_EMPTY_HEIGHT;
+    canvas.style.display = 'none';
+    rowsLayer.style.display = 'none';
+    updateMultiEventFunnelEmptyState(emptyState);
     return;
   }
 
+  canvas.style.display = 'block';
+  rowsLayer.style.display = 'block';
+  updateMultiEventFunnelEmptyState(emptyState);
+
   const { startIndex, endIndex, visibleRows } = getVisibleMultiEventFunnelWindow(totalRows, chartBody.scrollTop, rowsViewportHeight);
   const visibleDecksData = currentMultiEventFunnelRows.slice(startIndex, endIndex);
-  const visibleDeckLabels = visibleDecksData.map(item => buildDeckRowLabel(item.deck));
-  const chartHeight = Math.max(
-    MULTI_EVENT_FUNNEL_MIN_HEIGHT,
-    (Math.max(visibleRows, visibleDecksData.length) * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y
-  );
+  const visibleDeckLabels = visibleDecksData.map(item => buildEntityRowLabel(item.deck));
+  const renderedRowCount = Math.max(visibleDecksData.length, 1);
+  const chartHeight = (renderedRowCount * MULTI_EVENT_FUNNEL_ROW_HEIGHT) + MULTI_EVENT_FUNNEL_CHART_PADDING_Y;
   const maxBucketCount = Math.max(
     0,
     ...currentMultiEventFunnelRows.flatMap(item => groupingMode.buckets.map(bucket => (
@@ -628,12 +1156,13 @@ function renderMultiEventFunnelViewport() {
       }
 
       keyboardEvent.preventDefault();
-      openMultiEventDeckEvolutionModal(clickedDeckName);
+      openMultiEventFunnelEntityModal(clickedDeckName);
     });
     canvas.dataset.funnelKeyboardBound = 'true';
   }
 
   canvas.style.top = `${startIndex * MULTI_EVENT_FUNNEL_ROW_HEIGHT}px`;
+  canvas.style.minHeight = '0px';
   canvas.style.height = `${chartHeight}px`;
   canvas.height = chartHeight;
 
@@ -644,7 +1173,7 @@ function renderMultiEventFunnelViewport() {
   try {
     multiEventFunnelChart = new Chart(canvas, {
       type: 'scatter',
-      plugins: [fixedBucketBarPlugin, multiEventFunnelHeaderLayoutPlugin],
+      plugins: [multiEventFunnelHighlightPlugin, fixedBucketBarPlugin, multiEventFunnelHeaderLayoutPlugin],
       data: { datasets },
       options: {
         responsive: true,
@@ -664,7 +1193,7 @@ function renderMultiEventFunnelViewport() {
             labels: funnelCategories,
             title: {
               display: true,
-              text: groupingMode.key === 'detailed' ? 'Copies and Finish Buckets' : `Copies and ${groupingMode.label}`,
+              text: getMultiEventFunnelXAxisTitle(groupingMode),
               color: theme.text,
               font: { size: 16, weight: 'bold', family: "'Bitter', serif" }
             },
@@ -684,7 +1213,7 @@ function renderMultiEventFunnelViewport() {
             labels: visibleDeckLabels,
             title: {
               display: true,
-              text: 'Decks',
+              text: getMultiEventFunnelYAxisLabel(),
               color: theme.text,
               font: { size: 16, weight: 'bold', family: "'Bitter', serif" }
             },
@@ -701,6 +1230,11 @@ function renderMultiEventFunnelViewport() {
           }
         },
         plugins: {
+          multiEventFunnelHighlightRow: {
+            highlightedEntityName: getActiveMultiEventFunnelHighlightedEntityName(),
+            highlightFill: 'rgba(217, 164, 65, 0.14)',
+            highlightStroke: 'rgba(217, 164, 65, 0.52)'
+          },
           multiEventFunnelFixedBucketBars: {
             maxBucketCount,
             bucketLabels: groupingMode.buckets.map(bucket => bucket.label),
@@ -731,7 +1265,7 @@ function renderMultiEventFunnelViewport() {
               title: () => '',
               label: context => {
                 const point = context.raw || {};
-                return `${point.deckName || ''} — ${point.bucketLabel || context.dataset.label}: ${Number(point.rawCount || 0)} (${formatWholePercentage(point.percentage)})`;
+                return `${point.entityName || point.deckName || ''} — ${point.bucketLabel || context.dataset.label}: ${Number(point.rawCount || 0)} (${formatWholePercentage(point.percentage)})`;
               },
               labelColor: context => ({
                 backgroundColor: context.dataset?.backgroundColor || '#ffffff',
@@ -771,16 +1305,16 @@ function renderMultiEventFunnelViewport() {
           duration: 0
         },
         onClick: (event, activeElements, chart) => {
-          let clickedDeckName = '';
+          let clickedEntityName = '';
           if (activeElements?.length) {
             const clickedPoint = chart.data.datasets?.[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
-            clickedDeckName = String(clickedPoint?.deckName || '').trim();
+            clickedEntityName = String(clickedPoint?.entityName || clickedPoint?.deckName || '').trim();
           } else {
             const interactiveRow = getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event);
-            clickedDeckName = String(interactiveRow?.row?.deck || '').trim();
+            clickedEntityName = String(interactiveRow?.row?.deck || '').trim();
           }
-          if (clickedDeckName) {
-            openMultiEventDeckEvolutionModal(clickedDeckName);
+          if (clickedEntityName) {
+            openMultiEventFunnelEntityModal(clickedEntityName);
           }
         },
         onHover(event, activeElements, chart) {
@@ -789,7 +1323,8 @@ function renderMultiEventFunnelViewport() {
             ? chart.data.datasets?.[activeElements[0].datasetIndex]?.data?.[activeElements[0].index]
             : null;
           canvas.dataset.interactiveDeckName = String(
-            hoveredPoint?.deckName
+            hoveredPoint?.entityName
+              || hoveredPoint?.deckName
               || interactiveRow?.row?.deck
               || ''
           ).trim();
@@ -808,6 +1343,38 @@ function renderMultiEventFunnelViewport() {
 
   canvas.style.cursor = 'default';
   canvas.dataset.interactiveDeckName = '';
+}
+
+function ensureMultiEventFunnelEmptyState() {
+  const chartBody = document.getElementById('multiEventFunnelChartBody');
+  if (!chartBody) {
+    return null;
+  }
+
+  let emptyState = chartBody.querySelector('#multiEventFunnelEmptyState');
+  if (!emptyState) {
+    emptyState = document.createElement('div');
+    emptyState.id = 'multiEventFunnelEmptyState';
+    emptyState.className = 'multi-event-funnel-empty-state';
+    chartBody.appendChild(emptyState);
+  }
+
+  return emptyState;
+}
+
+function updateMultiEventFunnelEmptyState(emptyState) {
+  if (!emptyState) {
+    return;
+  }
+
+  if (currentMultiEventFunnelRows.length > 0) {
+    emptyState.hidden = true;
+    emptyState.textContent = '';
+    return;
+  }
+
+  emptyState.hidden = false;
+  emptyState.textContent = 'No conversion data available for the current filters.';
 }
 
 function scheduleMultiEventFunnelViewportRender() {
@@ -829,8 +1396,11 @@ export function updateMultiEventFunnelChart() {
   ensureMultiEventFunnelColumnHeader(groupingMode.buckets.map(bucket => bucket.label));
 
   const filteredData = getMultiEventChartData();
+  renderMultiEventFunnelPeriodBadge(filteredData);
   if (filteredData.length === 0) {
-    currentMultiEventFunnelRows = [];
+    currentMultiEventFunnelSourceRows = [];
+    syncMultiEventFunnelRows();
+    syncMultiEventFunnelSearchState();
     if (chartBody) {
       chartBody.scrollTop = 0;
     }
@@ -839,8 +1409,10 @@ export function updateMultiEventFunnelChart() {
     return;
   }
 
-  currentMultiEventFunnelRows = calculateDeckConversionStats(filteredData);
-  if (chartBody) {
+  currentMultiEventFunnelSourceRows = getMultiEventFunnelRows(filteredData);
+  syncMultiEventFunnelRows();
+  syncMultiEventFunnelSearchState();
+  if (chartBody && currentMultiEventFunnelRows.length > 0) {
     chartBody.scrollTop = 0;
   }
   renderMultiEventFunnelViewport();

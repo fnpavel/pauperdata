@@ -139,6 +139,23 @@ canvas {
   height: fit-content;
 }
 
+.multi-event-funnel-empty-state {
+  position: absolute;
+  inset: 52px 0 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--chart-text);
+  font-family: 'Bitter', serif;
+  font-size: 0.95rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+.multi-event-funnel-empty-state[hidden] {
+  display: none;
+}
+
 .event-funnel-toolbar {
   display: flex;
   align-items: center;
@@ -163,6 +180,16 @@ canvas {
   flex-wrap: wrap;
 }
 
+.multi-event-funnel-search-group {
+  flex: 1 1 320px;
+  justify-content: flex-end;
+}
+
+.multi-event-funnel-search {
+  flex: 1 1 280px;
+  min-width: min(100%, 280px);
+}
+
 .event-funnel-grouping-menu,
 .event-funnel-label-menu {
   display: flex;
@@ -174,6 +201,10 @@ canvas {
 .event-funnel-grouping-button,
 .event-funnel-label-button {
   white-space: nowrap;
+}
+
+.multi-event-funnel-search-status {
+  margin-top: -6px;
 }
 
 .event-funnel-column-header {
@@ -221,6 +252,10 @@ canvas {
 
 .multi-event-shared-chart-panel.active {
   display: block;
+}
+
+.multi-event-period-badge-row {
+  margin: 0 0 12px;
 }
 
 

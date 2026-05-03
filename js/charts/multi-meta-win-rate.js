@@ -6,6 +6,7 @@ import { calculateMetaWinRateStats } from "../utils/data-chart.js";
 import { openMultiEventDeckEvolutionModal } from './multi-deck-evolution.js';
 import { getChartTheme } from '../utils/theme.js';
 import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
+import { renderMultiEventPeriodSummaryBadge } from '../utils/multi-event-period-badge.js';
 
 export let metaWinRateChart = null;
 
@@ -15,8 +16,23 @@ export function updateMultiMetaWinRateChart() {
   console.log("updateMultiMetaWinRateChart called...");
   setChartLoading("metaWinRateChart", true);
   const theme = getChartTheme();
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const panel = document.getElementById('multiEventDeckScatterPanel');
+  const chartWrapper = document.getElementById('metaWinRateChartContainer');
 
   const filteredData = getMultiEventChartData();
+  if (panel && chartWrapper) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: chartWrapper.querySelector('.deck-search-container') || chartWrapper.previousElementSibling,
+      badgeId: 'multiEventDeckScatterPeriodBadge',
+      rows: filteredData,
+      startDate,
+      endDate
+    });
+  }
+
   if (filteredData.length === 0) {
     console.log("No filtered data, skipping chart creation...");
     if (metaWinRateChart) metaWinRateChart.destroy();
@@ -223,6 +239,17 @@ export function updateMultiMetaWinRateChart() {
     const searchInput = searchContainer.querySelector('.deck-search-input');
     const dropdown = searchContainer.querySelector('.deck-dropdown');
     // We might need to re-attach listeners if the element is recreated, but for now assume it persists
+  }
+
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: searchContainer,
+      badgeId: 'multiEventDeckScatterPeriodBadge',
+      rows: filteredData,
+      startDate,
+      endDate
+    });
   }
 
   try {
