@@ -363,6 +363,7 @@ def parse_args() -> argparse.Namespace:
             "Examples:\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --ignore-cutoff\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --yes"
         ),
         formatter_class=PipelineHelpFormatter,
@@ -388,6 +389,11 @@ def parse_args() -> argparse.Namespace:
             "Run the full sync, extraction, rebuild, thumbnail refresh, and manifest update without "
             "switching branches or publishing git changes."
         ),
+    )
+    sync_parser.add_argument(
+        "--ignore-cutoff",
+        action="store_true",
+        help="Ignore cutoff time and process latest workbook regardless of last processed time",
     )
     sync_parser.add_argument(
         "--reimport-latest",
@@ -1534,7 +1540,11 @@ def run_sync_command(args: argparse.Namespace) -> int:
     archive_paths = list_archive_relative_paths(settings.archive_root)
     drive_records = build_drive_records(drive_files, settings, archive_paths)
     current_utc_time = datetime.now(timezone.utc)
-    cutoff = current_utc_time - timedelta(minutes=30)
+    if args.ignore_cutoff:
+        log("[INFO] Running with --ignore-cutoff (forcing latest workbook processing)")
+        cutoff = None
+    else:
+        cutoff = current_utc_time - timedelta(minutes=30)
     excluded_drive_files_count = sum(
         1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides)
     )
@@ -1549,16 +1559,20 @@ def run_sync_command(args: argparse.Namespace) -> int:
     ]
     # Normal sync is deliberately conservative: only files that are both visible on
     # Drive and absent from the processed manifest are eligible for selection.
-    missing_files = [
-        drive_file
-        for drive_file in unprocessed_files
-        if drive_file.modified_time <= cutoff
-    ]
-    too_recent_files = [
-        drive_file
-        for drive_file in unprocessed_files
-        if drive_file.modified_time > cutoff
-    ]
+    if cutoff is None:
+        missing_files = list(unprocessed_files)
+        too_recent_files = []
+    else:
+        missing_files = [
+            drive_file
+            for drive_file in unprocessed_files
+            if drive_file.modified_time <= cutoff
+        ]
+        too_recent_files = [
+            drive_file
+            for drive_file in unprocessed_files
+            if drive_file.modified_time > cutoff
+        ]
     new_workbook_detected_at = (
         datetime.now().isoformat(timespec="seconds") if missing_files else None
     )
@@ -1658,13 +1672,14 @@ def run_sync_command(args: argparse.Namespace) -> int:
     summary: dict[str, object] = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "command": "sync",
+        "ignore_cutoff": bool(args.ignore_cutoff),
         "reimport_latest": bool(args.reimport_latest),
         "drive_file_count": len(drive_files),
         "excluded_drive_files_count": excluded_drive_files_count,
         "local_archive_file_count": len(archive_paths),
         "force_redownload": args.force_redownload,
         "force_redownload_source": forced_file_source,
-        "minimum_drive_file_age_minutes": 30,
+        "minimum_drive_file_age_minutes": 0 if args.ignore_cutoff else 30,
         "processed_manifest_path": str(PROCESSED_DRIVE_WORKBOOKS_PATH),
         "processed_manifest_entries_count": len(processed_paths),
         "selected_file_count": len(selected_files),

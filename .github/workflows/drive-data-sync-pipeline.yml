@@ -16,6 +16,11 @@ on:
         required: false
         type: boolean
         default: true
+      ignore_cutoff:
+        description: Ignore cutoff and force latest workbook processing
+        required: false
+        type: boolean
+        default: false
       run_full_rebuild:
         description: Run a full local rebuild from the archived workbooks
         required: false
@@ -176,6 +181,7 @@ jobs:
           set -euxo pipefail
           echo "Running inspect phase"
           echo "run_sync=${{ inputs.run_sync }}"
+          echo "ignore_cutoff=${{ inputs.ignore_cutoff }}"
           echo "run_full_rebuild=${{ inputs.run_full_rebuild }}"
           echo "run_publish=${{ inputs.run_publish }}"
           echo "run_discord_notification=${{ inputs.run_discord_notification }}"
@@ -233,10 +239,14 @@ jobs:
         run: |
           set -euxo pipefail
           LIMIT_ARG=""
+          IGNORE_CUTOFF_ARG=""
           if [ -n "${{ inputs.max_workbooks }}" ]; then
             LIMIT_ARG=" --limit ${{ inputs.max_workbooks }}"
           fi
-          export PIPELINE_COMMAND="sync --yes --skip-publish${LIMIT_ARG}"
+          if [ "${{ inputs.ignore_cutoff }}" = "true" ]; then
+            IGNORE_CUTOFF_ARG=" --ignore-cutoff"
+          fi
+          export PIPELINE_COMMAND="sync --yes --skip-publish${IGNORE_CUTOFF_ARG}${LIMIT_ARG}"
           python pipeline/run_github_action_pipeline.py
 
       - name: Run full local rebuild
