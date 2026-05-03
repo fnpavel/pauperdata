@@ -26,7 +26,7 @@ import {
 } from './export-table-csv.js';
 import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
-import { getAnalysisRows } from '../utils/analysis-data.js';
+import { getAllAnalysisRows, getAnalysisRows } from '../utils/analysis-data.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 
@@ -1490,6 +1490,10 @@ function resolveLeaderboardEventTypeMeta(eventName = '') {
   };
 }
 
+function getLeaderboardEventRows() {
+  return Array.isArray(getAllAnalysisRows()) ? getAllAnalysisRows() : [];
+}
+
 function buildLeaderboardEventSummary(dataset = currentLeaderboardDataset) {
   const uniqueEvents = new Map();
 
@@ -2072,7 +2076,7 @@ function getLeaderboardEventResultWinRate(row = {}) {
 function buildLeaderboardEventResultLookup(dataset = currentLeaderboardDataset) {
   // Elo match records do not contain finish/rank details, so join back to the
   // event results dataset by event + normalized player identity.
-  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const eventRows = getLeaderboardEventRows();
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
       .map(value => String(value || '').trim().toLowerCase())
@@ -2540,7 +2544,7 @@ function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
     registerRatedMatchEvent(`${seasonKey}:::${opponentBaseKey}`, match);
   });
 
-  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const eventRows = getLeaderboardEventRows();
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
       .map(value => String(value || '').trim().toLowerCase())
