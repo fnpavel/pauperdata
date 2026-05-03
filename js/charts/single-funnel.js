@@ -3,6 +3,7 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getFunnelChartData } from '../modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from '../utils/data-chart.js';
+import { openSingleEventDeckDrilldown } from '../modules/event-analysis.js';
 import { getActiveTheme, getChartTheme } from '../utils/theme.js';
 
 export let eventFunnelChart = null;
@@ -446,6 +447,98 @@ function syncEventFunnelColumnHeaderLayout(chart, bucketLabels = []) {
   header.style.gridTemplateColumns = gridTemplateColumns;
 }
 
+function getEventFunnelPointerPosition(event) {
+  const nativeEvent = event?.native || event;
+  const x = Number(
+    event?.x
+    ?? nativeEvent?.offsetX
+    ?? nativeEvent?.layerX
+    ?? nativeEvent?.x
+  );
+  const y = Number(
+    event?.y
+    ?? nativeEvent?.offsetY
+    ?? nativeEvent?.layerY
+    ?? nativeEvent?.y
+  );
+
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  return { x, y };
+}
+
+function openTopConversionDeckModal(row, event) {
+  event?.native?.preventDefault?.();
+  event?.native?.stopPropagation?.();
+  event?.preventDefault?.();
+  event?.stopPropagation?.();
+
+  const clickedDeckName = String(row?.deck || row?.deckName || '').trim();
+  if (!clickedDeckName) {
+    return;
+  }
+
+  openSingleEventDeckDrilldown(clickedDeckName);
+}
+
+function getEventFunnelInteractiveRow(chart, sortedDecksData, event) {
+  const xScale = chart?.scales?.x;
+  const yScale = chart?.scales?.y;
+  const chartArea = chart?.chartArea;
+  if (!xScale || !yScale || !chartArea || !Array.isArray(sortedDecksData) || sortedDecksData.length === 0) {
+    return null;
+  }
+
+  const pointer = getEventFunnelPointerPosition(event);
+  if (!pointer) {
+    return null;
+  }
+  const { x, y } = pointer;
+
+  const xStep = xScale.ticks.length > 1
+    ? Math.abs(xScale.getPixelForTick(1) - xScale.getPixelForTick(0))
+    : chartArea.width;
+  const yStep = yScale.ticks.length > 1
+    ? Math.abs(yScale.getPixelForTick(1) - yScale.getPixelForTick(0))
+    : chartArea.height;
+  const copiesCenterX = xScale.getPixelForValue('Copies');
+  const copiesLeft = copiesCenterX - (xStep / 2);
+  const copiesRight = copiesCenterX + (xStep / 2);
+  const firstBucketCenterX = xScale.getPixelForValue(chart.data?.labels?.[2] || '');
+  const firstBucketLeft = Number.isFinite(firstBucketCenterX) ? firstBucketCenterX - (xStep / 2) : copiesRight;
+  const rowHalfHeight = yStep / 2;
+
+  const rowIndex = sortedDecksData.findIndex((_item, index) => {
+    const rowCenterY = yScale.getPixelForTick(index);
+    return y >= (rowCenterY - rowHalfHeight) && y <= (rowCenterY + rowHalfHeight);
+  });
+  if (rowIndex === -1) {
+    return null;
+  }
+
+  const row = sortedDecksData[rowIndex];
+  const isDeckColumn = x >= 0 && x < copiesLeft;
+  const isCopiesColumn = x >= copiesLeft && x <= copiesRight;
+
+  if ((isDeckColumn || isCopiesColumn) && y >= chartArea.top && y <= chartArea.bottom) {
+    return {
+      type: isDeckColumn ? 'deck' : 'copies',
+      row
+    };
+  }
+
+  if (x >= firstBucketLeft && x <= chartArea.right && y >= chartArea.top && y <= chartArea.bottom) {
+    return {
+      type: 'bucket',
+      row
+    };
+  }
+
+  return null;
+}
+
 // Redraws the single-event conversion funnel for the active event and rank
 // range.
 export function updateEventFunnelChart() {
@@ -646,6 +739,22 @@ export function updateEventFunnelChart() {
         animation: {
           duration: 1000,
           easing: 'easeOutQuart'
+        },
+        onClick: (event, activeElements, chart) => {
+          if (activeElements?.length) {
+            const clickedPoint = chart.data.datasets?.[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
+            openTopConversionDeckModal(clickedPoint, event);
+          } else {
+            const interactiveRow = getEventFunnelInteractiveRow(chart, sortedDecksData, event);
+            if (interactiveRow?.type === 'deck' || interactiveRow?.type === 'copies') {
+              openTopConversionDeckModal(interactiveRow.row, event);
+            }
+          }
+        },
+        onHover: (event, activeElements, chart) => {
+          const interactiveRow = getEventFunnelInteractiveRow(chart, sortedDecksData, event);
+          const isClickableRegion = interactiveRow?.type === 'deck' || interactiveRow?.type === 'copies';
+          eventFunnelCtx.style.cursor = activeElements?.length || isClickableRegion ? 'pointer' : 'default';
         },
         elements: {
           point: {
