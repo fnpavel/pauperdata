@@ -45,9 +45,14 @@ const LEADERBOARD_TIMELINE_RANK_MEDALS = Object.freeze({
   3: '🥉'
 });
 const LEADERBOARD_TIMELINE_RANK_COLORS = Object.freeze({
-  1: '#d4a657',
-  2: '#b8c3d1',
-  3: '#b87333'
+  1: '#E6194B',
+  2: '#3CB44B',
+  3: '#4363D8',
+  4: '#F58231',
+  5: '#911EB4',
+  6: '#46F0F0',
+  7: '#F032E6',
+  8: '#BCF60C'
 });
 const LEADERBOARD_TIMELINE_RANK_OUTLIER_COLOR = '#ff8c42';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
@@ -4303,6 +4308,35 @@ function buildLeaderboardRankFinalPlayerLabels(pointMeta = [], timelineLength = 
   return labels;
 }
 
+function resolveLeaderboardRankSeriesColor(pointMeta = [], fallbackColor = '#5aa9e6') {
+  const finalIndex = Math.max(0, (Array.isArray(pointMeta) ? pointMeta.length : 0) - 1);
+  const finalPoint = Array.isArray(pointMeta) ? pointMeta[finalIndex] : null;
+  const finalRank = Number(finalPoint?.rank);
+  if (
+    finalPoint
+    && finalPoint.isRankOutlier !== true
+    && Number.isFinite(finalRank)
+    && finalRank >= 1
+    && finalRank <= MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK
+  ) {
+    return LEADERBOARD_TIMELINE_RANK_COLORS[finalRank] || fallbackColor;
+  }
+
+  return fallbackColor;
+}
+
+function buildLeaderboardTimelineRankColorMap(selectedRows = [], timeline = [], {
+  granularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY
+} = {}) {
+  return new Map(
+    buildLeaderboardRankTimelineDatasets(selectedRows, timeline, { granularity }).map((dataset, index) => {
+      const selectionKey = String(dataset?.selectionKey || '').trim();
+      const fallbackColor = getLeaderboardTimelineColor(index);
+      return [selectionKey, dataset?.rankColor || fallbackColor];
+    })
+  );
+}
+
 function getLeaderboardRankTimelineAxisBounds(rankedPlayerCount = 0, datasets = []) {
   const countedLowerLimit = Math.max(
     1,
@@ -4441,21 +4475,36 @@ function buildLeaderboardRankTimelineDatasets(selectedRows = [], timeline = [], 
       data: new Array(timeline.length).fill(null),
       pointMeta: new Array(timeline.length).fill(null)
     };
-    const color = getLeaderboardTimelineColor(index);
+    const fallbackColor = getLeaderboardTimelineColor(index);
+    const seriesColor = resolveLeaderboardRankSeriesColor(datasetState.pointMeta, fallbackColor);
+    const usesFixedRankColor = seriesColor !== fallbackColor;
 
     return {
       label: row.displayName,
       selectionKey: rowKey,
       data: datasetState.data,
       pointMeta: datasetState.pointMeta,
-      borderColor: color,
-      backgroundColor: `${color}22`,
+      rankColor: seriesColor,
+      borderColor: seriesColor,
+      backgroundColor: `${seriesColor}22`,
       pointBackgroundColor: datasetState.pointMeta.map(point => {
-        return point ? getLeaderboardTimelineRankPointColor(point.rank, color, point.isRankOutlier) : color;
+        if (!point) {
+          return seriesColor;
+        }
+        return usesFixedRankColor
+          ? seriesColor
+          : getLeaderboardTimelineRankPointColor(point.rank, fallbackColor, point.isRankOutlier);
       }),
       pointBorderColor: datasetState.pointMeta.map(point => {
-        return point ? getLeaderboardTimelineRankPointColor(point.rank, color, point.isRankOutlier) : color;
+        if (!point) {
+          return seriesColor;
+        }
+        return usesFixedRankColor
+          ? seriesColor
+          : getLeaderboardTimelineRankPointColor(point.rank, fallbackColor, point.isRankOutlier);
       }),
+      pointHoverBackgroundColor: datasetState.pointMeta.map(() => seriesColor),
+      pointHoverBorderColor: datasetState.pointMeta.map(() => seriesColor),
       pointRadius: datasetState.pointMeta.map(point => {
         if (point?.isRankOutlier) {
           return 5;
@@ -4634,8 +4683,15 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
     ? buildLeaderboardRankTimelineDatasets(selectedRows, timeline, {
         granularity: rankCohortGranularity
       })
-    : selectedRows.map((row, index) => {
-        const color = getLeaderboardTimelineColor(index);
+    : (() => {
+        const rankColorMap = buildLeaderboardTimelineRankColorMap(
+          selectedRows,
+          buildLeaderboardRankMonthlyTimeline(timeline),
+          { granularity: rankCohortGranularity }
+        );
+        return selectedRows.map((row, index) => {
+        const fallbackColor = getLeaderboardTimelineColor(index);
+        const color = rankColorMap.get(getLeaderboardRowSelectionKey(row)) || fallbackColor;
         const values = new Array(timeline.length).fill(null);
         buildEventLevelEloPoints(getLeaderboardPlayerHistoryAscending(row)).forEach(point => {
           const eventKey = [
@@ -4653,9 +4709,14 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
         return {
           label: row.displayName,
           selectionKey: getLeaderboardRowSelectionKey(row),
+          rankColor: color,
           data: values,
           borderColor: color,
           backgroundColor: `${color}22`,
+          pointBackgroundColor: color,
+          pointBorderColor: color,
+          pointHoverBackgroundColor: color,
+          pointHoverBorderColor: color,
           pointRadius: 2,
           pointHoverRadius: 4,
           borderWidth: 2,
@@ -4663,6 +4724,7 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
           spanGaps: true
         };
       });
+      })();
   logLeaderboardTimelineDebug(chartMode === 'rank' ? 'rankDataset' : 'eloDataset', datasets.map(dataset => ({
     label: dataset.label,
     selectionKey: dataset.selectionKey,

@@ -353,14 +353,14 @@ const leaderboardFinalRankLabelPlugin = {
 
       let labelX = Math.min(maxTextX, x + pointOffsetX);
       if (medal) {
-        ctx.fillStyle = pluginOptions?.medalColor || '#f5f0e6';
+        ctx.fillStyle = dataset?.rankColor || pluginOptions?.medalColor || '#f5f0e6';
         ctx.font = pluginOptions?.medalFont || '600 12px Bitter, system-ui, sans-serif';
         ctx.fillText(medal, labelX, y + medalOffsetY);
         labelX = Math.min(maxTextX, labelX + medalGap);
       }
 
       if (playerName) {
-        ctx.fillStyle = pluginOptions?.textColor || '#f5f0e6';
+        ctx.fillStyle = dataset?.rankColor || pluginOptions?.textColor || '#f5f0e6';
         ctx.font = pluginOptions?.textFont || '600 11px Bitter, system-ui, sans-serif';
         ctx.textAlign = 'left';
         ctx.fillText(playerName, Math.min(maxTextX, labelX + nameGap), y);
