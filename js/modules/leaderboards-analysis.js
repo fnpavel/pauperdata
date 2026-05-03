@@ -4680,15 +4680,17 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   });
 
   if (helper) {
-    helper.textContent = !hasHistoryLoaded
-      ? 'Match-level Elo history loads on demand for drilldowns and timelines.'
-      : selectedRows.length > 0
-      ? chartMode === 'rank'
-        ? rankCohortGranularity === 'month'
-          ? `Tracking monthly rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} month${timeline.length === 1 ? '' : 's'} using each player's latest Elo in that month.`
-          : `Tracking rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
-        : `Tracking ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
-      : `Select at least one player to draw the ${chartMode === 'rank' ? 'rank' : 'Elo'} timeline.`;
+    if (hasHistoryLoaded && selectedRows.length > 0 && chartMode === 'rank' && rankCohortGranularity === 'month') {
+      helper.innerHTML = `Tracking monthly rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} month${timeline.length === 1 ? '' : 's'} using each player's <strong style="color: gold;">latest Elo in that month</strong>.`;
+    } else {
+      helper.textContent = !hasHistoryLoaded
+        ? 'Match-level Elo history loads on demand for drilldowns and timelines.'
+        : selectedRows.length > 0
+        ? chartMode === 'rank'
+          ? `Tracking rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
+          : `Tracking ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
+        : `Select at least one player to draw the ${chartMode === 'rank' ? 'rank' : 'Elo'} timeline.`;
+    }
   }
   logLeaderboardTimelineDebug('selectedPlayers', selectedRows.map(row => ({
     displayName: row.displayName,
