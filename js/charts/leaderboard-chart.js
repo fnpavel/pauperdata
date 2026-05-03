@@ -286,6 +286,91 @@ const leaderboardYearBoundaryPlugin = {
   }
 };
 
+function getFinalRankLabelIndex(dataset = {}) {
+  const finalPlayerLabels = Array.isArray(dataset?.finalPlayerLabels) ? dataset.finalPlayerLabels : [];
+  const medalLabels = Array.isArray(dataset?.medalLabels) ? dataset.medalLabels : [];
+  const finalLength = Math.max(finalPlayerLabels.length, medalLabels.length);
+  for (let index = finalLength - 1; index >= 0; index -= 1) {
+    if (finalPlayerLabels[index] || medalLabels[index]) {
+      return index;
+    }
+  }
+  return -1;
+}
+
+const leaderboardFinalRankLabelPlugin = {
+  id: 'leaderboardFinalRankLabelPlugin',
+  afterDatasetsDraw(chart, _args, pluginOptions) {
+    if (!pluginOptions?.enabled) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const datasets = Array.isArray(chart.data?.datasets) ? chart.data.datasets : [];
+    const pointOffsetX = Number.isFinite(Number(pluginOptions?.pointOffsetX)) ? Number(pluginOptions.pointOffsetX) : 8;
+    const medalGap = Number.isFinite(Number(pluginOptions?.medalGap)) ? Number(pluginOptions.medalGap) : 16;
+    const nameGap = Number.isFinite(Number(pluginOptions?.nameGap)) ? Number(pluginOptions.nameGap) : 8;
+    const medalOffsetY = Number.isFinite(Number(pluginOptions?.medalOffsetY)) ? Number(pluginOptions.medalOffsetY) : -10;
+    const maxTextX = chart.width - 6;
+
+    ctx.save();
+    ctx.textBaseline = 'middle';
+
+    datasets.forEach((dataset, datasetIndex) => {
+      if (typeof chart.isDatasetVisible === 'function' && !chart.isDatasetVisible(datasetIndex)) {
+        return;
+      }
+
+      const meta = typeof chart.getDatasetMeta === 'function'
+        ? chart.getDatasetMeta(datasetIndex)
+        : null;
+      if (!meta || meta.hidden === true) {
+        return;
+      }
+
+      const finalIndex = getFinalRankLabelIndex(dataset);
+      if (finalIndex < 0) {
+        return;
+      }
+
+      const point = meta.data?.[finalIndex];
+      if (!point) {
+        return;
+      }
+
+      const { x, y } = typeof point.getProps === 'function'
+        ? point.getProps(['x', 'y'], true)
+        : point;
+      if (!Number.isFinite(x) || !Number.isFinite(y)) {
+        return;
+      }
+
+      const medal = String(dataset?.medalLabels?.[finalIndex] || '').trim();
+      const playerName = String(dataset?.finalPlayerLabels?.[finalIndex] || '').trim();
+      if (!medal && !playerName) {
+        return;
+      }
+
+      let labelX = Math.min(maxTextX, x + pointOffsetX);
+      if (medal) {
+        ctx.fillStyle = pluginOptions?.medalColor || '#f5f0e6';
+        ctx.font = pluginOptions?.medalFont || '600 12px Bitter, system-ui, sans-serif';
+        ctx.fillText(medal, labelX, y + medalOffsetY);
+        labelX = Math.min(maxTextX, labelX + medalGap);
+      }
+
+      if (playerName) {
+        ctx.fillStyle = pluginOptions?.textColor || '#f5f0e6';
+        ctx.font = pluginOptions?.textFont || '600 11px Bitter, system-ui, sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(playerName, Math.min(maxTextX, labelX + nameGap), y);
+      }
+    });
+
+    ctx.restore();
+  }
+};
+
 function getChartThemeColors() {
   const computed = getComputedStyle(document.documentElement);
   return {
@@ -450,7 +535,9 @@ export function createLeaderboardTimelineChart(canvas, {
   onLegendToggle = null,
   yAxis = {},
   tooltipCallbacks = null,
-  datalabelsOptions = null
+  datalabelsOptions = null,
+  layoutPadding = {},
+  rankLabelOverlayOptions = null
 } = {}) {
   if (!canvas || !globalThis.Chart || !labels.length || !datasets.length) {
     return null;
@@ -461,6 +548,12 @@ export function createLeaderboardTimelineChart(canvas, {
   const resolvedTooltipCallbacks = tooltipCallbacks && typeof tooltipCallbacks === 'object'
     ? tooltipCallbacks
     : null;
+  const resolvedLayoutPadding = layoutPadding && typeof layoutPadding === 'object'
+    ? layoutPadding
+    : {};
+  const resolvedRankLabelOverlayOptions = rankLabelOverlayOptions && typeof rankLabelOverlayOptions === 'object'
+    ? rankLabelOverlayOptions
+    : {};
   const resolvedTooltipLabel = typeof resolvedTooltipCallbacks?.label === 'function'
     ? resolvedTooltipCallbacks.label
     : context => {
@@ -476,7 +569,7 @@ export function createLeaderboardTimelineChart(canvas, {
 
   return new globalThis.Chart(canvas, {
     type: 'line',
-    plugins: [leaderboardYearBoundaryPlugin],
+    plugins: [leaderboardYearBoundaryPlugin, leaderboardFinalRankLabelPlugin],
     data: {
       labels,
       datasets
@@ -485,6 +578,9 @@ export function createLeaderboardTimelineChart(canvas, {
       responsive: true,
       maintainAspectRatio: false,
       aspectRatio: 2.2,
+      layout: {
+        padding: resolvedLayoutPadding
+      },
       interaction: {
         mode: 'nearest',
         intersect: false
@@ -496,6 +592,10 @@ export function createLeaderboardTimelineChart(canvas, {
           lineColor: 'rgba(212, 166, 87, 0.34)',
           labelColor: theme.text || '#d4a657',
           labelMinWidth: 54
+        },
+        leaderboardFinalRankLabelPlugin: {
+          ...resolvedRankLabelOverlayOptions,
+          enabled: resolvedRankLabelOverlayOptions.enabled === true
         },
         legend: {
           position: 'top',
@@ -545,9 +645,15 @@ export function createLeaderboardTimelineChart(canvas, {
           reverse: resolvedYAxis.reverse === true,
           min: Number.isFinite(Number(resolvedYAxis.min)) ? Number(resolvedYAxis.min) : undefined,
           max: Number.isFinite(Number(resolvedYAxis.max)) ? Number(resolvedYAxis.max) : undefined,
+          afterBuildTicks(scale) {
+            if (typeof resolvedYAxis.afterBuildTicks === 'function') {
+              resolvedYAxis.afterBuildTicks(scale);
+            }
+          },
           ticks: {
             color: theme.muted,
             stepSize: Number.isFinite(Number(resolvedYAxis.stepSize)) ? Number(resolvedYAxis.stepSize) : undefined,
+            autoSkip: resolvedYAxis.autoSkip === false ? false : undefined,
             callback(value) {
               if (typeof resolvedYAxis.tickFormatter === 'function') {
                 return resolvedYAxis.tickFormatter(value);

@@ -4298,6 +4298,63 @@ function buildLeaderboardRankFinalMedalLabels(pointMeta = [], timelineLength = 0
   return labels;
 }
 
+function buildLeaderboardRankFinalPlayerLabels(pointMeta = [], timelineLength = 0) {
+  const labels = new Array(timelineLength).fill('');
+  const finalIndex = Math.max(0, timelineLength - 1);
+  const finalPoint = Array.isArray(pointMeta) ? pointMeta[finalIndex] : null;
+  if (!finalPoint) {
+    return labels;
+  }
+
+  labels[finalIndex] = String(finalPoint.playerName || '').trim();
+  return labels;
+}
+
+function getLeaderboardRankTimelineAxisBounds(rankedPlayerCount = 0, datasets = []) {
+  const countedLowerLimit = Math.max(
+    1,
+    Math.min(MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK, Math.round(Number(rankedPlayerCount) || 0))
+  );
+  const actualMaxVisibleRank = datasets.reduce((maxRank, dataset) => {
+    const datasetMaxRank = Array.isArray(dataset?.pointMeta)
+      ? dataset.pointMeta.reduce((pointMaxRank, point) => {
+          const displayRank = Number(point?.displayRank);
+          if (!Number.isFinite(displayRank)) {
+            return pointMaxRank;
+          }
+          return Math.max(pointMaxRank, Math.round(displayRank));
+        }, 1)
+      : 1;
+    return Math.max(maxRank, datasetMaxRank);
+  }, 1);
+
+  return {
+    min: 0.6,
+    max: Math.max(countedLowerLimit, actualMaxVisibleRank)
+  };
+}
+
+function buildLeaderboardRankTimelineAxisTicks(maxVisibleRank = MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK) {
+  const boundedMax = Math.max(1, Math.round(Number(maxVisibleRank) || MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK));
+  return Array.from({ length: boundedMax }, (_item, index) => ({
+    value: index + 1
+  }));
+}
+
+function buildLeaderboardRankTimelineOverlayOptions() {
+  return {
+    enabled: true,
+    pointOffsetX: 8,
+    medalGap: 14,
+    nameGap: 6,
+    medalOffsetY: -10,
+    medalColor: '#f5f0e6',
+    textColor: '#f5f0e6',
+    medalFont: '600 12px Bitter, system-ui, sans-serif',
+    textFont: '600 11px Bitter, system-ui, sans-serif'
+  };
+}
+
 function buildLeaderboardRankTimelineDatasets(selectedRows = [], timeline = [], {
   granularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY
 } = {}) {
@@ -4422,7 +4479,8 @@ function buildLeaderboardRankTimelineDatasets(selectedRows = [], timeline = [], 
       borderWidth: 2,
       tension: 0.25,
       spanGaps: true,
-      medalLabels: buildLeaderboardRankFinalMedalLabels(datasetState.pointMeta, timeline.length)
+      medalLabels: buildLeaderboardRankFinalMedalLabels(datasetState.pointMeta, timeline.length),
+      finalPlayerLabels: buildLeaderboardRankFinalPlayerLabels(datasetState.pointMeta, timeline.length)
     };
   });
 }
@@ -4644,6 +4702,9 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   }
 
   const showYearBoundaries = shouldShowLeaderboardYearBoundaryMarkers();
+  const rankAxisBounds = chartMode === 'rank'
+    ? getLeaderboardRankTimelineAxisBounds(selectedRows.length, datasets)
+    : null;
   if (
     !forceRecreate
     && leaderboardTimelineChart
@@ -4670,6 +4731,17 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
 
     if (leaderboardTimelineChart.options?.plugins?.legend) {
       leaderboardTimelineChart.options.plugins.legend.display = datasets.length > 1;
+    }
+
+    if (leaderboardTimelineChart.options?.layout?.padding) {
+      leaderboardTimelineChart.options.layout.padding.top = chartMode === 'rank' ? 10 : 0;
+      leaderboardTimelineChart.options.layout.padding.right = chartMode === 'rank' ? 132 : 0;
+    }
+
+    if (leaderboardTimelineChart.options?.plugins?.leaderboardFinalRankLabelPlugin) {
+      leaderboardTimelineChart.options.plugins.leaderboardFinalRankLabelPlugin = chartMode === 'rank'
+        ? buildLeaderboardRankTimelineOverlayOptions()
+        : { enabled: false };
     }
 
     datasets.forEach((dataset, index) => {
@@ -4728,35 +4800,26 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
     }
 
     if (leaderboardTimelineChart.options?.plugins?.datalabels) {
-      leaderboardTimelineChart.options.plugins.datalabels = chartMode === 'rank'
-        ? {
-            display(context) {
-              return Boolean(context.dataset?.medalLabels?.[context.dataIndex]);
-            },
-            formatter(_value, context) {
-              return context.dataset?.medalLabels?.[context.dataIndex] || '';
-            },
-            align: 'top',
-            anchor: 'end',
-            offset: 6,
-            color: '#f5f0e6',
-            font: {
-              size: 12
-            },
-            clip: false
-          }
-        : {
-            display: false
-          };
+      leaderboardTimelineChart.options.plugins.datalabels = {
+        display: false
+      };
     }
 
     if (leaderboardTimelineChart.options?.scales?.y) {
       leaderboardTimelineChart.options.scales.y.reverse = chartMode === 'rank';
-      leaderboardTimelineChart.options.scales.y.min = chartMode === 'rank' ? 1 : undefined;
+      leaderboardTimelineChart.options.scales.y.min = chartMode === 'rank'
+        ? rankAxisBounds?.min
+        : undefined;
       leaderboardTimelineChart.options.scales.y.max = chartMode === 'rank'
-        ? MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK
+        ? rankAxisBounds?.max
         : undefined;
       leaderboardTimelineChart.options.scales.y.ticks.stepSize = chartMode === 'rank' ? 1 : undefined;
+      leaderboardTimelineChart.options.scales.y.ticks.autoSkip = chartMode === 'rank' ? false : undefined;
+      leaderboardTimelineChart.options.scales.y.afterBuildTicks = chartMode === 'rank'
+        ? scale => {
+            scale.ticks = buildLeaderboardRankTimelineAxisTicks(rankAxisBounds?.max);
+          }
+        : undefined;
       leaderboardTimelineChart.options.scales.y.ticks.callback = chartMode === 'rank'
         ? value => formatLeaderboardTimelineRankAxisTick(value)
         : value => formatRating(value);
@@ -4774,9 +4837,13 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
       yAxis: chartMode === 'rank'
         ? {
             reverse: true,
-            min: 1,
-            max: MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK,
+            min: rankAxisBounds?.min,
+            max: rankAxisBounds?.max,
             stepSize: 1,
+            autoSkip: false,
+            afterBuildTicks(scale) {
+              scale.ticks = buildLeaderboardRankTimelineAxisTicks(rankAxisBounds?.max);
+            },
             tickFormatter: value => formatLeaderboardTimelineRankAxisTick(value)
           }
         : {},
@@ -4812,22 +4879,13 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
           }
         : null,
       datalabelsOptions: chartMode === 'rank'
-        ? {
-            display(context) {
-              return Boolean(context.dataset?.medalLabels?.[context.dataIndex]);
-            },
-            formatter(_value, context) {
-              return context.dataset?.medalLabels?.[context.dataIndex] || '';
-            },
-            align: 'top',
-            anchor: 'end',
-            offset: 6,
-            color: '#f5f0e6',
-            font: {
-              size: 12
-            },
-            clip: false
-          }
+        ? { display: false }
+        : null,
+      layoutPadding: chartMode === 'rank'
+        ? { top: 10, right: 132 }
+        : {},
+      rankLabelOverlayOptions: chartMode === 'rank'
+        ? buildLeaderboardRankTimelineOverlayOptions()
         : null,
       onLegendToggle() {
         snapshotLeaderboardTimelineVisibility();
