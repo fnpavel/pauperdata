@@ -4,6 +4,15 @@ import { escapeHtml, getTopMode } from './filters/shared.js';
 import { updateElementHTML, updateElementText, triggerUpdateAnimation } from '../utils/dom.js';
 import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import {
+  INTEGRITY_VERSION,
+  METADATA_IDENTITY_COLUMNS_LABEL,
+  METADATA_VERSION_LABEL,
+  buildLeaderboardIntegritySummary,
+  compareLeaderboardCsvText,
+  readStoredLeaderboardCsvReference,
+  writeStoredLeaderboardCsvReference
+} from '../utils/leaderboard-csv-integrity.js';
+import {
   DEFAULT_RANKINGS_OPTIONS,
   buildRankingsDataset,
   getRankingsKFactor,
@@ -204,6 +213,7 @@ let leaderboardTimelineVisibilityBySelectionKey = new Map();
 let leaderboardThresholdRenderTimer = null;
 let leaderboardDatasetCache = new Map();
 let leaderboardDeckRowsCache = new Map();
+let leaderboardIntegrityTraceSequence = 0;
 
 const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
 const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
@@ -227,6 +237,152 @@ function logLeaderboardTimelineDebug(label = '', payload = null) {
   }
 
   console.log(`[Timeline Debug] ${label}`, payload);
+}
+
+function isLeaderboardIntegrityDebugEnabled() {
+  try {
+    return globalThis?.localStorage?.getItem('leaderboardIntegrityDebug') === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function normalizeLeaderboardTraceValue(value) {
+  return String(value ?? '').trim();
+}
+
+function getLeaderboardTraceIdentityKey(row = {}) {
+  const seasonKey = normalizeLeaderboardTraceValue(row?.seasonKey);
+  const playerKey = normalizeLeaderboardTraceValue(row?.playerKey || row?.basePlayerKey);
+  const deckScope = normalizeLeaderboardTraceValue(row?.deck || row?.deckScope);
+  return [seasonKey, playerKey, deckScope].filter(Boolean).join(':::');
+}
+
+function getLeaderboardTraceStatVector(row = {}) {
+  const matchCount = row?.matches ?? row?.matchCount;
+  return {
+    rating: Number(row?.rating || 0),
+    eventCount: Number(row?.eventCount || 0),
+    matches: Number(matchCount || 0),
+    wins: Number(row?.wins || 0),
+    losses: Number(row?.losses || 0),
+    draws: Number(row?.draws || 0),
+    winRate: Number(row?.winRate || 0),
+    top8Count: Number(row?.top8Count || 0),
+    top8Conversion: Number(row?.top8Conversion || 0),
+    challengeWins: Number(row?.challengeWins || 0),
+    lastActiveDate: normalizeLeaderboardTraceValue(row?.lastActiveDate),
+    seasonYear: normalizeLeaderboardTraceValue(row?.seasonYear || row?.displaySeasonYear),
+    deck: normalizeLeaderboardTraceValue(row?.deck)
+  };
+}
+
+function hashLeaderboardTraceStatVector(vector = {}) {
+  const source = JSON.stringify(vector);
+  let hash = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    hash = ((hash << 5) - hash) + source.charCodeAt(index);
+    hash |= 0;
+  }
+  return `h${(hash >>> 0).toString(16)}`;
+}
+
+function buildLeaderboardIntegritySnapshot(rows = [], {
+  includeRank = true
+} = {}) {
+  return (Array.isArray(rows) ? rows : []).map((row, index) => {
+    const statVector = getLeaderboardTraceStatVector(row);
+    return {
+      identityKey: getLeaderboardTraceIdentityKey(row),
+      playerKey: normalizeLeaderboardTraceValue(row?.playerKey || row?.basePlayerKey),
+      player: normalizeLeaderboardTraceValue(row?.displayName || row?.player || row?.basePlayerName),
+      elo: Number(row?.rating || 0),
+      rank: includeRank ? Number(row?.displayRank || row?.rank || index + 1) : null,
+      statVector,
+      statHash: hashLeaderboardTraceStatVector(statVector),
+      rowIndex: index
+    };
+  });
+}
+
+function logLeaderboardIntegritySnapshot(stage = '', rows = [], options = {}) {
+  if (!isLeaderboardIntegrityDebugEnabled()) {
+    return [];
+  }
+
+  const snapshot = buildLeaderboardIntegritySnapshot(rows, options);
+  leaderboardIntegrityTraceSequence += 1;
+  console.info(`[Leaderboard Integrity][${leaderboardIntegrityTraceSequence}] ${stage}`, snapshot.map(item => ({
+    identityKey: item.identityKey,
+    playerKey: item.playerKey,
+    elo: item.elo,
+    rank: item.rank,
+    statHash: item.statHash,
+    statVector: item.statVector
+  })));
+  return snapshot;
+}
+
+function compareLeaderboardIntegritySnapshots(stage = '', beforeSnapshot = [], afterSnapshot = [], {
+  allowRankOnlyChanges = true
+} = {}) {
+  if (!isLeaderboardIntegrityDebugEnabled()) {
+    return;
+  }
+
+  const beforeByIdentity = new Map((beforeSnapshot || []).map(item => [item.identityKey, item]));
+  const afterByIdentity = new Map((afterSnapshot || []).map(item => [item.identityKey, item]));
+  const onlyBefore = [];
+  const onlyAfter = [];
+  const changedStats = [];
+  const changedRankOnly = [];
+
+  beforeByIdentity.forEach((beforeItem, identityKey) => {
+    if (!afterByIdentity.has(identityKey)) {
+      onlyBefore.push(beforeItem);
+      return;
+    }
+
+    const afterItem = afterByIdentity.get(identityKey);
+    if (beforeItem.statHash !== afterItem.statHash) {
+      changedStats.push({
+        identityKey,
+        before: beforeItem,
+        after: afterItem
+      });
+      return;
+    }
+
+    if (beforeItem.rank !== afterItem.rank || beforeItem.rowIndex !== afterItem.rowIndex) {
+      changedRankOnly.push({
+        identityKey,
+        playerKey: afterItem.playerKey,
+        beforeRank: beforeItem.rank,
+        afterRank: afterItem.rank,
+        beforeIndex: beforeItem.rowIndex,
+        afterIndex: afterItem.rowIndex,
+        statHash: afterItem.statHash
+      });
+    }
+  });
+
+  afterByIdentity.forEach((afterItem, identityKey) => {
+    if (!beforeByIdentity.has(identityKey)) {
+      onlyAfter.push(afterItem);
+    }
+  });
+
+  if (!onlyBefore.length && !onlyAfter.length && !changedStats.length && (!changedRankOnly.length || allowRankOnlyChanges)) {
+    console.info(`[Leaderboard Integrity] ${stage}: no identity/stat drift detected.`);
+    return;
+  }
+
+  console.warn(`[Leaderboard Integrity] ${stage}`, {
+    onlyBefore,
+    onlyAfter,
+    changedStats,
+    changedRankOnly
+  });
 }
 
 function getLeaderboardsSection() {
@@ -2359,6 +2515,11 @@ function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
   currentLeaderboardRows = selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE
     ? applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset)
     : applyLeaderboardRowFilters(buildDeckViewRows(selectedDeck, currentLeaderboardDataset), currentLeaderboardDataset);
+  logLeaderboardIntegritySnapshot(
+    `renderLeaderboardFromCurrentState:${selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE ? 'all-decks' : `deck:${selectedDeck}`}`,
+    currentLeaderboardRows,
+    { includeRank: false }
+  );
   renderLeaderboardDeckButton();
   renderLeaderboardEloThresholdControls();
 
@@ -2408,6 +2569,7 @@ function clearLeaderboardSearchHighlights() {
 function sortLeaderboardRows(rows = []) {
   // Sorting is stable from a user perspective: selected column first, then the
   // default Elo ranking tie-breakers.
+  const beforeSnapshot = logLeaderboardIntegritySnapshot('sortLeaderboardRows:input', rows, { includeRank: false });
   const sortedRows = [...rows];
   const dataset = currentLeaderboardDataset;
   const mode = getLeaderboardSortMode(dataset);
@@ -2433,6 +2595,9 @@ function sortLeaderboardRows(rows = []) {
 
     return tieBreaker(a, b);
   });
+
+  const afterSnapshot = logLeaderboardIntegritySnapshot('sortLeaderboardRows:output', sortedRows, { includeRank: false });
+  compareLeaderboardIntegritySnapshots('sortLeaderboardRows', beforeSnapshot, afterSnapshot);
 
   return sortedRows;
 }
@@ -2497,10 +2662,15 @@ function applyLeaderboardTableSearch(searchTerm = '', { scrollIntoView = true } 
 
 function getSortedLeaderboardRowsWithRank() {
   ensureLeaderboardSortState(currentLeaderboardDataset);
-  return sortLeaderboardRows(currentLeaderboardRows).map((row, index) => ({
+  const sortedRows = sortLeaderboardRows(currentLeaderboardRows);
+  const beforeRankSnapshot = logLeaderboardIntegritySnapshot('getSortedLeaderboardRowsWithRank:before-rank', sortedRows, { includeRank: false });
+  const rankedRows = sortedRows.map((row, index) => ({
     ...row,
     displayRank: index + 1
   }));
+  const afterRankSnapshot = logLeaderboardIntegritySnapshot('getSortedLeaderboardRowsWithRank:after-rank', rankedRows, { includeRank: true });
+  compareLeaderboardIntegritySnapshots('getSortedLeaderboardRowsWithRank', beforeRankSnapshot, afterRankSnapshot);
+  return rankedRows;
 }
 
 function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboardDataset) {
@@ -2708,14 +2878,26 @@ function getLeaderboardEloThresholdCsvMetadata() {
 }
 
 function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
+  const identityColumns = [
+    'Player',
+    getLeaderboardEntryFieldLabel(dataset),
+    'Identity Key',
+    'Player Key',
+    'Season Key',
+    'Deck Scope'
+  ];
+
   if (dataset?.mode === 'performance') {
     return [
+      [METADATA_VERSION_LABEL, INTEGRITY_VERSION],
+      [METADATA_IDENTITY_COLUMNS_LABEL, identityColumns.join('|')],
       ['View', getLeaderboardViewTitle(dataset)],
       ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
       ['Selected Window', getWindowLabel(dataset.period, dataset.summary.selectedYears, dataset.startDate, dataset.endDate)],
       ['Selected Years', getLeaderboardSelectedYearsLabel(dataset) || '--'],
       ['Date Range', formatWindowRange(dataset.startDate, dataset.endDate)],
       ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
+      ['Deck Scope', getLeaderboardActiveExportScopeLabel()],
       ['Metric', 'Top 8 Conversion'],
       ['Minimum Events', String(dataset.summary.minEvents || 0)],
       ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
@@ -2726,6 +2908,8 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   }
 
   const metadataRows = [
+    [METADATA_VERSION_LABEL, INTEGRITY_VERSION],
+    [METADATA_IDENTITY_COLUMNS_LABEL, identityColumns.join('|')],
     ['Starting Rating', String(DEFAULT_RANKINGS_OPTIONS.startingRating)],
     ['kFactor', String(getLeaderboardResolvedKFactor(dataset, dataset.period))],
     ['View', getLeaderboardViewTitle(dataset)],
@@ -2735,6 +2919,7 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
     ['Selected Years', getLeaderboardSelectedYearsLabel(dataset) || '--'],
     ['Date Range', formatWindowRange(dataset.startDate, dataset.endDate)],
     ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
+    ['Deck Scope', getLeaderboardActiveExportScopeLabel()],
     ['Rated Matches', String(dataset.summary.ratedMatches || 0)],
     ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
     ['Leaderboard Rows', String(dataset.summary.seasonEntries || 0)],
@@ -2749,6 +2934,102 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   }
 
   return metadataRows;
+}
+
+function getLeaderboardCsvIdentityKey(row = {}) {
+  const playerKey = String(row?.playerKey || row?.basePlayerKey || '').trim();
+  const seasonKey = String(row?.seasonKey || '').trim();
+  return [seasonKey, playerKey].filter(Boolean).join(':::');
+}
+
+function getLeaderboardCsvDeckScopeValue(row = {}) {
+  if (String(row?.deck || '').trim()) {
+    return String(row.deck).trim();
+  }
+
+  if (selectedDeck && selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+    return String(selectedDeck).trim();
+  }
+
+  return LEADERBOARD_PLAYER_TOTAL_SCOPE;
+}
+
+function getLeaderboardActiveExportScopeLabel() {
+  return selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? 'all-decks'
+    : sanitizeCsvFilename(String(selectedDeck || '').trim() || 'selected-deck');
+}
+
+function getLeaderboardIntegrityReferenceKey(filename = '') {
+  return [
+    'leaderboard',
+    String(currentLeaderboardDataset?.mode || 'elo').trim(),
+    getLeaderboardActiveExportScopeLabel(),
+    String(filename || '').trim()
+  ].join('::');
+}
+
+function isCompatibleLeaderboardIntegrityReference(csvText = '') {
+  return String(csvText || '').includes(`${METADATA_VERSION_LABEL},${INTEGRITY_VERSION}`);
+}
+
+function reportLeaderboardIntegrityFailure(filename = '', report = {}) {
+  const summary = buildLeaderboardIntegritySummary(report);
+  globalThis.__lastLeaderboardCsvIntegrityReport = {
+    filename,
+    report,
+    createdAt: new Date().toISOString()
+  };
+  console.error(`Leaderboard CSV integrity check failed for ${filename}. ${summary}`, report);
+  try {
+    globalThis?.alert?.(
+      `Leaderboard CSV integrity check failed for ${filename}.\n\n${summary}\n\nSee the browser console for the full identity-level report.`
+    );
+  } catch {
+    // Ignore alert failures and still block the export via the thrown error.
+  }
+
+  const error = new Error(
+    `Leaderboard CSV integrity check failed for ${filename}. ${summary}. See console for the full identity-level report.`
+  );
+  error.leaderboardIntegrityReport = report;
+  throw error;
+}
+
+function runLeaderboardCsvIntegrityCheck(filename = '', csvText = '') {
+  const referenceKey = getLeaderboardIntegrityReferenceKey(filename);
+  const previousCsvText = readStoredLeaderboardCsvReference(referenceKey);
+  if (!previousCsvText || !isCompatibleLeaderboardIntegrityReference(previousCsvText)) {
+    writeStoredLeaderboardCsvReference(referenceKey, csvText);
+    return {
+      status: 'baseline-created',
+      report: null
+    };
+  }
+
+  const report = compareLeaderboardCsvText(previousCsvText, csvText);
+  globalThis.__lastLeaderboardCsvIntegrityReport = {
+    filename,
+    report,
+    createdAt: new Date().toISOString()
+  };
+
+  if (report.hasUnexpectedChanges) {
+    reportLeaderboardIntegrityFailure(filename, report);
+  }
+
+  if (report.orderingChanges.length > 0) {
+    console.warn(
+      `Leaderboard CSV integrity check found pure ordering changes for ${filename}. ${buildLeaderboardIntegritySummary(report)}`,
+      report
+    );
+  }
+
+  writeStoredLeaderboardCsvReference(referenceKey, csvText);
+  return {
+    status: report.orderingChanges.length > 0 ? 'ordering-only' : 'matched',
+    report
+  };
 }
 
 function applyLeaderboardTableSortHeaderState() {
@@ -2834,7 +3115,11 @@ function exportLeaderboardCsv() {
       { header: 'Wins', value: row => row.wins },
       { header: 'Losses', value: row => row.losses },
       { header: 'Match Win Rate', value: row => formatWinRate(row.winRate) },
-      { header: 'Last Event', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
+      { header: 'Last Event', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') },
+      { header: 'Identity Key', value: row => getLeaderboardCsvIdentityKey(row) },
+      { header: 'Player Key', value: row => row.playerKey || row.basePlayerKey || '' },
+      { header: 'Season Key', value: row => row.seasonKey || '' },
+      { header: 'Deck Scope', value: row => getLeaderboardCsvDeckScopeValue(row) }
     ]
     : [
       { header: 'Rank', value: row => row.displayRank },
@@ -2852,13 +3137,18 @@ function exportLeaderboardCsv() {
       { header: 'Win Rate', value: row => formatWinRate(row.winRate) },
       { header: 'Top 8 Conversion', value: row => formatWinRate(row.top8Conversion) },
       { header: '1st Places', value: row => row.challengeWins },
-      { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
+      { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') },
+      { header: 'Identity Key', value: row => getLeaderboardCsvIdentityKey(row) },
+      { header: 'Player Key', value: row => row.playerKey || row.basePlayerKey || '' },
+      { header: 'Season Key', value: row => row.seasonKey || '' },
+      { header: 'Deck Scope', value: row => getLeaderboardCsvDeckScopeValue(row) }
     ];
   const csvText = buildStructuredTableCsv(
     csvColumns,
     rowsWithRank,
     getLeaderboardCsvMetadata()
   );
+  logLeaderboardIntegritySnapshot('exportLeaderboardCsv:rowsWithRank', rowsWithRank, { includeRank: true });
 
   const windowLabel = sanitizeCsvFilename(
     getWindowLabel(
@@ -2869,7 +3159,18 @@ function exportLeaderboardCsv() {
     )
   );
   const viewLabel = sanitizeCsvFilename(getLeaderboardViewTitle(currentLeaderboardDataset) || 'elo-leaderboard');
-  downloadCsvFile(`${viewLabel || 'elo-leaderboard'}-${windowLabel || 'selected-window'}.csv`, csvText);
+  const scopeLabel = getLeaderboardActiveExportScopeLabel();
+  logLeaderboardIntegritySnapshot(
+    `exportLeaderboardCsv:csv-boundary:${scopeLabel}`,
+    rowsWithRank.map(row => ({
+      ...row,
+      rank: row.displayRank
+    })),
+    { includeRank: true }
+  );
+  const filename = `${viewLabel || 'elo-leaderboard'}-${windowLabel || 'selected-window'}-${scopeLabel}.csv`;
+  runLeaderboardCsvIntegrityCheck(filename, csvText);
+  downloadCsvFile(filename, csvText);
 }
 
 function getAllLeaderboardHistoryEntries() {
@@ -6804,8 +7105,11 @@ function buildDeckViewRows(selectedDeckName = '', dataset = currentLeaderboardDa
 
   const deckRows = (Array.isArray(dataset?.deckDataset?.seasonRows) ? dataset.deckDataset.seasonRows : [])
     .filter(row => String(row?.deck || '').trim() === normalizedDeckName);
+  const beforeSnapshot = logLeaderboardIntegritySnapshot(`buildDeckViewRows:${normalizedDeckName}:raw`, deckRows, { includeRank: false });
 
   const augmentedRows = augmentEloLeaderboardRowsWithEventStats(deckRows, dataset);
+  const afterSnapshot = logLeaderboardIntegritySnapshot(`buildDeckViewRows:${normalizedDeckName}:augmented`, augmentedRows, { includeRank: false });
+  compareLeaderboardIntegritySnapshots(`buildDeckViewRows:${normalizedDeckName}`, beforeSnapshot, afterSnapshot);
   leaderboardDeckRowsCache.set(cacheKey, augmentedRows);
   return augmentedRows;
 }
@@ -7048,7 +7352,9 @@ async function ensureLeaderboardDetailDataLoaded() {
     eventResultLookup: buildLeaderboardEventResultLookup(detailDataset)
   };
   clearLeaderboardStageBCaches();
+  logLeaderboardIntegritySnapshot('ensureLeaderboardDetailDataLoaded:seasonRows', detailDataset.seasonRows, { includeRank: false });
   currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(detailDataset.seasonRows, currentLeaderboardDataset);
+  logLeaderboardIntegritySnapshot('ensureLeaderboardDetailDataLoaded:baseRows', currentLeaderboardBaseRows, { includeRank: false });
   currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
   renderLeaderboardFromCurrentState();
   return true;
@@ -7111,7 +7417,9 @@ export async function updateLeaderboardAnalytics() {
       deckDataset
     };
     clearLeaderboardStageBCaches();
+    logLeaderboardIntegritySnapshot('updateLeaderboardAnalytics:seasonRows', dataset.seasonRows, { includeRank: false });
     currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(dataset.seasonRows, currentLeaderboardDataset);
+    logLeaderboardIntegritySnapshot('updateLeaderboardAnalytics:baseRows', currentLeaderboardBaseRows, { includeRank: false });
     currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
 
     renderLeaderboardFromCurrentState();

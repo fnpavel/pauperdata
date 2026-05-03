@@ -1,5 +1,6 @@
 const DEFAULT_EVENT_TYPE = 'online';
 const PRECALCULATED_ROOT = new URL('../../data/precalculated-elo/', import.meta.url);
+import { getPlayerIdentityKey, normalizePlayerName } from './player-names.js';
 
 let precalculatedManifestPromise = null;
 
@@ -123,10 +124,10 @@ function mapPayloadRow(row = {}, descriptor = null) {
   return {
     seasonKey,
     seasonYear,
-    playerKey: normalizeText(row?.playerKey),
-    displayName: normalizeText(row?.displayName || row?.basePlayerName || row?.playerKey),
-    basePlayerKey: normalizeText(row?.basePlayerKey || row?.playerKey),
-    basePlayerName: normalizeText(row?.basePlayerName || row?.displayName || row?.playerKey),
+    playerKey: getPlayerIdentityKey(row?.playerKey || row?.basePlayerKey || row?.displayName || row?.basePlayerName),
+    displayName: normalizePlayerName(row?.displayName || row?.basePlayerName || row?.playerKey),
+    basePlayerKey: getPlayerIdentityKey(row?.basePlayerKey || row?.playerKey || row?.basePlayerName || row?.displayName),
+    basePlayerName: normalizePlayerName(row?.basePlayerName || row?.displayName || row?.playerKey),
     deck: normalizeText(row?.deck),
     rating: Number(row?.rating) || 0,
     matches: Number(row?.matches) || 0,

@@ -4,6 +4,7 @@
 import { buildYearlyEloRatings } from './elo-rating.js';
 import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-data.js';
 import { loadPrecalculatedRankingsData } from './precalculated-elo.js';
+import { getPlayerIdentityKey } from './player-names.js';
 
 export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
   startingRating: 1500,
@@ -44,8 +45,8 @@ function getMatchKey(match, index) {
     normalizeText(match?.event_id || match?.eventId || match?.event),
     normalizeText(match?.date || match?.Date),
     String(Number.isFinite(Number(match?.round)) ? Number(match.round) : ''),
-    normalizeText(match?.player_key || match?.playerKey),
-    normalizeText(match?.opponent_key || match?.opponentKey),
+    getPlayerIdentityKey(match?.player_key || match?.playerKey || match?.player_a || match?.player),
+    getPlayerIdentityKey(match?.opponent_key || match?.opponentKey || match?.player_b || match?.opponent),
     String(index)
   ].join('|||');
 }
