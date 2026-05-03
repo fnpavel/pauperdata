@@ -364,6 +364,27 @@
       </div>
     </div>
 
+    <div id="deckEvolutionFocusOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal deck-evolution-focus-modal" role="dialog" aria-modal="true" aria-labelledby="deckEvolutionFocusTitle">
+        <div class="player-rank-drilldown-header">
+          <div class="player-rank-drilldown-heading">
+            <h3 id="deckEvolutionFocusTitle">Deck Evolution</h3>
+            <p id="deckEvolutionFocusSubtitle">Meta share and win rate across the current multi-event window.</p>
+          </div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="deckEvolutionFocusClose" aria-label="Close deck evolution details">
+            Close
+          </button>
+        </div>
+        <div class="player-rank-drilldown-content deck-evolution-focus-modal-content">
+          <div class="chart-container deck-evolution-focus-chart-shell">
+            <div id="deckEvolutionFocusChartLoading">Loading...</div>
+            <canvas id="deckEvolutionFocusChart"></canvas>
+          </div>
+          <div id="deckEvolutionFocusDetails" class="deck-evolution-focus-details"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Player Analysis Section: player filters drive cards, tables, and player-specific charts. -->
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">

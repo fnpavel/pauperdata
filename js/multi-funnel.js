@@ -3,6 +3,7 @@
 import { setChartLoading } from './utils/dom.js';
 import { getMultiEventChartData } from './modules/filters/filter-index.js';
 import { calculateDeckConversionStats } from './utils/data-chart.js';
+import { openMultiEventDeckEvolutionModal } from './charts/multi-deck-evolution.js';
 import { getActiveTheme, getChartTheme } from './utils/theme.js';
 
 export let multiEventFunnelChart = null;
@@ -523,6 +524,51 @@ function buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeThe
   }));
 }
 
+function getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event) {
+  const xScale = chart?.scales?.x;
+  const yScale = chart?.scales?.y;
+  const chartArea = chart?.chartArea;
+  if (!xScale || !yScale || !chartArea || !Array.isArray(visibleDecksData) || visibleDecksData.length === 0) {
+    return null;
+  }
+
+  const x = Number(event?.x);
+  const y = Number(event?.y);
+  if (!Number.isFinite(x) || !Number.isFinite(y)) {
+    return null;
+  }
+
+  const xStep = xScale.ticks.length > 1
+    ? Math.abs(xScale.getPixelForTick(1) - xScale.getPixelForTick(0))
+    : chartArea.width;
+  const yStep = yScale.ticks.length > 1
+    ? Math.abs(yScale.getPixelForTick(1) - yScale.getPixelForTick(0))
+    : chartArea.height;
+  const copiesCenterX = xScale.getPixelForValue('Copies');
+  const copiesLeft = copiesCenterX - (xStep / 2);
+  const copiesRight = copiesCenterX + (xStep / 2);
+  const rowHalfHeight = yStep / 2;
+
+  const rowIndex = visibleDecksData.findIndex((_item, index) => {
+    const rowCenterY = yScale.getPixelForTick(index);
+    return y >= (rowCenterY - rowHalfHeight) && y <= (rowCenterY + rowHalfHeight);
+  });
+  if (rowIndex === -1) {
+    return null;
+  }
+
+  const row = visibleDecksData[rowIndex];
+  if (x >= 0 && x < copiesLeft) {
+    return { type: 'deck', row };
+  }
+
+  if (x >= copiesLeft && x <= copiesRight && y >= chartArea.top && y <= chartArea.bottom) {
+    return { type: 'copies', row };
+  }
+
+  return null;
+}
+
 function renderMultiEventFunnelViewport() {
   multiEventFunnelRenderFrame = 0;
 
@@ -568,6 +614,24 @@ function renderMultiEventFunnelViewport() {
     )))
   );
   const datasets = buildMultiEventFunnelDatasets(visibleDecksData, groupingMode, activeTheme);
+
+  canvas.tabIndex = 0;
+  if (canvas.dataset.funnelKeyboardBound !== 'true') {
+    canvas.addEventListener('keydown', keyboardEvent => {
+      if (keyboardEvent.key !== 'Enter' && keyboardEvent.key !== ' ') {
+        return;
+      }
+
+      const clickedDeckName = String(canvas.dataset.interactiveDeckName || '').trim();
+      if (!clickedDeckName) {
+        return;
+      }
+
+      keyboardEvent.preventDefault();
+      openMultiEventDeckEvolutionModal(clickedDeckName);
+    });
+    canvas.dataset.funnelKeyboardBound = 'true';
+  }
 
   canvas.style.top = `${startIndex * MULTI_EVENT_FUNNEL_ROW_HEIGHT}px`;
   canvas.style.height = `${chartHeight}px`;
@@ -706,6 +770,31 @@ function renderMultiEventFunnelViewport() {
         animation: {
           duration: 0
         },
+        onClick: (event, activeElements, chart) => {
+          let clickedDeckName = '';
+          if (activeElements?.length) {
+            const clickedPoint = chart.data.datasets?.[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
+            clickedDeckName = String(clickedPoint?.deckName || '').trim();
+          } else {
+            const interactiveRow = getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event);
+            clickedDeckName = String(interactiveRow?.row?.deck || '').trim();
+          }
+          if (clickedDeckName) {
+            openMultiEventDeckEvolutionModal(clickedDeckName);
+          }
+        },
+        onHover(event, activeElements, chart) {
+          const interactiveRow = getMultiEventFunnelInteractiveRow(chart, visibleDecksData, event);
+          const hoveredPoint = activeElements?.length
+            ? chart.data.datasets?.[activeElements[0].datasetIndex]?.data?.[activeElements[0].index]
+            : null;
+          canvas.dataset.interactiveDeckName = String(
+            hoveredPoint?.deckName
+              || interactiveRow?.row?.deck
+              || ''
+          ).trim();
+          canvas.style.cursor = activeElements?.length || interactiveRow ? 'pointer' : 'default';
+        },
         elements: {
           point: {
             hoverBorderWidth: 2
@@ -716,6 +805,9 @@ function renderMultiEventFunnelViewport() {
   } catch (error) {
     console.error('Error initializing Multi-Event Funnel Chart:', error);
   }
+
+  canvas.style.cursor = 'default';
+  canvas.dataset.interactiveDeckName = '';
 }
 
 function scheduleMultiEventFunnelViewportRender() {

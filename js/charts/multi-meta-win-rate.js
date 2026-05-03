@@ -3,7 +3,7 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getMultiEventChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
-import { focusMultiEventDeck } from './multi-deck-evolution.js';
+import { openMultiEventDeckEvolutionModal } from './multi-deck-evolution.js';
 import { getChartTheme } from '../utils/theme.js';
 import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
 
@@ -267,8 +267,6 @@ export function updateMultiMetaWinRateChart() {
           }
         },
         onClick: (_, activeElements, chart) => {
-          // A point click promotes the selected deck into the Deck Evolution view
-          // so users can inspect the same archetype over time.
           if (activeElements.length === 0) {
             return;
           }
@@ -276,7 +274,7 @@ export function updateMultiMetaWinRateChart() {
           const clickedPoint = chart.data.datasets[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
           const clickedDeckName = String(clickedPoint?.label || '').trim();
           if (clickedDeckName) {
-            focusMultiEventDeck(clickedDeckName, { scrollIntoView: true });
+            openMultiEventDeckEvolutionModal(clickedDeckName);
           }
         },
         onHover: (_, activeElements) => {

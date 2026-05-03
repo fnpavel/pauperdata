@@ -238,6 +238,29 @@ canvas {
   max-height: 300px !important;
 }
 
+.deck-evolution-focus-modal-content {
+  gap: 16px;
+}
+
+.deck-evolution-focus-chart-shell {
+  margin-bottom: 0;
+  opacity: 1;
+  animation: none;
+  transform: none;
+}
+
+#deckEvolutionFocusChart {
+  min-height: 360px;
+  height: 360px !important;
+  max-height: 420px !important;
+}
+
+.deck-evolution-focus-details {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 #metaWinRateEventChartContainer {
   position: relative;
   height: 600px;
