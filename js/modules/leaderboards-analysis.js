@@ -3839,7 +3839,11 @@ function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
 }
 
 function shouldShowLeaderboardTimelineSection(dataset = currentLeaderboardDataset) {
-  return Boolean(dataset?.period);
+  if (!dataset?.period) {
+    return false;
+  }
+
+  return !(dataset.period.windowMode === 'range' && dataset.resetByYear);
 }
 
 function getLeaderboardTimelineChartMode() {
