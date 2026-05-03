@@ -4080,13 +4080,6 @@ function renderLeaderboardTimelineChipPanel() {
     ? selectedRows.map(row => `
       <span class="leaderboard-timeline-chip">
         <span>${escapeHtml(`${row.displayName} (${formatRating(row.rating)})`)}</span>
-        <button
-          type="button"
-          data-leaderboard-timeline-remove="${escapeHtml(getLeaderboardRowSelectionKey(row))}"
-          aria-label="${escapeHtml(`Remove ${row.displayName} from the ${modeLabel} timeline`)}"
-        >
-          x
-        </button>
       </span>
     `).join('')
     : `<div class="leaderboard-timeline-chip-empty">No players selected for the ${escapeHtml(modeLabel)} timeline.</div>`;
@@ -6383,20 +6376,6 @@ function setupLeaderboardTimelineInteractions() {
     dropdown.dataset.listenerAdded = 'true';
   }
 
-  if (chipPanel && chipPanel.dataset.listenerAdded !== 'true') {
-    chipPanel.addEventListener('click', event => {
-      const button = event.target.closest('[data-leaderboard-timeline-remove]');
-      if (!button) {
-        return;
-      }
-
-      activeLeaderboardTimelineSelections.delete(String(button.dataset.leaderboardTimelineRemove || ''));
-      renderLeaderboardTimelineChart();
-    });
-
-    chipPanel.dataset.listenerAdded = 'true';
-  }
-
   if (showAllLinesButton && showAllLinesButton.dataset.listenerAdded !== 'true') {
     showAllLinesButton.addEventListener('click', () => {
       setLeaderboardTimelineLineVisibility(true);
@@ -6995,7 +6974,7 @@ export async function updateLeaderboardAnalytics() {
         endDate: activeWindow?.endDate || ''
       }, {
         resetByYear: activeWindow?.resetByYear,
-        includeHistory: false
+        includeHistory: true
       }),
       loadLeaderboardDatasetCached({
         eventTypes: getSelectedLeaderboardEventTypes(),
@@ -7004,7 +6983,7 @@ export async function updateLeaderboardAnalytics() {
       }, {
         resetByYear: activeWindow?.resetByYear,
         entityMode: 'player_deck',
-        includeHistory: false
+        includeHistory: true
       })
     ]);
 
@@ -7016,7 +6995,7 @@ export async function updateLeaderboardAnalytics() {
       ...dataset,
       mode: 'elo',
       period: activeWindow,
-      detailsLoaded: false,
+      detailsLoaded: true,
       eventResultLookup: buildLeaderboardEventResultLookup(dataset),
       deckDataset
     };
@@ -7025,7 +7004,6 @@ export async function updateLeaderboardAnalytics() {
     currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
 
     renderLeaderboardFromCurrentState();
-    await ensureLeaderboardDetailDataLoaded();
   } catch (error) {
     if (requestId !== leaderboardDatasetRequestId) {
       return;

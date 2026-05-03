@@ -3782,12 +3782,15 @@ html[data-theme="light"] .range-calendar-day.active {
 }
 
 .leaderboard-chart-panel-header {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
   gap: 10px;
   margin-bottom: 12px;
+}
+
+.leaderboard-chart-panel-header > :first-child {
+  min-width: 0;
 }
 
 .leaderboard-chart-toolbar {
@@ -3810,11 +3813,23 @@ html[data-theme="light"] .range-calendar-day.active {
 }
 
 .leaderboard-chart-panel-header .leaderboard-chart-toolbar-actions {
-  margin-left: auto;
+  margin-left: 0;
+  justify-self: end;
+  align-self: start;
 }
 
 .leaderboard-chart-mode-actions {
   flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#leaderboardTimelineHelper {
+  max-width: min(100%, 52rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
 }
 
 .leaderboard-chart-cohort-actions[hidden] {
@@ -3831,6 +3846,32 @@ html[data-theme="light"] .range-calendar-day.active {
 
 .leaderboard-timeline-visibility-button {
   white-space: nowrap;
+}
+
+.leaderboard-timeline-chip-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.leaderboard-timeline-chip {
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 840px) {
+  .leaderboard-chart-panel-header {
+    grid-template-columns: 1fr;
+  }
+
+  .leaderboard-chart-panel-header .leaderboard-chart-toolbar-actions {
+    justify-self: start;
+  }
+
+  #leaderboardTimelineHelper {
+    max-width: 100%;
+    -webkit-line-clamp: 3;
+  }
 }
 
 .leaderboard-chart-toolbar .leaderboard-table-search-status {
