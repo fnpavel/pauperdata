@@ -32,6 +32,13 @@ export function calculateDeckConversionStats(data) {
     const total = stats.total;
     return {
       deck,
+      total,
+      counts: {
+        rank1_8: stats.rank1_8,
+        rank9_16: stats.rank9_16,
+        rank17_32: stats.rank17_32,
+        rank33_worse: stats.rank33_worse
+      },
       rank1_8: total > 0 ? (stats.rank1_8 / total) * 100 : 0,
       rank9_16: total > 0 ? (stats.rank9_16 / total) * 100 : 0,
       rank17_32: total > 0 ? (stats.rank17_32 / total) * 100 : 0,
@@ -43,6 +50,8 @@ export function calculateDeckConversionStats(data) {
     .sort((a, b) => b.rank1_8 - a.rank1_8 || a.deck.localeCompare(b.deck))
     .map(item => ({
       deck: item.deck,
+      total: item.total,
+      counts: item.counts,
       data: [item.rank1_8, item.rank9_16, item.rank17_32, item.rank33_worse]
     }));
 }

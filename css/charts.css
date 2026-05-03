@@ -83,6 +83,71 @@ canvas {
   max-height: 800px !important;
 }
 
+.event-funnel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -6px 0 14px;
+  flex-wrap: wrap;
+}
+
+.event-funnel-toolbar-label {
+  color: var(--chart-text);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.event-funnel-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.event-funnel-grouping-menu,
+.event-funnel-label-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.event-funnel-grouping-button,
+.event-funnel-label-button {
+  white-space: nowrap;
+}
+
+.event-funnel-column-header {
+  display: grid;
+  align-items: center;
+  gap: 0;
+  margin: 0 0 8px;
+  padding: 0;
+  width: 100%;
+}
+
+.event-funnel-column-header-cell {
+  color: var(--chart-text);
+  font-family: 'Bitter', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.event-funnel-column-header-cell-deck {
+  text-align: left;
+  padding-left: 8px;
+}
+
+.event-funnel-column-header-cell-copies {
+  text-align: center;
+}
+
 #multiPlayerWinRateChart {
   max-height: 400px !important;
 }
