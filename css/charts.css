@@ -83,6 +83,10 @@ canvas {
   max-height: 800px !important;
 }
 
+#multiEventFunnelChart {
+  max-height: 800px !important;
+}
+
 .event-funnel-toolbar {
   display: flex;
   align-items: center;

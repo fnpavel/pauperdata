@@ -7,6 +7,7 @@ import { updateEventMetaWinRateChart } from '../../charts/single-meta-win-rate.j
 import { updateMultiMetaWinRateChart } from '../../charts/multi-meta-win-rate.js';
 import { updateMultiPlayerWinRateChart } from '../../charts/multi-player-win-rate.js';
 import { updateEventFunnelChart } from '../../charts/single-funnel.js';
+import { updateMultiEventFunnelChart } from '../../multi-funnel.js';
 import { updateDeckEvolutionChart } from '../../charts/multi-deck-evolution.js';
 import { updatePlayerDeckPerformanceChart } from '../../charts/player-deck-performance.js';
 import { updatePlayerWinRateChart } from '../../charts/player-win-rate.js';
@@ -594,6 +595,7 @@ export function updateAllCharts() {
       filteredData = startDate && endDate && selectedEventTypes.length > 0 ? getFilteredMultiEventRows() : [];
 
       updateMultiMetaWinRateChart();
+      updateMultiEventFunnelChart();
       updateMultiPlayerWinRateChart();
       updateDeckEvolutionChart();
       updateMultiEventAnalytics();

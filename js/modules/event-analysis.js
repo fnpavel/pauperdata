@@ -7,6 +7,7 @@ import {
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
+import { updateMultiEventFunnelChart } from '../multi-funnel.js';
 import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
 import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, updateElementHTML } from '../utils/dom.js';
@@ -1642,6 +1643,7 @@ export function updateMultiEventAnalysis(data) {
 
   currentMultiEventRows = Array.isArray(data) ? [...data] : [];
   updateMultiMetaWinRateChart();
+  updateMultiEventFunnelChart();
   updateMultiPlayerWinRateChart();
   updateDeckEvolutionChart();
   updateMultiEventTables(data, 'aggregate');
