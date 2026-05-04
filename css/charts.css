@@ -32,6 +32,28 @@
   padding: 16px 18px;
 }
 
+.player-chart-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.player-chart-header .chart-title {
+  margin-bottom: 0;
+}
+
+.player-chart-view-toggle {
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.player-chart-panel[hidden] {
+  display: none !important;
+}
+
 .chart-title {
   font-size: 1.5rem;
   margin-bottom: 20px;

@@ -38,6 +38,7 @@ import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
 import { getAllAnalysisRows, getAnalysisRows } from '../utils/analysis-data.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
+import { LEADERBOARD_TOP8_DECK_COLORS } from '../utils/deck-colors.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
@@ -54,16 +55,7 @@ const LEADERBOARD_TIMELINE_RANK_MEDALS = Object.freeze({
   2: '🥈',
   3: '🥉'
 });
-const LEADERBOARD_TIMELINE_RANK_COLORS = Object.freeze({
-  1: '#E6194B',
-  2: '#3CB44B',
-  3: '#4363D8',
-  4: '#F58231',
-  5: '#911EB4',
-  6: '#46F0F0',
-  7: '#F032E6',
-  8: '#BCF60C'
-});
+const LEADERBOARD_TIMELINE_RANK_COLORS = LEADERBOARD_TOP8_DECK_COLORS;
 const LEADERBOARD_TIMELINE_RANK_OUTLIER_COLOR = '#ff8c42';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
   elo: new Set(['displayName', 'seasonYear', 'rating', 'eventCount', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])

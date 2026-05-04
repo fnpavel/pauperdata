@@ -1,5 +1,5 @@
-// Player Analysis win-rate timeline. The chart uses one point per event and a
-// local deck chip filter that does not mutate the global Player Analysis filters.
+// Player Analysis win-rate timeline. Each deck keeps its own series so the
+// shared Elo deck filter can highlight one line without hiding the others.
 import { setChartLoading, triggerUpdateAnimation } from '../utils/dom.js';
 import { getPlayerWinRateChartData } from '../modules/filters/filter-index.js';
 import { calculatePlayerWinRateStats } from "../utils/data-chart.js";
@@ -7,14 +7,13 @@ import { getAnalysisRowsForEvent } from '../utils/analysis-data.js';
 import { getSelectedPlayerLabel } from '../utils/player-names.js';
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
-import { getSelectedPlayerDeck, setSelectedPlayerDeck, dispatchPlayerDeckFilterChange, getEloDeckOrder } from '../utils/player-deck-filter.js';
+import { getSelectedPlayerDeck, getEloDeckOrder } from '../utils/player-deck-filter.js';
+import { buildOrderedDeckColorMap } from '../utils/deck-colors.js';
 
 export let playerWinRateChart = null;
 // Empty means the detail card follows hover; a value means a clicked event stays
 // pinned until another point or reset action replaces it.
 let pinnedPlayerPointKey = '';
-const PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE = 'Deck chips appear here once the current player filters include deck results.';
-
 const playerSummaryStatCardIds = [
   'playerEventsCard',
   'playerUniqueDecksCard',
@@ -36,18 +35,6 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function getPlayerWinRateDeckFilterRoot() {
-  return document.getElementById('playerWinRateDeckFilter');
-}
-
-function readSelectedPlayerWinRateDeck() {
-  return getSelectedPlayerDeck();
-}
-
-function writeSelectedPlayerWinRateDeck(selectedDeck) {
-  setSelectedPlayerDeck(selectedDeck);
-}
-
 function isSelectablePlayerWinRateDeck(deckName) {
   const normalizedDeck = String(deckName || '').trim();
   return normalizedDeck !== '' && normalizedDeck !== 'No Show' && normalizedDeck.toUpperCase() !== 'UNKNOWN';
@@ -55,122 +42,6 @@ function isSelectablePlayerWinRateDeck(deckName) {
 
 function getPlayerWinRateBaseData() {
   return getPlayerWinRateChartData().filter(row => isSelectablePlayerWinRateDeck(row.Deck));
-}
-
-function renderPlayerWinRateDeckFilter(baseData) {
-  const root = getPlayerWinRateDeckFilterRoot();
-  if (!root) {
-    return '';
-  }
-
-  const availableDecks = [...new Set(
-    (baseData || [])
-      .map(row => String(row.Deck || '').trim())
-      .filter(isSelectablePlayerWinRateDeck)
-  )];
-
-  const eloDeckOrder = getEloDeckOrder();
-  const originalDeckIndex = new Map(availableDecks.map((deck, index) => [deck, index]));
-
-  availableDecks.sort((a, b) => {
-    const ai = eloDeckOrder.indexOf(a);
-    const bi = eloDeckOrder.indexOf(b);
-
-    if (ai !== -1 && bi !== -1) {
-      return ai - bi;
-    }
-    if (ai !== -1) {
-      return -1;
-    }
-    if (bi !== -1) {
-      return 1;
-    }
-
-    return (originalDeckIndex.get(a) || 0) - (originalDeckIndex.get(b) || 0);
-  });
-
-  const currentSelectedDeck = readSelectedPlayerWinRateDeck();
-  const validSelectedDeck = availableDecks.includes(currentSelectedDeck) ? currentSelectedDeck : '';
-
-  if (availableDecks.length === 0) {
-    root.innerHTML = `
-      <div class="player-chart-filter-header">
-        <div class="player-chart-filter-copy">
-          <span class="player-chart-filter-label">Deck Filter</span>
-          <span class="player-chart-filter-note">Shared player deck filter. Mirrors the selected Elo deck filter.</span>
-        </div>
-      </div>
-      <div class="player-chart-filter-empty">${escapeHtml(PLAYER_WIN_RATE_DECK_FILTER_EMPTY_MESSAGE)}</div>
-    `;
-    return '';
-  }
-
-  const filterSummary = validSelectedDeck
-    ? `Shared deck filter. Showing only ${validSelectedDeck} in the current time span.`
-    : `Shared deck filter. Showing all ${availableDecks.length} decks in the current time span.`;
-
-  root.innerHTML = `
-    <div class="player-chart-filter-header">
-      <div class="player-chart-filter-copy">
-        <span class="player-chart-filter-label">Deck Filter</span>
-        <span class="player-chart-filter-note">${escapeHtml(filterSummary)}</span>
-      </div>
-    </div>
-    <div class="bubble-menu player-chart-filter-chips">
-      <button type="button" class="bubble-button player-win-rate-deck-chip player-win-rate-deck-chip-reset${!validSelectedDeck ? ' active' : ''}" data-player-win-rate-reset="true">All Decks</button>
-      ${availableDecks.map(deck => `
-        <button
-          type="button"
-          class="bubble-button player-win-rate-deck-chip${validSelectedDeck === deck ? ' active' : ''}"
-          data-player-win-rate-deck="${escapeHtml(deck)}"
-        >${escapeHtml(deck)}</button>
-      `).join('')}
-    </div>
-  `;
-
-  return validSelectedDeck;
-}
-
-function setupPlayerWinRateDeckFilterListeners() {
-  const root = getPlayerWinRateDeckFilterRoot();
-  if (!root || root.dataset.listenerAdded === 'true') {
-    return;
-  }
-
-  root.addEventListener('click', event => {
-    const resetButton = event.target.closest('[data-player-win-rate-reset="true"]');
-    if (resetButton) {
-      writeSelectedPlayerWinRateDeck('');
-      dispatchPlayerDeckFilterChange();
-      updatePlayerWinRateChart();
-      return;
-    }
-
-    const deckButton = event.target.closest('[data-player-win-rate-deck]');
-    if (!deckButton) {
-      return;
-    }
-
-    const deckName = String(deckButton.dataset.playerWinRateDeck || '').trim();
-    if (!isSelectablePlayerWinRateDeck(deckName)) {
-      return;
-    }
-
-    const currentSelectedDeck = readSelectedPlayerWinRateDeck();
-    writeSelectedPlayerWinRateDeck(currentSelectedDeck === deckName ? '' : deckName);
-    dispatchPlayerDeckFilterChange();
-    updatePlayerWinRateChart();
-  });
-
-  root.dataset.listenerAdded = 'true';
-}
-
-function filterPlayerWinRateDataByDeck(baseData, selectedDeck) {
-  if (!selectedDeck) {
-    return baseData;
-  }
-
-  return baseData.filter(row => String(row.Deck || '').trim() === selectedDeck);
 }
 
 function formatShortChartDate(dateStr, includeYear = false) {
@@ -203,6 +74,15 @@ function setPlayerEventDetailsMarkup(markup) {
 
 function getPlayerPointKey(point) {
   return point?.event && point?.date ? `${point.date}::${point.event}` : '';
+}
+
+function getPlayerChartPoint(chart, activeElement) {
+  if (!chart || !activeElement) {
+    return null;
+  }
+
+  const dataset = chart.data?.datasets?.[activeElement.datasetIndex];
+  return dataset?.data?.[activeElement.index] || null;
 }
 
 function renderPlayerEventDetailsPlaceholder(message) {
@@ -414,12 +294,8 @@ export function updatePlayerWinRateChart() {
   const theme = getChartTheme();
   pinnedPlayerPointKey = '';
 
-  setupPlayerWinRateDeckFilterListeners();
   const baseData = getPlayerWinRateBaseData();
-  const selectedDeck = renderPlayerWinRateDeckFilter(baseData);
-  const filteredData = filterPlayerWinRateDataByDeck(baseData, selectedDeck);
-
-  if (!filteredData.length) {
+  if (!baseData.length) {
     renderPlayerEventDetailsPlaceholder('No event details available for the current filters.');
     if (playerWinRateChart) playerWinRateChart.destroy();
     const playerWinRateCtx = document.getElementById("playerWinRateChart");
@@ -460,29 +336,12 @@ export function updatePlayerWinRateChart() {
           plugins: {
             legend: { position: 'top', labels: { color: theme.mutedText, font: { size: 14, weight: 'bold' } } },
             tooltip: { enabled: false },
-            datalabels: { display: false },
-            zoom: {
-              zoom: {
-                wheel: { enabled: true, speed: 0.1 },
-                drag: {
-                  enabled: true,
-                  backgroundColor: 'rgba(0, 0, 255, 0.3)',
-                  borderColor: 'rgba(0, 0, 255, 0.8)',
-                  borderWidth: 1
-                },
-                mode: 'xy'
-              },
-              pan: { enabled: false },
-              limits: { y: { min: 0, max: 100 } }
-            }
+            datalabels: { display: false }
           },
           animation: { onComplete: () => triggerUpdateAnimation('playerWinRateChartContainer') }
         }
       });
-
-      playerWinRateCtx.ondblclick = () => {
-        playerWinRateChart.resetZoom();
-      };
+      playerWinRateCtx.ondblclick = null;
     }
     setChartLoading("playerWinRateChart", false);
     return;
@@ -490,11 +349,43 @@ export function updatePlayerWinRateChart() {
 
   playerSummaryStatCardIds.forEach(cardId => triggerUpdateAnimation(cardId));
 
-  const { dates, pointDetails } = calculatePlayerWinRateStats(filteredData);
-  const winRates = pointDetails.map(point => point.winRate);
-  const multiYearDates = new Set(dates.map(date => String(date || '').slice(0, 4))).size > 1;
+  const eloDeckOrder = getEloDeckOrder();
+  const { labels, deckNames, pointDetails } = calculatePlayerWinRateStats(baseData, eloDeckOrder);
+  const selectedDeck = getSelectedPlayerDeck();
+  const validSelectedDeck = deckNames.includes(selectedDeck) ? selectedDeck : '';
+  const multiYearDates = new Set(pointDetails.map(point => String(point.date || '').slice(0, 4))).size > 1;
   const playerFilterMenu = document.getElementById("playerFilterMenu");
   const selectedPlayer = getSelectedPlayerLabel(playerFilterMenu) || "Unknown";
+  const deckColorMap = buildOrderedDeckColorMap(deckNames, eloDeckOrder);
+  const datasets = deckNames.map(deckName => {
+    const color = deckColorMap.get(deckName) || '#FFD700';
+    const isHighlighted = validSelectedDeck ? validSelectedDeck === deckName : true;
+
+    return {
+      label: deckName,
+      data: pointDetails
+        .filter(point => point.deck === deckName)
+        .map(point => ({
+          x: point.eventKey,
+          y: point.winRate,
+          ...point
+        })),
+      backgroundColor: color,
+      borderColor: color,
+      pointBackgroundColor: color,
+      pointBorderColor: color,
+      borderWidth: isHighlighted ? 3 : 2,
+      borderDash: isHighlighted ? [] : [8, 6],
+      pointRadius: isHighlighted ? 4 : 3,
+      pointHoverRadius: 7,
+      pointHoverBorderWidth: 2,
+      pointHitRadius: 18,
+      tension: 0.3,
+      fill: false,
+      spanGaps: true
+    };
+  });
+
   renderPlayerEventDetailsPlaceholder('Hover a point to inspect the event, deck, and winner context. Click a point to pin it.');
 
   if (playerWinRateChart) playerWinRateChart.destroy();
@@ -509,22 +400,8 @@ export function updatePlayerWinRateChart() {
     playerWinRateChart = new Chart(playerWinRateCtx, {
       type: "line",
       data: {
-        labels: dates,
-        datasets: [{
-          label: `${selectedPlayer} Win Rate %`,
-          data: winRates,
-          backgroundColor: '#FFD700',
-          borderColor: '#FFD700',
-          borderWidth: 2,
-          pointRadius: 4,
-          pointHoverRadius: 7,
-          pointHoverBorderWidth: 2,
-          pointHitRadius: 18,
-          tension: 0.3,
-          fill: false,
-          linePercentage: 0.5,
-          categoryPercentage: 0.8
-        }]
+        labels,
+        datasets
       },
       options: {
         responsive: true,
@@ -540,7 +417,9 @@ export function updatePlayerWinRateChart() {
               maxRotation: 45,
               minRotation: 45,
               callback(value) {
-                return formatShortChartDate(this.getLabelForValue(value), multiYearDates);
+                const labelValue = String(this.getLabelForValue(value) || '');
+                const [dateValue] = labelValue.split('::');
+                return formatShortChartDate(dateValue, multiYearDates);
               }
             }
           }
@@ -559,15 +438,15 @@ export function updatePlayerWinRateChart() {
             borderWidth: 1,
             callbacks: {
               title(context) {
-                const point = pointDetails[context[0]?.dataIndex];
+                const point = context[0]?.raw;
                 return point ? (formatEventName(point.event) || point.event || 'Unknown Event') : '';
               },
               beforeBody(context) {
-                const point = pointDetails[context[0]?.dataIndex];
+                const point = context[0]?.raw;
                 return point ? [`Date: ${formatDate(point.date)}`] : [];
               },
               label(context) {
-                const point = pointDetails[context.dataIndex];
+                const point = context.raw;
                 if (!point) {
                   return '';
                 }
@@ -585,7 +464,7 @@ export function updatePlayerWinRateChart() {
                 return labelLines;
               },
               afterBody(context) {
-                const point = pointDetails[context[0]?.dataIndex];
+                const point = context[0]?.raw;
                 if (!pinnedPlayerPointKey) {
                   renderPlayerEventDetails(point);
                 }
@@ -593,21 +472,7 @@ export function updatePlayerWinRateChart() {
               }
             }
           },
-          datalabels: { display: false },
-          zoom: {
-            zoom: {
-              wheel: { enabled: true, speed: 0.1 },
-              drag: {
-                enabled: true,
-                backgroundColor: 'rgba(0, 0, 255, 0.3)',
-                borderColor: 'rgba(0, 0, 255, 0.8)',
-                borderWidth: 1
-              },
-              mode: 'xy'
-            },
-            pan: { enabled: false },
-            limits: { y: { min: 0, max: 100 } }
-          }
+          datalabels: { display: false }
         },
         onClick(event, activeElements) {
           if (!activeElements?.length) {
@@ -618,7 +483,7 @@ export function updatePlayerWinRateChart() {
             return;
           }
 
-          const point = pointDetails[activeElements[0].index];
+          const point = getPlayerChartPoint(playerWinRateChart, activeElements[0]);
           const pointKey = getPlayerPointKey(point);
 
           if (pinnedPlayerPointKey === pointKey) {
@@ -632,7 +497,7 @@ export function updatePlayerWinRateChart() {
         },
         onHover(event, activeElements) {
           if (activeElements?.length) {
-            const hoveredPoint = pointDetails[activeElements[0].index];
+            const hoveredPoint = getPlayerChartPoint(playerWinRateChart, activeElements[0]);
             const hoveredPointKey = getPlayerPointKey(hoveredPoint);
 
             if (pinnedPlayerPointKey && pinnedPlayerPointKey !== hoveredPointKey) {
@@ -659,9 +524,7 @@ export function updatePlayerWinRateChart() {
       }
     });
 
-    playerWinRateCtx.ondblclick = () => {
-      playerWinRateChart.resetZoom();
-    };
+    playerWinRateCtx.ondblclick = null;
   } catch (error) {
     console.error("Error initializing Player Win Rate Chart:", error);
   }

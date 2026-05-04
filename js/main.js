@@ -142,7 +142,6 @@ async function initializeDashboard() {
     updateEventAnalytics(); // Default to single event analysis
   } else if (defaultTopMode === 'player') {
     updatePlayerAnalytics();
-    window.updatePlayerDeckPerformanceChart(); // Initial call for Player Analysis
   } else if (defaultTopMode === 'deck-matchup' || defaultTopMode === 'player-matchup') {
     updateMatchupAnalytics();
   } else if (defaultTopMode === 'leaderboard') {

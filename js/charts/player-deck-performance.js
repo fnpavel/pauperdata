@@ -5,6 +5,8 @@ import { getPlayerDeckPerformanceChartData } from '../modules/filters/filter-ind
 import { calculatePlayerDeckPerformanceStats } from "../utils/data-chart.js";
 import { getSelectedPlayerLabel } from '../utils/player-names.js';
 import { getChartTheme } from '../utils/theme.js';
+import { getEloDeckOrder } from '../utils/player-deck-filter.js';
+import { buildOrderedDeckColorMap } from '../utils/deck-colors.js';
 
 export let playerDeckPerformanceChart = null;
 
@@ -78,20 +80,17 @@ export function updatePlayerDeckPerformanceChart() {
   }
 
   const deckStats = calculatePlayerDeckPerformanceStats(filteredData);
-  const maxEvents = Math.max(...deckStats.map(stats => stats.eventCount));
+  const deckColorMap = buildOrderedDeckColorMap(deckStats.map(stats => stats.deck), getEloDeckOrder());
+  const orderedDeckStats = [...deckStats].sort((a, b) => {
+    const orderedDecks = [...deckColorMap.keys()];
+    return orderedDecks.indexOf(a.deck) - orderedDecks.indexOf(b.deck);
+  });
+  const maxEvents = Math.max(...orderedDeckStats.map(stats => stats.eventCount));
   const xAxisMax = maxEvents + 1;
-
-  const colors = [
-    '#FFD700', '#FF6347', '#00CED1', '#32CD32', '#9370DB', 
-    '#FF69B4', '#20B2AA', '#FFA500', '#4682B4', '#9ACD32',
-    '#DC143C', '#7B68EE', '#ADFF2F', '#FF4500', '#6A5ACD'
-  ];
-
-  let colorIndex = 0;
   // Each deck gets its own one-point dataset so Chart.js can expose deck names
   // directly in the legend and let users toggle decks independently.
-  const datasets = deckStats.map(stats => {
-    const color = colors[colorIndex++ % colors.length];
+  const datasets = orderedDeckStats.map(stats => {
+    const color = deckColorMap.get(stats.deck) || '#FFD700';
     return {
       label: stats.deck,
       data: [{

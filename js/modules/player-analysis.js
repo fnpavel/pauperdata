@@ -172,6 +172,7 @@ let currentPlayerAnalysisRows = [];
 let activePlayerDrilldownCategory = '';
 let currentPlayerEloInsights = createEmptyPlayerEloInsights();
 let playerAnalyticsRequestId = 0;
+let activePlayerPrimaryChartView = 'win-rate';
 let currentPlayerRawTableState = {
   tableType: 'event',
   title: 'player-event-data',
@@ -221,6 +222,81 @@ function getPlayerRawTableFullscreenButton() {
 
 function getPlayerRawTableContainer() {
   return document.getElementById('playerRawTableContainer');
+}
+
+function getPlayerPrimaryChartToggleRoot() {
+  return document.getElementById('playerPrimaryChartToggle');
+}
+
+function getPlayerPrimaryChartPanel(view) {
+  const panelMap = {
+    'win-rate': document.getElementById('playerWinRatePanel'),
+    'scatter': document.getElementById('playerScatterDeckPanel')
+  };
+
+  return panelMap[view] || null;
+}
+
+function syncPlayerPrimaryChartView({ refreshVisibleChart = false } = {}) {
+  const toggleRoot = getPlayerPrimaryChartToggleRoot();
+  const normalizedView = activePlayerPrimaryChartView === 'scatter' ? 'scatter' : 'win-rate';
+  activePlayerPrimaryChartView = normalizedView;
+
+  if (toggleRoot) {
+    Array.from(toggleRoot.querySelectorAll('[data-player-chart-view]')).forEach(button => {
+      const isActive = button.dataset.playerChartView === normalizedView;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
+
+  ['win-rate', 'scatter'].forEach(view => {
+    const panel = getPlayerPrimaryChartPanel(view);
+    if (!panel) {
+      return;
+    }
+
+    const isActive = view === normalizedView;
+    panel.hidden = !isActive;
+    panel.dataset.active = isActive ? 'true' : 'false';
+  });
+
+  if (!refreshVisibleChart) {
+    return;
+  }
+
+  if (normalizedView === 'scatter') {
+    updatePlayerDeckPerformanceChart();
+    return;
+  }
+
+  updatePlayerWinRateChart();
+}
+
+function setupPlayerPrimaryChartToggleListeners() {
+  const root = getPlayerPrimaryChartToggleRoot();
+  if (!root || root.dataset.listenerAdded === 'true') {
+    syncPlayerPrimaryChartView();
+    return;
+  }
+
+  root.addEventListener('click', event => {
+    const button = event.target.closest('[data-player-chart-view]');
+    if (!button) {
+      return;
+    }
+
+    const requestedView = button.dataset.playerChartView === 'scatter' ? 'scatter' : 'win-rate';
+    if (requestedView === activePlayerPrimaryChartView) {
+      return;
+    }
+
+    activePlayerPrimaryChartView = requestedView;
+    syncPlayerPrimaryChartView({ refreshVisibleChart: true });
+  });
+
+  root.dataset.listenerAdded = 'true';
+  syncPlayerPrimaryChartView();
 }
 
 function exportPlayerRawTableCsv() {
@@ -3001,6 +3077,7 @@ function initPlayerSearchDropdown() {
 export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
   setupPlayerRawTableFullscreenAction();
+  setupPlayerPrimaryChartToggleListeners();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();
@@ -3028,10 +3105,9 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
   // component reads the same snapshot.
   currentPlayerAnalysisRows = Array.isArray(data) ? [...data] : [];
   currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
-  updatePlayerWinRateChart();
-  updatePlayerDeckPerformanceChart();
   populatePlayerAnalysisRawData(data, currentPlayerEloInsights);
   populatePlayerStats(data, currentPlayerEloInsights);
+  syncPlayerPrimaryChartView({ refreshVisibleChart: true });
 }
 
 // Resolves current player/date/type filters, builds Elo insights, and refreshes

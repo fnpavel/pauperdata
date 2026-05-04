@@ -463,20 +463,26 @@
         <div class="charts-and-tables">
           <div id="playerCharts">
             <div class="chart-container player-primary-chart">
-              <h2 class="chart-title">Player Analytics</h2>
+              <div class="player-chart-header">
+                <h2 class="chart-title">Player Analytics</h2>
+                <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                  <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
+                  <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+                </div>
+              </div>
               <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
-              <div id="playerWinRateDeckFilter" class="player-chart-filter-panel"></div>
               <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
               <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-              <div id="playerWinRateChartLoading">Loading...</div>
-              <canvas id="playerWinRateChart"></canvas>
-              <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-            </div>
-            <div class="chart-container player-secondary-chart">
-              <h2 class="chart-title">Deck Performance Scatter Plot</h2>
-              <div id="playerDeckPerformanceChartLoading">Loading...</div>
-              <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
-              <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              <div id="playerWinRatePanel" class="player-chart-panel">
+                <div id="playerWinRateChartLoading">Loading...</div>
+                <canvas id="playerWinRateChart"></canvas>
+                <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              </div>
+              <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
+                <div id="playerDeckPerformanceChartLoading">Loading...</div>
+                <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
+                <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              </div>
             </div>
             <div class="data-table-container" id="playerRawTableContainer">
               <div class="leaderboard-table-toolbar">

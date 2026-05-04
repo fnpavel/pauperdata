@@ -170,22 +170,32 @@ export function calculatePlayerDeckPerformanceStats(data) {
 
 // Player Analysis: chronological player event points used by player-win-rate.js.
 // Returns date-ordered win-rate points and hover metadata for one player.
-export function calculatePlayerWinRateStats(data) {
+export function calculatePlayerWinRateStats(data, deckOrder = []) {
   const filteredData = data.filter(row => row.Deck.toUpperCase() !== "UNKNOWN");
-  
+
+  const orderedDecks = Array.isArray(deckOrder)
+    ? deckOrder.map(deck => String(deck || '').trim()).filter(Boolean)
+    : [];
+  const deckOrderIndex = new Map(orderedDecks.map((deck, index) => [deck, index]));
+
   const eventStats = filteredData.reduce((acc, row) => {
-    if (!acc[row.Event]) {
-      acc[row.Event] = {
-        event: row.Event,
-        date: row.Date,
+    const deckName = String(row.Deck || '').trim() || 'N/A';
+    const eventName = String(row.Event || '').trim();
+    const eventDate = String(row.Date || '').trim();
+    const eventKey = `${eventDate}::${eventName}::${deckName}`;
+
+    if (!acc[eventKey]) {
+      acc[eventKey] = {
+        event: eventName,
+        date: eventDate,
         wins: 0,
         losses: 0,
-        deck: row.Deck,
+        deck: deckName,
         rank: Number(row.Rank)
       };
     }
-    acc[row.Event].wins += Number(row.Wins) || 0;
-    acc[row.Event].losses += Number(row.Losses) || 0;
+    acc[eventKey].wins += Number(row.Wins) || 0;
+    acc[eventKey].losses += Number(row.Losses) || 0;
     return acc;
   }, {});
 
@@ -194,6 +204,7 @@ export function calculatePlayerWinRateStats(data) {
       event: stats.event,
       date: stats.date,
       deck: stats.deck || "N/A",
+      eventKey: `${stats.date}::${stats.event}`,
       wins: stats.wins,
       losses: stats.losses,
       rank: Number.isFinite(stats.rank) ? stats.rank : null,
@@ -205,20 +216,34 @@ export function calculatePlayerWinRateStats(data) {
         return dateComparison;
       }
 
-      return String(a.event || '').localeCompare(String(b.event || ''));
+      const eventComparison = String(a.event || '').localeCompare(String(b.event || ''));
+      if (eventComparison !== 0) {
+        return eventComparison;
+      }
+
+      const ai = deckOrderIndex.has(a.deck) ? deckOrderIndex.get(a.deck) : Number.MAX_SAFE_INTEGER;
+      const bi = deckOrderIndex.has(b.deck) ? deckOrderIndex.get(b.deck) : Number.MAX_SAFE_INTEGER;
+      if (ai !== bi) {
+        return ai - bi;
+      }
+
+      return String(a.deck || '').localeCompare(String(b.deck || ''));
     });
 
-  const dates = pointDetails.map(point => point.date);
-  const eventByDate = {};
-  pointDetails.forEach(point => {
-    eventByDate[point.date] = point.event;
+  const labels = [...new Set(pointDetails.map(point => point.eventKey))];
+  const deckNames = [...new Set(pointDetails.map(point => point.deck))].sort((a, b) => {
+    const ai = deckOrderIndex.has(a) ? deckOrderIndex.get(a) : Number.MAX_SAFE_INTEGER;
+    const bi = deckOrderIndex.has(b) ? deckOrderIndex.get(b) : Number.MAX_SAFE_INTEGER;
+    if (ai !== bi) {
+      return ai - bi;
+    }
+
+    return String(a || '').localeCompare(String(b || ''));
   });
 
   return {
-    dates,
-    winRates: pointDetails.map(point => point.winRate),
-    decks: pointDetails.map(point => point.deck),
-    eventByDate,
+    labels,
+    deckNames,
     pointDetails
   };
 }
