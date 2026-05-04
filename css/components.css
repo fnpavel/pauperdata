@@ -2956,6 +2956,25 @@ button.leaderboard-deck-result-card {
   color: var(--light);
 }
 
+.event-analysis-inline-deck-button {
+  appearance: none;
+  background: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  font: inherit;
+  line-height: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  cursor: pointer;
+}
+
+.event-analysis-inline-deck-button:hover,
+.event-analysis-inline-deck-button:focus-visible {
+  color: var(--accent);
+}
+
 .stat-card#singleEventInfoCard .stat-value,
 .stat-card#singleTopPlayerCard .stat-value,
 .stat-card#singleRunnerUpCard .stat-value,

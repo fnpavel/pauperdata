@@ -9,7 +9,7 @@ import { updateEventFunnelChart } from '../charts/single-funnel.js';
 import { metaWinRateChart, updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
 import { updateMultiEventFunnelChart } from '../multi-funnel.js';
 import { multiPlayerWinRateChart, updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
-import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
+import { openMultiEventDeckEvolutionModal, updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
@@ -232,6 +232,50 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+function formatCopyLabel(count) {
+  const normalizedCount = Number(count) || 0;
+  return `${normalizedCount} ${normalizedCount === 1 ? 'Copy' : 'Copies'}`;
+}
+
+function formatTopDeckRangeCardLabel(rangeKey = '') {
+  return String(rangeKey || '').replace(/\s+/g, '');
+}
+
+function buildInlineDeckCardDeckLinks(deckNames = [], dataAttributeName = 'data-single-event-deck-link') {
+  return deckNames.map(deckName => `
+    <button
+      type="button"
+      class="event-analysis-inline-deck-button"
+      ${dataAttributeName}="${escapeHtml(deckName)}"
+    >${escapeHtml(deckName)}</button>
+  `).join(', ');
+}
+
+function bindDeckLinkContainer(containerId, dataAttributeName, openDeckModal) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    return;
+  }
+
+  const boundAttributeName = `${dataAttributeName}-bound`;
+  if (container.getAttribute(boundAttributeName) === 'true') {
+    return;
+  }
+
+  container.setAttribute(boundAttributeName, 'true');
+  container.addEventListener('click', event => {
+    const selector = `[${dataAttributeName}]`;
+    const deckButton = event.target.closest(selector);
+    if (!deckButton) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+    openDeckModal(deckButton.getAttribute(dataAttributeName) || '');
+  });
 }
 
 function getSingleEventDownloadButton() {
@@ -1626,6 +1670,7 @@ function setupSingleEventDrilldownCards() {
       }
     });
   });
+  bindDeckLinkContainer('singleTopDecksDetails', 'data-single-event-deck-link', openSingleEventDeckDrilldown);
 }
 
 function setupMultiEventDrilldownCards() {
@@ -1653,6 +1698,8 @@ function setupMultiEventDrilldownCards() {
       }
     });
   });
+
+  bindDeckLinkContainer('multiTopDecksDetails', 'data-multi-event-deck-link', openMultiEventDeckEvolutionModal);
 }
 
 // Wires Event Analysis modals, stat-card click targets, and CSV export buttons.
@@ -2063,22 +2110,13 @@ export function populateSingleEventStats(filteredData) {
       const deckCounts = stats.deckCountsByRange[range];
       const maxCopies = Math.max(...Object.values(deckCounts), 0);
       if (maxCopies === 0) return "";
-      const mostPlayedDecks = Object.entries(deckCounts).filter(([_, count]) => count === maxCopies).map(([deck]) => deck);
-      const rangeCount = {
-        "Top 8": filteredData.filter(row => row.Rank >= 1 && row.Rank <= 8).length,
-        "Top 16": filteredData.filter(row => row.Rank >= 9 && row.Rank <= 16).length,
-        "Top 32": filteredData.filter(row => row.Rank >= 17 && row.Rank <= 32).length,
-        "Below Top 32": filteredData.filter(row => row.Rank > 32).length
-      }[range];
-      const uniqueDecksCount = Object.keys(deckCounts).length;
-      const maxEntries = range === "Top 8" ? 8 : range === "Top 16" ? 8 : range === "Top 32" ? 16 : rangeCount;
-      const deckStatsText = rangeCount === maxEntries && uniqueDecksCount === rangeCount && maxCopies === 1 
-        ? "All Unique Decks" 
-        : mostPlayedDecks.map(deck => {
-            const stats = calculateDeckStats(filteredData, deck, filteredData.length);
-            return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
-          }).join(", ");
-      return `<div><span class="label">${range}:</span> <span class="value">${deckStatsText}</span></div>`;
+      const mostPlayedDecks = Object.entries(deckCounts)
+        .filter(([, count]) => count === maxCopies)
+        .map(([deck]) => deck)
+        .sort((a, b) => a.localeCompare(b));
+      const compactRangeLabel = formatTopDeckRangeCardLabel(range);
+      const deckLinks = buildInlineDeckCardDeckLinks(mostPlayedDecks, 'data-single-event-deck-link');
+      return `<div><span class="label">${compactRangeLabel}:</span> <span class="value">${formatCopyLabel(maxCopies)} of ${deckLinks}</span></div>`;
     })
     .filter(Boolean)
     .join("") || "No Data");
@@ -2175,7 +2213,8 @@ export function populateMultiEventStats(filteredData) {
         ? "All Unique Decks" 
         : mostPlayedDecks.map(deck => {
             const stats = calculateDeckStats(filteredData, deck, filteredData.length);
-            return `${maxCopies} Copies of ${deck} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
+            const deckLink = buildInlineDeckCardDeckLinks([deck], 'data-multi-event-deck-link');
+            return `${maxCopies} Copies of ${deckLink} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
           }).join(", ");
       return `<div><span class="label">${range}:</span> <span class="value">${deckStatsText}</span></div>`;
     })
