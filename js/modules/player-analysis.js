@@ -2305,6 +2305,9 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
   }
 
   return groups.map((group, index) => {
+    const eloDeckGroup = (currentPlayerEloInsights.deckGroups || []).find(eloGroup =>
+      String(eloGroup?.deck || '').trim() === String(group?.deck || '').trim()
+    ) || null;
     const eventRowsByName = buildEventRowsByName(group.rows.map(row => row.Event));
 
     return `
@@ -2328,6 +2331,14 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
           <div class="player-rank-drilldown-summary-item">
             <span class="player-rank-drilldown-summary-label">Overall Win Rate</span>
             <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatWinRatePercentage(group.overallWinRate))}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Current Elo</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(Number(eloDeckGroup?.latestElo)) ? formatEloRating(eloDeckGroup.latestElo) : '--')}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Peak Elo</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(Number(eloDeckGroup?.peakElo)) ? formatEloRating(eloDeckGroup.peakElo) : '--')}</strong>
           </div>
           <div class="player-rank-drilldown-summary-item">
             <span class="player-rank-drilldown-summary-label">Average Finish</span>
