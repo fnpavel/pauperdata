@@ -2155,6 +2155,10 @@ button.leaderboard-deck-result-card {
   margin-bottom: 18px;
 }
 
+#playerAnalysisSection #playerDateRangeCalendar {
+  display: none !important;
+}
+
 .player-chart-filter-panel {
   display: flex;
   flex-direction: column;
