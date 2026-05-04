@@ -113,14 +113,9 @@
     min-height: 74px;
   }
 
-  #playerWinRateChart {
+  .player-primary-chart-canvas {
     height: 500px !important;
     max-height: 500px !important;
-  }
-
-  #playerDeckPerformanceChart {
-    height: 280px !important;
-    max-height: 280px !important;
   }
 
   canvas {

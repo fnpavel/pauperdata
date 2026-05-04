@@ -299,14 +299,9 @@ canvas {
   max-height: 400px !important;
 }
 
-#playerWinRateChart {
+.player-primary-chart-canvas {
   height: 600px !important;
   max-height: 600px !important;
-}
-
-#playerDeckPerformanceChart {
-  height: 300px !important;
-  max-height: 300px !important;
 }
 
 .deck-evolution-focus-modal-content {
