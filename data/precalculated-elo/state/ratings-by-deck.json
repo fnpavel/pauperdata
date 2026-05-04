@@ -213,8 +213,8 @@
       "basePlayerKey": "__noob__",
       "basePlayerName": "__Noob__",
       "deck": "White Weenie",
-      "rating": 1515.775,
-      "lastActiveDate": "2025-06-27"
+      "rating": 1501.978,
+      "lastActiveDate": "2026-05-03"
     },
     "_a.c.a.i_2007_:::Dimir Control": {
       "playerKey": "_a.c.a.i_2007_:::Dimir Control",
@@ -2328,8 +2328,8 @@
       "basePlayerKey": "532at",
       "basePlayerName": "532at",
       "deck": "Mono Red Madness",
-      "rating": 1521.55,
-      "lastActiveDate": "2026-04-17"
+      "rating": 1541.492,
+      "lastActiveDate": "2026-05-03"
     },
     "532at:::UNKNOWN": {
       "playerKey": "532at:::UNKNOWN",
@@ -3111,8 +3111,8 @@
       "basePlayerKey": "adryannthehero04",
       "basePlayerName": "AdryannTheHero04",
       "deck": "Rakdos Madness",
-      "rating": 1549.748,
-      "lastActiveDate": "2026-03-29"
+      "rating": 1581.043,
+      "lastActiveDate": "2026-05-03"
     },
     "adssam:::Boros Glitters": {
       "playerKey": "adssam:::Boros Glitters",
@@ -4932,6 +4932,15 @@
       "rating": 1498.954,
       "lastActiveDate": "2026-04-26"
     },
+    "arbitation:::Turbofog": {
+      "playerKey": "arbitation:::Turbofog",
+      "displayName": "Arbitation (Turbofog)",
+      "basePlayerKey": "arbitation",
+      "basePlayerName": "Arbitation",
+      "deck": "Turbofog",
+      "rating": 1507.678,
+      "lastActiveDate": "2026-05-03"
+    },
     "archits05:::Walls Combo": {
       "playerKey": "archits05:::Walls Combo",
       "displayName": "archits05 (Walls Combo)",
@@ -5379,8 +5388,8 @@
       "basePlayerKey": "aswerty",
       "basePlayerName": "asWerty",
       "deck": "Few Land Spy",
-      "rating": 1601.728,
-      "lastActiveDate": "2026-04-16"
+      "rating": 1583.434,
+      "lastActiveDate": "2026-05-03"
     },
     "aswerty:::UNKNOWN": {
       "playerKey": "aswerty:::UNKNOWN",
@@ -6639,8 +6648,8 @@
       "basePlayerKey": "beicodegeia",
       "basePlayerName": "Beicodegeia",
       "deck": "Dimir Fae",
-      "rating": 1596.696,
-      "lastActiveDate": "2026-04-16"
+      "rating": 1606.127,
+      "lastActiveDate": "2026-05-03"
     },
     "beicodegeia:::Dimir Terror": {
       "playerKey": "beicodegeia:::Dimir Terror",
@@ -8829,6 +8838,15 @@
       "rating": 1494.787,
       "lastActiveDate": "2026-02-26"
     },
+    "brasatore:::Golgari Pestilence": {
+      "playerKey": "brasatore:::Golgari Pestilence",
+      "displayName": "Brasatore (Golgari Pestilence)",
+      "basePlayerKey": "brasatore",
+      "basePlayerName": "Brasatore",
+      "deck": "Golgari Pestilence",
+      "rating": 1488.598,
+      "lastActiveDate": "2026-05-03"
+    },
     "brasatore:::Grixis Affinity": {
       "playerKey": "brasatore:::Grixis Affinity",
       "displayName": "Brasatore (Grixis Affinity)",
@@ -10287,6 +10305,15 @@
       "rating": 1524.107,
       "lastActiveDate": "2025-05-04"
     },
+    "cabz:::Red Deck Wins": {
+      "playerKey": "cabz:::Red Deck Wins",
+      "displayName": "Cabz (Red Deck Wins)",
+      "basePlayerKey": "cabz",
+      "basePlayerName": "Cabz",
+      "deck": "Red Deck Wins",
+      "rating": 1582.274,
+      "lastActiveDate": "2026-05-03"
+    },
     "cabz:::UNKNOWN": {
       "playerKey": "cabz:::UNKNOWN",
       "displayName": "Cabz (UNKNOWN)",
@@ -10815,8 +10842,8 @@
       "basePlayerKey": "capoeira02",
       "basePlayerName": "Capoeira02",
       "deck": "Jund Wildfire",
-      "rating": 1503.66,
-      "lastActiveDate": "2025-07-13"
+      "rating": 1522.853,
+      "lastActiveDate": "2026-05-03"
     },
     "capoeira02:::Mono Red Madness": {
       "playerKey": "capoeira02:::Mono Red Madness",
@@ -11790,6 +11817,15 @@
       "rating": 1428.781,
       "lastActiveDate": "2026-03-01"
     },
+    "chambales:::Boros Synth": {
+      "playerKey": "chambales:::Boros Synth",
+      "displayName": "Chambales (Boros Synth)",
+      "basePlayerKey": "chambales",
+      "basePlayerName": "Chambales",
+      "deck": "Boros Synth",
+      "rating": 1508.716,
+      "lastActiveDate": "2026-05-03"
+    },
     "chambales:::Mono Blue Faeries": {
       "playerKey": "chambales:::Mono Blue Faeries",
       "displayName": "Chambales (Mono Blue Faeries)",
@@ -11823,8 +11859,8 @@
       "basePlayerKey": "chaoticmtg",
       "basePlayerName": "ChaoticMTG",
       "deck": "Azorius Familiars",
-      "rating": 1628.39,
-      "lastActiveDate": "2026-02-08"
+      "rating": 1633.204,
+      "lastActiveDate": "2026-05-03"
     },
     "chaoticmtg:::Hexproof": {
       "playerKey": "chaoticmtg:::Hexproof",
@@ -15000,8 +15036,8 @@
       "basePlayerKey": "db_kirblinxy",
       "basePlayerName": "DB_Kirblinxy",
       "deck": "No Show",
-      "rating": 1342.28,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1340.415,
+      "lastActiveDate": "2026-05-03"
     },
     "db_kirblinxy:::Orzhov Blade": {
       "playerKey": "db_kirblinxy:::Orzhov Blade",
@@ -20121,8 +20157,8 @@
       "basePlayerKey": "fazparte",
       "basePlayerName": "fazparte",
       "deck": "Mono Red Madness",
-      "rating": 1558.264,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1547.813,
+      "lastActiveDate": "2026-05-03"
     },
     "fazparte:::UNKNOWN": {
       "playerKey": "fazparte:::UNKNOWN",
@@ -23319,6 +23355,15 @@
       "rating": 1685.107,
       "lastActiveDate": "2025-02-22"
     },
+    "gn42:::Boros Bully": {
+      "playerKey": "gn42:::Boros Bully",
+      "displayName": "Gn42 (Boros Bully)",
+      "basePlayerKey": "gn42",
+      "basePlayerName": "Gn42",
+      "deck": "Boros Bully",
+      "rating": 1492.986,
+      "lastActiveDate": "2026-05-03"
+    },
     "gn42:::Cawgates": {
       "playerKey": "gn42:::Cawgates",
       "displayName": "Gn42 (Cawgates)",
@@ -23865,8 +23910,8 @@
       "basePlayerKey": "gshu",
       "basePlayerName": "gshu",
       "deck": "Dimir Terror",
-      "rating": 1497.897,
-      "lastActiveDate": "2026-04-19"
+      "rating": 1478.352,
+      "lastActiveDate": "2026-05-03"
     },
     "gshu:::UNKNOWN": {
       "playerKey": "gshu:::UNKNOWN",
@@ -24353,6 +24398,15 @@
       "deck": "Azorius Glitters",
       "rating": 1515.577,
       "lastActiveDate": "2024-04-07"
+    },
+    "hamuda:::Boros Tribe": {
+      "playerKey": "hamuda:::Boros Tribe",
+      "displayName": "Hamuda (Boros Tribe)",
+      "basePlayerKey": "hamuda",
+      "basePlayerName": "Hamuda",
+      "deck": "Boros Tribe",
+      "rating": 1504.337,
+      "lastActiveDate": "2026-05-03"
     },
     "hamuda:::Broodscale Combo": {
       "playerKey": "hamuda:::Broodscale Combo",
@@ -28071,6 +28125,15 @@
       "rating": 1450.084,
       "lastActiveDate": "2026-03-08"
     },
+    "j4k3st3r02:::Cycle Storm": {
+      "playerKey": "j4k3st3r02:::Cycle Storm",
+      "displayName": "J4K3ST3R02 (Cycle Storm)",
+      "basePlayerKey": "j4k3st3r02",
+      "basePlayerName": "J4K3ST3R02",
+      "deck": "Cycle Storm",
+      "rating": 1486.632,
+      "lastActiveDate": "2026-05-03"
+    },
     "jace_mtg:::Golgari Gardens": {
       "playerKey": "jace_mtg:::Golgari Gardens",
       "displayName": "Jace_MTG (Golgari Gardens)",
@@ -28716,8 +28779,8 @@
       "basePlayerKey": "jinjaa",
       "basePlayerName": "Jinjaa",
       "deck": "Jund Wildfire",
-      "rating": 1489.528,
-      "lastActiveDate": "2025-09-27"
+      "rating": 1497.376,
+      "lastActiveDate": "2026-05-03"
     },
     "jinjaa:::Mono Blue Faeries": {
       "playerKey": "jinjaa:::Mono Blue Faeries",
@@ -29013,8 +29076,8 @@
       "basePlayerKey": "john1111",
       "basePlayerName": "John1111",
       "deck": "Golgari Gardens",
-      "rating": 1495.161,
-      "lastActiveDate": "2024-09-01"
+      "rating": 1541.905,
+      "lastActiveDate": "2026-05-03"
     },
     "john1111:::Grixis Affinity": {
       "playerKey": "john1111:::Grixis Affinity",
@@ -31182,8 +31245,8 @@
       "basePlayerKey": "keez",
       "basePlayerName": "Keez",
       "deck": "Red Deck Wins",
-      "rating": 1459.728,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1464.193,
+      "lastActiveDate": "2026-05-03"
     },
     "keez:::UNKNOWN": {
       "playerKey": "keez:::UNKNOWN",
@@ -31407,8 +31470,8 @@
       "basePlayerKey": "kidrenan",
       "basePlayerName": "KidRenan",
       "deck": "White Weenie",
-      "rating": 1529.92,
-      "lastActiveDate": "2026-04-23"
+      "rating": 1535.648,
+      "lastActiveDate": "2026-05-03"
     },
     "kiki-gigi:::Izzet Control": {
       "playerKey": "kiki-gigi:::Izzet Control",
@@ -32415,8 +32478,8 @@
       "basePlayerKey": "kolletao",
       "basePlayerName": "kolletao",
       "deck": "Rakdos Madness",
-      "rating": 1494.747,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1516.336,
+      "lastActiveDate": "2026-05-03"
     },
     "komattaman:::Red Kuldotha": {
       "playerKey": "komattaman:::Red Kuldotha",
@@ -32739,8 +32802,8 @@
       "basePlayerKey": "kuldothared",
       "basePlayerName": "kuldothared",
       "deck": "Jund Wildfire",
-      "rating": 1582.387,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1561.537,
+      "lastActiveDate": "2026-05-03"
     },
     "kuldothared:::UNKNOWN": {
       "playerKey": "kuldothared:::UNKNOWN",
@@ -33371,6 +33434,15 @@
       "deck": "Red Kuldotha",
       "rating": 1487.533,
       "lastActiveDate": "2025-02-14"
+    },
+    "lbbl:::Boros Tribe": {
+      "playerKey": "lbbl:::Boros Tribe",
+      "displayName": "LBBL (Boros Tribe)",
+      "basePlayerKey": "lbbl",
+      "basePlayerName": "LBBL",
+      "deck": "Boros Tribe",
+      "rating": 1509.618,
+      "lastActiveDate": "2026-05-03"
     },
     "lbbl:::Dimir Ninja Affinity": {
       "playerKey": "lbbl:::Dimir Ninja Affinity",
@@ -35718,8 +35790,8 @@
       "basePlayerKey": "luffydochapeudepalha",
       "basePlayerName": "LuffyDoChapeuDePalha",
       "deck": "Grixis Affinity",
-      "rating": 1628.693,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1613.391,
+      "lastActiveDate": "2026-05-03"
     },
     "luffydochapeudepalha:::Hexproof": {
       "playerKey": "luffydochapeudepalha:::Hexproof",
@@ -35970,8 +36042,8 @@
       "basePlayerKey": "luminati",
       "basePlayerName": "Luminati",
       "deck": "Mono Blue Terror",
-      "rating": 1689.077,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1686.417,
+      "lastActiveDate": "2026-05-03"
     },
     "luminati:::Simic Infect": {
       "playerKey": "luminati:::Simic Infect",
@@ -38004,8 +38076,8 @@
       "basePlayerKey": "marzaboi",
       "basePlayerName": "marzaboi",
       "deck": "Selesnya Gates",
-      "rating": 1540.98,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1528.438,
+      "lastActiveDate": "2026-05-03"
     },
     "marzaboi:::UNKNOWN": {
       "playerKey": "marzaboi:::UNKNOWN",
@@ -40641,8 +40713,8 @@
       "basePlayerKey": "mistertwin",
       "basePlayerName": "MisterTwin",
       "deck": "Rakdos Madness",
-      "rating": 1572.24,
-      "lastActiveDate": "2026-02-19"
+      "rating": 1581.784,
+      "lastActiveDate": "2026-05-03"
     },
     "mistertwin:::Red Deck Wins": {
       "playerKey": "mistertwin:::Red Deck Wins",
@@ -41388,8 +41460,8 @@
       "basePlayerKey": "morpheus38",
       "basePlayerName": "morpheus38",
       "deck": "Dimir Teachings",
-      "rating": 1467.361,
-      "lastActiveDate": "2026-04-05"
+      "rating": 1455.079,
+      "lastActiveDate": "2026-05-03"
     },
     "morpheus38:::Turbofog": {
       "playerKey": "morpheus38:::Turbofog",
@@ -43386,8 +43458,8 @@
       "basePlayerKey": "newbarola",
       "basePlayerName": "newbarola",
       "deck": "Elves",
-      "rating": 1626.71,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1594.927,
+      "lastActiveDate": "2026-05-03"
     },
     "newbarola:::Golgari Gardens": {
       "playerKey": "newbarola:::Golgari Gardens",
@@ -43539,8 +43611,8 @@
       "basePlayerKey": "nicknorman",
       "basePlayerName": "NickNorman",
       "deck": "Golgari Gardens",
-      "rating": 1635.141,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1649.967,
+      "lastActiveDate": "2026-05-03"
     },
     "nicknorman:::Gruul Eldrazi Stompy": {
       "playerKey": "nicknorman:::Gruul Eldrazi Stompy",
@@ -44658,6 +44730,15 @@
       "rating": 1499.166,
       "lastActiveDate": "2026-04-30"
     },
+    "nulyan:::Grixis Affinity": {
+      "playerKey": "nulyan:::Grixis Affinity",
+      "displayName": "Nulyan (Grixis Affinity)",
+      "basePlayerKey": "nulyan",
+      "basePlayerName": "Nulyan",
+      "deck": "Grixis Affinity",
+      "rating": 1479.774,
+      "lastActiveDate": "2026-05-03"
+    },
     "nulyan:::Red Kuldotha": {
       "playerKey": "nulyan:::Red Kuldotha",
       "displayName": "Nulyan (Red Kuldotha)",
@@ -44882,6 +44963,15 @@
       "deck": "UNKNOWN",
       "rating": 1411.832,
       "lastActiveDate": "2026-03-08"
+    },
+    "obesix:::Golgari Gardens": {
+      "playerKey": "obesix:::Golgari Gardens",
+      "displayName": "OBESIX (Golgari Gardens)",
+      "basePlayerKey": "obesix",
+      "basePlayerName": "OBESIX",
+      "deck": "Golgari Gardens",
+      "rating": 1485.112,
+      "lastActiveDate": "2026-05-03"
     },
     "obesix:::Jund Wildfire": {
       "playerKey": "obesix:::Jund Wildfire",
@@ -45942,8 +46032,8 @@
       "basePlayerKey": "otta",
       "basePlayerName": "otta",
       "deck": "Mono Blue Terror",
-      "rating": 1477.104,
-      "lastActiveDate": "2026-01-01"
+      "rating": 1452.222,
+      "lastActiveDate": "2026-05-03"
     },
     "outzeroo:::Affinity": {
       "playerKey": "outzeroo:::Affinity",
@@ -47205,6 +47295,15 @@
       "rating": 1513.964,
       "lastActiveDate": "2024-05-31"
     },
+    "pedrastone:::Boros Tribe": {
+      "playerKey": "pedrastone:::Boros Tribe",
+      "displayName": "PedraStone (Boros Tribe)",
+      "basePlayerKey": "pedrastone",
+      "basePlayerName": "PedraStone",
+      "deck": "Boros Tribe",
+      "rating": 1475.199,
+      "lastActiveDate": "2026-05-03"
+    },
     "pedrastone:::Dredge": {
       "playerKey": "pedrastone:::Dredge",
       "displayName": "PedraStone (Dredge)",
@@ -47591,6 +47690,15 @@
       "deck": "Red Kuldotha",
       "rating": 1490.432,
       "lastActiveDate": "2024-11-24"
+    },
+    "pepeteam:::Selesnya Gates": {
+      "playerKey": "pepeteam:::Selesnya Gates",
+      "displayName": "pepeteam (Selesnya Gates)",
+      "basePlayerKey": "pepeteam",
+      "basePlayerName": "pepeteam",
+      "deck": "Selesnya Gates",
+      "rating": 1488.865,
+      "lastActiveDate": "2026-05-03"
     },
     "pepeteam:::UNKNOWN": {
       "playerKey": "pepeteam:::UNKNOWN",
@@ -48237,8 +48345,8 @@
       "basePlayerKey": "piraccinichallenge",
       "basePlayerName": "PiracciniChallenge",
       "deck": "Jund Wildfire",
-      "rating": 1543.029,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1541.138,
+      "lastActiveDate": "2026-05-03"
     },
     "pirol94:::Altar Tron": {
       "playerKey": "pirol94:::Altar Tron",
@@ -48417,8 +48525,8 @@
       "basePlayerKey": "pnascimento",
       "basePlayerName": "PNascimento",
       "deck": "Boros Tribe",
-      "rating": 1563.855,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1581.016,
+      "lastActiveDate": "2026-05-03"
     },
     "pnascimento:::Burn": {
       "playerKey": "pnascimento:::Burn",
@@ -49038,8 +49146,8 @@
       "basePlayerKey": "pr0boszcz",
       "basePlayerName": "PR0boszcz",
       "deck": "Golgari Pestilence",
-      "rating": 1620.759,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1601.562,
+      "lastActiveDate": "2026-05-03"
     },
     "pr0boszcz:::Orzhov Pestilence": {
       "playerKey": "pr0boszcz:::Orzhov Pestilence",
@@ -51450,8 +51558,8 @@
       "basePlayerKey": "roter_erzengel",
       "basePlayerName": "roter_Erzengel",
       "deck": "Mono Blue Terror",
-      "rating": 1561.887,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1580.049,
+      "lastActiveDate": "2026-05-03"
     },
     "roter_erzengel:::UNKNOWN": {
       "playerKey": "roter_erzengel:::UNKNOWN",
@@ -51729,8 +51837,8 @@
       "basePlayerKey": "rucetfort",
       "basePlayerName": "RUCetFort",
       "deck": "White Weenie",
-      "rating": 1501.158,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1509.678,
+      "lastActiveDate": "2026-05-03"
     },
     "ruff-rider17:::UNKNOWN": {
       "playerKey": "ruff-rider17:::UNKNOWN",
@@ -51936,8 +52044,8 @@
       "basePlayerKey": "saculsueahtam",
       "basePlayerName": "SaculSueahtam",
       "deck": "Red Deck Wins",
-      "rating": 1630.522,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1608.818,
+      "lastActiveDate": "2026-05-03"
     },
     "saculsueahtam:::UNKNOWN": {
       "playerKey": "saculsueahtam:::UNKNOWN",
@@ -52307,6 +52415,15 @@
       "deck": "UNKNOWN",
       "rating": 1471.396,
       "lastActiveDate": "2025-07-13"
+    },
+    "samuelgraebner:::Jeskai Ephemerate": {
+      "playerKey": "samuelgraebner:::Jeskai Ephemerate",
+      "displayName": "SamuelGraebner (Jeskai Ephemerate)",
+      "basePlayerKey": "samuelgraebner",
+      "basePlayerName": "SamuelGraebner",
+      "deck": "Jeskai Ephemerate",
+      "rating": 1500.156,
+      "lastActiveDate": "2026-05-03"
     },
     "san3:::Mono Blue Terror": {
       "playerKey": "san3:::Mono Blue Terror",
@@ -55863,6 +55980,15 @@
       "rating": 1424.414,
       "lastActiveDate": "2026-01-09"
     },
+    "splashbrb:::Elves": {
+      "playerKey": "splashbrb:::Elves",
+      "displayName": "SplashBRB (Elves)",
+      "basePlayerKey": "splashbrb",
+      "basePlayerName": "SplashBRB",
+      "deck": "Elves",
+      "rating": 1485.702,
+      "lastActiveDate": "2026-05-03"
+    },
     "splashbrb:::Grixis Affinity": {
       "playerKey": "splashbrb:::Grixis Affinity",
       "displayName": "splashBRB (Grixis Affinity)",
@@ -56763,6 +56889,15 @@
       "rating": 1474.368,
       "lastActiveDate": "2026-04-26"
     },
+    "supermeon:::Rakdos Affinity": {
+      "playerKey": "supermeon:::Rakdos Affinity",
+      "displayName": "SuperMeon (Rakdos Affinity)",
+      "basePlayerKey": "supermeon",
+      "basePlayerName": "SuperMeon",
+      "deck": "Rakdos Affinity",
+      "rating": 1499.576,
+      "lastActiveDate": "2026-05-03"
+    },
     "supermeon:::UNKNOWN": {
       "playerKey": "supermeon:::UNKNOWN",
       "displayName": "SuperMeon (UNKNOWN)",
@@ -56859,8 +56994,8 @@
       "basePlayerKey": "syns",
       "basePlayerName": "Syns",
       "deck": "Mono Red Madness",
-      "rating": 1507.622,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1525.988,
+      "lastActiveDate": "2026-05-03"
     },
     "syns:::Poison Storm": {
       "playerKey": "syns:::Poison Storm",
@@ -57743,6 +57878,15 @@
       "deck": "Jund Wildfire",
       "rating": 1500.917,
       "lastActiveDate": "2025-02-22"
+    },
+    "terracotta99:::Boros Synth": {
+      "playerKey": "terracotta99:::Boros Synth",
+      "displayName": "Terracotta99 (Boros Synth)",
+      "basePlayerKey": "terracotta99",
+      "basePlayerName": "Terracotta99",
+      "deck": "Boros Synth",
+      "rating": 1514.712,
+      "lastActiveDate": "2026-05-03"
     },
     "terracotta99:::Mono Blue Faeries": {
       "playerKey": "terracotta99:::Mono Blue Faeries",
@@ -61026,8 +61170,8 @@
       "basePlayerKey": "ultrajelle",
       "basePlayerName": "ultrajelle",
       "deck": "Gruul Eldrazi Stompy",
-      "rating": 1503.21,
-      "lastActiveDate": "2026-03-08"
+      "rating": 1507.286,
+      "lastActiveDate": "2026-05-03"
     },
     "ultrajelle:::Gruul Land Destruction": {
       "playerKey": "ultrajelle:::Gruul Land Destruction",
@@ -61665,8 +61809,8 @@
       "basePlayerKey": "viashinoperuano",
       "basePlayerName": "viashinoperuano",
       "deck": "Boros Synth",
-      "rating": 1631.936,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1639.85,
+      "lastActiveDate": "2026-05-03"
     },
     "viashinoperuano:::Dimir Fae": {
       "playerKey": "viashinoperuano:::Dimir Fae",
@@ -62115,8 +62259,8 @@
       "basePlayerKey": "vini_torres",
       "basePlayerName": "vini_torres",
       "deck": "Red Deck Wins",
-      "rating": 1610.985,
-      "lastActiveDate": "2026-05-01"
+      "rating": 1592.401,
+      "lastActiveDate": "2026-05-03"
     },
     "vini_torres:::Red Kuldotha": {
       "playerKey": "vini_torres:::Red Kuldotha",
@@ -62556,8 +62700,8 @@
       "basePlayerKey": "walker735",
       "basePlayerName": "Walker735",
       "deck": "Jund Wildfire",
-      "rating": 1694.175,
-      "lastActiveDate": "2026-05-02"
+      "rating": 1687.115,
+      "lastActiveDate": "2026-05-03"
     },
     "walker735:::Red Kuldotha": {
       "playerKey": "walker735:::Red Kuldotha",
@@ -65430,6 +65574,15 @@
       "rating": 1604.665,
       "lastActiveDate": "2026-04-19"
     },
+    "ziofrancone:::Mono Red Madness": {
+      "playerKey": "ziofrancone:::Mono Red Madness",
+      "displayName": "ziofrancone (Mono Red Madness)",
+      "basePlayerKey": "ziofrancone",
+      "basePlayerName": "ziofrancone",
+      "deck": "Mono Red Madness",
+      "rating": 1483.766,
+      "lastActiveDate": "2026-05-03"
+    },
     "ziofrancone:::Rakdos Madness": {
       "playerKey": "ziofrancone:::Rakdos Madness",
       "displayName": "ziofrancone (Rakdos Madness)",
@@ -65490,8 +65643,8 @@
       "basePlayerKey": "zodiacek",
       "basePlayerName": "Zodiacek",
       "deck": "Grixis Affinity",
-      "rating": 1490.472,
-      "lastActiveDate": "2026-04-26"
+      "rating": 1479.843,
+      "lastActiveDate": "2026-05-03"
     },
     "zodiacek:::UNKNOWN": {
       "playerKey": "zodiacek:::UNKNOWN",
