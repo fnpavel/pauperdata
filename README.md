@@ -4,220 +4,6 @@ A browser-based dashboard for exploring Pauper tournament data with focused view
 
 This repository includes both a front-end dashboard and a full data pipeline that builds the dataset from Google Drive sources.
 
-## Data Pipeline
-
-The repository includes a local + GitHub Actions pipeline that keeps the dashboard data in sync with a shared Google Drive workbook archive.
-
-### What The Pipeline Does
-
-1. Reads workbook metadata from Google Drive or from the local `dataGoogleDrive/` archive.
-2. Extracts workbook sheets to staged CSV files for inspection and import.
-3. Rebuilds event data and matchup data under `data/`.
-4. Regenerates derived Elo outputs under `data/precalculated-elo/`.
-5. Refreshes `thumbnail.png` and updates the cache-bust token in `index.html`.
-6. Optionally commits and publishes the generated output.
-7. Optionally sends a Discord notification after a successful publish.
-
-### Main Paths
-
-#### Normal Sync
-
-Use this when you want the pipeline to look for new Drive workbooks and process only workbooks that are both:
-- not already listed in `pipeline/processed-drive-workbooks.json`
-- old enough to pass the recent-file safety cutoff
-
-Command:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py sync --yes --skip-publish
-```
-
-Notes:
-- `sync` is incremental by default.
-- `--skip-publish` keeps the run local and avoids branch switching or git pushes.
-
-#### Full Rebuild
-
-Use this when you want to rebuild the generated dataset from the local workbook archive without calling Google Drive.
-
-Command:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py rebuild --full
-```
-
-Notes:
-- This path rebuilds events, matchups, Elo, and the thumbnail.
-- The full rebuild path also runs the Elo builder with full-rebuild pruning enabled.
-
-#### Bounded Validation Mode
-
-Use `--limit N` when you want a smaller validation run.
-
-Examples:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py list --drive --limit 5
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py sync --yes --skip-publish --limit 5
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py rebuild --full --limit 5
-```
-
-Behavior:
-- `sync --limit N` limits the run to the most recent eligible sync candidates.
-- `rebuild --limit N` limits the rebuild to the most recent local archive workbooks after excludes.
-- If `--limit` is omitted, default behavior is unchanged.
-
-#### Replay Validation Mode
-
-Use `--reimport-latest` when validation should replay the newest visible Drive workbooks even if they were already processed before.
-
-Example:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py sync --yes --skip-publish --reimport-latest --limit 5
-```
-
-Behavior:
-- Ignores `pipeline/processed-drive-workbooks.json` for selection.
-- Reimports from the newest visible complete Drive workbooks.
-- Excludes `[Incomplete]` workbooks by default.
-- Reuses the existing include-relative-path rebuild path so event and matchup rows are replaced instead of duplicated.
-
-### Thumbnail Generation
-
-Thumbnail generation is part of the rebuild path, not a separate publish step.
-
-- Script: `pipeline/update-thumbnail.mjs`
-- Outputs:
-  - `thumbnail.png`
-  - updated thumbnail version token inside `index.html`
-
-If thumbnail generation fails, the pipeline logs the failure and keeps the rebuilt data instead of failing the whole run.
-
-### Publish Step
-
-Publish is handled by `pipeline/publish_pipeline_changes.py`.
-
-What it does:
-- requires the repo to be on the configured data branch
-- refuses to publish if unrelated tracked changes or untracked files are present
-- stages generated data files plus `thumbnail.png` and `index.html`
-- commits on the data branch
-- fast-forwards the main branch
-
-Dry-run example:
-
-```powershell
-.venv\Scripts\python.exe pipeline\publish_pipeline_changes.py --dry-run
-```
-
-### Discord Notification Step
-
-Discord notification is handled by `pipeline/discord_notify.py`.
-
-What it does:
-- prefers publish context from `pipeline/pipeline-state.json`
-- skips when no relevant published data changes were recorded
-- can fall back to explicit workflow git comparison context if needed
-- waits for the live site to serve the expected thumbnail version unless skipped
-
-Dry-run example:
-
-```powershell
-.venv\Scripts\python.exe pipeline\discord_notify.py --dry-run --skip-live-site-wait
-```
-
-### GitHub Actions
-
-Main workflow:
-- `.github/workflows/drive-data-sync-pipeline.yml`
-
-Manual workflow inputs include:
-- inspect mode
-- sync mode
-- full rebuild mode
-- optional `max_workbooks` limit for validation runs
-- publish toggle
-- Discord toggle
-
-### Common Local Validation Commands
-
-Inspect:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py list --drive --limit 5
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py list --latest --limit 5
-```
-
-Bounded sync validation:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py sync --yes --skip-publish --limit 5
-```
-
-Replay validation:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py sync --yes --skip-publish --reimport-latest --limit 5
-```
-
-Bounded rebuild validation:
-
-```powershell
-.venv\Scripts\python.exe pipeline\sync_drive_and_rebuild_all.py rebuild --full --limit 5
-```
-
-Publish simulation:
-
-```powershell
-.venv\Scripts\python.exe pipeline\publish_pipeline_changes.py --dry-run
-```
-
-Discord simulation:
-
-```powershell
-.venv\Scripts\python.exe pipeline\discord_notify.py --dry-run --skip-live-site-wait
-```
-
-### Important Environment Variables
-
-Used by the GitHub Actions wrapper:
-- `GOOGLE_SERVICE_ACCOUNT_JSON`
-- `GOOGLE_DRIVE_FOLDER_ID`
-- `PIPELINE_REMOTE`
-- `PIPELINE_DATA_BRANCH`
-- `PIPELINE_MAIN_BRANCH`
-- `PIPELINE_COMMIT_MESSAGE_TEMPLATE`
-
-Used by the local pipeline config:
-- `GOOGLE_SERVICE_ACCOUNT_FILE`
-- `GOOGLE_DRIVE_FOLDER_ID`
-
-Used by Discord notification:
-- `DISCORD_WEBHOOK_1`
-- `DISCORD_WEBHOOK_2`
-- `DISCORD_WEBHOOK_3`
-- `PIPELINE_STATE_PATH`
-- `EVENT_NAME`
-- `BEFORE_SHA`
-- `CURRENT_SHA`
-- `DASHBOARD_BASE_URL`
-
-### Known Failure Modes
-
-- Drive download timeout
-  - Large or older combined workbook files can still hit repeated chunk timeouts.
-- Already-processed workbooks
-  - Normal `sync` intentionally ignores workbooks listed in `pipeline/processed-drive-workbooks.json`.
-- Incomplete workbooks
-  - `[Incomplete]` workbooks may be visible in inspect output but are skipped by replay validation mode by default.
-- Dirty worktree during publish
-  - Publish refuses to continue when unrelated tracked changes or untracked files are present.
-- Wrong branch for publish
-  - Publish requires the configured data branch.
-- Thumbnail generation failure
-  - The pipeline continues, but the thumbnail and cache-bust token may be stale until the next successful run.
-
 ## What It Includes
 
 - `Event Analysis` with `Single Event` and `Multiple Events` modes
@@ -238,7 +24,6 @@ Used by Discord notification:
 This project is a static front-end app thus serve the folder with any simple local static server
 
 Note: the dashboard loads some assets from external CDNs, including Chart.js, plugins, Google Fonts, and Google Analytics. If those files are not already cached by your browser or available locally on your machine, an internet connection will be needed.
-
 
 ## Main Views
 
@@ -299,6 +84,12 @@ Note: the dashboard loads some assets from external CDNs, including Chart.js, pl
 This project is licensed under the MIT License.
 
 See [LICENSE](./LICENSE) for the full text.
+
+## Disclaimer
+
+All data is crowdsourced from the community and thus this project and dashboard is for the community.
+
+Magic: The Gathering and Magic: The Gathering Online are trademarks of Wizards of the Coast LLC. The dashboard is not affiliated with, endorsed by, or sponsored by Wizards of the Coast.
 
 ## Documentation Notes
 
