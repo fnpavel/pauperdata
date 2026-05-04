@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Helpers for running the data pipeline from GitHub Actions."""
+"""Helpers for running the data pipeline from GitHub Actions.
+
+This module backs the supported CI wrapper path. Keep workflow bootstrap logic
+here rather than duplicating config-writing behavior in workflow YAML.
+"""
 
 from __future__ import annotations
 
@@ -43,6 +47,37 @@ def _read_service_account_payload() -> dict[str, Any]:
     return payload
 
 
+def _read_ignored_drive_folders() -> list[str]:
+    raw_value = _read_env("PIPELINE_IGNORED_DRIVE_FOLDERS", default="")
+    if not raw_value:
+        return ["Combined Matchups"]
+
+    try:
+        payload = json.loads(raw_value)
+    except json.JSONDecodeError:
+        payload = [part.strip() for part in raw_value.split(",")]
+
+    if isinstance(payload, str):
+        raw_items: list[object] = [payload]
+    elif isinstance(payload, list):
+        raw_items = payload
+    else:
+        raise SystemExit(
+            "PIPELINE_IGNORED_DRIVE_FOLDERS must be a JSON array, JSON string, or comma-separated list."
+        )
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_item in raw_items:
+        folder_name = str(raw_item).strip()
+        if not folder_name or folder_name in seen:
+            continue
+        seen.add(folder_name)
+        normalized.append(folder_name)
+
+    return normalized or ["Combined Matchups"]
+
+
 @dataclass(frozen=True)
 class AutomationSettings:
     drive_folder_id: str
@@ -50,6 +85,7 @@ class AutomationSettings:
     data_branch: str
     main_branch: str
     commit_message_template: str
+    ignored_drive_folders: list[str]
     service_account_payload: dict[str, Any]
 
 
@@ -63,6 +99,7 @@ def load_automation_settings() -> AutomationSettings:
             "PIPELINE_COMMIT_MESSAGE_TEMPLATE",
             default="chore(data): import {workbook_name}",
         ),
+        ignored_drive_folders=_read_ignored_drive_folders(),
         service_account_payload=_read_service_account_payload(),
     )
 
@@ -98,6 +135,7 @@ class ManagedPipelineConfig:
             "data_branch": self.settings.data_branch,
             "main_branch": self.settings.main_branch,
             "commit_message_template": self.settings.commit_message_template,
+            "ignored_drive_folders": self.settings.ignored_drive_folders,
         }
         PIPELINE_CONFIG_PATH.write_text(
             json.dumps(config_payload, indent=2) + "\n",

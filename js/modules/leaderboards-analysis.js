@@ -4,14 +4,23 @@ import { escapeHtml, getTopMode } from './filters/shared.js';
 import { updateElementHTML, updateElementText, triggerUpdateAnimation } from '../utils/dom.js';
 import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import {
+  INTEGRITY_VERSION,
+  METADATA_IDENTITY_COLUMNS_LABEL,
+  METADATA_VERSION_LABEL,
+  buildLeaderboardIntegritySummary,
+  compareLeaderboardCsvText,
+  readStoredLeaderboardCsvReference,
+  writeStoredLeaderboardCsvReference
+} from '../utils/leaderboard-csv-integrity.js';
+import {
   DEFAULT_RANKINGS_OPTIONS,
   buildRankingsDataset,
   getRankingsKFactor,
   getRankingsAvailableDates
 } from '../utils/rankings-data.js';
-import { buildYearlyEloRatings } from '../utils/elo-rating.js';
 import {
   buildEventLevelEloPoints,
+  buildLeaderboardYearBands,
   buildLeaderboardTimeline,
   createLeaderboardPlayerEloChart,
   createLeaderboardTimelineChart,
@@ -26,17 +35,28 @@ import {
 } from './export-table-csv.js';
 import { downloadTextPdfReport } from './export-pdf-report.js';
 import { openSingleEventPlayerInAnalysis } from './event-analysis.js';
-import { getAnalysisRows } from '../utils/analysis-data.js';
+import { getAllAnalysisRows, getAnalysisRows } from '../utils/analysis-data.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
+import { LEADERBOARD_TOP8_DECK_COLORS } from '../utils/deck-colors.js';
 
 const DEFAULT_EVENT_TYPE = 'online';
 const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
 const DEFAULT_LEADERBOARD_RESET_MODE = 'continuous';
+const DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE = 'elo';
+const DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY = 'month';
+const MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK = 8;
 const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
 const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
 const LEADERBOARD_REPORT_FOCUSED_DECK_COLOR = '#5aa9e6';
 const LEADERBOARD_ELO_UNKNOWN_DECK_NOTE = 'Elo always includes UNKNOWN decks (player vs player), so the Data Quality toggle is not available.';
+const LEADERBOARD_TIMELINE_RANK_MEDALS = Object.freeze({
+  1: '🥇',
+  2: '🥈',
+  3: '🥉'
+});
+const LEADERBOARD_TIMELINE_RANK_COLORS = LEADERBOARD_TOP8_DECK_COLORS;
+const LEADERBOARD_TIMELINE_RANK_OUTLIER_COLOR = '#ff8c42';
 const LEADERBOARD_SORTABLE_KEYS = Object.freeze({
   elo: new Set(['displayName', 'seasonYear', 'rating', 'eventCount', 'matches', 'wins', 'losses', 'winRate', 'top8Conversion', 'challengeWins', 'lastActiveDate'])
 });
@@ -154,6 +174,7 @@ let currentLeaderboardDataset = {
   },
   eventTypes: [DEFAULT_EVENT_TYPE],
   period: null,
+  detailsLoaded: false,
   processedMatches: [],
   historyByPlayer: new Map(),
   eventResultLookup: new Map(),
@@ -168,7 +189,8 @@ let leaderboardTableSort = {
   direction: 'desc'
 };
 let activeLeaderboardDrilldownCategory = '';
-let activeLeaderboardSearchTerm = '';
+let activeSearchTerm = '';
+let selectedDeck = LEADERBOARD_PLAYER_TOTAL_SCOPE;
 let activeLeaderboardPlayerDrilldown = null;
 let activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
 let leaderboardDatasetRequestId = 0;
@@ -177,6 +199,183 @@ let leaderboardPlayerEloChart = null;
 let leaderboardTimelineChart = null;
 let activeLeaderboardTimelineSelections = new Set();
 let activeLeaderboardTimelineSearchTerm = '';
+let activeLeaderboardTimelineChartMode = DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
+let activeLeaderboardTimelineRankCohortGranularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY;
+let leaderboardTimelineVisibilityBySelectionKey = new Map();
+let leaderboardThresholdRenderTimer = null;
+let leaderboardDatasetCache = new Map();
+let leaderboardDeckRowsCache = new Map();
+let leaderboardIntegrityTraceSequence = 0;
+
+const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
+const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
+
+function isLeaderboardTimelineDebugEnabled() {
+  try {
+    return globalThis?.localStorage?.getItem('leaderboardTimelineDebug') === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function logLeaderboardTimelineDebug(label = '', payload = null) {
+  if (!isLeaderboardTimelineDebugEnabled()) {
+    return;
+  }
+
+  if (typeof payload === 'undefined') {
+    console.log(`[Timeline Debug] ${label}`);
+    return;
+  }
+
+  console.log(`[Timeline Debug] ${label}`, payload);
+}
+
+function isLeaderboardIntegrityDebugEnabled() {
+  try {
+    return globalThis?.localStorage?.getItem('leaderboardIntegrityDebug') === 'true';
+  } catch {
+    return false;
+  }
+}
+
+function normalizeLeaderboardTraceValue(value) {
+  return String(value ?? '').trim();
+}
+
+function getLeaderboardTraceIdentityKey(row = {}) {
+  const seasonKey = normalizeLeaderboardTraceValue(row?.seasonKey);
+  const playerKey = normalizeLeaderboardTraceValue(row?.playerKey || row?.basePlayerKey);
+  const deckScope = normalizeLeaderboardTraceValue(row?.deck || row?.deckScope);
+  return [seasonKey, playerKey, deckScope].filter(Boolean).join(':::');
+}
+
+function getLeaderboardTraceStatVector(row = {}) {
+  const matchCount = row?.matches ?? row?.matchCount;
+  return {
+    rating: Number(row?.rating || 0),
+    eventCount: Number(row?.eventCount || 0),
+    matches: Number(matchCount || 0),
+    wins: Number(row?.wins || 0),
+    losses: Number(row?.losses || 0),
+    draws: Number(row?.draws || 0),
+    winRate: Number(row?.winRate || 0),
+    top8Count: Number(row?.top8Count || 0),
+    top8Conversion: Number(row?.top8Conversion || 0),
+    challengeWins: Number(row?.challengeWins || 0),
+    lastActiveDate: normalizeLeaderboardTraceValue(row?.lastActiveDate),
+    seasonYear: normalizeLeaderboardTraceValue(row?.seasonYear || row?.displaySeasonYear),
+    deck: normalizeLeaderboardTraceValue(row?.deck)
+  };
+}
+
+function hashLeaderboardTraceStatVector(vector = {}) {
+  const source = JSON.stringify(vector);
+  let hash = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    hash = ((hash << 5) - hash) + source.charCodeAt(index);
+    hash |= 0;
+  }
+  return `h${(hash >>> 0).toString(16)}`;
+}
+
+function buildLeaderboardIntegritySnapshot(rows = [], {
+  includeRank = true
+} = {}) {
+  return (Array.isArray(rows) ? rows : []).map((row, index) => {
+    const statVector = getLeaderboardTraceStatVector(row);
+    return {
+      identityKey: getLeaderboardTraceIdentityKey(row),
+      playerKey: normalizeLeaderboardTraceValue(row?.playerKey || row?.basePlayerKey),
+      player: normalizeLeaderboardTraceValue(row?.displayName || row?.player || row?.basePlayerName),
+      elo: Number(row?.rating || 0),
+      rank: includeRank ? Number(row?.displayRank || row?.rank || index + 1) : null,
+      statVector,
+      statHash: hashLeaderboardTraceStatVector(statVector),
+      rowIndex: index
+    };
+  });
+}
+
+function logLeaderboardIntegritySnapshot(stage = '', rows = [], options = {}) {
+  if (!isLeaderboardIntegrityDebugEnabled()) {
+    return [];
+  }
+
+  const snapshot = buildLeaderboardIntegritySnapshot(rows, options);
+  leaderboardIntegrityTraceSequence += 1;
+  console.info(`[Leaderboard Integrity][${leaderboardIntegrityTraceSequence}] ${stage}`, snapshot.map(item => ({
+    identityKey: item.identityKey,
+    playerKey: item.playerKey,
+    elo: item.elo,
+    rank: item.rank,
+    statHash: item.statHash,
+    statVector: item.statVector
+  })));
+  return snapshot;
+}
+
+function compareLeaderboardIntegritySnapshots(stage = '', beforeSnapshot = [], afterSnapshot = [], {
+  allowRankOnlyChanges = true
+} = {}) {
+  if (!isLeaderboardIntegrityDebugEnabled()) {
+    return;
+  }
+
+  const beforeByIdentity = new Map((beforeSnapshot || []).map(item => [item.identityKey, item]));
+  const afterByIdentity = new Map((afterSnapshot || []).map(item => [item.identityKey, item]));
+  const onlyBefore = [];
+  const onlyAfter = [];
+  const changedStats = [];
+  const changedRankOnly = [];
+
+  beforeByIdentity.forEach((beforeItem, identityKey) => {
+    if (!afterByIdentity.has(identityKey)) {
+      onlyBefore.push(beforeItem);
+      return;
+    }
+
+    const afterItem = afterByIdentity.get(identityKey);
+    if (beforeItem.statHash !== afterItem.statHash) {
+      changedStats.push({
+        identityKey,
+        before: beforeItem,
+        after: afterItem
+      });
+      return;
+    }
+
+    if (beforeItem.rank !== afterItem.rank || beforeItem.rowIndex !== afterItem.rowIndex) {
+      changedRankOnly.push({
+        identityKey,
+        playerKey: afterItem.playerKey,
+        beforeRank: beforeItem.rank,
+        afterRank: afterItem.rank,
+        beforeIndex: beforeItem.rowIndex,
+        afterIndex: afterItem.rowIndex,
+        statHash: afterItem.statHash
+      });
+    }
+  });
+
+  afterByIdentity.forEach((afterItem, identityKey) => {
+    if (!beforeByIdentity.has(identityKey)) {
+      onlyAfter.push(afterItem);
+    }
+  });
+
+  if (!onlyBefore.length && !onlyAfter.length && !changedStats.length && (!changedRankOnly.length || allowRankOnlyChanges)) {
+    console.info(`[Leaderboard Integrity] ${stage}: no identity/stat drift detected.`);
+    return;
+  }
+
+  console.warn(`[Leaderboard Integrity] ${stage}`, {
+    onlyBefore,
+    onlyAfter,
+    changedStats,
+    changedRankOnly
+  });
+}
 
 function getLeaderboardsSection() {
   return document.getElementById('leaderboardsSection');
@@ -252,6 +451,26 @@ function getLeaderboardTimelineHelper() {
   return document.getElementById('leaderboardTimelineHelper');
 }
 
+function getLeaderboardTimelineTitle() {
+  return document.getElementById('leaderboardTimelineTitle');
+}
+
+function getLeaderboardTimelineModeButtons() {
+  return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-timeline-mode]') || []);
+}
+
+function getLeaderboardTimelineRankCohortButtons() {
+  return Array.from(getLeaderboardsSection()?.querySelectorAll('[data-leaderboard-timeline-rank-cohort]') || []);
+}
+
+function getLeaderboardTimelineRankCohortButtonGroup() {
+  return document.getElementById('leaderboardTimelineRankCohortButtons');
+}
+
+function getLeaderboardTimelineLoadingState() {
+  return document.getElementById('leaderboardTimelineLoadingState');
+}
+
 function getLeaderboardTimelineSearchInput() {
   return document.getElementById('leaderboardTimelinePlayerSearchInput');
 }
@@ -266,6 +485,10 @@ function getLeaderboardTimelineChipPanel() {
 
 function getLeaderboardTimelineSearchStatus() {
   return document.getElementById('leaderboardTimelineSearchStatus');
+}
+
+function getLeaderboardTimelineDebugFallback() {
+  return document.getElementById('leaderboardTimelineDebugFallback');
 }
 
 function getLeaderboardTimelineShowAllLinesButton() {
@@ -672,7 +895,12 @@ function getLeaderboardRowYearGainValue(row = {}, year = '') {
     return '--';
   }
 
-  const historyEntries = currentLeaderboardDataset.historyByPlayer?.get(row.playerKey) || [];
+  const rowKey = String(row?.playerKey || '').trim();
+  const historyMap = currentLeaderboardDataset.deckDataset?.historyByPlayer?.has(rowKey)
+    ? currentLeaderboardDataset.deckDataset.historyByPlayer
+    : currentLeaderboardDataset.historyByPlayer;
+  const historyEntries = Array.isArray(historyMap?.get(rowKey)) ? historyMap.get(rowKey) : [];
+
   const yearTotals = historyEntries.reduce((totals, entry) => {
     const entryYear = String(entry.date || '').slice(0, 4);
     if (entryYear !== normalizedYear || !Number.isFinite(Number(entry.delta))) {
@@ -810,7 +1038,12 @@ function renderLeaderboardTitleBadgeRow(dataset = currentLeaderboardDataset) {
     return;
   }
 
-  badgeRow.innerHTML = buildLeaderboardRatingBadgeRowHtml(dataset);
+  badgeRow.innerHTML = `
+    <div class="leaderboard-info-badge-row">
+      ${buildLeaderboardRatingBadgeHtml('Starting Rating', DEFAULT_RANKINGS_OPTIONS.startingRating)}
+      ${buildLeaderboardRatingBadgeHtml('K-Factor', getLeaderboardResolvedKFactor(dataset))}
+    </div>
+  `;
   badgeRow.hidden = false;
 }
 
@@ -1349,6 +1582,11 @@ function formatRating(value) {
   return Number.isFinite(numericValue) ? Math.round(numericValue).toString() : '--';
 }
 
+function formatLeaderboardRank(value) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? Math.max(1, Math.round(numericValue)).toString() : '--';
+}
+
 function formatRatingDelta(value) {
   const numericValue = Number(value);
   return Number.isFinite(numericValue)
@@ -1398,6 +1636,10 @@ function resolveLeaderboardEventTypeMeta(eventName = '') {
     label: String(groupInfo?.label || rawName || 'Event').trim() || 'Event',
     order: Number.isFinite(Number(groupInfo?.order)) ? Number(groupInfo.order) : 100
   };
+}
+
+function getLeaderboardEventRows() {
+  return Array.isArray(getAllAnalysisRows()) ? getAllAnalysisRows() : [];
 }
 
 function buildLeaderboardEventSummary(dataset = currentLeaderboardDataset) {
@@ -1488,16 +1730,35 @@ function formatWindowRange(startDate = '', endDate = '') {
 }
 
 function getWindowLabel(period, selectedYears = [], startDate = '', endDate = '') {
+  const resolvedYears = [...new Set((Array.isArray(selectedYears) ? selectedYears : []).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+
+  if (period?.windowMode === 'seasonal') {
+    if (resolvedYears.length === 1) {
+      return resolvedYears[0];
+    }
+
+    if (period?.year) {
+      return String(period.year);
+    }
+  }
+
+  if (period?.windowMode === 'range' || resolvedYears.length > 1) {
+    const rangeLabel = resolvedYears.length > 1
+      ? `${resolvedYears[0]}\u2013${resolvedYears[resolvedYears.length - 1]}`
+      : (resolvedYears[0] || String(period?.startYear || period?.endYear || '').trim());
+    if (rangeLabel) {
+      return period?.resetMode === 'yearly'
+        ? `${rangeLabel} (reset each year)`
+        : rangeLabel;
+    }
+  }
+
   if (period?.label) {
     return period.label;
   }
 
-  if (selectedYears.length === 1) {
-    return `${selectedYears[0]} Season`;
-  }
-
-  if (selectedYears.length > 1) {
-    return `${selectedYears[0]}-${selectedYears[selectedYears.length - 1]}`;
+  if (resolvedYears.length === 1) {
+    return resolvedYears[0];
   }
 
   if (startDate && endDate) {
@@ -1608,6 +1869,70 @@ function formatNameList(names = [], maxVisible = 3) {
   return `${cleanedNames.slice(0, maxVisible).join(', ')} +${cleanedNames.length - maxVisible} more`;
 }
 
+function getLeaderboardDatasetCacheKey({
+  eventTypes = [],
+  startDate = '',
+  endDate = '',
+  resetByYear = true,
+  entityMode = 'player',
+  includeHistory = false
+} = {}) {
+  const normalizedTypes = [...new Set((Array.isArray(eventTypes) ? eventTypes : [eventTypes]).filter(Boolean))].sort();
+  return JSON.stringify({
+    eventTypes: normalizedTypes,
+    startDate: String(startDate || '').trim(),
+    endDate: String(endDate || '').trim(),
+    resetByYear: resetByYear !== false,
+    entityMode: String(entityMode || 'player').trim(),
+    includeHistory: includeHistory === true
+  });
+}
+
+function pruneLeaderboardDatasetCache() {
+  if (leaderboardDatasetCache.size <= LEADERBOARD_DATASET_CACHE_LIMIT) {
+    return;
+  }
+
+  const oldestKey = leaderboardDatasetCache.keys().next().value;
+  if (oldestKey) {
+    leaderboardDatasetCache.delete(oldestKey);
+  }
+}
+
+async function loadLeaderboardDatasetCached(request = {}, options = {}) {
+  const cacheKey = getLeaderboardDatasetCacheKey({
+    eventTypes: request.eventTypes,
+    startDate: request.startDate,
+    endDate: request.endDate,
+    resetByYear: options.resetByYear,
+    entityMode: options.entityMode,
+    includeHistory: options.includeHistory
+  });
+
+  if (leaderboardDatasetCache.has(cacheKey)) {
+    return leaderboardDatasetCache.get(cacheKey);
+  }
+
+  const pendingRequest = buildRankingsDataset(request, options)
+    .then(dataset => {
+      leaderboardDatasetCache.set(cacheKey, dataset);
+      pruneLeaderboardDatasetCache();
+      return dataset;
+    })
+    .catch(error => {
+      leaderboardDatasetCache.delete(cacheKey);
+      throw error;
+    });
+
+  leaderboardDatasetCache.set(cacheKey, pendingRequest);
+  pruneLeaderboardDatasetCache();
+  return pendingRequest;
+}
+
+function clearLeaderboardStageBCaches() {
+  leaderboardDeckRowsCache = new Map();
+}
+
 function formatShortDate(dateString = '') {
   if (!dateString) {
     return '--';
@@ -1660,9 +1985,34 @@ function normalizeLeaderboardDeckScopeKey(value = '') {
   return normalizedValue || LEADERBOARD_PLAYER_TOTAL_SCOPE;
 }
 
+function normalizeLeaderboardDeckNameKey(value = '') {
+  return String(value ?? '').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
 function getLeaderboardDeckDisplayName(deck = '') {
   const normalizedDeck = String(deck || '').trim();
   return normalizedDeck || 'Unknown Deck';
+}
+
+function resolveRowRatingForScope(row = {}, dataset = currentLeaderboardDataset, deckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+  const normalizedScope = normalizeLeaderboardDeckScopeKey(deckScope);
+  const normalizedSeasonKey = String(row?.seasonKey || '').trim();
+  const playerKey = String(row?.playerKey || '').trim();
+
+  const historyEntries = normalizedScope === LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? Array.isArray(dataset?.historyByPlayer?.get(playerKey)) ? dataset.historyByPlayer.get(playerKey) : []
+    : Array.isArray(dataset?.deckDataset?.historyByPlayer?.get(normalizedScope)) ? dataset.deckDataset.historyByPlayer.get(normalizedScope) : [];
+
+  const scopeHistory = (Array.isArray(historyEntries) ? historyEntries : [])
+    .filter(entry => String(entry?.seasonKey || '').trim() === normalizedSeasonKey)
+    .sort(compareHistoryEntriesDescending);
+
+  const latestEntry = scopeHistory[0];
+  if (latestEntry && Number.isFinite(Number(latestEntry.ratingAfter))) {
+    return Number(latestEntry.ratingAfter);
+  }
+
+  return Number.isFinite(Number(row?.rating)) ? Number(row.rating) : 0;
 }
 
 function compareHistoryEntriesDescending(a, b) {
@@ -1716,7 +2066,7 @@ function getHistoryTotalDelta(historyEntries = []) {
 function buildLeaderboardScopeData({
   key = LEADERBOARD_PLAYER_TOTAL_SCOPE,
   type = 'all',
-  label = 'All Decks',
+  label = getDeckDisplayName(LEADERBOARD_PLAYER_TOTAL_SCOPE),
   row = null,
   historyEntries = [],
   totalRow = null
@@ -1797,18 +2147,33 @@ function resolveActiveLeaderboardPlayerDeckScope(deckSummaries = []) {
     : LEADERBOARD_PLAYER_TOTAL_SCOPE;
 }
 
+function resolveLeaderboardPlayerDeckScopeForDeckName(deckSummaries = [], selectedDeckName = '') {
+  const normalizedSelectedDeckName = normalizeLeaderboardDeckNameKey(selectedDeckName);
+  if (!normalizedSelectedDeckName) {
+    return LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  }
+
+  const matchingScope = (Array.isArray(deckSummaries) ? deckSummaries : []).find(scope => {
+    const scopeDeckName = normalizeLeaderboardDeckNameKey(scope?.row?.deck || scope?.label || '');
+    return scopeDeckName && scopeDeckName === normalizedSelectedDeckName;
+  });
+
+  return matchingScope?.key || LEADERBOARD_PLAYER_TOTAL_SCOPE;
+}
+
 function getLeaderboardPlayerDrilldownModel(row) {
   // Player drilldowns always include an all-decks scope plus optional per-deck
   // scopes so users can compare total Elo against deck-specific Elo.
+  const baseRow = getLeaderboardOverallPlayerRow(row);
   const totalScope = buildLeaderboardScopeData({
     key: LEADERBOARD_PLAYER_TOTAL_SCOPE,
     type: 'all',
-    label: 'All Decks',
-    row,
-    historyEntries: getPlayerHistoryForRow(row),
-    totalRow: row
+    label: getDeckDisplayName(LEADERBOARD_PLAYER_TOTAL_SCOPE),
+    row: baseRow,
+    historyEntries: getPlayerHistoryForRow(baseRow),
+    totalRow: baseRow
   });
-  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(row);
+  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(baseRow);
   totalScope.uniqueDeckCount = deckSummaries.length || totalScope.uniqueDeckCount;
   const activeScopeKey = resolveActiveLeaderboardPlayerDeckScope(deckSummaries);
   const activeScope = activeScopeKey === LEADERBOARD_PLAYER_TOTAL_SCOPE
@@ -1816,12 +2181,18 @@ function getLeaderboardPlayerDrilldownModel(row) {
     : deckSummaries.find(scope => scope.key === activeScopeKey) || totalScope;
 
   return {
-    row,
+    row: baseRow,
     totalScope,
     deckSummaries,
     activeScopeKey,
     activeScope
   };
+}
+
+function initializeLeaderboardPlayerDeckScope(row, selectedDeckName = '') {
+  const baseRow = getLeaderboardOverallPlayerRow(row);
+  const deckSummaries = getLeaderboardDeckSummariesForPlayerRow(baseRow);
+  activeLeaderboardPlayerDeckScope = resolveLeaderboardPlayerDeckScopeForDeckName(deckSummaries, selectedDeckName);
 }
 
 function normalizeLeaderboardSearchText(value) {
@@ -1853,7 +2224,7 @@ function getLeaderboardEventResultWinRate(row = {}) {
 function buildLeaderboardEventResultLookup(dataset = currentLeaderboardDataset) {
   // Elo match records do not contain finish/rank details, so join back to the
   // event results dataset by event + normalized player identity.
-  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const eventRows = getLeaderboardEventRows();
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
       .map(value => String(value || '').trim().toLowerCase())
@@ -2100,8 +2471,10 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   updateLeaderboardSearchStatus(message);
   const timelineSection = getLeaderboardTimelineSection();
   if (timelineSection) {
-    timelineSection.hidden = true;
+    timelineSection.hidden = false;
   }
+  renderLeaderboardTimelineModeButtons();
+  renderLeaderboardTimelineLoadingState('Loading chart...');
 }
 
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
@@ -2115,21 +2488,37 @@ function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard d
   if (timelineSection) {
     timelineSection.hidden = true;
   }
+  renderLeaderboardTimelineLoadingState('');
 }
 
-function renderLeaderboardFromCurrentState() {
+function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
   // Re-render every dependent surface from the current dataset snapshot. This is
   // used after threshold changes, sorts, theme refreshes, and async data loads.
   const searchInput = getLeaderboardSearchInput();
   const downloadButton = getLeaderboardDownloadButton();
 
-  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
+  // Reset the deck selection if the chosen deck no longer exists in the current dataset.
+  const availableDecks = getAllDeckNamesFromDataset(currentLeaderboardDataset);
+  if (selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE && !availableDecks.includes(selectedDeck)) {
+    selectedDeck = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  }
+
+  // Apply the selected deck filter first, then apply Elo thresholds.
+  currentLeaderboardRows = selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset)
+    : applyLeaderboardRowFilters(buildDeckViewRows(selectedDeck, currentLeaderboardDataset), currentLeaderboardDataset);
+  logLeaderboardIntegritySnapshot(
+    `renderLeaderboardFromCurrentState:${selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE ? 'all-decks' : `deck:${selectedDeck}`}`,
+    currentLeaderboardRows,
+    { includeRank: false }
+  );
+  renderLeaderboardDeckButton();
   renderLeaderboardEloThresholdControls();
 
   populateLeaderboardStats(currentLeaderboardDataset);
   updateLeaderboardDrilldownCardStates();
   renderLeaderboardTable(currentLeaderboardDataset);
-  renderLeaderboardTimelineChart();
+  renderLeaderboardTimelineChart({ forceRecreate: !thresholdOnly });
 
   if (searchInput) {
     searchInput.disabled = currentLeaderboardRows.length === 0;
@@ -2138,8 +2527,8 @@ function renderLeaderboardFromCurrentState() {
     downloadButton.disabled = currentLeaderboardRows.length === 0;
   }
 
-  if (activeLeaderboardSearchTerm) {
-    applyLeaderboardTableSearch(searchInput?.value || activeLeaderboardSearchTerm, { scrollIntoView: false });
+  if (activeSearchTerm) {
+    applyLeaderboardTableSearch(searchInput?.value || activeSearchTerm, { scrollIntoView: false });
   } else {
     clearLeaderboardSearchHighlights();
     updateLeaderboardSearchStatus('');
@@ -2172,6 +2561,7 @@ function clearLeaderboardSearchHighlights() {
 function sortLeaderboardRows(rows = []) {
   // Sorting is stable from a user perspective: selected column first, then the
   // default Elo ranking tie-breakers.
+  const beforeSnapshot = logLeaderboardIntegritySnapshot('sortLeaderboardRows:input', rows, { includeRank: false });
   const sortedRows = [...rows];
   const dataset = currentLeaderboardDataset;
   const mode = getLeaderboardSortMode(dataset);
@@ -2198,6 +2588,9 @@ function sortLeaderboardRows(rows = []) {
     return tieBreaker(a, b);
   });
 
+  const afterSnapshot = logLeaderboardIntegritySnapshot('sortLeaderboardRows:output', sortedRows, { includeRank: false });
+  compareLeaderboardIntegritySnapshots('sortLeaderboardRows', beforeSnapshot, afterSnapshot);
+
   return sortedRows;
 }
 
@@ -2221,7 +2614,7 @@ function applyLeaderboardTableSearch(searchTerm = '', { scrollIntoView = true } 
   const tableRows = Array.from(document.querySelectorAll('#leaderboardTableBody tr[data-leaderboard-player-name]'));
 
   clearLeaderboardSearchHighlights();
-  activeLeaderboardSearchTerm = normalizedSearchTerm;
+  activeSearchTerm = normalizedSearchTerm;
 
   if (!normalizedSearchTerm) {
     updateLeaderboardSearchStatus('');
@@ -2261,10 +2654,15 @@ function applyLeaderboardTableSearch(searchTerm = '', { scrollIntoView = true } 
 
 function getSortedLeaderboardRowsWithRank() {
   ensureLeaderboardSortState(currentLeaderboardDataset);
-  return sortLeaderboardRows(currentLeaderboardRows).map((row, index) => ({
+  const sortedRows = sortLeaderboardRows(currentLeaderboardRows);
+  const beforeRankSnapshot = logLeaderboardIntegritySnapshot('getSortedLeaderboardRowsWithRank:before-rank', sortedRows, { includeRank: false });
+  const rankedRows = sortedRows.map((row, index) => ({
     ...row,
     displayRank: index + 1
   }));
+  const afterRankSnapshot = logLeaderboardIntegritySnapshot('getSortedLeaderboardRowsWithRank:after-rank', rankedRows, { includeRank: true });
+  compareLeaderboardIntegritySnapshots('getSortedLeaderboardRowsWithRank', beforeRankSnapshot, afterRankSnapshot);
+  return rankedRows;
 }
 
 function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboardDataset) {
@@ -2308,7 +2706,7 @@ function buildLeaderboardEventStatsLookup(dataset = currentLeaderboardDataset) {
     registerRatedMatchEvent(`${seasonKey}:::${opponentBaseKey}`, match);
   });
 
-  const eventRows = Array.isArray(getAnalysisRows()) ? getAnalysisRows() : [];
+  const eventRows = getLeaderboardEventRows();
   const selectedEventTypes = new Set(
     (Array.isArray(dataset?.eventTypes) ? dataset.eventTypes : [])
       .map(value => String(value || '').trim().toLowerCase())
@@ -2392,7 +2790,7 @@ function augmentEloLeaderboardRowsWithEventStats(rows = [], dataset = currentLea
     const playerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
     const seasonKey = String(row?.seasonKey || '').trim() || getLeaderboardStatsSeasonKey(row?.lastActiveDate, dataset);
     const rowStats = statsLookup.get(`${seasonKey}:::${playerKey}`) || {
-      eventCount: countUniqueEvents(
+      eventCount: Number(row?.eventCount || 0) || countUniqueEvents(
         (Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : []).filter(match => {
           const matchSeasonKey = String(match?.seasonKey || '').trim();
           return matchSeasonKey === seasonKey && (
@@ -2472,14 +2870,26 @@ function getLeaderboardEloThresholdCsvMetadata() {
 }
 
 function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
+  const identityColumns = [
+    'Player',
+    getLeaderboardEntryFieldLabel(dataset),
+    'Identity Key',
+    'Player Key',
+    'Season Key',
+    'Deck Scope'
+  ];
+
   if (dataset?.mode === 'performance') {
     return [
+      [METADATA_VERSION_LABEL, INTEGRITY_VERSION],
+      [METADATA_IDENTITY_COLUMNS_LABEL, identityColumns.join('|')],
       ['View', getLeaderboardViewTitle(dataset)],
       ['Window Type', getLeaderboardWindowModeLabel(dataset.period)],
       ['Selected Window', getWindowLabel(dataset.period, dataset.summary.selectedYears, dataset.startDate, dataset.endDate)],
       ['Selected Years', getLeaderboardSelectedYearsLabel(dataset) || '--'],
       ['Date Range', formatWindowRange(dataset.startDate, dataset.endDate)],
       ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
+      ['Deck Scope', getLeaderboardActiveExportScopeLabel()],
       ['Metric', 'Top 8 Conversion'],
       ['Minimum Events', String(dataset.summary.minEvents || 0)],
       ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
@@ -2490,6 +2900,8 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   }
 
   const metadataRows = [
+    [METADATA_VERSION_LABEL, INTEGRITY_VERSION],
+    [METADATA_IDENTITY_COLUMNS_LABEL, identityColumns.join('|')],
     ['Starting Rating', String(DEFAULT_RANKINGS_OPTIONS.startingRating)],
     ['kFactor', String(getLeaderboardResolvedKFactor(dataset, dataset.period))],
     ['View', getLeaderboardViewTitle(dataset)],
@@ -2499,6 +2911,7 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
     ['Selected Years', getLeaderboardSelectedYearsLabel(dataset) || '--'],
     ['Date Range', formatWindowRange(dataset.startDate, dataset.endDate)],
     ['Event Types', (dataset.eventTypes || []).join(', ') || DEFAULT_EVENT_TYPE],
+    ['Deck Scope', getLeaderboardActiveExportScopeLabel()],
     ['Rated Matches', String(dataset.summary.ratedMatches || 0)],
     ['Tracked Players', String(dataset.summary.uniquePlayers || 0)],
     ['Leaderboard Rows', String(dataset.summary.seasonEntries || 0)],
@@ -2513,6 +2926,102 @@ function getLeaderboardCsvMetadata(dataset = currentLeaderboardDataset) {
   }
 
   return metadataRows;
+}
+
+function getLeaderboardCsvIdentityKey(row = {}) {
+  const playerKey = String(row?.playerKey || row?.basePlayerKey || '').trim();
+  const seasonKey = String(row?.seasonKey || '').trim();
+  return [seasonKey, playerKey].filter(Boolean).join(':::');
+}
+
+function getLeaderboardCsvDeckScopeValue(row = {}) {
+  if (String(row?.deck || '').trim()) {
+    return String(row.deck).trim();
+  }
+
+  if (selectedDeck && selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+    return String(selectedDeck).trim();
+  }
+
+  return LEADERBOARD_PLAYER_TOTAL_SCOPE;
+}
+
+function getLeaderboardActiveExportScopeLabel() {
+  return selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? 'all-decks'
+    : sanitizeCsvFilename(String(selectedDeck || '').trim() || 'selected-deck');
+}
+
+function getLeaderboardIntegrityReferenceKey(filename = '') {
+  return [
+    'leaderboard',
+    String(currentLeaderboardDataset?.mode || 'elo').trim(),
+    getLeaderboardActiveExportScopeLabel(),
+    String(filename || '').trim()
+  ].join('::');
+}
+
+function isCompatibleLeaderboardIntegrityReference(csvText = '') {
+  return String(csvText || '').includes(`${METADATA_VERSION_LABEL},${INTEGRITY_VERSION}`);
+}
+
+function reportLeaderboardIntegrityFailure(filename = '', report = {}) {
+  const summary = buildLeaderboardIntegritySummary(report);
+  globalThis.__lastLeaderboardCsvIntegrityReport = {
+    filename,
+    report,
+    createdAt: new Date().toISOString()
+  };
+  console.error(`Leaderboard CSV integrity check failed for ${filename}. ${summary}`, report);
+  try {
+    globalThis?.alert?.(
+      `Leaderboard CSV integrity check failed for ${filename}.\n\n${summary}\n\nSee the browser console for the full identity-level report.`
+    );
+  } catch {
+    // Ignore alert failures and still block the export via the thrown error.
+  }
+
+  const error = new Error(
+    `Leaderboard CSV integrity check failed for ${filename}. ${summary}. See console for the full identity-level report.`
+  );
+  error.leaderboardIntegrityReport = report;
+  throw error;
+}
+
+function runLeaderboardCsvIntegrityCheck(filename = '', csvText = '') {
+  const referenceKey = getLeaderboardIntegrityReferenceKey(filename);
+  const previousCsvText = readStoredLeaderboardCsvReference(referenceKey);
+  if (!previousCsvText || !isCompatibleLeaderboardIntegrityReference(previousCsvText)) {
+    writeStoredLeaderboardCsvReference(referenceKey, csvText);
+    return {
+      status: 'baseline-created',
+      report: null
+    };
+  }
+
+  const report = compareLeaderboardCsvText(previousCsvText, csvText);
+  globalThis.__lastLeaderboardCsvIntegrityReport = {
+    filename,
+    report,
+    createdAt: new Date().toISOString()
+  };
+
+  if (report.hasUnexpectedChanges) {
+    reportLeaderboardIntegrityFailure(filename, report);
+  }
+
+  if (report.orderingChanges.length > 0) {
+    console.warn(
+      `Leaderboard CSV integrity check found pure ordering changes for ${filename}. ${buildLeaderboardIntegritySummary(report)}`,
+      report
+    );
+  }
+
+  writeStoredLeaderboardCsvReference(referenceKey, csvText);
+  return {
+    status: report.orderingChanges.length > 0 ? 'ordering-only' : 'matched',
+    report
+  };
 }
 
 function applyLeaderboardTableSortHeaderState() {
@@ -2569,8 +3078,8 @@ function setupLeaderboardTableSorting() {
     };
 
     renderLeaderboardTable(currentLeaderboardDataset);
-    if (activeLeaderboardSearchTerm) {
-      applyLeaderboardTableSearch(getLeaderboardSearchInput()?.value || activeLeaderboardSearchTerm, { scrollIntoView: false });
+    if (activeSearchTerm) {
+      applyLeaderboardTableSearch(getLeaderboardSearchInput()?.value || activeSearchTerm, { scrollIntoView: false });
     } else {
       updateLeaderboardSearchStatus('');
     }
@@ -2598,7 +3107,11 @@ function exportLeaderboardCsv() {
       { header: 'Wins', value: row => row.wins },
       { header: 'Losses', value: row => row.losses },
       { header: 'Match Win Rate', value: row => formatWinRate(row.winRate) },
-      { header: 'Last Event', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
+      { header: 'Last Event', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') },
+      { header: 'Identity Key', value: row => getLeaderboardCsvIdentityKey(row) },
+      { header: 'Player Key', value: row => row.playerKey || row.basePlayerKey || '' },
+      { header: 'Season Key', value: row => row.seasonKey || '' },
+      { header: 'Deck Scope', value: row => getLeaderboardCsvDeckScopeValue(row) }
     ]
     : [
       { header: 'Rank', value: row => row.displayRank },
@@ -2616,13 +3129,18 @@ function exportLeaderboardCsv() {
       { header: 'Win Rate', value: row => formatWinRate(row.winRate) },
       { header: 'Top 8 Conversion', value: row => formatWinRate(row.top8Conversion) },
       { header: '1st Places', value: row => row.challengeWins },
-      { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') }
+      { header: 'Last Match', value: row => (row.lastActiveDate ? formatDate(row.lastActiveDate) : '--') },
+      { header: 'Identity Key', value: row => getLeaderboardCsvIdentityKey(row) },
+      { header: 'Player Key', value: row => row.playerKey || row.basePlayerKey || '' },
+      { header: 'Season Key', value: row => row.seasonKey || '' },
+      { header: 'Deck Scope', value: row => getLeaderboardCsvDeckScopeValue(row) }
     ];
   const csvText = buildStructuredTableCsv(
     csvColumns,
     rowsWithRank,
     getLeaderboardCsvMetadata()
   );
+  logLeaderboardIntegritySnapshot('exportLeaderboardCsv:rowsWithRank', rowsWithRank, { includeRank: true });
 
   const windowLabel = sanitizeCsvFilename(
     getWindowLabel(
@@ -2633,7 +3151,18 @@ function exportLeaderboardCsv() {
     )
   );
   const viewLabel = sanitizeCsvFilename(getLeaderboardViewTitle(currentLeaderboardDataset) || 'elo-leaderboard');
-  downloadCsvFile(`${viewLabel || 'elo-leaderboard'}-${windowLabel || 'selected-window'}.csv`, csvText);
+  const scopeLabel = getLeaderboardActiveExportScopeLabel();
+  logLeaderboardIntegritySnapshot(
+    `exportLeaderboardCsv:csv-boundary:${scopeLabel}`,
+    rowsWithRank.map(row => ({
+      ...row,
+      rank: row.displayRank
+    })),
+    { includeRank: true }
+  );
+  const filename = `${viewLabel || 'elo-leaderboard'}-${windowLabel || 'selected-window'}-${scopeLabel}.csv`;
+  runLeaderboardCsvIntegrityCheck(filename, csvText);
+  downloadCsvFile(filename, csvText);
 }
 
 function getAllLeaderboardHistoryEntries() {
@@ -2685,14 +3214,37 @@ function getLeaderboardRowByKeys(playerKey = '', seasonKey = '') {
   const normalizedPlayerKey = String(playerKey || '').trim();
   const normalizedSeasonKey = String(seasonKey || '').trim();
 
-  return currentLeaderboardRows.find(row => {
+  const fromVisible = currentLeaderboardRows.find(row => {
+    return String(row.playerKey || '').trim() === normalizedPlayerKey
+      && String(row.seasonKey || '').trim() === normalizedSeasonKey;
+  });
+  if (fromVisible) {
+    return fromVisible;
+  }
+
+  return currentLeaderboardBaseRows.find(row => {
     return String(row.playerKey || '').trim() === normalizedPlayerKey
       && String(row.seasonKey || '').trim() === normalizedSeasonKey;
   }) || null;
 }
 
+function isLeaderboardDeckEntityRow(row = {}, dataset = currentLeaderboardDataset) {
+  const normalizedPlayerKey = String(row?.playerKey || '').trim();
+  if (!normalizedPlayerKey) {
+    return false;
+  }
+
+  return dataset?.deckDataset?.historyByPlayer?.has(normalizedPlayerKey) === true;
+}
+
+function getLeaderboardHistoryMapForRow(row = {}, dataset = currentLeaderboardDataset) {
+  return isLeaderboardDeckEntityRow(row, dataset)
+    ? dataset?.deckDataset?.historyByPlayer
+    : dataset?.historyByPlayer;
+}
+
 function getPlayerHistoryForRow(row) {
-  const historyEntries = currentLeaderboardDataset.historyByPlayer?.get(row.playerKey) || [];
+  const historyEntries = getLeaderboardHistoryMapForRow(row)?.get(row?.playerKey) || [];
 
   return [...historyEntries]
     .filter(entry => String(entry.seasonKey || '') === String(row.seasonKey || ''))
@@ -2710,6 +3262,19 @@ function getLeaderboardRowsBySelectionKeys(selectionKeys = activeLeaderboardTime
 
 function getLeaderboardPlayerHistoryAscending(row) {
   return getPlayerHistoryForRow(row).slice().sort(compareHistoryEntriesAscending);
+}
+
+function getLeaderboardOverallPlayerRow(row = {}) {
+  const normalizedSeasonKey = String(row?.seasonKey || '').trim();
+  const normalizedBasePlayerKey = String(row?.basePlayerKey || row?.playerKey || '').trim();
+  if (!normalizedSeasonKey || !normalizedBasePlayerKey) {
+    return row || null;
+  }
+
+  return currentLeaderboardBaseRows.find(candidate => {
+    return String(candidate?.seasonKey || '').trim() === normalizedSeasonKey
+      && String(candidate?.playerKey || '').trim() === normalizedBasePlayerKey;
+  }) || row || null;
 }
 
 function destroyLeaderboardPlayerEloChart() {
@@ -2734,7 +3299,7 @@ function buildLeaderboardPlayerHistoryCsvMetadata(row, scope = null) {
   return [
     ['View', `${getLeaderboardViewTitle(currentLeaderboardDataset)} Match History`],
     ['Player', row.displayName || row.playerKey || '--'],
-    ['Deck Scope', resolvedScope?.label || 'All Decks'],
+    ['Deck Scope', resolvedScope?.label || getDeckDisplayName(LEADERBOARD_PLAYER_TOTAL_SCOPE)],
     ['Rating Type', ratingLabel],
     [getLeaderboardEntryFieldLabel(currentLeaderboardDataset), getLeaderboardEntryLabel(row)],
     [ratingLabel, formatRating(scopeRow.rating)],
@@ -3235,7 +3800,8 @@ function buildLeaderboardPlayerDeckCardHtml(scope, {
 } = {}) {
   const row = scope?.row || {};
   const cardTitle = totalScope ? 'Total Player Elo' : 'Deck Elo Trail';
-  const cardName = totalScope ? 'All Decks' : scope?.label || 'Unknown Deck';
+  const cardName = totalScope ? getDeckDisplayName(LEADERBOARD_PLAYER_TOTAL_SCOPE) : scope?.label || 'Unknown Deck';
+  const deckRank = totalScope ? null : getLeaderboardPlayerDeckRank(scope, currentLeaderboardDataset);
 
   return `
     <button
@@ -3250,6 +3816,12 @@ function buildLeaderboardPlayerDeckCardHtml(scope, {
           <div class="player-rank-drilldown-event-date">${escapeHtml(cardTitle)}</div>
           <h4 class="leaderboard-deck-result-name">${escapeHtml(cardName)}</h4>
         </div>
+        ${deckRank ? `
+          <span class="player-rank-drilldown-rank-badge leaderboard-deck-result-badge leaderboard-deck-rank-badge">
+            ${escapeHtml(`#${deckRank}`)}
+            <span>Deck Rank</span>
+          </span>
+        ` : ''}
         <span class="player-rank-drilldown-rank-badge leaderboard-deck-result-badge">
           ${escapeHtml(formatRating(row.rating))}
           <span>Elo</span>
@@ -3553,18 +4125,37 @@ function renderLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   }
 
   const model = getLeaderboardPlayerDrilldownModel(row);
+  const displayRow = model.row || row;
   activeLeaderboardPlayerDeckScope = model.activeScopeKey;
-  elements.title.textContent = row.displayName || row.playerKey || 'Elo Player';
-  elements.subtitle.textContent = buildLeaderboardPlayerScopeSubtitle(row, model);
-  elements.content.innerHTML = buildLeaderboardPlayerDetailHtml(row, model);
+  elements.title.textContent = displayRow.displayName || displayRow.playerKey || 'Elo Player';
+  elements.subtitle.textContent = buildLeaderboardPlayerScopeSubtitle(displayRow, model);
+  elements.content.innerHTML = buildLeaderboardPlayerDetailHtml(displayRow, model);
   renderLeaderboardPlayerEloChart(model);
-  updateLeaderboardPlayerReportDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
-  updateLeaderboardPlayerHistoryDownloadButton(row.playerKey, row.seasonKey, model.activeScopeKey);
+  updateLeaderboardPlayerReportDownloadButton(displayRow.playerKey, displayRow.seasonKey, model.activeScopeKey);
+  updateLeaderboardPlayerHistoryDownloadButton(displayRow.playerKey, displayRow.seasonKey, model.activeScopeKey);
   return true;
 }
 
 function shouldShowLeaderboardTimelineSection(dataset = currentLeaderboardDataset) {
-  return !(dataset?.period?.windowMode === 'range' && dataset?.resetByYear);
+  if (!dataset?.period) {
+    return false;
+  }
+
+  return !(dataset.period.windowMode === 'range' && dataset.resetByYear);
+}
+
+function getLeaderboardTimelineChartMode() {
+  return activeLeaderboardTimelineChartMode === 'rank'
+    ? 'rank'
+    : DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
+}
+
+function getLeaderboardTimelineRankCohortGranularity() {
+  return DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY;
+}
+
+function getLeaderboardTimelineModeLabel(chartMode = getLeaderboardTimelineChartMode()) {
+  return chartMode === 'rank' ? 'Rank' : 'Elo';
 }
 
 function getDefaultLeaderboardTimelineSelectionKeys() {
@@ -3580,6 +4171,9 @@ function syncLeaderboardTimelineSelections() {
   activeLeaderboardTimelineSelections = new Set(
     Array.from(activeLeaderboardTimelineSelections).filter(key => validKeys.has(key))
   );
+  leaderboardTimelineVisibilityBySelectionKey = new Map(
+    Array.from(leaderboardTimelineVisibilityBySelectionKey.entries()).filter(([key]) => validKeys.has(key))
+  );
 
   if (activeLeaderboardTimelineSelections.size === 0) {
     activeLeaderboardTimelineSelections = getDefaultLeaderboardTimelineSelectionKeys();
@@ -3590,6 +4184,61 @@ function updateLeaderboardTimelineSearchStatus(message = '') {
   const status = getLeaderboardTimelineSearchStatus();
   if (status) {
     status.textContent = message;
+  }
+}
+
+function renderLeaderboardTimelineDebugFallback(message = '', details = null) {
+  const fallback = getLeaderboardTimelineDebugFallback();
+  if (!fallback) {
+    return;
+  }
+
+  if (!isLeaderboardTimelineDebugEnabled() || !message) {
+    fallback.hidden = true;
+    fallback.textContent = '';
+    return;
+  }
+
+  const detailLines = details && typeof details === 'object'
+    ? [
+        `events: ${details.events ?? 0}`,
+        `selected players: ${details.selectedPlayers ?? 0}`,
+        `visible players: ${details.visiblePlayers ?? 0}`,
+        `dataset series: ${details.datasetSeries ?? 0}`,
+        `chart mode: ${details.chartMode || 'unknown'}`,
+        `multi-year mode: ${details.multiYearMode || 'unknown'}`
+      ]
+    : [];
+
+  fallback.hidden = false;
+  fallback.textContent = [
+    message,
+    ...detailLines.map(line => `- ${line}`)
+  ].join('\n');
+}
+
+function renderLeaderboardTimelineLoadingState(message = '') {
+  const loadingState = getLeaderboardTimelineLoadingState();
+  const canvas = getLeaderboardTimelineChartCanvas();
+  const chipPanel = getLeaderboardTimelineChipPanel();
+  const debugFallback = getLeaderboardTimelineDebugFallback();
+  if (!loadingState) {
+    return;
+  }
+
+  const shouldShow = Boolean(message);
+  loadingState.hidden = !shouldShow;
+  loadingState.textContent = shouldShow ? message : 'Loading chart...';
+
+  if (canvas) {
+    canvas.hidden = shouldShow;
+  }
+  if (chipPanel) {
+    chipPanel.hidden = shouldShow;
+  }
+  if (debugFallback && shouldShow) {
+    debugFallback.hidden = true;
+    debugFallback.textContent = '';
   }
 }
 
@@ -3640,6 +4289,44 @@ function setLeaderboardChartLineVisibility(chart = null, shouldShow = true, {
   return true;
 }
 
+function getLeaderboardTimelineDatasetIdentity(dataset = {}) {
+  return String(dataset?.selectionKey || dataset?.label || '').trim();
+}
+
+function snapshotLeaderboardTimelineVisibility(chart = leaderboardTimelineChart) {
+  if (!chart?.data?.datasets?.length) {
+    return;
+  }
+
+  chart.data.datasets.forEach((dataset, index) => {
+    const datasetKey = getLeaderboardTimelineDatasetIdentity(dataset);
+    if (!datasetKey) {
+      return;
+    }
+
+    const isVisible = typeof chart.isDatasetVisible === 'function'
+      ? chart.isDatasetVisible(index)
+      : !(chart.getDatasetMeta?.(index)?.hidden === true || chart.data.datasets[index]?.hidden === true);
+    leaderboardTimelineVisibilityBySelectionKey.set(datasetKey, isVisible);
+  });
+}
+
+function applyLeaderboardTimelineVisibilityState(chart = leaderboardTimelineChart) {
+  if (!chart?.data?.datasets?.length || typeof chart.setDatasetVisibility !== 'function') {
+    return;
+  }
+
+  chart.data.datasets.forEach((dataset, index) => {
+    const datasetKey = getLeaderboardTimelineDatasetIdentity(dataset);
+    const isVisible = datasetKey
+      ? leaderboardTimelineVisibilityBySelectionKey.get(datasetKey)
+      : null;
+    if (typeof isVisible === 'boolean') {
+      chart.setDatasetVisibility(index, isVisible);
+    }
+  });
+}
+
 function updateLeaderboardTimelineVisibilityButtons() {
   const showAllButton = getLeaderboardTimelineShowAllLinesButton();
   const hideAllButton = getLeaderboardTimelineHideAllLinesButton();
@@ -3660,6 +4347,7 @@ function setLeaderboardTimelineLineVisibility(shouldShow = true) {
     updateLeaderboardTimelineVisibilityButtons();
     return;
   }
+  snapshotLeaderboardTimelineVisibility();
   updateLeaderboardTimelineVisibilityButtons();
 }
 
@@ -3693,21 +4381,490 @@ function renderLeaderboardTimelineChipPanel() {
     return;
   }
 
+  const modeLabel = getLeaderboardTimelineModeLabel();
   const selectedRows = getLeaderboardRowsBySelectionKeys();
   chipPanel.innerHTML = selectedRows.length > 0
     ? selectedRows.map(row => `
       <span class="leaderboard-timeline-chip">
         <span>${escapeHtml(`${row.displayName} (${formatRating(row.rating)})`)}</span>
-        <button
-          type="button"
-          data-leaderboard-timeline-remove="${escapeHtml(getLeaderboardRowSelectionKey(row))}"
-          aria-label="${escapeHtml(`Remove ${row.displayName} from the Elo timeline`)}"
-        >
-          x
-        </button>
       </span>
     `).join('')
-    : '<div class="leaderboard-timeline-chip-empty">No players selected for the Elo timeline.</div>';
+    : `<div class="leaderboard-timeline-chip-empty">No players selected for the ${escapeHtml(modeLabel)} timeline.</div>`;
+}
+
+function renderLeaderboardTimelineModeButtons() {
+  const chartMode = getLeaderboardTimelineChartMode();
+  const title = getLeaderboardTimelineTitle();
+  const helper = getLeaderboardTimelineHelper();
+  const cohortButtonGroup = getLeaderboardTimelineRankCohortButtonGroup();
+  const titleText = chartMode === 'rank'
+    ? 'Rank Timeline Across Months'
+    : 'Elo Timeline Across Events';
+
+  getLeaderboardTimelineModeButtons().forEach(button => {
+    button.classList.toggle('active', String(button.dataset.leaderboardTimelineMode || '') === chartMode);
+  });
+
+  if (cohortButtonGroup) {
+    cohortButtonGroup.hidden = true;
+  }
+
+  if (title) {
+    title.textContent = titleText;
+  }
+
+  if (helper && !currentLeaderboardDataset?.processedMatches?.length) {
+    helper.textContent = 'Match-level Elo history loads on demand for drilldowns and timelines.';
+  }
+}
+
+function buildLeaderboardTimelineEloPointLookup(row) {
+  const pointLookup = new Map();
+  buildEventLevelEloPoints(getLeaderboardPlayerHistoryAscending(row)).forEach(point => {
+    pointLookup.set([
+      String(point.seasonKey || row.seasonKey || '').trim(),
+      String(point.date || '').trim(),
+      String(point.eventId || '').trim(),
+      String(point.event || '').trim()
+    ].join('|||'), point);
+  });
+  return pointLookup;
+}
+
+function compareLeaderboardTimelineRankParticipants(a, b) {
+  return Number(b?.ratingAfter || 0) - Number(a?.ratingAfter || 0)
+    || String(a?.row?.displayName || a?.row?.playerKey || '').localeCompare(String(b?.row?.displayName || b?.row?.playerKey || ''))
+    || String(a?.row?.seasonKey || '').localeCompare(String(b?.row?.seasonKey || ''));
+}
+
+function getLeaderboardTimelineRankPointStyle(rank = null) {
+  return Number(rank) <= 3 ? 'circle' : 'circle';
+}
+
+function getLeaderboardTimelineRankPointColor(rank = null, color = '#5aa9e6', isRankOutlier = false) {
+  if (isRankOutlier) {
+    return LEADERBOARD_TIMELINE_RANK_OUTLIER_COLOR;
+  }
+  return LEADERBOARD_TIMELINE_RANK_COLORS[Number(rank)] || color;
+}
+
+function getLeaderboardTimelineDisplayRank(rank = 0) {
+  const numericRank = Number(rank);
+  if (!Number.isFinite(numericRank)) {
+    return null;
+  }
+
+  return Math.min(Math.max(1, Math.round(numericRank)), MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK);
+}
+
+function formatLeaderboardTimelineRankAxisTick(value) {
+  const numericValue = Number(value);
+  if (!Number.isFinite(numericValue)) {
+    return '';
+  }
+
+  const roundedRank = Math.round(numericValue);
+  return roundedRank >= MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK
+    ? `>${MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK}`
+    : formatLeaderboardRank(roundedRank);
+}
+
+function getLeaderboardTimelineMonthKey(dateString = '') {
+  const safeDate = String(dateString || '').trim();
+  return /^\d{4}-\d{2}-\d{2}$/.test(safeDate) ? safeDate.slice(0, 7) : '';
+}
+
+function formatLeaderboardTimelineMonthLabel(monthKey = '') {
+  const match = /^(\d{4})-(\d{2})$/.exec(String(monthKey || '').trim());
+  if (!match) {
+    return 'Unknown Month';
+  }
+
+  const year = Number(match[1]);
+  const monthIndex = Number(match[2]) - 1;
+  if (!Number.isInteger(year) || !Number.isInteger(monthIndex) || monthIndex < 0 || monthIndex > 11) {
+    return 'Unknown Month';
+  }
+
+  const safeDate = new Date(Date.UTC(year, monthIndex, 1));
+  return safeDate.toLocaleString('en-US', {
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC'
+  });
+}
+
+function buildLeaderboardRankMonthlyTimeline(eventTimeline = []) {
+  const monthMap = new Map();
+
+  (Array.isArray(eventTimeline) ? eventTimeline : []).forEach(entry => {
+    const monthKey = getLeaderboardTimelineMonthKey(entry?.date);
+    if (!monthKey) {
+      return;
+    }
+
+    const existingEntry = monthMap.get(monthKey);
+    if (!existingEntry || String(entry.date || '').localeCompare(String(existingEntry.date || '')) >= 0) {
+      monthMap.set(monthKey, {
+        key: monthKey,
+        date: `${monthKey}-01`,
+        label: formatLeaderboardTimelineMonthLabel(monthKey),
+        monthKey
+      });
+    }
+  });
+
+  return Array.from(monthMap.values()).sort((a, b) => String(a.monthKey || '').localeCompare(String(b.monthKey || '')));
+}
+
+function normalizeLeaderboardTimelineDataForChart(dataset = currentLeaderboardDataset, {
+  rows = getSortedLeaderboardRowsWithRank(),
+  chartMode = getLeaderboardTimelineChartMode(),
+  rankCohortGranularity = getLeaderboardTimelineRankCohortGranularity()
+} = {}) {
+  const timelineRows = Array.isArray(rows) ? rows : [];
+  const shouldUseDeckTimeline = timelineRows.length > 0 && timelineRows.every(row => isLeaderboardDeckEntityRow(row, dataset));
+  const processedMatches = shouldUseDeckTimeline
+    ? (Array.isArray(dataset?.deckDataset?.processedMatches) ? dataset.deckDataset.processedMatches : [])
+    : (Array.isArray(dataset?.processedMatches) ? dataset.processedMatches : []);
+  logLeaderboardTimelineDebug('raw input', processedMatches);
+  logLeaderboardTimelineDebug('shape summary', {
+    isArray: Array.isArray(processedMatches),
+    keys: processedMatches && typeof processedMatches === 'object' ? Object.keys(processedMatches).slice(0, 20) : null,
+    firstItem: Array.isArray(processedMatches) ? processedMatches[0] : null,
+    shouldUseDeckTimeline
+  });
+  const eventTimeline = buildLeaderboardTimeline(processedMatches).filter(entry => {
+    return Boolean(String(entry?.key || '').trim()) && Boolean(String(entry?.date || '').trim());
+  });
+  const timeline = chartMode === 'rank' && rankCohortGranularity === 'month'
+    ? buildLeaderboardRankMonthlyTimeline(eventTimeline)
+    : eventTimeline;
+
+  return {
+    processedMatches,
+    eventTimeline,
+    timeline,
+    labels: timeline.map(point => point.label),
+    timelineIndexByKey: new Map(timeline.map(point => [point.key, point.index])),
+    hasHistoryLoaded: processedMatches.length > 0
+  };
+}
+
+function buildLeaderboardRankTimelinePointLookup(row) {
+  const timelinePoints = buildEventLevelEloPoints(getLeaderboardPlayerHistoryAscending(row));
+  const eventPointLookup = new Map();
+  const monthlyPointLookup = new Map();
+
+  timelinePoints.forEach(point => {
+    const eventKey = [
+      String(row.seasonKey || '').trim(),
+      String(point.date || '').trim(),
+      String(point.eventId || '').trim(),
+      String(point.event || '').trim()
+    ].join('|||');
+    eventPointLookup.set(eventKey, point);
+
+    const monthKey = getLeaderboardTimelineMonthKey(point.date);
+    if (!monthKey) {
+      return;
+    }
+
+    const existingMonthPoint = monthlyPointLookup.get(monthKey);
+    if (!existingMonthPoint || eventKey.localeCompare(String(existingMonthPoint.eventKey || '')) >= 0) {
+      monthlyPointLookup.set(monthKey, {
+        ...point,
+        eventKey,
+        monthKey
+      });
+    }
+  });
+
+  return {
+    eventPointLookup,
+    monthlyPointLookup
+  };
+}
+
+function buildLeaderboardRankFinalMedalLabels(pointMeta = [], timelineLength = 0) {
+  const labels = new Array(timelineLength).fill('');
+  const finalIndex = Math.max(0, timelineLength - 1);
+  const finalPoint = Array.isArray(pointMeta) ? pointMeta[finalIndex] : null;
+  if (!finalPoint) {
+    return labels;
+  }
+
+  labels[finalIndex] = LEADERBOARD_TIMELINE_RANK_MEDALS[Number(finalPoint.rank)] || '';
+  return labels;
+}
+
+function buildLeaderboardRankBoundaryMedalLabels(pointMeta = [], timeline = []) {
+  const timelineLength = Array.isArray(timeline) ? timeline.length : 0;
+  const labels = new Array(timelineLength).fill('');
+  if (timelineLength <= 1) {
+    return labels;
+  }
+
+  const yearBands = buildLeaderboardYearBands(timeline);
+  if (yearBands.length <= 1) {
+    return labels;
+  }
+
+  yearBands.slice(0, -1).forEach(band => {
+    const boundaryIndex = Number(band?.endIndex);
+    if (!Number.isInteger(boundaryIndex) || boundaryIndex < 0 || boundaryIndex >= timelineLength - 1) {
+      return;
+    }
+
+    const boundaryPoint = Array.isArray(pointMeta) ? pointMeta[boundaryIndex] : null;
+    if (!boundaryPoint) {
+      return;
+    }
+
+    labels[boundaryIndex] = LEADERBOARD_TIMELINE_RANK_MEDALS[Number(boundaryPoint.rank)] || '';
+  });
+
+  return labels;
+}
+
+function buildLeaderboardRankFinalPlayerLabels(pointMeta = [], timelineLength = 0) {
+  const labels = new Array(timelineLength).fill('');
+  const finalIndex = Math.max(0, timelineLength - 1);
+  const finalPoint = Array.isArray(pointMeta) ? pointMeta[finalIndex] : null;
+  if (!finalPoint) {
+    return labels;
+  }
+
+  labels[finalIndex] = String(finalPoint.playerName || '').trim();
+  return labels;
+}
+
+function resolveLeaderboardRankSeriesColor(pointMeta = [], fallbackColor = '#5aa9e6') {
+  const finalIndex = Math.max(0, (Array.isArray(pointMeta) ? pointMeta.length : 0) - 1);
+  const finalPoint = Array.isArray(pointMeta) ? pointMeta[finalIndex] : null;
+  const finalRank = Number(finalPoint?.rank);
+  if (
+    finalPoint
+    && finalPoint.isRankOutlier !== true
+    && Number.isFinite(finalRank)
+    && finalRank >= 1
+    && finalRank <= MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK
+  ) {
+    return LEADERBOARD_TIMELINE_RANK_COLORS[finalRank] || fallbackColor;
+  }
+
+  return fallbackColor;
+}
+
+function buildLeaderboardTimelineRankColorMap(selectedRows = [], timeline = [], {
+  granularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY
+} = {}) {
+  return new Map(
+    buildLeaderboardRankTimelineDatasets(selectedRows, timeline, { granularity }).map((dataset, index) => {
+      const selectionKey = String(dataset?.selectionKey || '').trim();
+      const fallbackColor = getLeaderboardTimelineColor(index);
+      return [selectionKey, dataset?.rankColor || fallbackColor];
+    })
+  );
+}
+
+function getLeaderboardRankTimelineAxisBounds(rankedPlayerCount = 0, datasets = []) {
+  const countedLowerLimit = Math.max(
+    1,
+    Math.min(MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK, Math.round(Number(rankedPlayerCount) || 0))
+  );
+  const actualMaxVisibleRank = datasets.reduce((maxRank, dataset) => {
+    const datasetMaxRank = Array.isArray(dataset?.pointMeta)
+      ? dataset.pointMeta.reduce((pointMaxRank, point) => {
+          const displayRank = Number(point?.displayRank);
+          if (!Number.isFinite(displayRank)) {
+            return pointMaxRank;
+          }
+          return Math.max(pointMaxRank, Math.round(displayRank));
+        }, 1)
+      : 1;
+    return Math.max(maxRank, datasetMaxRank);
+  }, 1);
+
+  return {
+    min: 0.6,
+    max: Math.max(countedLowerLimit, actualMaxVisibleRank)
+  };
+}
+
+function buildLeaderboardRankTimelineAxisTicks(maxVisibleRank = MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK) {
+  const boundedMax = Math.max(1, Math.round(Number(maxVisibleRank) || MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK));
+  return Array.from({ length: boundedMax }, (_item, index) => ({
+    value: index + 1
+  }));
+}
+
+function buildLeaderboardRankTimelineOverlayOptions() {
+  return {
+    enabled: true,
+    pointOffsetX: 8,
+    medalGap: 14,
+    nameGap: 6,
+    medalOffsetY: -10,
+    medalColor: '#f5f0e6',
+    textColor: '#f5f0e6',
+    medalFont: '600 12px Bitter, system-ui, sans-serif',
+    textFont: '600 11px Bitter, system-ui, sans-serif'
+  };
+}
+
+function buildLeaderboardRankTimelineDatasets(selectedRows = [], timeline = [], {
+  granularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY
+} = {}) {
+  const chartRows = getSortedLeaderboardRowsWithRank();
+  const selectedKeySet = new Set(selectedRows.map(row => getLeaderboardRowSelectionKey(row)));
+  const isMonthlyGranularity = granularity === 'month';
+  const pointLookupByRowKey = new Map(
+    chartRows.map(row => [getLeaderboardRowSelectionKey(row), buildLeaderboardRankTimelinePointLookup(row)])
+  );
+  const lastKnownMonthlyPointByRowKey = new Map();
+  const selectedDatasetState = new Map(
+    selectedRows.map(row => [getLeaderboardRowSelectionKey(row), {
+      row,
+      data: new Array(timeline.length).fill(null),
+      pointMeta: new Array(timeline.length).fill(null)
+    }])
+  );
+
+  // Rank mode is derived only for this chart. Event and monthly cohorts are
+  // computed from event-level Elo history here without mutating leaderboard rows
+  // or replacing the underlying event timeline used elsewhere.
+  timeline.forEach((timelineEntry, timelineIndex) => {
+    const participants = [];
+
+    chartRows.forEach(row => {
+      const rowKey = getLeaderboardRowSelectionKey(row);
+      const rowPointLookups = pointLookupByRowKey.get(rowKey);
+      const monthlyPoint = isMonthlyGranularity
+        ? rowPointLookups?.monthlyPointLookup?.get(timelineEntry.monthKey)
+        : null;
+      if (isMonthlyGranularity && monthlyPoint) {
+        lastKnownMonthlyPointByRowKey.set(rowKey, monthlyPoint);
+      }
+
+      const representativePoint = isMonthlyGranularity
+        ? (monthlyPoint || lastKnownMonthlyPointByRowKey.get(rowKey) || null)
+        : rowPointLookups?.eventPointLookup?.get(timelineEntry.key);
+      if (!representativePoint || !Number.isFinite(Number(representativePoint.ratingAfter))) {
+        return;
+      }
+
+      participants.push({
+        row,
+        rowKey,
+        ratingAfter: Number(representativePoint.ratingAfter),
+        representativePoint,
+        carriedForward: Boolean(isMonthlyGranularity && !monthlyPoint)
+      });
+    });
+
+    participants.sort(compareLeaderboardTimelineRankParticipants);
+    participants.forEach((participant, participantIndex) => {
+      if (!selectedKeySet.has(participant.rowKey)) {
+        return;
+      }
+
+      const datasetState = selectedDatasetState.get(participant.rowKey);
+      if (!datasetState) {
+        return;
+      }
+
+      const rank = participantIndex + 1;
+      const displayRank = getLeaderboardTimelineDisplayRank(rank);
+      const isRankOutlier = rank > MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK;
+      datasetState.data[timelineIndex] = displayRank;
+      datasetState.pointMeta[timelineIndex] = {
+        playerName: participant.row.displayName || participant.row.playerKey || 'Player',
+        eventLabel: timelineEntry.label,
+        eventName: isMonthlyGranularity ? timelineEntry.label : timelineEntry.event,
+        rank,
+        displayRank,
+        isRankOutlier,
+        elo: participant.ratingAfter,
+        cohortGranularity: granularity,
+        monthLabel: isMonthlyGranularity ? timelineEntry.label : '',
+        basedOnLatestInMonth: isMonthlyGranularity && !participant.carriedForward,
+        carriedForward: participant.carriedForward,
+        carriedForwardSourceLabel: participant.carriedForward
+          ? (getLeaderboardTimelineMonthKey(participant.representativePoint?.date)
+              ? formatLeaderboardTimelineMonthLabel(getLeaderboardTimelineMonthKey(participant.representativePoint.date))
+              : (participant.representativePoint?.label || participant.representativePoint?.event || 'last played month'))
+          : '',
+        sourceEventLabel: participant.representativePoint?.label || participant.representativePoint?.event || ''
+      };
+    });
+  });
+
+  return selectedRows.map((row, index) => {
+    const rowKey = getLeaderboardRowSelectionKey(row);
+    const datasetState = selectedDatasetState.get(rowKey) || {
+      data: new Array(timeline.length).fill(null),
+      pointMeta: new Array(timeline.length).fill(null)
+    };
+    const fallbackColor = getLeaderboardTimelineColor(index);
+    const seriesColor = resolveLeaderboardRankSeriesColor(datasetState.pointMeta, fallbackColor);
+    const usesFixedRankColor = seriesColor !== fallbackColor;
+
+    return {
+      label: row.displayName,
+      selectionKey: rowKey,
+      data: datasetState.data,
+      pointMeta: datasetState.pointMeta,
+      rankColor: seriesColor,
+      borderColor: seriesColor,
+      backgroundColor: `${seriesColor}22`,
+      pointBackgroundColor: datasetState.pointMeta.map(point => {
+        if (!point) {
+          return seriesColor;
+        }
+        return usesFixedRankColor
+          ? seriesColor
+          : getLeaderboardTimelineRankPointColor(point.rank, fallbackColor, point.isRankOutlier);
+      }),
+      pointBorderColor: datasetState.pointMeta.map(point => {
+        if (!point) {
+          return seriesColor;
+        }
+        return usesFixedRankColor
+          ? seriesColor
+          : getLeaderboardTimelineRankPointColor(point.rank, fallbackColor, point.isRankOutlier);
+      }),
+      pointHoverBackgroundColor: datasetState.pointMeta.map(() => seriesColor),
+      pointHoverBorderColor: datasetState.pointMeta.map(() => seriesColor),
+      pointRadius: datasetState.pointMeta.map(point => {
+        if (point?.isRankOutlier) {
+          return 5;
+        }
+        return point?.rank && point.rank <= 3 ? 4 : 2.5;
+      }),
+      pointHoverRadius: datasetState.pointMeta.map(point => {
+        if (point?.isRankOutlier) {
+          return 7;
+        }
+        return point?.rank && point.rank <= 3 ? 6 : 4.5;
+      }),
+      pointStyle: datasetState.pointMeta.map(point => point?.isRankOutlier ? 'triangle' : getLeaderboardTimelineRankPointStyle(point?.rank)),
+      borderWidth: 2,
+      tension: 0.25,
+      spanGaps: true,
+      medalLabels: (() => {
+        const labels = buildLeaderboardRankBoundaryMedalLabels(datasetState.pointMeta, timeline);
+        const finalLabels = buildLeaderboardRankFinalMedalLabels(datasetState.pointMeta, timeline.length);
+        finalLabels.forEach((label, index) => {
+          if (label) {
+            labels[index] = label;
+          }
+        });
+        return labels;
+      })(),
+      finalPlayerLabels: buildLeaderboardRankFinalPlayerLabels(datasetState.pointMeta, timeline.length)
+    };
+  });
 }
 
 function renderLeaderboardTimelineSearchDropdown() {
@@ -3758,12 +4915,9 @@ function renderLeaderboardTimelineSearchDropdown() {
   `).join('');
 }
 
-function renderLeaderboardTimelineChart() {
+function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   // Rebuilds the multi-player timeline chart from selected/visible leaderboard
   // rows.
-  destroyLeaderboardTimelineChart();
-  updateLeaderboardTimelineVisibilityButtons();
-
   const section = getLeaderboardTimelineSection();
   const canvas = getLeaderboardTimelineChartCanvas();
   const helper = getLeaderboardTimelineHelper();
@@ -3773,8 +4927,17 @@ function renderLeaderboardTimelineChart() {
     return;
   }
 
+  if (forceRecreate) {
+    snapshotLeaderboardTimelineVisibility();
+    destroyLeaderboardTimelineChart();
+  }
+  updateLeaderboardTimelineVisibilityButtons();
+
   if (!shouldShowLeaderboardTimelineSection()) {
     section.hidden = true;
+    destroyLeaderboardTimelineChart();
+    renderLeaderboardTimelineLoadingState('');
+    renderLeaderboardTimelineDebugFallback('');
     if (dropdown) {
       dropdown.hidden = true;
       dropdown.classList.remove('open');
@@ -3786,20 +4949,52 @@ function renderLeaderboardTimelineChart() {
   }
 
   section.hidden = false;
+  renderLeaderboardTimelineLoadingState('Loading chart...');
+  renderLeaderboardTimelineModeButtons();
   syncLeaderboardTimelineSelections();
   renderLeaderboardTimelineChipPanel();
   renderLeaderboardTimelineSearchDropdown();
 
   const selectedRows = getLeaderboardRowsBySelectionKeys();
-  const timeline = buildLeaderboardTimeline(currentLeaderboardDataset.processedMatches || []);
-  const labels = timeline.map(point => point.label);
-  const timelineIndexByKey = new Map(timeline.map(point => [point.key, point.index]));
+  const chartMode = getLeaderboardTimelineChartMode();
+  const rankCohortGranularity = getLeaderboardTimelineRankCohortGranularity();
+  const {
+    timeline,
+    labels,
+    hasHistoryLoaded,
+    timelineIndexByKey
+  } = normalizeLeaderboardTimelineDataForChart(currentLeaderboardDataset, {
+    rows: selectedRows.length > 0 ? selectedRows : getSortedLeaderboardRowsWithRank(),
+    chartMode,
+    rankCohortGranularity
+  });
+  logLeaderboardTimelineDebug('normalized', {
+    chartMode,
+    rankCohortGranularity,
+    timelineLength: timeline.length,
+    firstTimelineItem: timeline[0] || null,
+    labelsPreview: labels.slice(0, 5)
+  });
 
   if (helper) {
-    helper.textContent = selectedRows.length > 0
-      ? `Tracking ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
-      : 'Select at least one player to draw the Elo timeline.';
+    if (hasHistoryLoaded && selectedRows.length > 0 && chartMode === 'rank' && rankCohortGranularity === 'month') {
+      helper.innerHTML = `Tracking monthly rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} month${timeline.length === 1 ? '' : 's'} using each player's <strong style="color: gold;">latest Elo in that month</strong>.`;
+    } else {
+      helper.textContent = !hasHistoryLoaded
+        ? 'Match-level Elo history loads on demand for drilldowns and timelines.'
+        : selectedRows.length > 0
+        ? chartMode === 'rank'
+          ? `Tracking rank movement for ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
+          : `Tracking ${selectedRows.length} selected player${selectedRows.length === 1 ? '' : 's'} across ${timeline.length} event${timeline.length === 1 ? '' : 's'} in the current Elo window.`
+        : `Select at least one player to draw the ${chartMode === 'rank' ? 'rank' : 'Elo'} timeline.`;
+    }
   }
+  logLeaderboardTimelineDebug('selectedPlayers', selectedRows.map(row => ({
+    displayName: row.displayName,
+    playerKey: row.playerKey,
+    seasonKey: row.seasonKey,
+    rating: row.rating
+  })));
   updateLeaderboardTimelineSearchStatus(
     selectedRows.length > 0
       ? `${selectedRows.length} player${selectedRows.length === 1 ? '' : 's'} shown`
@@ -3809,60 +5004,320 @@ function renderLeaderboardTimelineChart() {
     searchInput.disabled = getSortedLeaderboardRowsWithRank().length === 0;
   }
 
-  if (!globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
+  if (!hasHistoryLoaded || !globalThis.Chart || selectedRows.length === 0 || timeline.length === 0) {
+    destroyLeaderboardTimelineChart();
+    renderLeaderboardTimelineLoadingState('');
+    renderLeaderboardTimelineDebugFallback('No timeline rendered:', {
+      events: timeline.length,
+      selectedPlayers: selectedRows.length,
+      visiblePlayers: 0,
+      datasetSeries: 0,
+      chartMode,
+      multiYearMode: currentLeaderboardDataset?.period?.windowMode === 'range'
+        ? (currentLeaderboardDataset?.period?.resetMode || 'range')
+        : 'seasonal'
+    });
     updateLeaderboardTimelineVisibilityButtons();
     return;
   }
 
-  const datasets = selectedRows.map((row, index) => {
-    const color = getLeaderboardTimelineColor(index);
-    const values = new Array(timeline.length).fill(null);
-    buildEventLevelEloPoints(getLeaderboardPlayerHistoryAscending(row)).forEach(point => {
-      const eventKey = [
-        String(row.seasonKey || '').trim(),
-        String(point.date || '').trim(),
-        String(point.eventId || '').trim(),
-        String(point.event || '').trim()
-      ].join('|||');
-      const timelineIndex = timelineIndexByKey.get(eventKey);
-      if (typeof timelineIndex === 'number') {
-        values[timelineIndex] = point.ratingAfter;
+  const datasets = chartMode === 'rank'
+    ? buildLeaderboardRankTimelineDatasets(selectedRows, timeline, {
+        granularity: rankCohortGranularity
+      })
+    : (() => {
+        const rankColorMap = buildLeaderboardTimelineRankColorMap(
+          selectedRows,
+          buildLeaderboardRankMonthlyTimeline(timeline),
+          { granularity: rankCohortGranularity }
+        );
+        return selectedRows.map((row, index) => {
+        const fallbackColor = getLeaderboardTimelineColor(index);
+        const color = rankColorMap.get(getLeaderboardRowSelectionKey(row)) || fallbackColor;
+        const values = new Array(timeline.length).fill(null);
+        buildEventLevelEloPoints(getLeaderboardPlayerHistoryAscending(row)).forEach(point => {
+          const eventKey = [
+            String(point.seasonKey || row.seasonKey || '').trim(),
+            String(point.date || '').trim(),
+            String(point.eventId || '').trim(),
+            String(point.event || '').trim()
+          ].join('|||');
+          const timelineIndex = timelineIndexByKey.get(eventKey);
+          if (typeof timelineIndex === 'number') {
+            values[timelineIndex] = point.ratingAfter;
+          }
+        });
+
+        return {
+          label: row.displayName,
+          selectionKey: getLeaderboardRowSelectionKey(row),
+          rankColor: color,
+          data: values,
+          borderColor: color,
+          backgroundColor: `${color}22`,
+          pointBackgroundColor: color,
+          pointBorderColor: color,
+          pointHoverBackgroundColor: color,
+          pointHoverBorderColor: color,
+          pointRadius: 2,
+          pointHoverRadius: 4,
+          borderWidth: 2,
+          tension: 0.25,
+          spanGaps: true
+        };
+      });
+      })();
+  logLeaderboardTimelineDebug(chartMode === 'rank' ? 'rankDataset' : 'eloDataset', datasets.map(dataset => ({
+    label: dataset.label,
+    selectionKey: dataset.selectionKey,
+    dataLength: Array.isArray(dataset.data) ? dataset.data.length : 0,
+    nonNullPoints: Array.isArray(dataset.data) ? dataset.data.filter(value => value !== null && typeof value !== 'undefined').length : 0,
+    firstPointMeta: Array.isArray(dataset.pointMeta) ? dataset.pointMeta.find(Boolean) || null : null
+  })));
+  logLeaderboardTimelineDebug('render condition', {
+    chartMode,
+    hasEvents: timeline.length > 0,
+    hasPlayers: selectedRows.length > 0,
+    datasetLength: datasets.length,
+    hasHistoryLoaded
+  });
+  if (datasets.length === 0) {
+    renderLeaderboardTimelineLoadingState('');
+    renderLeaderboardTimelineDebugFallback('No timeline rendered:', {
+      events: timeline.length,
+      selectedPlayers: selectedRows.length,
+      visiblePlayers: 0,
+      datasetSeries: datasets.length,
+      chartMode,
+      multiYearMode: currentLeaderboardDataset?.period?.windowMode === 'range'
+        ? (currentLeaderboardDataset?.period?.resetMode || 'range')
+        : 'seasonal'
+    });
+  } else {
+    renderLeaderboardTimelineLoadingState('');
+    renderLeaderboardTimelineDebugFallback('');
+  }
+
+  const showYearBoundaries = shouldShowLeaderboardYearBoundaryMarkers();
+  const rankAxisBounds = chartMode === 'rank'
+    ? getLeaderboardRankTimelineAxisBounds(selectedRows.length, datasets)
+    : null;
+  if (
+    !forceRecreate
+    && leaderboardTimelineChart
+    && Array.isArray(leaderboardTimelineChart.data?.labels)
+    && leaderboardTimelineChart.data.labels.length === labels.length
+    && leaderboardTimelineChart.data.labels.every((label, index) => label === labels[index])
+  ) {
+    const visibilityByDatasetKey = new Map(
+      (leaderboardTimelineChart.data.datasets || []).map((dataset, index) => [
+        getLeaderboardTimelineDatasetIdentity(dataset),
+        typeof leaderboardTimelineChart.isDatasetVisible === 'function'
+          ? leaderboardTimelineChart.isDatasetVisible(index)
+          : true
+      ])
+    );
+
+    leaderboardTimelineChart.data.labels = labels;
+    leaderboardTimelineChart.data.datasets = datasets;
+
+    if (leaderboardTimelineChart.options?.plugins?.leaderboardYearBoundaryPlugin) {
+      const yearBands = showYearBoundaries ? buildLeaderboardYearBands(timeline) : [];
+      leaderboardTimelineChart.options.plugins.leaderboardYearBoundaryPlugin.bands = yearBands.length > 1 ? yearBands : [];
+    }
+
+    if (leaderboardTimelineChart.options?.plugins?.legend) {
+      leaderboardTimelineChart.options.plugins.legend.display = datasets.length > 1;
+    }
+
+    if (leaderboardTimelineChart.options?.layout?.padding) {
+      leaderboardTimelineChart.options.layout.padding.top = chartMode === 'rank' ? 10 : 0;
+      leaderboardTimelineChart.options.layout.padding.right = chartMode === 'rank' ? 132 : 0;
+    }
+
+    if (leaderboardTimelineChart.options?.plugins?.leaderboardFinalRankLabelPlugin) {
+      leaderboardTimelineChart.options.plugins.leaderboardFinalRankLabelPlugin = chartMode === 'rank'
+        ? buildLeaderboardRankTimelineOverlayOptions()
+        : { enabled: false };
+    }
+
+    datasets.forEach((dataset, index) => {
+      const datasetKey = getLeaderboardTimelineDatasetIdentity(dataset);
+      const isVisible = visibilityByDatasetKey.get(datasetKey);
+      if (typeof isVisible === 'boolean') {
+        leaderboardTimelineVisibilityBySelectionKey.set(datasetKey, isVisible);
+      }
+      if (typeof leaderboardTimelineChart.setDatasetVisibility === 'function') {
+        const persistedVisibility = leaderboardTimelineVisibilityBySelectionKey.get(datasetKey);
+        if (typeof persistedVisibility === 'boolean') {
+          leaderboardTimelineChart.setDatasetVisibility(index, persistedVisibility);
+        }
       }
     });
 
-    return {
-      label: row.displayName,
-      data: values,
-      borderColor: color,
-      backgroundColor: `${color}22`,
-      pointRadius: 2,
-      pointHoverRadius: 4,
-      borderWidth: 2,
-      tension: 0.25,
-      spanGaps: true
-    };
-  });
-
-  leaderboardTimelineChart = createLeaderboardTimelineChart(canvas, {
-    labels,
-    datasets,
-    timelineEntries: timeline,
-    formatRating,
-    showYearBoundaries: shouldShowLeaderboardYearBoundaryMarkers(),
-    onLegendToggle() {
-      updateLeaderboardTimelineVisibilityButtons();
+    if (leaderboardTimelineChart.options?.plugins?.tooltip) {
+      leaderboardTimelineChart.options.plugins.tooltip.callbacks = chartMode === 'rank'
+        ? {
+            title(items) {
+              return items[0]?.dataset?.pointMeta?.[items[0]?.dataIndex]?.eventLabel || items[0]?.label || '';
+            },
+            label(context) {
+              const pointMeta = context.dataset?.pointMeta?.[context.dataIndex];
+              if (!pointMeta) {
+                return `${context.dataset.label}: no rank available`;
+              }
+              const lines = [
+                pointMeta.playerName,
+                `Rank: ${formatLeaderboardRank(pointMeta.rank)}`,
+                `Elo: ${formatRating(pointMeta.elo)}`
+              ];
+              if (pointMeta.carriedForward) {
+                lines.push(
+                  pointMeta.carriedForwardSourceLabel
+                    ? `Carried forward from ${pointMeta.carriedForwardSourceLabel}`
+                    : 'Carried forward from last played event/month'
+                );
+              } else if (pointMeta.basedOnLatestInMonth) {
+                lines.push('Based on latest Elo in this month');
+              }
+              if (pointMeta.isRankOutlier) {
+                lines.push(`Displayed as >${MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK}`);
+              }
+              return lines;
+            }
+          }
+        : {
+            label(context) {
+              if (!Number.isFinite(context.parsed.y)) {
+                return `${context.dataset.label}: no event result`;
+              }
+              return `${context.dataset.label}: ${formatRating(context.parsed.y)}`;
+            }
+          };
     }
-  });
+
+    if (leaderboardTimelineChart.options?.plugins?.datalabels) {
+      leaderboardTimelineChart.options.plugins.datalabels = {
+        display: false
+      };
+    }
+
+    if (leaderboardTimelineChart.options?.scales?.y) {
+      leaderboardTimelineChart.options.scales.y.reverse = chartMode === 'rank';
+      leaderboardTimelineChart.options.scales.y.min = chartMode === 'rank'
+        ? rankAxisBounds?.min
+        : undefined;
+      leaderboardTimelineChart.options.scales.y.max = chartMode === 'rank'
+        ? rankAxisBounds?.max
+        : undefined;
+      leaderboardTimelineChart.options.scales.y.ticks.stepSize = chartMode === 'rank' ? 1 : undefined;
+      leaderboardTimelineChart.options.scales.y.ticks.autoSkip = chartMode === 'rank' ? false : undefined;
+      leaderboardTimelineChart.options.scales.y.afterBuildTicks = chartMode === 'rank'
+        ? scale => {
+            scale.ticks = buildLeaderboardRankTimelineAxisTicks(rankAxisBounds?.max);
+          }
+        : undefined;
+      leaderboardTimelineChart.options.scales.y.ticks.callback = chartMode === 'rank'
+        ? value => formatLeaderboardTimelineRankAxisTick(value)
+        : value => formatRating(value);
+    }
+
+    leaderboardTimelineChart.update('none');
+  } else {
+    destroyLeaderboardTimelineChart();
+    leaderboardTimelineChart = createLeaderboardTimelineChart(canvas, {
+      labels,
+      datasets,
+      timelineEntries: timeline,
+      formatRating,
+      showYearBoundaries,
+      yAxis: chartMode === 'rank'
+        ? {
+            reverse: true,
+            min: rankAxisBounds?.min,
+            max: rankAxisBounds?.max,
+            stepSize: 1,
+            autoSkip: false,
+            afterBuildTicks(scale) {
+              scale.ticks = buildLeaderboardRankTimelineAxisTicks(rankAxisBounds?.max);
+            },
+            tickFormatter: value => formatLeaderboardTimelineRankAxisTick(value)
+          }
+        : {},
+      tooltipCallbacks: chartMode === 'rank'
+        ? {
+            title(items) {
+              return items[0]?.dataset?.pointMeta?.[items[0]?.dataIndex]?.eventLabel || items[0]?.label || '';
+            },
+            label(context) {
+              const pointMeta = context.dataset?.pointMeta?.[context.dataIndex];
+              if (!pointMeta) {
+                return `${context.dataset.label}: no rank available`;
+              }
+              const lines = [
+                pointMeta.playerName,
+                `Rank: ${formatLeaderboardRank(pointMeta.rank)}`,
+                `Elo: ${formatRating(pointMeta.elo)}`
+              ];
+              if (pointMeta.carriedForward) {
+                lines.push(
+                  pointMeta.carriedForwardSourceLabel
+                    ? `Carried forward from ${pointMeta.carriedForwardSourceLabel}`
+                    : 'Carried forward from last played event/month'
+                );
+              } else if (pointMeta.basedOnLatestInMonth) {
+                lines.push('Based on latest Elo in this month');
+              }
+              if (pointMeta.isRankOutlier) {
+                lines.push(`Displayed as >${MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK}`);
+              }
+              return lines;
+            }
+          }
+        : null,
+      datalabelsOptions: chartMode === 'rank'
+        ? { display: false }
+        : null,
+      layoutPadding: chartMode === 'rank'
+        ? { top: 10, right: 132 }
+        : {},
+      rankLabelOverlayOptions: chartMode === 'rank'
+        ? buildLeaderboardRankTimelineOverlayOptions()
+        : null,
+      onLegendToggle() {
+        snapshotLeaderboardTimelineVisibility();
+        updateLeaderboardTimelineVisibilityButtons();
+      }
+    });
+    applyLeaderboardTimelineVisibilityState();
+    leaderboardTimelineChart?.update('none');
+  }
+  renderLeaderboardTimelineLoadingState('');
+  snapshotLeaderboardTimelineVisibility();
   updateLeaderboardTimelineVisibilityButtons();
 }
 
-function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
+async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   const elements = getLeaderboardDrilldownElements();
   if (!elements.overlay) {
     return;
   }
 
-  activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  try {
+    await ensureLeaderboardDetailDataLoaded();
+  } catch (error) {
+    console.error('Failed to load detailed leaderboard Elo history.', error);
+  }
+
+  const row = getLeaderboardRowByKeys(playerKey, seasonKey);
+  if (!row) {
+    return;
+  }
+
+  initializeLeaderboardPlayerDeckScope(
+    row,
+    selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE ? String(selectedDeck || '').trim() : ''
+  );
   if (!renderLeaderboardPlayerDrilldown(playerKey, seasonKey)) {
     return;
   }
@@ -4417,10 +5872,16 @@ function renderLeaderboardDrilldown(categoryKey) {
     : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
 }
 
-function openLeaderboardDrilldown(categoryKey) {
+async function openLeaderboardDrilldown(categoryKey) {
   const elements = getLeaderboardDrilldownElements();
   if (!elements.overlay || !LEADERBOARD_DRILLDOWN_CONFIG[categoryKey]) {
     return;
+  }
+
+  try {
+    await ensureLeaderboardDetailDataLoaded();
+  } catch (error) {
+    console.error('Failed to load detailed leaderboard Elo history.', error);
   }
 
   activeLeaderboardDrilldownCategory = categoryKey;
@@ -4973,6 +6434,19 @@ function populateLeaderboardStats(dataset) {
   LEADERBOARD_STAT_CARD_IDS.forEach(triggerUpdateAnimation);
 }
 
+function getLeaderboardRankMedal(rank) {
+  switch (rank) {
+    case 1:
+      return '🥇';
+    case 2:
+      return '🥈';
+    case 3:
+      return '🥉';
+    default:
+      return '';
+  }
+}
+
 function renderLeaderboardTable(dataset) {
   // Renders sorted leaderboard rows and keeps search/export/fullscreen controls in
   // sync with the current row set.
@@ -5007,11 +6481,14 @@ function renderLeaderboardTable(dataset) {
       'leaderboardTableBody',
       rowsWithRank.length === 0
         ? '<tr><td colspan="11">No Performance leaderboard rows are available for the selected filters.</td></tr>'
-        : rowsWithRank.map(row => `
+        : rowsWithRank.map(row => {
+          const rankValue = Number(row.displayRank);
+          const rankMedal = getLeaderboardRankMedal(rankValue);
+          return `
           <tr
             data-leaderboard-player-name="${escapeHtml(normalizeLeaderboardSearchText(row.displayName))}"
           >
-            <td class="leaderboard-rank-cell">${row.displayRank}</td>
+            <td class="leaderboard-rank-cell">${rankMedal ? `<span class="leaderboard-rank-medal" aria-hidden="true">${rankMedal}</span> ${rankValue}` : rankValue}</td>
             <td>${escapeHtml(row.displayName)}</td>
             <td>${escapeHtml(getLeaderboardEntryLabel(row))}</td>
             <td>${formatWinRate(row.top8Conversion)}</td>
@@ -5023,7 +6500,8 @@ function renderLeaderboardTable(dataset) {
             <td>${formatWinRate(row.winRate)}</td>
             <td>${row.lastActiveDate ? escapeHtml(formatDate(row.lastActiveDate)) : '--'}</td>
           </tr>
-        `).join('')
+        `;
+        }).join('')
     );
     applyLeaderboardTableSortHeaderState();
     return;
@@ -5065,7 +6543,10 @@ function renderLeaderboardTable(dataset) {
           ? 'No Elo leaderboard rows met the current minimum filters.'
           : 'No Elo leaderboard rows are available for the selected filters.'
       }</td></tr>`
-      : rowsWithRank.map(row => `
+      : rowsWithRank.map(row => {
+          const rankValue = Number(row.displayRank);
+          const rankMedal = getLeaderboardRankMedal(rankValue);
+          return `
         <tr
           class="leaderboard-player-row"
           data-leaderboard-player-name="${escapeHtml(normalizeLeaderboardSearchText(row.displayName))}"
@@ -5075,7 +6556,7 @@ function renderLeaderboardTable(dataset) {
           role="button"
           aria-label="${escapeHtml(`Open Elo details for ${row.displayName || row.playerKey || 'player'} in ${getLeaderboardEntryLabel(row)}`)}"
         >
-          <td class="leaderboard-rank-cell">${row.displayRank}</td>
+          <td class="leaderboard-rank-cell">${rankMedal ? `<span class="leaderboard-rank-medal" aria-hidden="true">${rankMedal}</span> ${rankValue}` : rankValue}</td>
           <td>${escapeHtml(row.displayName)}</td>
           <td>${escapeHtml(getLeaderboardEntryLabel(row))}</td>
           <td>${formatRating(row.rating)}</td>
@@ -5089,7 +6570,8 @@ function renderLeaderboardTable(dataset) {
           <td>${row.challengeWins}</td>
           <td>${row.lastActiveDate ? escapeHtml(formatDate(row.lastActiveDate)) : '--'}</td>
         </tr>
-      `).join('')
+      `;
+        }).join('')
   );
   applyLeaderboardTableSortHeaderState();
 }
@@ -5205,6 +6687,28 @@ function setupLeaderboardTimelineInteractions() {
   const chipPanel = getLeaderboardTimelineChipPanel();
   const showAllLinesButton = getLeaderboardTimelineShowAllLinesButton();
   const hideAllLinesButton = getLeaderboardTimelineHideAllLinesButton();
+  const modeButtons = getLeaderboardTimelineModeButtons();
+
+  modeButtons.forEach(button => {
+    if (button.dataset.listenerAdded === 'true') {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      const nextMode = String(button.dataset.leaderboardTimelineMode || DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE);
+      if (nextMode === getLeaderboardTimelineChartMode()) {
+        return;
+      }
+
+      snapshotLeaderboardTimelineVisibility();
+      activeLeaderboardTimelineChartMode = nextMode === 'rank' ? 'rank' : DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
+      renderLeaderboardTimelineModeButtons();
+      renderLeaderboardTimelineChipPanel();
+      renderLeaderboardTimelineChart();
+    });
+
+    button.dataset.listenerAdded = 'true';
+  });
 
   if (searchInput && searchInput.dataset.listenerAdded !== 'true') {
     searchInput.addEventListener('input', () => {
@@ -5276,20 +6780,6 @@ function setupLeaderboardTimelineInteractions() {
     dropdown.dataset.listenerAdded = 'true';
   }
 
-  if (chipPanel && chipPanel.dataset.listenerAdded !== 'true') {
-    chipPanel.addEventListener('click', event => {
-      const button = event.target.closest('[data-leaderboard-timeline-remove]');
-      if (!button) {
-        return;
-      }
-
-      activeLeaderboardTimelineSelections.delete(String(button.dataset.leaderboardTimelineRemove || ''));
-      renderLeaderboardTimelineChart();
-    });
-
-    chipPanel.dataset.listenerAdded = 'true';
-  }
-
   if (showAllLinesButton && showAllLinesButton.dataset.listenerAdded !== 'true') {
     showAllLinesButton.addEventListener('click', () => {
       setLeaderboardTimelineLineVisibility(true);
@@ -5305,6 +6795,30 @@ function setupLeaderboardTimelineInteractions() {
   }
 
   updateLeaderboardTimelineVisibilityButtons();
+}
+
+function flushLeaderboardThresholdRender() {
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+    leaderboardThresholdRenderTimer = null;
+  }
+
+  if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+    renderLeaderboardFromCurrentState({ thresholdOnly: true });
+  }
+}
+
+function scheduleLeaderboardThresholdRender() {
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+  }
+
+  leaderboardThresholdRenderTimer = setTimeout(() => {
+    leaderboardThresholdRenderTimer = null;
+    if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
+      renderLeaderboardFromCurrentState({ thresholdOnly: true });
+    }
+  }, LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS);
 }
 
 function setupLeaderboardFilterListeners() {
@@ -5448,12 +6962,22 @@ function setupLeaderboardFilterListeners() {
   });
 
   Object.entries(eloThresholdControls).forEach(([key, control]) => {
-    const applyThreshold = value => {
+    const applyThreshold = (value, { immediate = false } = {}) => {
+      const sanitizedValue = sanitizeLeaderboardThresholdValue(key, value);
+      const currentValue = sanitizeLeaderboardThresholdValue(key, getActiveLeaderboardEloThresholds()[key] ?? 0);
+      if (sanitizedValue === currentValue) {
+        return;
+      }
+
       setLeaderboardEloThreshold(key, value);
       renderLeaderboardEloThresholdControls();
 
       if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
-        renderLeaderboardFromCurrentState();
+        if (immediate) {
+          flushLeaderboardThresholdRender();
+        } else {
+          scheduleLeaderboardThresholdRender();
+        }
       }
     };
 
@@ -5467,7 +6991,7 @@ function setupLeaderboardFilterListeners() {
           const topPercent = Number(button.dataset.leaderboardThresholdTopPercent || 0);
           const quickValue = getLeaderboardEloThresholdQuickViewValue(key, topPercent);
           const activeValue = getActiveLeaderboardEloThresholds()[key] ?? 0;
-          applyThreshold(areLeaderboardThresholdValuesEqual(key, quickValue, activeValue) ? 0 : quickValue);
+          applyThreshold(areLeaderboardThresholdValuesEqual(key, quickValue, activeValue) ? 0 : quickValue, { immediate: true });
         });
 
         button.dataset.listenerAdded = 'true';
@@ -5486,11 +7010,11 @@ function setupLeaderboardFilterListeners() {
     }
 
     control.input.addEventListener('change', () => {
-      applyThreshold(control.input.value);
+      applyThreshold(control.input.value, { immediate: true });
     });
 
     control.input.addEventListener('blur', () => {
-      applyThreshold(control.input.value);
+      applyThreshold(control.input.value, { immediate: true });
     });
 
     control.input.addEventListener('keydown', event => {
@@ -5511,7 +7035,7 @@ function setupLeaderboardFilterListeners() {
       renderLeaderboardEloThresholdControls();
 
       if (getTopMode() === 'leaderboard' && currentLeaderboardDataset?.mode === 'elo') {
-        renderLeaderboardFromCurrentState();
+        flushLeaderboardThresholdRender();
       }
     });
 
@@ -5519,11 +7043,251 @@ function setupLeaderboardFilterListeners() {
   }
 }
 
+// ─── Deck Selector ─────────────────────────────────────────────────────────
+// Modal-based deck selection for the Elo leaderboard.
+
+function getLeaderboardDeckSelectButton() {
+  return document.getElementById('leaderboardDeckSelectButton');
+}
+
+function getLeaderboardDeckResetButton() {
+  return document.getElementById('leaderboardDeckResetButton');
+}
+
+function getLeaderboardDeckModalBackdrop() {
+  return document.getElementById('leaderboardDeckModalBackdrop');
+}
+
+function getLeaderboardDeckModalSearchInput() {
+  return document.getElementById('leaderboardDeckModalSearchInput');
+}
+
+function getLeaderboardDeckModalList() {
+  return document.getElementById('leaderboardDeckModalList');
+}
+
+function getDeckDisplayName(deckName) {
+  return deckName === LEADERBOARD_PLAYER_TOTAL_SCOPE ? 'All Decks (Overall)' : String(deckName || '').trim();
+}
+
+function getAllDeckNamesFromDataset(dataset = currentLeaderboardDataset) {
+  const rows = Array.isArray(dataset?.deckDataset?.seasonRows) ? dataset.deckDataset.seasonRows : [];
+  return [...new Set(rows.map(row => String(row?.deck || '').trim()).filter(Boolean))]
+    .sort((a, b) => String(a).localeCompare(String(b), undefined, { sensitivity: 'base' }));
+}
+
+function buildDeckViewRows(selectedDeckName = '', dataset = currentLeaderboardDataset) {
+  const normalizedDeckName = String(selectedDeckName || '').trim();
+  if (!normalizedDeckName || normalizedDeckName === LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+    return [];
+  }
+
+  const datasetKey = getLeaderboardDatasetCacheKey({
+    eventTypes: dataset?.eventTypes,
+    startDate: dataset?.startDate,
+    endDate: dataset?.endDate,
+    resetByYear: dataset?.resetByYear,
+    entityMode: 'player_deck',
+    includeHistory: dataset?.detailsLoaded === true
+  });
+  const cacheKey = `${datasetKey}:::${normalizedDeckName}`;
+  if (leaderboardDeckRowsCache.has(cacheKey)) {
+    return leaderboardDeckRowsCache.get(cacheKey);
+  }
+
+  const deckRows = (Array.isArray(dataset?.deckDataset?.seasonRows) ? dataset.deckDataset.seasonRows : [])
+    .filter(row => String(row?.deck || '').trim() === normalizedDeckName);
+  const beforeSnapshot = logLeaderboardIntegritySnapshot(`buildDeckViewRows:${normalizedDeckName}:raw`, deckRows, { includeRank: false });
+
+  const augmentedRows = augmentEloLeaderboardRowsWithEventStats(deckRows, dataset);
+  const afterSnapshot = logLeaderboardIntegritySnapshot(`buildDeckViewRows:${normalizedDeckName}:augmented`, augmentedRows, { includeRank: false });
+  compareLeaderboardIntegritySnapshots(`buildDeckViewRows:${normalizedDeckName}`, beforeSnapshot, afterSnapshot);
+  leaderboardDeckRowsCache.set(cacheKey, augmentedRows);
+  return augmentedRows;
+}
+
+function getLeaderboardPlayerDeckRank(scope = {}, dataset = currentLeaderboardDataset) {
+  if (!scope || scope.type !== 'deck' || !scope.label) {
+    return null;
+  }
+
+  const deckRows = applyLeaderboardRowFilters(buildDeckViewRows(scope.label, dataset), dataset);
+  if (!deckRows.length) {
+    return null;
+  }
+
+  const sortedDeckRows = [...deckRows].sort(compareEloLeaderboardRows);
+  const normalizedKey = String(scope.key || '').trim();
+  const rankIndex = sortedDeckRows.findIndex(row => String(row.playerKey || '').trim() === normalizedKey);
+
+  return rankIndex >= 0 ? rankIndex + 1 : null;
+}
+
+function renderLeaderboardDeckButton() {
+  const button = getLeaderboardDeckSelectButton();
+  const resetButton = getLeaderboardDeckResetButton();
+  if (!button) {
+    return;
+  }
+
+  button.textContent = `Deck: ${getDeckDisplayName(selectedDeck)}`;
+
+  if (resetButton) {
+    const isTotalScope = selectedDeck === LEADERBOARD_PLAYER_TOTAL_SCOPE;
+    resetButton.hidden = isTotalScope;
+    resetButton.disabled = isTotalScope;
+  }
+}
+
+function renderLeaderboardDeckModal(dataset = currentLeaderboardDataset) {
+  const backdrop = getLeaderboardDeckModalBackdrop();
+  const list = getLeaderboardDeckModalList();
+  const input = getLeaderboardDeckModalSearchInput();
+
+  if (!backdrop || !list || !input) {
+    return;
+  }
+
+  const filterTerm = String(input.value || '').trim().toLowerCase();
+  const allDecks = getAllDeckNamesFromDataset(dataset);
+  const options = [LEADERBOARD_PLAYER_TOTAL_SCOPE, ...allDecks];
+
+  const filteredDecks = options.filter(deckKey => {
+    if (deckKey === LEADERBOARD_PLAYER_TOTAL_SCOPE) {
+      return true;
+    }
+    return String(deckKey).toLowerCase().includes(filterTerm);
+  });
+
+  list.innerHTML = filteredDecks.length > 0
+    ? filteredDecks.map(deckKey => {
+      const label = getDeckDisplayName(deckKey);
+      const isActive = deckKey === selectedDeck;
+      return `
+        <button
+          type="button"
+          class="deck-selector-item${isActive ? ' active' : ''}"
+          data-deck-name="${escapeHtml(deckKey)}"
+        >
+          ${escapeHtml(label)}
+        </button>
+      `;
+    }).join('')
+    : '<div class="deck-selector-empty">No decks matched the filter.</div>';
+}
+
+function openLeaderboardDeckModal() {
+  const backdrop = getLeaderboardDeckModalBackdrop();
+  const input = getLeaderboardDeckModalSearchInput();
+
+  if (!backdrop || !input) {
+    return;
+  }
+
+  backdrop.hidden = false;
+  input.value = '';
+  input.focus();
+  renderLeaderboardDeckModal(currentLeaderboardDataset);
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLeaderboardDeckModal() {
+  const backdrop = getLeaderboardDeckModalBackdrop();
+
+  if (!backdrop) {
+    return;
+  }
+
+  backdrop.hidden = true;
+  document.body.style.overflow = '';
+}
+
+function selectLeaderboardDeck(deckName = '') {
+  selectedDeck = deckName || LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  renderLeaderboardDeckButton();
+  closeLeaderboardDeckModal();
+  renderLeaderboardFromCurrentState();
+}
+
+function setupLeaderboardDeckSelector() {
+  const button = getLeaderboardDeckSelectButton();
+  const backdrop = getLeaderboardDeckModalBackdrop();
+  const closeButton = document.getElementById('leaderboardDeckModalClose');
+  const searchInput = getLeaderboardDeckModalSearchInput();
+  const deckList = getLeaderboardDeckModalList();
+
+  if (button && button.dataset.listenerAdded !== 'true') {
+    button.addEventListener('click', openLeaderboardDeckModal);
+    button.dataset.listenerAdded = 'true';
+  }
+
+  const resetButton = getLeaderboardDeckResetButton();
+  if (resetButton && resetButton.dataset.listenerAdded !== 'true') {
+    resetButton.addEventListener('click', event => {
+      event.stopPropagation();
+      selectLeaderboardDeck(LEADERBOARD_PLAYER_TOTAL_SCOPE);
+    });
+    resetButton.dataset.listenerAdded = 'true';
+  }
+
+  if (backdrop && backdrop.dataset.listenerAdded !== 'true') {
+    backdrop.addEventListener('click', event => {
+      if (event.target === backdrop) {
+        closeLeaderboardDeckModal();
+      }
+    });
+    backdrop.dataset.listenerAdded = 'true';
+  }
+
+  if (closeButton && closeButton.dataset.listenerAdded !== 'true') {
+    closeButton.addEventListener('click', closeLeaderboardDeckModal);
+    closeButton.dataset.listenerAdded = 'true';
+  }
+
+  if (searchInput && searchInput.dataset.listenerAdded !== 'true') {
+    searchInput.addEventListener('input', () => renderLeaderboardDeckModal(currentLeaderboardDataset));
+    searchInput.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        event.preventDefault();
+        closeLeaderboardDeckModal();
+      }
+    });
+    searchInput.dataset.listenerAdded = 'true';
+  }
+
+  if (deckList && deckList.dataset.listenerAdded !== 'true') {
+    deckList.addEventListener('click', event => {
+      const option = event.target.closest('[data-deck-name]');
+      if (!option) {
+        return;
+      }
+      selectLeaderboardDeck(option.dataset.deckName || '');
+    });
+    deckList.dataset.listenerAdded = 'true';
+  }
+
+  if (document.body.dataset.deckModalKeyBound !== 'true') {
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape') {
+        const backdropElement = getLeaderboardDeckModalBackdrop();
+        if (backdropElement && !backdropElement.hidden) {
+          closeLeaderboardDeckModal();
+        }
+      }
+    });
+    document.body.dataset.deckModalKeyBound = 'true';
+  }
+}
+
+
+// ─── End Deck Selector ───────────────────────────────────────────────────────
+
 // Wires Leaderboard controls, table actions, drilldowns, and timeline
 // interactions.
 export function initLeaderboards() {
   setLeaderboardEventType(DEFAULT_EVENT_TYPE);
   renderLeaderboardWindowControls();
+  renderLeaderboardTimelineModeButtons();
   setupLeaderboardTableSorting();
   setupLeaderboardTableRowInteractions();
   setupLeaderboardTableActions();
@@ -5531,12 +7295,71 @@ export function initLeaderboards() {
   setupLeaderboardFilterListeners();
   setupLeaderboardDrilldownModal();
   setupLeaderboardDrilldownCards();
+  setupLeaderboardDeckSelector();
 }
 
 // Builds the active Elo dataset and refreshes every Leaderboards surface.
+async function ensureLeaderboardDetailDataLoaded() {
+  if (currentLeaderboardDataset?.detailsLoaded) {
+    return true;
+  }
+
+  const activeWindow = currentLeaderboardDataset?.period;
+  if (!activeWindow?.startDate || !activeWindow?.endDate) {
+    return false;
+  }
+
+  const requestId = leaderboardDatasetRequestId;
+  const [detailDataset, deckDetailDataset] = await Promise.all([
+    loadLeaderboardDatasetCached({
+      eventTypes: currentLeaderboardDataset.eventTypes,
+      startDate: currentLeaderboardDataset.startDate,
+      endDate: currentLeaderboardDataset.endDate
+    }, {
+      resetByYear: activeWindow.resetByYear,
+      includeHistory: true
+    }),
+    loadLeaderboardDatasetCached({
+      eventTypes: currentLeaderboardDataset.eventTypes,
+      startDate: currentLeaderboardDataset.startDate,
+      endDate: currentLeaderboardDataset.endDate
+    }, {
+      resetByYear: activeWindow.resetByYear,
+      entityMode: 'player_deck',
+      includeHistory: true
+    })
+  ]);
+
+  if (requestId !== leaderboardDatasetRequestId) {
+    return false;
+  }
+
+  currentLeaderboardDataset = {
+    ...currentLeaderboardDataset,
+    ...detailDataset,
+    mode: 'elo',
+    period: activeWindow,
+    detailsLoaded: true,
+    deckDataset: deckDetailDataset,
+    eventResultLookup: buildLeaderboardEventResultLookup(detailDataset)
+  };
+  clearLeaderboardStageBCaches();
+  logLeaderboardIntegritySnapshot('ensureLeaderboardDetailDataLoaded:seasonRows', detailDataset.seasonRows, { includeRank: false });
+  currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(detailDataset.seasonRows, currentLeaderboardDataset);
+  logLeaderboardIntegritySnapshot('ensureLeaderboardDetailDataLoaded:baseRows', currentLeaderboardBaseRows, { includeRank: false });
+  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
+  renderLeaderboardFromCurrentState();
+  return true;
+}
+
 export async function updateLeaderboardAnalytics() {
   // Async requests can overlap when filters change quickly. Incrementing this id
   // lets stale responses exit before overwriting the latest rendered dataset.
+  if (leaderboardThresholdRenderTimer) {
+    clearTimeout(leaderboardThresholdRenderTimer);
+    leaderboardThresholdRenderTimer = null;
+  }
+
   const requestId = leaderboardDatasetRequestId + 1;
   leaderboardDatasetRequestId = requestId;
   const activeWindow = renderLeaderboardWindowControls();
@@ -5552,50 +7375,63 @@ export async function updateLeaderboardAnalytics() {
 
   renderLeaderboardLoadingState();
 
-  let dataset;
   try {
-    dataset = await buildRankingsDataset({
-      eventTypes: getSelectedLeaderboardEventTypes(),
-      startDate: activeWindow?.startDate || '',
-      endDate: activeWindow?.endDate || ''
-    }, {
-      resetByYear: activeWindow?.resetByYear
-    });
+    const [dataset, deckDataset] = await Promise.all([
+      loadLeaderboardDatasetCached({
+        eventTypes: getSelectedLeaderboardEventTypes(),
+        startDate: activeWindow?.startDate || '',
+        endDate: activeWindow?.endDate || ''
+      }, {
+        resetByYear: activeWindow?.resetByYear,
+        includeHistory: true
+      }),
+      loadLeaderboardDatasetCached({
+        eventTypes: getSelectedLeaderboardEventTypes(),
+        startDate: activeWindow?.startDate || '',
+        endDate: activeWindow?.endDate || ''
+      }, {
+        resetByYear: activeWindow?.resetByYear,
+        entityMode: 'player_deck',
+        includeHistory: true
+      })
+    ]);
+
+    if (requestId !== leaderboardDatasetRequestId) {
+      return;
+    }
+
+    currentLeaderboardDataset = {
+      ...dataset,
+      mode: 'elo',
+      period: activeWindow,
+      detailsLoaded: true,
+      eventResultLookup: buildLeaderboardEventResultLookup(dataset),
+      deckDataset
+    };
+    clearLeaderboardStageBCaches();
+    logLeaderboardIntegritySnapshot('updateLeaderboardAnalytics:seasonRows', dataset.seasonRows, { includeRank: false });
+    currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(dataset.seasonRows, currentLeaderboardDataset);
+    logLeaderboardIntegritySnapshot('updateLeaderboardAnalytics:baseRows', currentLeaderboardBaseRows, { includeRank: false });
+    currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
+
+    renderLeaderboardFromCurrentState();
   } catch (error) {
     if (requestId !== leaderboardDatasetRequestId) {
       return;
     }
 
-    console.error('Failed to build Elo leaderboard dataset.', error);
+    console.error('Failed to build or render Elo leaderboard dataset.', error);
     currentLeaderboardBaseRows = [];
     currentLeaderboardRows = [];
     renderLeaderboardEloThresholdControls();
     renderLeaderboardErrorState('Unable to load Elo leaderboard data for the selected window.');
-    return;
+
+    if (searchInput) {
+      searchInput.disabled = false;
+    }
+    if (downloadButton) {
+      downloadButton.disabled = false;
+    }
   }
-
-  if (requestId !== leaderboardDatasetRequestId) {
-    return;
-  }
-
-  const deckDataset = buildYearlyEloRatings(dataset.filteredMatches || [], {
-    // Build a second Elo model where each player/deck combination is its own
-    // entity. Player drilldowns use it for deck-specific Elo comparisons.
-    kFactor: getRankingsKFactor({ resetByYear: activeWindow?.resetByYear }),
-    resetByYear: activeWindow?.resetByYear,
-    entityMode: 'player_deck'
-  });
-
-  currentLeaderboardDataset = {
-    ...dataset,
-    mode: 'elo',
-    period: activeWindow,
-    eventResultLookup: buildLeaderboardEventResultLookup(dataset),
-    deckDataset
-  };
-  currentLeaderboardBaseRows = augmentEloLeaderboardRowsWithEventStats(dataset.seasonRows, currentLeaderboardDataset);
-  currentLeaderboardRows = applyLeaderboardRowFilters(currentLeaderboardBaseRows, currentLeaderboardDataset);
-
-  renderLeaderboardFromCurrentState();
 }
 

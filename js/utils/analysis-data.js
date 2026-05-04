@@ -349,6 +349,13 @@ export function getAnalysisRows() {
   return excludeUnknownHeavyBelowTop32Events ? filteredAnalysisRows : rawCleanedData;
 }
 
+// Returns the full raw event dataset without applying optional data-quality
+// exclusions. Leaderboards use this path so Elo-derived stats always include
+// every event unless a record is missing required fields.
+export function getAllAnalysisRows() {
+  return rawCleanedData;
+}
+
 // Returns all rows for a specific event name.
 export function getAnalysisRowsForEvent(eventName = '', rows = getAnalysisRows()) {
   const normalizedEventName = normalizeEventName(eventName);

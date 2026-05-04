@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Rebuild the project data from the local workbook archive."""
+"""Rebuild the project data from the local workbook archive.
+
+This wrapper exists to keep the rebuild contract small: choose the workbook scope
+here, then delegate import/replacement logic to the importer script.
+"""
 
 from __future__ import annotations
 
@@ -31,6 +35,12 @@ REBUILD_MATCHUP_CSV_ROOT = REBUILD_STAGING_ROOT / "google-drive-matchup-input"
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Rebuild the project event and matchup data from the workbook archive.")
     parser.add_argument(
+        "--include-relative-path",
+        action="append",
+        default=[],
+        help="Limit the rebuild to these source-root-relative workbook paths.",
+    )
+    parser.add_argument(
         "--full-rebuild-online",
         action="store_true",
         help=(
@@ -42,6 +52,11 @@ def parse_args() -> argparse.Namespace:
 
 
 def resolve_incremental_cutoff(state: dict[str, object]) -> str | None:
+    """Choose the best incremental cutoff from aliases, state, or prior summary.
+
+    Returning `None` is intentional: it tells the rebuild path there is no safe
+    incremental marker, so it must fall back to a full-archive import scope.
+    """
     if ALIASES_PATH.exists():
         try:
             aliases = json.loads(ALIASES_PATH.read_text(encoding="utf-8"))
@@ -69,6 +84,11 @@ def resolve_incremental_cutoff(state: dict[str, object]) -> str | None:
 def resolve_next_cutoff(
     state: dict[str, object], summary: dict[str, object], previous_cutoff: str | None
 ) -> str:
+    """Compute the next persisted cutoff after a rebuild finishes.
+
+    Prefers durable data-derived markers over wall-clock time so later incremental
+    rebuilds replay cleanly instead of drifting on timing alone.
+    """
     if ALIASES_PATH.exists():
         try:
             aliases = json.loads(ALIASES_PATH.read_text(encoding="utf-8"))
@@ -86,6 +106,11 @@ def resolve_next_cutoff(
 
 
 def main() -> int:
+    """Run the importer-facing rebuild wrapper and persist the next rebuild marker.
+
+    - Full rebuild replaces selected online rows; incremental rebuild prefers the exact paths recorded by sync.
+    - Writes rebuild state after the importer summary is available.
+    """
     args = parse_args()
     settings = load_settings()
     state = load_state()
@@ -114,10 +139,27 @@ def main() -> int:
             str(PIPELINE_OVERRIDES_PATH),
         ]
     )
+    include_relative_paths = [
+        str(relative_path).strip()
+        for relative_path in args.include_relative_path
+        if str(relative_path).strip()
+    ]
+    for relative_path in include_relative_paths:
+        command.extend(["--include-relative-path", relative_path])
     if args.full_rebuild_online:
-        log("Rebuilding project data from the full local workbook archive, honoring pipeline overrides.")
+        # Full rebuild means "replace online-derived rows from the selected archive
+        # scope", not "blindly append new rows on top of the existing dataset".
+        if include_relative_paths:
+            log(
+                f"Rebuilding project data from {len(include_relative_paths)} selected local workbook(s), "
+                "honoring pipeline overrides."
+            )
+        else:
+            log("Rebuilding project data from the full local workbook archive, honoring pipeline overrides.")
         command.append("--replace-existing-online")
     else:
+        # Incremental rebuild prefers the exact workbook paths recorded by sync so
+        # reimports replace only the affected event IDs instead of touching the full archive.
         downloaded_files = state.get("downloaded_files")
         if isinstance(downloaded_files, list) and downloaded_files:
             relative_paths = [

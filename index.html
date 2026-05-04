@@ -8,8 +8,8 @@
   <meta property="og:url" content="https://fnpavel.github.io/pauperdata/">
   <meta property="og:title" content="MTG Pauper Analytics Dashboard">
   <meta property="og:description" content="Explore Pauper tournament results, meta share, win rates, deck trends, and player performance in one analytics dashboard.">
-  <meta property="og:image" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260503075355">
-  <meta property="og:image:secure_url" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260503075355">
+  <meta property="og:image" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260502065335">
+  <meta property="og:image:secure_url" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260502065335">
   <meta property="og:image:type" content="image/png">
   <meta property="og:image:width" content="1280">
   <meta property="og:image:height" content="640">
@@ -18,7 +18,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="MTG Pauper Analytics Dashboard">
   <meta name="twitter:description" content="Explore Pauper tournament results, meta share, win rates, deck trends, and player performance in one analytics dashboard.">
-  <meta name="twitter:image" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260503075355">
+  <meta name="twitter:image" content="https://fnpavel.github.io/pauperdata/thumbnail.png?v=20260502065335">
   <meta name="twitter:image:alt" content="MTG Pauper Analytics Dashboard preview image">
   <title>MTG Pauper Analytics Dashboard</title>
   <link rel="canonical" href="https://fnpavel.github.io/pauperdata/">
@@ -279,55 +279,31 @@
               <div id="multiEventDateRangeCalendar" class="range-calendar-container"></div>
               <select id="startDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
               <select id="endDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
-              <div id="metaWinRateChartLegend" class="custom-legend"></div>
-              <div id="metaWinRateChartLoading">Loading...</div>
-              <!-- Chart modules inject search controls into this wrapper before the canvas. -->
-              <div id="metaWinRateChartContainer">
-                <canvas id="metaWinRateChart"></canvas>
+              <div class="bubble-menu multi-event-scatter-toggle-footer" id="multiEventScatterModeButtons" aria-label="Select multi-event scatter chart">
+                <button type="button" class="bubble-button multi-event-scatter-mode-button active" data-multi-event-scatter-mode="deck">Deck</button>
+                <button type="button" class="bubble-button multi-event-scatter-mode-button" data-multi-event-scatter-mode="player">Player</button>
+              </div>
+              <div id="multiEventDeckScatterPanel" class="multi-event-shared-chart-panel active" data-multi-event-scatter-panel="deck">
+                <div id="metaWinRateChartLegend" class="custom-legend"></div>
+                <div id="metaWinRateChartLoading">Loading...</div>
+                <!-- Chart modules inject search controls into this wrapper before the canvas. -->
+                <div id="metaWinRateChartContainer">
+                  <canvas id="metaWinRateChart"></canvas>
+                </div>
+              </div>
+              <div id="multiEventPlayerScatterPanel" class="multi-event-shared-chart-panel" data-multi-event-scatter-panel="player" hidden>
+                <div id="multiPlayerWinRateChartLoading">Loading...</div>
+                <canvas id="multiPlayerWinRateChart"></canvas>
+                <div id="multiPlayerWinRateDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
               </div>
             </div>
             <div class="chart-container">
-              <h2 class="chart-title">Aggregate Player Win Rates</h2>
-              <div id="multiPlayerWinRateChartLoading">Loading...</div>
-              <canvas id="multiPlayerWinRateChart"></canvas>
-              <div id="multiPlayerWinRateDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-            </div>
-            <div class="chart-container">
-              <h2 class="chart-title">Deck Evolution: Meta and Win Rate</h2>
-              <div class="bubble-menu">
-                <label>Deck:</label>
-                <select id="deckEvolutionSelect" onchange="updateDeckEvolutionChart()"></select>
-              </div>
-              <div id="deckEvolutionChartLoading">Loading...</div>
-              <canvas id="deckEvolutionChart"></canvas>
-              <div id="deckEvolutionEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-            </div>
-
-            <div class="data-table-container">
-              <div class="leaderboard-table-toolbar">
-                <h2 class="chart-title" id="multiEventTableTitle">Aggregate Data</h2>
-                <button type="button" class="bubble-button" id="multiEventTableDownloadCsv">Export CSV</button>
-              </div>
-              <div class="bubble-menu table-toggle">
-                <button class="bubble-button table-toggle-btn active" data-table="aggregate">Aggregate Data</button>
-                <button class="bubble-button table-toggle-btn" data-table="deck">Deck Evolution Data</button>
-              </div>
-              <div class="data-table-scroll event-analysis-table-scroll">
-                <table class="data-table" id="multiEventTable">
-                  <thead id="multiEventTableHead">
-                    <tr>
-                      <th data-sort="deck">Deck</th>
-                      <th data-sort="metaShare">Aggregate Meta Share</th>
-                      <th data-sort="winRate">Aggregate Win Rate</th>
-                      <th data-sort="top1">Top 1</th>
-                      <th data-sort="top8">Top 8</th>
-                      <th data-sort="top16">Top 16</th>
-                      <th data-sort="top32">Top 32</th>
-                      <th data-sort="belowTop32">Below Top 32</th>
-                    </tr>
-                  </thead>
-                  <tbody id="multiEventTableBody"></tbody>
-                </table>
+              <h2 class="chart-title">Aggregate Event Top 8/16/32 Conversion</h2>
+              <div id="multiEventFunnelScrollFrame" class="multi-event-funnel-scroll-frame">
+                <div id="multiEventFunnelChartBody" class="multi-event-funnel-chart-body">
+                  <div id="multiEventFunnelChartLoading">Loading...</div>
+                  <canvas id="multiEventFunnelChart"></canvas>
+                </div>
               </div>
             </div>
           </div>
@@ -350,27 +326,48 @@
       </div>
     </div>
 
+    <div id="deckEvolutionFocusOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal deck-evolution-focus-modal" role="dialog" aria-modal="true" aria-labelledby="deckEvolutionFocusTitle">
+        <div class="player-rank-drilldown-header">
+          <div class="player-rank-drilldown-heading">
+            <h3 id="deckEvolutionFocusTitle">Deck Evolution</h3>
+            <p id="deckEvolutionFocusSubtitle">Meta share and win rate across the current multi-event window.</p>
+          </div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="deckEvolutionFocusClose" aria-label="Close deck evolution details">
+            Close
+          </button>
+        </div>
+        <div class="player-rank-drilldown-content deck-evolution-focus-modal-content">
+          <div class="chart-container deck-evolution-focus-chart-shell">
+            <div id="deckEvolutionFocusChartLoading">Loading...</div>
+            <canvas id="deckEvolutionFocusChart"></canvas>
+          </div>
+          <div id="deckEvolutionFocusDetails" class="deck-evolution-focus-details"></div>
+        </div>
+      </div>
+    </div>
+
     <!-- Player Analysis Section: player filters drive cards, tables, and player-specific charts. -->
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">
         <div class="player-stats-row player-stats-row-primary">
+          <div class="stat-card" id="playerFocusedPlayerCard">
+            <div class="stat-title">Focused Player</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">Select a player to inspect</div>
+            <div class="stat-icon">👤</div>
+          </div>
           <div class="stat-card" id="playerEventsCard">
             <div class="stat-title">Total Events</div>
             <div class="stat-value">Loading...</div>
             <div class="stat-change"></div>
             <div class="stat-icon">📅</div>
           </div>
-          <div class="stat-card" id="playerPeriodEloCard">
-            <div class="stat-title">Elo for the Period</div>
+          <div class="stat-card" id="playerOverallWinRateCard">
+            <div class="stat-title">Overall Win Rate</div>
             <div class="stat-value">--</div>
-            <div class="stat-change">No rated Elo matches yet</div>
-            <div class="stat-icon">🏆</div>
-          </div>
-          <div class="stat-card" id="playerPeakEloCard">
-            <div class="stat-title">Peak Elo</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change">No Elo peak yet</div>
-            <div class="stat-icon">⚡</div>
+            <div class="stat-change"></div>
+            <div class="stat-icon">📊</div>
           </div>
           <div class="stat-card" id="playerUniqueDecksCard">
             <div class="stat-title">Unique Decks Used</div>
@@ -466,20 +463,26 @@
         <div class="charts-and-tables">
           <div id="playerCharts">
             <div class="chart-container player-primary-chart">
-              <h2 class="chart-title">Player Analytics</h2>
+              <div class="player-chart-header">
+                <h2 class="chart-title">Player Analytics</h2>
+                <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                  <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
+                  <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+                </div>
+              </div>
               <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
-              <div id="playerWinRateDeckFilter" class="player-chart-filter-panel"></div>
               <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
               <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-              <div id="playerWinRateChartLoading">Loading...</div>
-              <canvas id="playerWinRateChart"></canvas>
-              <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-            </div>
-            <div class="chart-container player-secondary-chart">
-              <h2 class="chart-title">Deck Performance Scatter Plot</h2>
-              <div id="playerDeckPerformanceChartLoading">Loading...</div>
-              <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
-              <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              <div id="playerWinRatePanel" class="player-chart-panel">
+                <div id="playerWinRateChartLoading">Loading...</div>
+                <canvas id="playerWinRateChart"></canvas>
+                <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              </div>
+              <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
+                <div id="playerDeckPerformanceChartLoading">Loading...</div>
+                <canvas id="playerDeckPerformanceChart" style="height: 400px;"></canvas>
+                <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              </div>
             </div>
             <div class="data-table-container" id="playerRawTableContainer">
               <div class="leaderboard-table-toolbar">
@@ -511,63 +514,41 @@
         </div>
 
         <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
-          <div class="stat-card combined" id="playerWinRateStatsCard">
-            <div class="stat-title">Overall Win Rate</div>
-            <div class="stat-details" id="playerWinRateStatsDetails">
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerOverallWinRate">--</span></div>
-            </div>
-            <div class="stat-icon">📊</div>
+          <div class="stat-card" id="playerPeriodEloCard">
+            <div class="stat-title">Elo for the Period</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">No rated Elo matches yet</div>
+            <div class="stat-icon">🏆</div>
           </div>
-          <div class="stat-card combined" id="playerMostPlayedDeckCard" style="display: none;">
-            <div class="stat-title">Most Played Deck</div>
-            <div class="stat-details" id="playerMostPlayedDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerMostPlayedDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerMostPlayedDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerMostPlayedDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerMostPlayedDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerMostPlayedDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">⬆️</div>
+          <div class="stat-card" id="playerPeakEloCard">
+            <div class="stat-title">Peak Elo</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">No Elo peak yet</div>
+            <div class="stat-icon">⚡</div>
           </div>
-          <div class="stat-card combined" id="playerLeastPlayedDeckCard" style="display: none;">
-            <div class="stat-title">Least Played Deck</div>
-            <div class="stat-details" id="playerLeastPlayedDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerLeastPlayedDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerLeastPlayedDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerLeastPlayedDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">⬇️</div>
-          </div>
-          <div class="stat-card combined" id="playerBestDeckCard">
-            <div class="stat-title">Best Performing Deck</div>
-            <div class="stat-details" id="playerBestDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerBestDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerBestDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerBestDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerBestDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerBestDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">👑</div>
-          </div>
-          <div class="stat-card combined" id="playerWorstDeckCard">
-            <div class="stat-title">Worst Performing Deck</div>
-            <div class="stat-details" id="playerWorstDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerWorstDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerWorstDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerWorstDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerWorstDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerWorstDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">☠️</div>
-          </div>
+          <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
         </div>
       </div>
+    </div>
 
-      <div id="playerRankDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
-        <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="playerRankDrilldownTitle">
-          <div class="player-rank-drilldown-header">
+    <div id="multiPlayerAggregateOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal multi-player-aggregate-modal" role="dialog" aria-modal="true" aria-labelledby="multiPlayerAggregateTitle">
+        <div class="player-rank-drilldown-header">
+          <div class="player-rank-drilldown-heading">
+            <h3 id="multiPlayerAggregateTitle">Player Aggregate</h3>
+            <p id="multiPlayerAggregateSubtitle">Selected Multi-Event aggregate data.</p>
+          </div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="multiPlayerAggregateClose" aria-label="Close player aggregate details">
+            Close
+          </button>
+        </div>
+        <div id="multiPlayerAggregateContent" class="player-rank-drilldown-content"></div>
+      </div>
+    </div>
+
+    <div id="playerRankDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="playerRankDrilldownTitle">
+        <div class="player-rank-drilldown-header">
             <div class="player-rank-drilldown-heading">
               <h3 id="playerRankDrilldownTitle">Player Finish Details</h3>
               <p id="playerRankDrilldownSubtitle">Select a finish card to inspect the matching events.</p>
@@ -959,7 +940,26 @@
 
         <div class="charts-and-tables" id="leaderboardChartsAndTables">
           <div class="data-table-container" id="leaderboardTableContainer">
-            <h2 class="chart-title" id="leaderboardTableTitle">Seasonal Elo Leaderboard</h2>
+            <div class="leaderboard-title-row" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <h2 class="chart-title" id="leaderboardTableTitle" style="margin:0;">Seasonal Elo Leaderboard</h2>
+            </div>
+            <div id="leaderboardDeckModalBackdrop" class="deck-selector-modal-backdrop" hidden>
+              <div class="deck-selector-modal" role="dialog" aria-modal="true" aria-labelledby="leaderboardDeckModalTitle">
+                <div class="deck-selector-header">
+                  <h3 id="leaderboardDeckModalTitle">Select Deck</h3>
+                  <button type="button" class="bubble-button deck-selector-close-button" id="leaderboardDeckModalClose" aria-label="Close deck selector">Close</button>
+                </div>
+                <input
+                  type="search"
+                  class="player-search-input deck-selector-input"
+                  id="leaderboardDeckModalSearchInput"
+                  placeholder="Filter decks..."
+                  aria-label="Filter decks"
+                  autocomplete="off"
+                />
+                <div class="deck-selector-list" id="leaderboardDeckModalList"></div>
+              </div>
+            </div>
             <div id="leaderboardTitleBadgeRow"></div>
             <div class="leaderboard-table-toolbar" id="leaderboardTableToolbar">
               <div class="player-search-select leaderboard-table-search">
@@ -986,6 +986,26 @@
             <div class="leaderboard-table-click-hint" id="leaderboardTableClickHint">
               Click a player row to open details.
             </div>
+            <div class="leaderboard-deck-control leaderboard-deck-control-inline">
+              <button
+                type="button"
+                class="bubble-button"
+                id="leaderboardDeckSelectButton"
+                title="Select a deck for the Elo leaderboard"
+              >
+                Deck: All Decks (Overall)
+              </button>
+              <button
+                type="button"
+                class="bubble-button leaderboard-deck-reset-button"
+                id="leaderboardDeckResetButton"
+                title="Clear deck selection"
+                hidden
+                aria-label="Clear deck selection"
+              >
+                ✕
+              </button>
+            </div>
             <div class="leaderboard-table-search-status" id="leaderboardTableSearchStatus" aria-live="polite"></div>
             <div class="data-table-scroll player-data-table-scroll" id="leaderboardTableScroll">
               <table class="data-table" id="leaderboardTable">
@@ -1011,10 +1031,18 @@
           <div class="chart-container leaderboard-timeline-section" id="leaderboardTimelineSection" hidden>
             <div class="leaderboard-chart-panel-header">
               <div>
-                <h2 class="chart-title">Elo Timeline Across Events</h2>
+                <h2 class="chart-title" id="leaderboardTimelineTitle">Elo Timeline Across Events</h2>
                 <div class="leaderboard-table-helper" id="leaderboardTimelineHelper">
                   Tracking the selected players across the current Elo window. Top 8 are shown by default.
                 </div>
+              </div>
+              <div class="leaderboard-chart-toolbar-actions leaderboard-chart-mode-actions" id="leaderboardTimelineModeButtons" aria-label="Select leaderboard timeline chart view">
+                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="elo">
+                  Elo View
+                </button>
+                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="rank">
+                  Rank View
+                </button>
               </div>
             </div>
             <div class="leaderboard-chart-toolbar">
@@ -1044,6 +1072,8 @@
               <div class="leaderboard-table-search-status" id="leaderboardTimelineSearchStatus" aria-live="polite"></div>
             </div>
             <div class="leaderboard-timeline-chip-panel" id="leaderboardTimelineChipPanel"></div>
+            <div class="leaderboard-table-helper" id="leaderboardTimelineLoadingState" hidden>Loading chart...</div>
+            <div class="leaderboard-table-helper" id="leaderboardTimelineDebugFallback" hidden></div>
             <canvas id="leaderboardTimelineChart"></canvas>
           </div>
         </div>
@@ -1181,6 +1211,7 @@
   <script src="js/charts/single-meta-win-rate.js" type="module"></script>
   <script src="js/charts/single-funnel.js" type="module"></script>
   <script src="js/charts/multi-meta-win-rate.js" type="module"></script>
+  <script src="js/multi-funnel.js" type="module"></script>
   <script src="js/charts/multi-player-win-rate.js" type="module"></script>
   <script src="js/charts/multi-deck-evolution.js" type="module"></script>
   <script src="js/charts/player-win-rate.js" type="module"></script>

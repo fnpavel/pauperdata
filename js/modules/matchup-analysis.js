@@ -76,7 +76,15 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function pluralize(count, singular, pluralForm = `${singular}s`) {
+function pluralize(count, singular, pluralForm) {
+  if (pluralForm === undefined) {
+    // Handle irregular plurals
+    if (singular === 'match') {
+      pluralForm = 'matches';
+    } else {
+      pluralForm = `${singular}s`;
+    }
+  }
   return count === 1 ? singular : pluralForm;
 }
 
@@ -633,7 +641,8 @@ async function ensureDefaultMatchupPlayerFocus(resolvedMatches = []) {
       startDate: defaultRange.startDate,
       endDate: defaultRange.endDate
     }, {
-      resetByYear: true
+      resetByYear: true,
+      includeHistory: false
     });
     const defaultLeaderKey = String(
       rankingsDataset?.summary?.leader?.playerKey

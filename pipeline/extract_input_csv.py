@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract the workbook Input sheet into inspectable CSV files."""
+"""Extract workbook Input sheets into inspectable CSV files for debug review."""
 
 from __future__ import annotations
 
@@ -94,9 +94,9 @@ def main() -> int:
     )
     save_state(state)
 
-    log(f"Extracted Input sheets to CSV for {len(extracted_files)} workbook(s).")
+    log(f"Extracted Input sheets to debug CSVs for {len(extracted_files)} workbook(s).")
     log(f"- latest csv: {extracted_files[-1]['csv_path']}")
-    log("Next: open the CSVs if you want to inspect them, then run rebuild_event_matchup_data.py")
+    log("These CSVs are for inspection only; rebuild_event_matchup_data.py regenerates its own staging inputs.")
     return 0
 
 

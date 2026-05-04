@@ -5,6 +5,9 @@ import { getDeckEvolutionChartData } from '../modules/filters/filter-index.js';
 import { calculateMultiPlayerWinRateStats } from "../utils/data-chart.js";
 import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
+import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
+import { openMultiEventPlayerAggregateModal } from '../modules/multi-player-aggregate-modal.js';
+import { renderMultiEventPeriodSummaryBadge } from '../utils/multi-event-period-badge.js';
 
 export let multiPlayerWinRateChart = null;
 // Empty means hover controls the details panel; a value means the clicked point
@@ -27,6 +30,23 @@ function setMultiPlayerWinRateDetailsMarkup(markup) {
   }
 
   detailsEl.innerHTML = markup;
+}
+
+function ensureMultiPlayerWinRateDetailsInteractions() {
+  const detailsEl = document.getElementById('multiPlayerWinRateDetails');
+  if (!detailsEl || detailsEl.dataset.aggregateModalBound === 'true') {
+    return;
+  }
+
+  detailsEl.dataset.aggregateModalBound = 'true';
+  detailsEl.addEventListener('click', event => {
+    const trigger = event.target.closest('[data-multi-player-aggregate-open]');
+    if (!trigger) {
+      return;
+    }
+
+    openMultiEventPlayerAggregateModal(trigger.dataset.multiPlayerAggregateOpen || '');
+  });
 }
 
 function renderMultiPlayerWinRateDetailsPlaceholder(message) {
@@ -212,7 +232,7 @@ function buildMultiPlayerPointDetails(sortedPlayerData, chartData) {
 
 function renderMultiPlayerWinRateDetails(point, { pinned = false } = {}) {
   if (!point?.player) {
-    renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
+    renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to open the modal.');
     return;
   }
 
@@ -229,7 +249,7 @@ function renderMultiPlayerWinRateDetails(point, { pinned = false } = {}) {
     <div class="player-chart-event-card${pinned ? ' player-chart-event-card-pinned' : ''}">
       <div class="player-chart-event-header">
         <div class="player-chart-event-date">${escapeHtml(spanLabel)}</div>
-        <div class="player-chart-event-title">${escapeHtml(point.player)}</div>
+        <button type="button" class="player-chart-event-title player-chart-event-title-button" data-multi-player-aggregate-open="${escapeHtml(point.player)}">${escapeHtml(point.player)}</button>
       </div>
       <div class="player-chart-event-grid">
         <div class="player-chart-event-item">
@@ -311,9 +331,24 @@ export function updateMultiPlayerWinRateChart() {
   console.log("updateMultiPlayerWinRateChart called...");
   setChartLoading("multiPlayerWinRateChart", true);
   const theme = getChartTheme();
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const panel = document.getElementById('multiEventPlayerScatterPanel');
   pinnedMultiPlayerPointKey = '';
+  ensureMultiPlayerWinRateDetailsInteractions();
 
   const chartData = getDeckEvolutionChartData();
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: panel.querySelector('.player-search-container') || panel.querySelector('#multiPlayerWinRateChartLoading'),
+      badgeId: 'multiEventPlayerScatterPeriodBadge',
+      rows: chartData,
+      startDate,
+      endDate
+    });
+  }
+
   if (chartData.length === 0) {
     renderMultiPlayerWinRateDetailsPlaceholder('No player results are available for the current Multi-Event filters.');
     if (multiPlayerWinRateChart) multiPlayerWinRateChart.destroy();
@@ -390,7 +425,7 @@ export function updateMultiPlayerWinRateChart() {
         multiPlayerWinRateChart.options.scales.x.min = 0;
         multiPlayerWinRateChart.options.scales.x.max = Math.max(...(searchState.eventCounts.length ? searchState.eventCounts : [0])) + 2;
         multiPlayerWinRateChart.options.scales.y.min = 0;
-        multiPlayerWinRateChart.options.scales.y.max = Math.min(100, Math.ceil(Math.max(...(searchState.winRates.length ? searchState.winRates : [0])) / 10) * 10 + 10);
+        multiPlayerWinRateChart.options.scales.y.max = 100;
         
         multiPlayerWinRateChart.update();
         dropdown.style.display = 'none';
@@ -472,7 +507,18 @@ export function updateMultiPlayerWinRateChart() {
 
   searchContainer._playerSearchState = { labels, eventCounts, winRates, pointDetails };
 
-  renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: searchContainer,
+      badgeId: 'multiEventPlayerScatterPeriodBadge',
+      rows: chartData,
+      startDate,
+      endDate
+    });
+  }
+
+  renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to open the modal.');
 
   try {
     multiPlayerWinRateChart = new Chart(multiPlayerWinRateCtx, {
@@ -519,24 +565,7 @@ export function updateMultiPlayerWinRateChart() {
             min: 0,
             max: Math.max(...eventCounts) + 1
           },
-          y: {
-            type: 'linear',
-            title: {
-              display: true,
-              text: "Win Rate %",
-              color: theme.text,
-              font: { size: 14, weight: 'bold', family: "'Bitter', serif" }
-            },
-            ticks: {
-              color: theme.text,
-              font: { size: 12, family: "'Bitter', serif" },
-              callback: value => `${value}%`,
-              stepSize: 10
-            },
-            grid: { color: theme.grid },
-            min: 0,
-            max: Math.min(100, Math.ceil(Math.max(...winRates) / 10) * 10 + 10)
-          }
+          y: buildSharedMultiScatterYAxis(theme)
         },
         plugins: {
           legend: {
@@ -612,30 +641,18 @@ export function updateMultiPlayerWinRateChart() {
             pan: { enabled: false },
             limits: {
               x: { min: 0, max: Math.max(...eventCounts) + 1 },
-              y: { min: 0, max: Math.min(100, Math.ceil(Math.max(...winRates) / 10) * 10 + 10) }
+              y: { min: 0, max: 100 }
             }
           }
         },
         onClick(event, activeElements) {
           if (!activeElements?.length) {
-            if (pinnedMultiPlayerPointKey) {
-              pinnedMultiPlayerPointKey = '';
-              renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
-            }
             return;
           }
 
           const point = pointDetails[activeElements[0].index];
-          const pointKey = getMultiPlayerPointKey(point);
-
-          if (pinnedMultiPlayerPointKey === pointKey) {
-            pinnedMultiPlayerPointKey = '';
-            renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
-            return;
-          }
-
-          pinnedMultiPlayerPointKey = pointKey;
-          renderMultiPlayerWinRateDetails(point, { pinned: true });
+          pinnedMultiPlayerPointKey = '';
+          openMultiEventPlayerAggregateModal(point.player);
         },
         onHover(event, activeElements) {
           multiPlayerWinRateCtx.style.cursor = activeElements?.length ? 'pointer' : 'default';
@@ -661,11 +678,11 @@ export function updateMultiPlayerWinRateChart() {
             }
 
             pinnedMultiPlayerPointKey = '';
-            renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
+            renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to open the modal.');
             return;
           }
 
-          renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to lock it.');
+          renderMultiPlayerWinRateDetailsPlaceholder('Hover a player point to inspect the aggregate result profile. Click a point to open the modal.');
         },
         animation: { duration: 1000, easing: 'easeOutQuart' }
       }

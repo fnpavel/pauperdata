@@ -3,8 +3,10 @@
 import { setChartLoading } from '../utils/dom.js';
 import { getMultiEventChartData } from '../modules/filters/filter-index.js';
 import { calculateMetaWinRateStats } from "../utils/data-chart.js";
-import { focusMultiEventDeck } from './multi-deck-evolution.js';
+import { openMultiEventDeckEvolutionModal } from './multi-deck-evolution.js';
 import { getChartTheme } from '../utils/theme.js';
+import { buildSharedMultiScatterYAxis } from './multi-scatter-shared.js';
+import { renderMultiEventPeriodSummaryBadge } from '../utils/multi-event-period-badge.js';
 
 export let metaWinRateChart = null;
 
@@ -14,8 +16,23 @@ export function updateMultiMetaWinRateChart() {
   console.log("updateMultiMetaWinRateChart called...");
   setChartLoading("metaWinRateChart", true);
   const theme = getChartTheme();
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const panel = document.getElementById('multiEventDeckScatterPanel');
+  const chartWrapper = document.getElementById('metaWinRateChartContainer');
 
   const filteredData = getMultiEventChartData();
+  if (panel && chartWrapper) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: chartWrapper.querySelector('.deck-search-container') || chartWrapper.previousElementSibling,
+      badgeId: 'multiEventDeckScatterPeriodBadge',
+      rows: filteredData,
+      startDate,
+      endDate
+    });
+  }
+
   if (filteredData.length === 0) {
     console.log("No filtered data, skipping chart creation...");
     if (metaWinRateChart) metaWinRateChart.destroy();
@@ -35,7 +52,6 @@ export function updateMultiMetaWinRateChart() {
   }));
 
   const metaMax = deckData.length > 0 ? Math.max(...deckData.map(d => d.meta)) : 0;
-  const winRateMax = deckData.length > 0 ? Math.max(...deckData.map(d => d.winRate)) : 0;
 
   if (deckData.length === 0) {
     console.log("No decks, skipping chart creation...");
@@ -63,19 +79,23 @@ export function updateMultiMetaWinRateChart() {
     maintainAspectRatio: false,
     scales: {
       x: {
-        title: { display: true, text: "Meta %", color: theme.text },
+        type: 'linear',
+        title: {
+          display: true,
+          text: "Meta %",
+          color: theme.text,
+          font: { size: 14, weight: 'bold', family: "'Bitter', serif" }
+        },
+        ticks: {
+          color: theme.text,
+          font: { size: 12, family: "'Bitter', serif" },
+          stepSize: metaMax > 0 ? Math.ceil(metaMax / 10) : 1
+        },
         grid: { color: theme.grid },
-        ticks: { color: theme.text, stepSize: metaMax > 0 ? Math.ceil(metaMax / 10) : 1 },
         min: 0,
         max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10
       },
-      y: {
-        title: { display: true, text: "Win Rate %", color: theme.text },
-        grid: { color: theme.grid },
-        ticks: { color: theme.text, stepSize: 10 },
-        min: 0,
-        max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100
-      }
+      y: buildSharedMultiScatterYAxis(theme)
     },
     plugins: {
       tooltip: {
@@ -147,7 +167,7 @@ export function updateMultiMetaWinRateChart() {
         metaWinRateChart.options.scales.x.min = 0;
         metaWinRateChart.options.scales.x.max = metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10;
         metaWinRateChart.options.scales.y.min = 0;
-        metaWinRateChart.options.scales.y.max = winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100;
+        metaWinRateChart.options.scales.y.max = 100;
         
         metaWinRateChart.update();
         dropdown.style.display = 'none';
@@ -221,6 +241,17 @@ export function updateMultiMetaWinRateChart() {
     // We might need to re-attach listeners if the element is recreated, but for now assume it persists
   }
 
+  if (panel) {
+    renderMultiEventPeriodSummaryBadge({
+      container: panel,
+      insertAfter: searchContainer,
+      badgeId: 'multiEventDeckScatterPeriodBadge',
+      rows: filteredData,
+      startDate,
+      endDate
+    });
+  }
+
   try {
     metaWinRateChart = new Chart(metaWinRateMultiCtx, {
       data: { labels, datasets },
@@ -258,13 +289,11 @@ export function updateMultiMetaWinRateChart() {
             pan: { enabled: false },
             limits: {
               x: { min: 0, max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10 },
-              y: { min: 0, max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100 }
+              y: { min: 0, max: 100 }
             }
           }
         },
         onClick: (_, activeElements, chart) => {
-          // A point click promotes the selected deck into the Deck Evolution view
-          // so users can inspect the same archetype over time.
           if (activeElements.length === 0) {
             return;
           }
@@ -272,7 +301,7 @@ export function updateMultiMetaWinRateChart() {
           const clickedPoint = chart.data.datasets[activeElements[0].datasetIndex]?.data?.[activeElements[0].index];
           const clickedDeckName = String(clickedPoint?.label || '').trim();
           if (clickedDeckName) {
-            focusMultiEventDeck(clickedDeckName, { scrollIntoView: true });
+            openMultiEventDeckEvolutionModal(clickedDeckName);
           }
         },
         onHover: (_, activeElements) => {

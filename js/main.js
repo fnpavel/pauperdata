@@ -2,6 +2,7 @@
 // set of globals available for legacy inline handlers declared in index.html.
 import { ensureEventDataLoaded, getLastUpdatedTimestamp } from './utils/event-data.js';
 import { setAnalysisDataRows } from './utils/analysis-data.js';
+import { ensureMatchupCatalogLoaded } from './utils/matchup-data.js';
 import { initEventAnalysis, updateEventAnalytics, updateMultiEventAnalytics } from './modules/event-analysis.js';
 import { initPlayerAnalysis, updatePlayerAnalytics } from './modules/player-analysis.js';
 import { initMatchupAnalysis, updateMatchupAnalytics } from './modules/matchup-analysis.js';
@@ -106,7 +107,10 @@ async function initializeDashboard() {
 
   // Every analysis module reads from the shared analysis dataset, so the data
   // cache needs to be populated before any module computes its initial state.
-  const { rows } = await ensureEventDataLoaded();
+  const [{ rows }] = await Promise.all([
+    ensureEventDataLoaded(),
+    ensureMatchupCatalogLoaded()
+  ]);
   setAnalysisDataRows(rows);
   setLastUpdatedDate();
   window.setInterval(setLastUpdatedDate, 60 * 1000);
@@ -138,7 +142,6 @@ async function initializeDashboard() {
     updateEventAnalytics(); // Default to single event analysis
   } else if (defaultTopMode === 'player') {
     updatePlayerAnalytics();
-    window.updatePlayerDeckPerformanceChart(); // Initial call for Player Analysis
   } else if (defaultTopMode === 'deck-matchup' || defaultTopMode === 'player-matchup') {
     updateMatchupAnalytics();
   } else if (defaultTopMode === 'leaderboard') {

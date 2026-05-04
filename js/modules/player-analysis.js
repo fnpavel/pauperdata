@@ -5,6 +5,7 @@ import { updatePlayerWinRateChart } from '../charts/player-win-rate.js';
 import { updatePlayerDeckPerformanceChart } from '../charts/player-deck-performance.js';
 import { triggerUpdateAnimation, updateElementHTML } from '../utils/dom.js';
 import { calculatePlayerStats } from '../utils/data-cards.js';
+import { getSelectedPlayerDeck, setSelectedPlayerDeck } from '../utils/player-deck-filter.js';
 import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/data-tables.js';
 import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
@@ -48,13 +49,7 @@ function applyPlayerEventGroupFilter(rows = []) {
   return rows.filter(row => activeGroupKeys.has(getEventGroupInfo(row.Event).key));
 }
 
-const playerSidebarCardIds = [
-  'playerWinRateStatsCard',
-  'playerMostPlayedDeckCard',
-  'playerLeastPlayedDeckCard',
-  'playerBestDeckCard',
-  'playerWorstDeckCard'
-];
+const playerSidebarCardIds = ['playerPeriodEloCard', 'playerPeakEloCard'];
 
 const PLAYER_RANK_DRILLDOWN_CONFIG = {
   top1: {
@@ -136,41 +131,17 @@ const PLAYER_SUMMARY_DRILLDOWN_CONFIG = {
   }
 };
 
-const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {
-  overallWinRate: {
-    cardId: 'playerWinRateStatsCard',
-    fallbackTitle: 'Overall Win Rate',
-    emptyMessage: 'No deck data in the current Player Analysis filters.'
-  },
-  mostPlayedDeckStats: {
-    cardId: 'playerMostPlayedDeckCard',
-    fallbackTitle: 'Most Played Deck',
-    emptyMessage: 'No deck data in the current Player Analysis filters.'
-  },
-  leastPlayedDeckStats: {
-    cardId: 'playerLeastPlayedDeckCard',
-    fallbackTitle: 'Least Played Deck',
-    emptyMessage: 'No deck data in the current Player Analysis filters.'
-  },
-  bestDeckStats: {
-    cardId: 'playerBestDeckCard',
-    fallbackTitle: 'Best Performing Deck',
-    emptyMessage: 'No deck data in the current Player Analysis filters.'
-  },
-  worstDeckStats: {
-    cardId: 'playerWorstDeckCard',
-    fallbackTitle: 'Worst Performing Deck',
-    emptyMessage: 'No deck data in the current Player Analysis filters.'
-  }
-};
+const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {};
 
 // These snapshots support the currently visible Player Analysis view. Keeping
 // them at module scope lets charts, cards, and drilldowns read one consistent
 // state without repeatedly querying the DOM.
 let currentPlayerAnalysisRows = [];
 let activePlayerDrilldownCategory = '';
+let activePlayerDeckStatsDrilldownDeck = '';
 let currentPlayerEloInsights = createEmptyPlayerEloInsights();
 let playerAnalyticsRequestId = 0;
+let activePlayerPrimaryChartView = 'win-rate';
 let currentPlayerRawTableState = {
   tableType: 'event',
   title: 'player-event-data',
@@ -220,6 +191,141 @@ function getPlayerRawTableFullscreenButton() {
 
 function getPlayerRawTableContainer() {
   return document.getElementById('playerRawTableContainer');
+}
+
+function getPlayerDeckStatsCardsRoot() {
+  return document.getElementById('playerDeckStatsCards');
+}
+
+function getPlayerPrimaryChartToggleRoot() {
+  return document.getElementById('playerPrimaryChartToggle');
+}
+
+function getPlayerPrimaryChartPanel(view) {
+  const panelMap = {
+    'win-rate': document.getElementById('playerWinRatePanel'),
+    'scatter': document.getElementById('playerScatterDeckPanel')
+  };
+
+  return panelMap[view] || null;
+}
+
+function syncPlayerPrimaryChartView({ refreshVisibleChart = false } = {}) {
+  const toggleRoot = getPlayerPrimaryChartToggleRoot();
+  const normalizedView = activePlayerPrimaryChartView === 'scatter' ? 'scatter' : 'win-rate';
+  activePlayerPrimaryChartView = normalizedView;
+
+  if (toggleRoot) {
+    Array.from(toggleRoot.querySelectorAll('[data-player-chart-view]')).forEach(button => {
+      const isActive = button.dataset.playerChartView === normalizedView;
+      button.classList.toggle('active', isActive);
+      button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+    });
+  }
+
+  ['win-rate', 'scatter'].forEach(view => {
+    const panel = getPlayerPrimaryChartPanel(view);
+    if (!panel) {
+      return;
+    }
+
+    const isActive = view === normalizedView;
+    panel.hidden = !isActive;
+    panel.dataset.active = isActive ? 'true' : 'false';
+  });
+
+  if (!refreshVisibleChart) {
+    return;
+  }
+
+  if (normalizedView === 'scatter') {
+    updatePlayerDeckPerformanceChart();
+    return;
+  }
+
+  updatePlayerWinRateChart();
+}
+
+function setupPlayerPrimaryChartToggleListeners() {
+  const root = getPlayerPrimaryChartToggleRoot();
+  if (!root || root.dataset.listenerAdded === 'true') {
+    syncPlayerPrimaryChartView();
+    return;
+  }
+
+  root.addEventListener('click', event => {
+    const button = event.target.closest('[data-player-chart-view]');
+    if (!button) {
+      return;
+    }
+
+    const requestedView = button.dataset.playerChartView === 'scatter' ? 'scatter' : 'win-rate';
+    if (requestedView === activePlayerPrimaryChartView) {
+      return;
+    }
+
+    activePlayerPrimaryChartView = requestedView;
+    syncPlayerPrimaryChartView({ refreshVisibleChart: true });
+  });
+
+  root.dataset.listenerAdded = 'true';
+  syncPlayerPrimaryChartView();
+}
+
+function renderPlayerDeckStatsCards(deckStatsCards = []) {
+  const root = getPlayerDeckStatsCardsRoot();
+  if (!root) {
+    return;
+  }
+
+  if (!Array.isArray(deckStatsCards) || deckStatsCards.length === 0) {
+    root.innerHTML = `
+      <div class="stat-card combined player-deck-stats-card player-deck-stats-card-empty">
+        <div class="stat-title">Deck Stats</div>
+        <div class="stat-details">
+          <div><span class="value">No deck data in the current Player Analysis filters.</span></div>
+        </div>
+        <div class="stat-icon">🃏</div>
+      </div>
+    `;
+    return;
+  }
+
+  root.innerHTML = deckStatsCards.map((card, index) => `
+    <div
+      class="stat-card combined player-deck-stats-card"
+      id="playerDeckStatsCard${index}"
+      data-player-deck-stats-card="${index}"
+      data-player-deck-stats-deck="${escapeHtml(card.name || '')}"
+    >
+      <div class="stat-title">${escapeHtml(card.title || 'Deck Stats')}</div>
+      <div class="stat-value">${escapeHtml(card.name || '--')}</div>
+      <div class="stat-details">
+        <div><span class="label">Events:</span> <span class="value">${escapeHtml(card.events || '--')}</span></div>
+        <div><span class="label">Match Record:</span> <span class="value">${escapeHtml(card.record || '--')}</span></div>
+        <div><span class="label">Overall Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.overallWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.overallWinRatePercent || '--')}">${escapeHtml(card.overallWinRateRaw || '--')}</span></div>
+        <div><span class="label">Current Elo:</span> <span class="value">${escapeHtml(card.currentElo || '--')}</span></div>
+        <div><span class="label">Peak Elo:</span> <span class="value">${escapeHtml(card.peakElo || '--')}</span></div>
+        <div><span class="label">Best Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.bestWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.bestWinRatePercent || '--')}">${escapeHtml(card.bestWinRateRaw || '--')}</span></div>
+        <div><span class="label">Worst Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.worstWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.worstWinRatePercent || '--')}">${escapeHtml(card.worstWinRateRaw || '--')}</span></div>
+      </div>
+      <div class="stat-icon">🃏</div>
+    </div>
+  `).join('');
+}
+
+function setPlayerDeckStatsCardHoverState(card, isHovering) {
+  if (!card) {
+    return;
+  }
+
+  card.querySelectorAll('.player-deck-stats-hover-percent').forEach(field => {
+    field.classList.toggle('player-deck-stats-hover-percent-active', isHovering);
+    const nextValue = isHovering
+      ? String(field.dataset.percentValue || '').trim()
+      : String(field.dataset.rawValue || '').trim();
+    field.textContent = nextValue || '--';
+  });
 }
 
 function exportPlayerRawTableCsv() {
@@ -312,21 +418,11 @@ function getPlayerEloDeckFilterRoot() {
 }
 
 function readSelectedPlayerEloDeck() {
-  const root = getPlayerEloDeckFilterRoot();
-  if (!root) {
-    return '';
-  }
-
-  return String(root.dataset.selectedDeck || '').trim();
+  return getSelectedPlayerDeck();
 }
 
 function writeSelectedPlayerEloDeck(selectedDeck) {
-  const root = getPlayerEloDeckFilterRoot();
-  if (!root) {
-    return;
-  }
-
-  root.dataset.selectedDeck = String(selectedDeck || '').trim();
+  setSelectedPlayerDeck(selectedDeck);
 }
 
 function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
@@ -343,7 +439,6 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
     : [];
   const selectedDeck = readSelectedPlayerEloDeck();
   const validSelectedDeck = availableDecks.includes(selectedDeck) ? selectedDeck : '';
-  writeSelectedPlayerEloDeck(validSelectedDeck);
 
   if (availableDecks.length === 0) {
     root.innerHTML = `
@@ -372,7 +467,7 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
     <div class="bubble-menu player-chart-filter-chips">
       <button
         type="button"
-        class="bubble-button player-elo-deck-chip analysis-filter-tooltip${!validSelectedDeck ? ' active' : ''}"
+        class="bubble-button player-elo-deck-chip player-elo-deck-chip-reset analysis-filter-tooltip${!validSelectedDeck ? ' active' : ''}"
         data-player-elo-deck-reset="true"
         data-tooltip="${escapeHtml(getPlayerEloDeckFilterTooltip(true))}"
         aria-label="${escapeHtml(`All Decks. ${getPlayerEloDeckFilterTooltip(true)}`)}"
@@ -783,6 +878,15 @@ function sortDeckGroupsByOverallWinRate(groups = []) {
 
     return a.deck.localeCompare(b.deck);
   });
+}
+
+function getPlayerDeckStatsDrilldownGroup(deckName = '', data = currentPlayerAnalysisRows) {
+  const normalizedDeckName = String(deckName || '').trim();
+  if (!normalizedDeckName) {
+    return null;
+  }
+
+  return buildPlayerDeckGroups(data).find(group => String(group?.deck || '').trim() === normalizedDeckName) || null;
 }
 
 function getPlayerSummaryDrilldownItems(categoryKey, data = currentPlayerAnalysisRows) {
@@ -2201,6 +2305,9 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
   }
 
   return groups.map((group, index) => {
+    const eloDeckGroup = (currentPlayerEloInsights.deckGroups || []).find(eloGroup =>
+      String(eloGroup?.deck || '').trim() === String(group?.deck || '').trim()
+    ) || null;
     const eventRowsByName = buildEventRowsByName(group.rows.map(row => row.Event));
 
     return `
@@ -2224,6 +2331,14 @@ function buildPlayerDeckGroupDrilldownHtml(groups) {
           <div class="player-rank-drilldown-summary-item">
             <span class="player-rank-drilldown-summary-label">Overall Win Rate</span>
             <strong class="player-rank-drilldown-summary-value">${escapeHtml(formatWinRatePercentage(group.overallWinRate))}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Current Elo</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(Number(eloDeckGroup?.latestElo)) ? formatEloRating(eloDeckGroup.latestElo) : '--')}</strong>
+          </div>
+          <div class="player-rank-drilldown-summary-item">
+            <span class="player-rank-drilldown-summary-label">Peak Elo</span>
+            <strong class="player-rank-drilldown-summary-value">${escapeHtml(Number.isFinite(Number(eloDeckGroup?.peakElo)) ? formatEloRating(eloDeckGroup.peakElo) : '--')}</strong>
           </div>
           <div class="player-rank-drilldown-summary-item">
             <span class="player-rank-drilldown-summary-label">Average Finish</span>
@@ -2348,6 +2463,24 @@ function updatePlayerSidebarDrilldownCardStates(data = currentPlayerAnalysisRows
   });
 }
 
+function updatePlayerDeckStatsCardStates(data = currentPlayerAnalysisRows) {
+  const cards = document.querySelectorAll('.player-deck-stats-card[data-player-deck-stats-deck]');
+  cards.forEach(card => {
+    const deckName = String(card.dataset.playerDeckStatsDeck || '').trim();
+    const group = getPlayerDeckStatsDrilldownGroup(deckName, data);
+    const isDisabled = !group || !Array.isArray(group.rows) || group.rows.length === 0;
+
+    card.classList.add('drilldown-card');
+    card.classList.toggle('drilldown-disabled', isDisabled);
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+    card.tabIndex = isDisabled ? -1 : 0;
+    card.title = isDisabled
+      ? 'No deck data in the current Player Analysis filters.'
+      : `Open deck stats details for ${deckName}`;
+  });
+}
+
 function renderPlayerRankDrilldown(categoryKey) {
   // Renders the modal for finish-band stat cards.
   const elements = getPlayerRankDrilldownElements();
@@ -2424,8 +2557,31 @@ function renderPlayerSidebarDrilldown(categoryKey) {
     : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
 }
 
+function renderPlayerDeckStatsDrilldown(deckName = activePlayerDeckStatsDrilldownDeck) {
+  const elements = getPlayerRankDrilldownElements();
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const playerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'Selected Player';
+  const group = getPlayerDeckStatsDrilldownGroup(deckName);
+
+  elements.title.textContent = `${playerLabel} - Deck Stats`;
+  elements.subtitle.textContent = group
+    ? `${group.deck} | ${group.eventCount} event${group.eventCount === 1 ? '' : 's'} in the current Player Analysis filters`
+    : 'No deck data in the current Player Analysis filters.';
+  elements.content.innerHTML = group
+    ? buildPlayerDeckGroupDrilldownHtml([group])
+    : '<div class="player-rank-drilldown-empty">No deck data in the current Player Analysis filters.</div>';
+}
+
 function renderPlayerDrilldown(categoryKey) {
   // Delegates modal body rendering based on which Player Analysis card opened it.
+  if (categoryKey === 'deckStatsCard') {
+    renderPlayerDeckStatsDrilldown();
+    return;
+  }
+
   if (PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) {
     renderPlayerRankDrilldown(categoryKey);
     return;
@@ -2445,6 +2601,7 @@ function openPlayerDrilldown(categoryKey) {
   // Opens any Player Analysis stat-card drilldown.
   const elements = getPlayerRankDrilldownElements();
   const hasConfig =
+    categoryKey === 'deckStatsCard' ||
     Boolean(PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) ||
     Boolean(PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey]) ||
     Boolean(PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey]);
@@ -2558,6 +2715,21 @@ function closePlayerRankDrilldown() {
   overlay.hidden = true;
   activePlayerDrilldownCategory = '';
   document.body.classList.remove('modal-open');
+}
+
+function openPlayerDeckStatsDrilldown(deckName = '') {
+  const normalizedDeckName = String(deckName || '').trim();
+  if (!normalizedDeckName) {
+    return;
+  }
+
+  const group = getPlayerDeckStatsDrilldownGroup(normalizedDeckName);
+  if (!group) {
+    return;
+  }
+
+  activePlayerDeckStatsDrilldownDeck = normalizedDeckName;
+  openPlayerDrilldown('deckStatsCard');
 }
 
 function openPlayerEventInAnalysis(eventName = '', eventType = '') {
@@ -2750,6 +2922,74 @@ function setupPlayerSidebarDrilldownCards() {
       }
     });
   });
+}
+
+function setupPlayerDeckStatsCardInteractions() {
+  const root = getPlayerDeckStatsCardsRoot();
+  if (!root || root.dataset.drilldownBound === 'true') {
+    return;
+  }
+
+  const openFromTarget = target => {
+    const card = target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.getAttribute('aria-disabled') === 'true') {
+      return;
+    }
+
+    openPlayerDeckStatsDrilldown(card.dataset.playerDeckStatsDeck || '');
+  };
+
+  root.addEventListener('click', event => {
+    openFromTarget(event.target);
+  });
+
+  root.addEventListener('mouseover', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setPlayerDeckStatsCardHoverState(card, true);
+  });
+
+  root.addEventListener('mouseout', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setPlayerDeckStatsCardHoverState(card, false);
+  });
+
+  root.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.getAttribute('aria-disabled') === 'true') {
+      return;
+    }
+
+    event.preventDefault();
+    openPlayerDeckStatsDrilldown(card.dataset.playerDeckStatsDeck || '');
+  });
+
+  root.addEventListener('focusin', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (card) {
+      setPlayerDeckStatsCardHoverState(card, true);
+    }
+  });
+
+  root.addEventListener('focusout', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (card && !card.contains(event.relatedTarget)) {
+      setPlayerDeckStatsCardHoverState(card, false);
+    }
+  });
+
+  root.dataset.drilldownBound = 'true';
 }
 
 function initPlayerSearchDropdown() {
@@ -3011,15 +3251,27 @@ function initPlayerSearchDropdown() {
 export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
   setupPlayerRawTableFullscreenAction();
+  setupPlayerPrimaryChartToggleListeners();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();
   setupPlayerSummaryDrilldownCards();
   setupPlayerSidebarDrilldownCards();
+  setupPlayerDeckStatsCardInteractions();
   setupPlayerEloDeckFilterListeners();
+  document.addEventListener('playerDeckFilterChanged', event => {
+    const requestedDeck = String(event?.detail?.selectedDeck || '').trim();
+    if (requestedDeck === readSelectedPlayerEloDeck()) {
+      return;
+    }
+
+    writeSelectedPlayerEloDeck(requestedDeck);
+    updatePlayerAnalytics();
+  });
   updatePlayerRankDrilldownCardStates();
   updatePlayerSummaryDrilldownCardStates();
   updatePlayerSidebarDrilldownCardStates();
+  updatePlayerDeckStatsCardStates();
   console.log('Player Analysis initialized');
 }
 
@@ -3029,10 +3281,9 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
   // component reads the same snapshot.
   currentPlayerAnalysisRows = Array.isArray(data) ? [...data] : [];
   currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
-  updatePlayerWinRateChart();
-  updatePlayerDeckPerformanceChart();
   populatePlayerAnalysisRawData(data, currentPlayerEloInsights);
   populatePlayerStats(data, currentPlayerEloInsights);
+  syncPlayerPrimaryChartView({ refreshVisibleChart: true });
 }
 
 // Resolves current player/date/type filters, builds Elo insights, and refreshes
@@ -3305,17 +3556,34 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
 export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights) {
   console.log("populatePlayerStats called with data:", data);
   const resolvedSelectedDeck = renderPlayerEloDeckFilter(eloInsights);
-  const stats = calculatePlayerStats(data, {
+  const baseStats = calculatePlayerStats(data, {
     selectedTopFinishDeck: resolvedSelectedDeck
   });
+  const deckEloMap = new Map(
+    (Array.isArray(eloInsights?.deckGroups) ? eloInsights.deckGroups : []).map(group => [
+      String(group?.deck || '').trim(),
+      group
+    ])
+  );
+  const stats = {
+    ...baseStats,
+    deckStatsCards: (Array.isArray(baseStats.deckStatsCards) ? baseStats.deckStatsCards : []).map(card => {
+      const deckElo = deckEloMap.get(String(card?.name || '').trim());
+      return {
+        ...card,
+        currentElo: Number.isFinite(Number(deckElo?.latestElo)) ? formatEloRating(deckElo.latestElo) : '--',
+        peakElo: Number.isFinite(Number(deckElo?.peakElo)) ? formatEloRating(deckElo.peakElo) : '--'
+      };
+    })
+  };
+  const selectedPlayerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'No Player Selected';
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
   const topFinishScopeSuffix = resolvedSelectedDeck ? ` (${resolvedSelectedDeck})` : '';
 
   // Ensure all stat cards are visible
-  ['playerEventsCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
-   'playerBestDeckCard', 'playerWorstDeckCard', 'playerMostPlayedDeckCard', 'playerLeastPlayedDeckCard',
-   'playerRankStatsCard', 'playerOverallWinRateCard'].forEach(id => {
+  ['playerFocusedPlayerCard', 'playerEventsCard', 'playerOverallWinRateCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
+   'playerPeriodEloCard', 'playerPeakEloCard', 'playerRankStatsCard'].forEach(id => {
     const element = document.getElementById(id);
     if (element) element.style.display = "block";
   });
@@ -3337,8 +3605,13 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   };
 
   // Simple Cards
+  updateQueryElement("playerFocusedPlayerCard", ".stat-value", selectedPlayerLabel);
+  updateQueryElement("playerFocusedPlayerCard", ".stat-change", "Current player selection");
+  updateQueryElement("playerEventsCard", ".stat-title", stats.eventsTitle);
   updateQueryElement("playerEventsCard", ".stat-value", stats.totalEvents);
   updateQueryElement("playerEventsCard", ".stat-change", stats.eventsDetails);
+  updateQueryElement("playerOverallWinRateCard", ".stat-value", stats.overallWinRate);
+  updateQueryElement("playerOverallWinRateCard", ".stat-change", stats.overallRecord);
   updateQueryElement("playerPeriodEloCard", ".stat-title", eloScopeLabel);
   updateQueryElement("playerPeriodEloCard", ".stat-value", eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--');
   updateQueryElement(
@@ -3385,47 +3658,19 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateElement("playerTop9_16%", stats.rankStats.top9_16Percent);
   updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);
   updateElement("playerTop33Plus%", stats.rankStats.top33PlusPercent);
-
-  // Overall Win Rate
-  updateElement("playerOverallWinRate", stats.overallWinRate);
-
-  // Best Performing Deck
-  updateQueryElement("playerBestDeckCard", ".stat-title", stats.bestDeckTitle);
-  updateElement("playerBestDeckName", stats.bestDecks.name);
-  updateElement("playerBestDeckEvents", stats.bestDecks.events);
-  updateElement("playerBestDeckWinRate", stats.bestDecks.winRate);
-  updateElement("playerBestDeckBestWinRate", stats.bestDecks.bestWinRate);
-  updateElement("playerBestDeckWorstWinRate", stats.bestDecks.worstWinRate);
-
-  // Worst Performing Deck
-  updateQueryElement("playerWorstDeckCard", ".stat-title", stats.worstDeckTitle);
-  updateElement("playerWorstDeckName", stats.worstDecks.name);
-  updateElement("playerWorstDeckEvents", stats.worstDecks.events);
-  updateElement("playerWorstDeckWinRate", stats.worstDecks.winRate);
-  updateElement("playerWorstDeckBestWinRate", stats.worstDecks.bestWinRate);
-  updateElement("playerWorstDeckWorstWinRate", stats.worstDecks.worstWinRate);
-
-  // Most Played Deck
-  updateQueryElement("playerMostPlayedDeckCard", ".stat-title", stats.mostPlayedDeckTitle);
-  updateElement("playerMostPlayedDeckName", stats.mostPlayedDecksData.name);
-  updateElement("playerMostPlayedDeckEvents", stats.mostPlayedDecksData.events);
-  updateElement("playerMostPlayedDeckWinRate", stats.mostPlayedDecksData.winRate);
-  updateElement("playerMostPlayedDeckBestWinRate", stats.mostPlayedDecksData.bestWinRate);
-  updateElement("playerMostPlayedDeckWorstWinRate", stats.mostPlayedDecksData.worstWinRate);
-
-  // Least Played Deck
-  updateQueryElement("playerLeastPlayedDeckCard", ".stat-title", stats.leastPlayedDeckTitle);
-  updateElement("playerLeastPlayedDeckName", stats.leastPlayedDecksData.name);
-  updateElement("playerLeastPlayedDeckEvents", stats.leastPlayedDecksData.events);
-  updateElement("playerLeastPlayedDeckWinRate", stats.leastPlayedDecksData.winRate);
-  updateElement("playerLeastPlayedDeckBestWinRate", stats.leastPlayedDecksData.bestWinRate);
-  updateElement("playerLeastPlayedDeckWorstWinRate", stats.leastPlayedDecksData.worstWinRate);
+  renderPlayerDeckStatsCards(stats.deckStatsCards);
 
   playerSidebarCardIds.forEach(triggerUpdateAnimation);
+  Array.from(document.querySelectorAll('.player-deck-stats-card')).forEach(card => {
+    if (card.id) {
+      triggerUpdateAnimation(card.id);
+    }
+  });
   updatePlayerRankDrilldownCardStates(data);
   updatePlayerRankCardHoverNotes(data);
   updatePlayerSummaryDrilldownCardStates(data);
   updatePlayerSidebarDrilldownCardStates(data);
+  updatePlayerDeckStatsCardStates(data);
 
   if (activePlayerDrilldownCategory) {
     renderPlayerDrilldown(activePlayerDrilldownCategory);

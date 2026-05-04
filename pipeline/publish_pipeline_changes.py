@@ -24,10 +24,14 @@ INDEX_COMMIT_PATH = PROJECT_ROOT / "index.html"
 
 
 def classify_changed_paths(changed_paths: set[str]) -> tuple[list[str], list[str], list[str]]:
-    sorted_paths = sorted(changed_paths)
-    data_paths = [path for path in sorted_paths if path == "data" or path.startswith("data/")]
-    metadata_paths = [path for path in sorted_paths if path not in data_paths]
-    return sorted_paths, data_paths, metadata_paths
+    changed_files = sorted(changed_paths)
+    data_changed_files = [
+        path for path in changed_files if path == "data" or path.startswith("data/")
+    ]
+    metadata_changed_files = [
+        path for path in changed_files if path not in data_changed_files
+    ]
+    return changed_files, data_changed_files, metadata_changed_files
 
 
 def update_publish_change_state(
@@ -35,22 +39,23 @@ def update_publish_change_state(
     *,
     changed_paths: set[str],
     publish_performed: bool,
-) -> dict[str, object]:
-    changed_files, data_changed_files, metadata_changed_files = classify_changed_paths(changed_paths)
+) -> None:
+    changed_files, data_changed_files, metadata_changed_files = classify_changed_paths(
+        changed_paths
+    )
     state.update(
         {
-            "publish_any_changes": bool(changed_files),
-            "publish_changed_files_count": len(changed_files),
-            "publish_changed_files": changed_files,
-            "publish_data_changed_files_count": len(data_changed_files),
-            "publish_data_changed_files": data_changed_files,
-            "publish_metadata_changed_files_count": len(metadata_changed_files),
-            "publish_metadata_changed_files": metadata_changed_files,
-            "publish_data_changed_this_run": bool(data_changed_files),
-            "publish_was_noop": not publish_performed,
+            "published_changed_files": changed_files,
+            "published_changed_files_count": len(changed_files),
+            "published_any_changes": bool(changed_files),
+            "published_data_changed_files": data_changed_files,
+            "published_data_changed_files_count": len(data_changed_files),
+            "published_data_any_changes": bool(data_changed_files),
+            "published_metadata_changed_files": metadata_changed_files,
+            "published_metadata_changed_files_count": len(metadata_changed_files),
+            "published_was_noop": not publish_performed,
         }
     )
-    return state
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Commit the generated data update and publish it to git.")
@@ -64,9 +69,17 @@ def untracked_files() -> set[str]:
 
 
 def main() -> int:
+    """Publish generated pipeline outputs from the data branch into main.
+
+    - Refuses wrong-branch, unrelated-change, or untracked-file publishes.
+    - Records explicit publish results in pipeline state so Discord can trust the outcome.
+    - `--dry-run` shows the exact git path without mutating repository state.
+    """
     args = parse_args()
     settings = load_settings()
     state = load_state()
+    # Publish is intentionally narrow: only generated pipeline outputs plus the
+    # derived thumbnail/index changes are allowed through this step.
     commit_paths = [
         str(path.relative_to(PROJECT_ROOT)) for path in [*DEFAULT_COMMIT_PATHS, THUMBNAIL_COMMIT_PATH, INDEX_COMMIT_PATH]
     ]
@@ -95,11 +108,17 @@ def main() -> int:
         )
 
     if not allowed_changed:
-        update_publish_change_state(state, changed_paths=set(), publish_performed=False)
+        # Downstream notification logic reads these state keys, so "nothing to
+        # publish" still needs an explicit state update instead of an early silent exit.
+        update_publish_change_state(
+            state,
+            changed_paths=set(),
+            publish_performed=False,
+        )
         state.update(
             {
                 "published_at": None,
-                "published_commit_message": None,
+                "published_commit_message": "",
                 "main_publish_completed": False,
             }
         )
@@ -109,7 +128,11 @@ def main() -> int:
 
     staged_paths = sorted(allowed_changed)
     commit_message = build_commit_message(settings.commit_message_template, state)
-    update_publish_change_state(state, changed_paths=allowed_changed, publish_performed=True)
+    update_publish_change_state(
+        state,
+        changed_paths=allowed_changed,
+        publish_performed=True,
+    )
     if args.dry_run:
         save_state(state)
         log("Dry run: the publish step would publish the following data changes.")

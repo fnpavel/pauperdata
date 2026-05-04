@@ -26,7 +26,6 @@ DOWNLOAD_ROOT = PIPELINE_ROOT / "output" / "downloaded-workbooks"
 EXTRACTED_ROOT = PIPELINE_ROOT / "output" / "extracted-csv"
 ARCHIVE_ROOT = PROJECT_ROOT / "dataGoogleDrive"
 IMPORT_SCRIPT = PROJECT_ROOT / "pipeline" / "import-google-drive-folder.py"
-ACTIVE_DRIVE_YEAR_FOLDER = "2026"
 
 GOOGLE_FOLDER_MIME = "application/vnd.google-apps.folder"
 GOOGLE_SHEETS_MIME = "application/vnd.google-apps.spreadsheet"
@@ -37,14 +36,15 @@ SUPPORTED_FILE_MIME_TYPES = {GOOGLE_SHEETS_MIME, XLSX_MIME}
 WINDOWS_RESERVED_CHARS = re.compile(r'[<>:"/\\|?*]')
 DEFAULT_COMMIT_PATHS = [
     PROJECT_ROOT / "data" / "events",
-    PROJECT_ROOT / "data" / "elo-data",
     PROJECT_ROOT / "data" / "events.json",
     PROJECT_ROOT / "data" / "results.json",
     PROJECT_ROOT / "data" / "aliases.json",
     PROJECT_ROOT / "data" / "matchups",
+    PROJECT_ROOT / "data" / "precalculated-elo",
     PIPELINE_OVERRIDES_PATH,
     PROCESSED_DRIVE_WORKBOOKS_PATH,
 ]
+DEFAULT_IGNORED_DRIVE_FOLDERS = ("Combined Matchups",)
 
 DRIVE_REQUEST_METRICS: dict[str, int] = {
     "total_requests": 0,
@@ -66,6 +66,7 @@ class PipelineSettings:
     data_branch: str
     main_branch: str
     commit_message_template: str
+    ignored_drive_folders: tuple[str, ...]
 
 
 @dataclass(frozen=True)
@@ -142,6 +143,10 @@ def load_settings() -> PipelineSettings:
             "Fill it in pipeline-config.json or set GOOGLE_DRIVE_FOLDER_ID."
         )
 
+    ignored_drive_folders = normalize_ignored_drive_folders(
+        config.get("ignored_drive_folders", DEFAULT_IGNORED_DRIVE_FOLDERS)
+    )
+
     return PipelineSettings(
         credentials_path=resolve_config_path(credentials_value, Path(str(credentials_value)).expanduser()),
         drive_folder_id=str(drive_folder_value).strip(),
@@ -155,6 +160,7 @@ def load_settings() -> PipelineSettings:
         commit_message_template=str(
             config.get("commit_message_template", "chore(data): import {workbook_name}")
         ),
+        ignored_drive_folders=ignored_drive_folders,
     )
 
 
@@ -194,6 +200,27 @@ def normalize_cell_text(value: object) -> str:
     return str(value).strip()
 
 
+def normalize_ignored_drive_folders(values: object) -> tuple[str, ...]:
+    if values is None:
+        raw_values: Iterable[object] = DEFAULT_IGNORED_DRIVE_FOLDERS
+    elif isinstance(values, str):
+        raw_values = [values]
+    elif isinstance(values, Iterable):
+        raw_values = values
+    else:
+        raw_values = [values]
+
+    normalized: list[str] = []
+    seen: set[str] = set()
+    for raw_value in raw_values:
+        folder_name = str(raw_value).strip()
+        if not folder_name or folder_name in seen:
+            continue
+        seen.add(folder_name)
+        normalized.append(folder_name)
+    return tuple(normalized)
+
+
 def summarize_missing_positions(positions: Iterable[int], *, limit: int = 8) -> str:
     unique_positions = sorted({int(position) for position in positions})
     preview = ", ".join(str(position) for position in unique_positions[:limit])
@@ -223,24 +250,18 @@ def inspect_workbook_readiness(workbook_path: Path) -> dict[str, Any]:
         else:
             input_sheet = workbook["Input"]
             for top32_position in range(1, 33):
-                row_index = top32_position + 1 #header is row 1; players in column B (2) and decks in column E (5)
-                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=2).value)
+                row_index = top32_position + 1
+                name_value = normalize_cell_text(input_sheet.cell(row=row_index, column=3).value)
                 deck_value = normalize_cell_text(input_sheet.cell(row=row_index, column=5).value)
                 if not name_value or not deck_value:
                     input_missing_positions.append(top32_position)
-            for row_index, row in enumerate(input_sheet.iter_rows(min_row=34), start=34):
-                name_value = normalize_cell_text(row[1].value)  # column B
-                deck_value = normalize_cell_text(row[4].value)  # column E
-
-                if bool(name_value) != bool(deck_value):
-                    issues.append(f"Input has mismatched Name/Deck rows at position {row_index}")
-                    break
 
             if input_missing_positions:
                 issues.append(
                     "Input Top 32 is incomplete for Name/Deck rows: "
                     f"{summarize_missing_positions(input_missing_positions)}"
                 )
+
         if "Match Up Input" not in workbook.sheetnames:
             issues.append("Match Up Input sheet is missing.")
         else:
@@ -275,6 +296,7 @@ def relative_archive_path(drive_file: DriveFile) -> Path:
 
 
 def legacy_archive_relative_path(drive_file: DriveFile) -> Path:
+    """Legacy compatibility for older archive names that replaced apostrophes with underscores."""
     return Path(
         *[
             part.replace("'", "_")
@@ -284,6 +306,7 @@ def legacy_archive_relative_path(drive_file: DriveFile) -> Path:
 
 
 def archive_relative_path_candidates(drive_file: DriveFile) -> list[Path]:
+    """Return current archive path first, then legacy-compatible candidates when needed."""
     current = relative_archive_path(drive_file)
     legacy = legacy_archive_relative_path(drive_file)
     candidates = [current]
@@ -295,6 +318,7 @@ def archive_relative_path_candidates(drive_file: DriveFile) -> list[Path]:
 def resolve_archive_relative_path(
     drive_file: DriveFile, archive_root: Path, archive_paths: set[str]
 ) -> Path:
+    """Preserve compatibility with older archived workbook paths still present in the repo."""
     for candidate in archive_relative_path_candidates(drive_file):
         if candidate.as_posix() in archive_paths:
             return candidate
@@ -387,10 +411,32 @@ def resolve_shortcut(service, item: dict[str, Any]) -> dict[str, Any] | None:
     }
 
 
-def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
+def format_drive_folder_path(folder_segments: tuple[str, ...]) -> str:
+    return " / ".join(folder_segments) if folder_segments else "/"
+
+
+def should_skip_drive_folder(
+    folder_name: str,
+    folder_segments: tuple[str, ...],
+    ignored_drive_folders: set[str],
+) -> bool:
+    normalized_name = folder_name.strip()
+    if normalized_name not in ignored_drive_folders:
+        return False
+
+    log(f"Skipping ignored Drive folder: {format_drive_folder_path(folder_segments + (normalized_name,))}")
+    return True
+
+
+def find_latest_drive_file(
+    service,
+    root_folder_id: str,
+    ignored_drive_folders: Iterable[str] = DEFAULT_IGNORED_DRIVE_FOLDERS,
+) -> DriveFile:
     latest: DriveFile | None = None
     queue: list[tuple[str, tuple[str, ...]]] = [(root_folder_id, ())]
     seen_folders: set[str] = set()
+    ignored_folder_names = set(normalize_ignored_drive_folders(ignored_drive_folders))
 
     while queue:
         folder_id, folder_segments = queue.pop()
@@ -408,7 +454,10 @@ def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
 
             mime_type = str(candidate.get("mimeType", ""))
             if mime_type == GOOGLE_FOLDER_MIME:
-                queue.append((str(candidate["id"]), folder_segments + (str(candidate["name"]),)))
+                folder_name = str(candidate["name"]).strip()
+                if should_skip_drive_folder(folder_name, folder_segments, ignored_folder_names):
+                    continue
+                queue.append((str(candidate["id"]), folder_segments + (folder_name,)))
                 continue
             if mime_type not in SUPPORTED_FILE_MIME_TYPES:
                 continue
@@ -429,10 +478,15 @@ def find_latest_drive_file(service, root_folder_id: str) -> DriveFile:
     return latest
 
 
-def list_drive_files(service, root_folder_id: str) -> list[DriveFile]:
+def list_drive_files(
+    service,
+    root_folder_id: str,
+    ignored_drive_folders: Iterable[str] = DEFAULT_IGNORED_DRIVE_FOLDERS,
+) -> list[DriveFile]:
     drive_files: list[DriveFile] = []
     queue: list[tuple[str, tuple[str, ...]]] = [(root_folder_id, ())]
     seen_folders: set[str] = set()
+    ignored_folder_names = set(normalize_ignored_drive_folders(ignored_drive_folders))
 
     while queue:
         folder_id, folder_segments = queue.pop()
@@ -450,7 +504,10 @@ def list_drive_files(service, root_folder_id: str) -> list[DriveFile]:
 
             mime_type = str(candidate.get("mimeType", ""))
             if mime_type == GOOGLE_FOLDER_MIME:
-                queue.append((str(candidate["id"]), folder_segments + (str(candidate["name"]),)))
+                folder_name = str(candidate["name"]).strip()
+                if should_skip_drive_folder(folder_name, folder_segments, ignored_folder_names):
+                    continue
+                queue.append((str(candidate["id"]), folder_segments + (folder_name,)))
                 continue
             if mime_type not in SUPPORTED_FILE_MIME_TYPES:
                 continue
@@ -465,13 +522,10 @@ def list_drive_files(service, root_folder_id: str) -> list[DriveFile]:
                 )
             )
 
-    filtered_drive_files = [
-        drive_file
-        for drive_file in drive_files
-        if drive_file.folder_segments and drive_file.folder_segments[0] == ACTIVE_DRIVE_YEAR_FOLDER
-    ]
-
-    return sorted(filtered_drive_files, key=lambda drive_file: (drive_file.modified_time, drive_file.export_name))
+    return sorted(
+        drive_files,
+        key=lambda drive_file: (drive_file.modified_time, drive_file.export_name),
+    )
 
 
 def list_archive_relative_paths(archive_root: Path) -> set[str]:
@@ -584,6 +638,86 @@ def run_git(*args: str) -> str:
 
 def current_branch() -> str:
     return run_git("rev-parse", "--abbrev-ref", "HEAD")
+
+
+def git_worktree_status_lines(*, include_untracked: bool = True) -> list[str]:
+    untracked_mode = "normal" if include_untracked else "no"
+    output = run_git("status", "--short", f"--untracked-files={untracked_mode}")
+    return [line.strip() for line in output.splitlines() if line.strip()]
+
+
+def local_git_branch_exists(branch_name: str) -> bool:
+    try:
+        run_git("rev-parse", "--verify", f"refs/heads/{branch_name}")
+    except RuntimeError:
+        return False
+    return True
+
+
+def remote_git_branch_exists(remote_name: str, branch_name: str) -> bool:
+    try:
+        run_git("ls-remote", "--exit-code", "--heads", remote_name, branch_name)
+    except RuntimeError:
+        return False
+    return True
+
+
+def prepare_publish_branch(
+    *,
+    remote_name: str,
+    base_branch: str,
+    data_branch: str,
+) -> None:
+    status_lines = git_worktree_status_lines(include_untracked=True)
+    if status_lines:
+        raise SystemExit(
+            "Refusing to prepare the publish branch because the git worktree is not clean.\n"
+            "Commit, stash, or remove these changes first:\n"
+            + "\n".join(f"- {line}" for line in status_lines)
+        )
+
+    starting_branch = current_branch()
+    log("Preparing the publish branch for the incoming data update...")
+    log(f"- starting branch: {starting_branch}")
+    log(f"- target update branch: {data_branch}")
+    log(f"- base branch: {base_branch}")
+    log(f"- remote: {remote_name}")
+
+    run_git("fetch", remote_name)
+
+    run_git("checkout", base_branch)
+    run_git("pull", "--ff-only", remote_name, base_branch)
+    log(f"- checked out base branch: {base_branch}")
+    log(f"- fast-forwarded base branch from {remote_name}/{base_branch}")
+
+    had_local_data_branch = local_git_branch_exists(data_branch)
+    had_remote_data_branch = remote_git_branch_exists(remote_name, data_branch)
+
+    if had_local_data_branch:
+        run_git("checkout", data_branch)
+        log(f"- checked out existing local update branch: {data_branch}")
+        if had_remote_data_branch:
+            run_git("pull", "--ff-only", remote_name, data_branch)
+            log(f"- fast-forwarded update branch from {remote_name}/{data_branch}")
+    elif had_remote_data_branch:
+        run_git("checkout", "-b", data_branch, f"{remote_name}/{data_branch}")
+        log(f"- created local update branch from remote branch: {remote_name}/{data_branch}")
+    else:
+        run_git("checkout", "-b", data_branch, base_branch)
+        log(f"- created local update branch from base branch: {base_branch}")
+
+    base_already_included = False
+    merged_base_branch = False
+    try:
+        run_git("merge-base", "--is-ancestor", base_branch, "HEAD")
+        base_already_included = True
+    except RuntimeError:
+        run_git("merge", "--no-edit", base_branch)
+        merged_base_branch = True
+
+    log(f"- base already included: {'yes' if base_already_included else 'no'}")
+    log(f"- merged base into update branch: {'yes' if merged_base_branch else 'no'}")
+    log(f"- active branch: {current_branch()}")
 
 
 def tracked_changed_files(*paths: str) -> set[str]:

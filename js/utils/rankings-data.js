@@ -3,6 +3,8 @@
 // filtering, duplicate protection, and the final summary values consumed by UI.
 import { buildYearlyEloRatings } from './elo-rating.js';
 import { getEloAvailableDates, getEloEventTypes, getEloMatches } from './elo-data.js';
+import { loadPrecalculatedRankingsData } from './precalculated-elo.js';
+import { getPlayerIdentityKey } from './player-names.js';
 
 export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
   startingRating: 1500,
@@ -11,7 +13,9 @@ export const DEFAULT_RANKINGS_OPTIONS = Object.freeze({
     seasonal: 16
   }),
   resetByYear: true,
-  entityMode: 'player'
+  entityMode: 'player',
+  preferPrecalculated: true,
+  includeHistory: true
 });
 
 const DEFAULT_EVENT_TYPE = 'online';
@@ -41,8 +45,8 @@ function getMatchKey(match, index) {
     normalizeText(match?.event_id || match?.eventId || match?.event),
     normalizeText(match?.date || match?.Date),
     String(Number.isFinite(Number(match?.round)) ? Number(match.round) : ''),
-    normalizeText(match?.player_key || match?.playerKey),
-    normalizeText(match?.opponent_key || match?.opponentKey),
+    getPlayerIdentityKey(match?.player_key || match?.playerKey || match?.player_a || match?.player),
+    getPlayerIdentityKey(match?.opponent_key || match?.opponentKey || match?.player_b || match?.opponent),
     String(index)
   ].join('|||');
 }
@@ -93,11 +97,135 @@ function getYearRangeLabel(years = []) {
   return `${normalizedYears[0]}-${normalizedYears[normalizedYears.length - 1]}`;
 }
 
+function getYearsFromResolvedWindow(startDate = '', endDate = '') {
+  const startYear = /^\d{4}-\d{2}-\d{2}$/.test(String(startDate || '').trim())
+    ? String(startDate).slice(0, 4)
+    : '';
+  const endYear = /^\d{4}-\d{2}-\d{2}$/.test(String(endDate || '').trim())
+    ? String(endDate).slice(0, 4)
+    : '';
+
+  if (!startYear || !endYear) {
+    return [];
+  }
+
+  const startNumericYear = Number(startYear);
+  const endNumericYear = Number(endYear);
+  if (!Number.isInteger(startNumericYear) || !Number.isInteger(endNumericYear)) {
+    return [];
+  }
+
+  const years = [];
+  for (let year = Math.min(startNumericYear, endNumericYear); year <= Math.max(startNumericYear, endNumericYear); year += 1) {
+    years.push(String(year));
+  }
+
+  return years;
+}
+
+function getNow() {
+  return typeof globalThis.performance?.now === 'function'
+    ? globalThis.performance.now()
+    : Date.now();
+}
+
+function logRankingsTiming(message, startTime) {
+  const elapsedMs = Math.round((getNow() - startTime) * 10) / 10;
+  console.info(`[rankings] ${message} in ${elapsedMs}ms.`);
+}
+
 export function getRankingsKFactor(options = {}) {
   const resetByYear = options?.resetByYear !== false;
   return resetByYear
     ? DEFAULT_RANKINGS_OPTIONS.kFactor.seasonal
     : DEFAULT_RANKINGS_OPTIONS.kFactor.multiYear;
+}
+
+function finalizeRankingsDataset({
+  eloResults,
+  resolvedOptions,
+  normalizedEventTypes,
+  availableDates,
+  defaultRange,
+  resolvedStartDate,
+  resolvedEndDate,
+  filteredMatches = [],
+  seasonRowsSource = [],
+  ratedMatchCount = null,
+  selectedMatchCount = null,
+  skippedMatchCount = null,
+  latestProcessedMatch = null
+}) {
+  const selectedYears = [...new Set(
+    (Array.isArray(filteredMatches) ? filteredMatches : [])
+      .map(getMatchYear)
+      .filter(Boolean)
+  )].sort();
+  const resolvedWindowYears = getYearsFromResolvedWindow(resolvedStartDate, resolvedEndDate);
+  const fallbackSelectedYears = selectedYears.length > 0
+    ? selectedYears
+    : (
+      resolvedWindowYears.length > 0
+        ? resolvedWindowYears
+        : [...new Set(
+            (Array.isArray(seasonRowsSource) ? seasonRowsSource : [])
+              .map(row => String(row?.seasonYear || '').trim())
+              .filter(value => /^\d{4}$/.test(value))
+          )].sort()
+    );
+  const selectedYearRangeLabel = getYearRangeLabel(fallbackSelectedYears);
+  const seasonRows = [...(Array.isArray(seasonRowsSource) ? seasonRowsSource : [])]
+    .map(row => ({
+      ...row,
+      displaySeasonYear: eloResults.resetByYear
+        ? row.seasonYear
+        : (selectedYearRangeLabel || row.seasonYear || 'Selected Range')
+    }))
+    .sort(compareSeasonRows);
+  const leader = seasonRows[0] || null;
+  const mostActiveSeason = [...seasonRows].sort((a, b) => {
+    return (
+      Number(b.matches) - Number(a.matches) ||
+      Number(b.rating) - Number(a.rating) ||
+      String(a.displayName).localeCompare(String(b.displayName), undefined, { sensitivity: 'base' }) ||
+      String(a.playerKey).localeCompare(String(b.playerKey))
+    );
+  })[0] || null;
+  const uniquePlayers = new Set(seasonRows.map(row => row.basePlayerKey || row.playerKey)).size;
+  const processedMatchList = Array.isArray(eloResults.processedMatches) ? eloResults.processedMatches : [];
+  const resolvedLatestProcessedMatch = latestProcessedMatch || processedMatchList[processedMatchList.length - 1] || null;
+  const resolvedRatedMatchCount = Number.isFinite(Number(ratedMatchCount))
+    ? Number(ratedMatchCount)
+    : processedMatchList.length;
+  const resolvedSelectedMatchCount = Number.isFinite(Number(selectedMatchCount))
+    ? Number(selectedMatchCount)
+    : (Array.isArray(filteredMatches) ? filteredMatches.length : resolvedRatedMatchCount);
+  const resolvedSkippedMatchCount = Number.isFinite(Number(skippedMatchCount))
+    ? Number(skippedMatchCount)
+    : Math.max(0, resolvedSelectedMatchCount - resolvedRatedMatchCount);
+
+  return {
+    ...eloResults,
+    availableDates,
+    defaultRange,
+    eventTypes: normalizedEventTypes,
+    startDate: resolvedStartDate,
+    endDate: resolvedEndDate,
+    filteredMatches,
+    seasonRows,
+    summary: {
+      leader,
+      mostActiveSeason,
+      uniquePlayers,
+      seasonEntries: seasonRows.length,
+      ratedMatches: resolvedRatedMatchCount,
+      selectedMatches: resolvedSelectedMatchCount,
+      skippedMatches: resolvedSkippedMatchCount,
+      latestProcessedMatch: resolvedLatestProcessedMatch,
+      selectedYears: fallbackSelectedYears,
+      selectedYearRangeLabel
+    }
+  };
 }
 
 // Exposes the event types available to ranking/leaderboard consumers.
@@ -144,6 +272,7 @@ export async function buildRankingsDataset(
   } = {},
   options = {}
 ) {
+  const loadStartedAt = getNow();
   const resolvedOptions = {
     ...DEFAULT_RANKINGS_OPTIONS,
     ...options,
@@ -164,28 +293,53 @@ export async function buildRankingsDataset(
       ...resolvedOptions
     });
 
-    return {
-      ...eloResults,
+    const emptyDataset = finalizeRankingsDataset({
+      eloResults,
+      resolvedOptions,
+      normalizedEventTypes,
       availableDates,
       defaultRange,
-      eventTypes: normalizedEventTypes,
-      startDate: resolvedStartDate,
-      endDate: resolvedEndDate,
+      resolvedStartDate,
+      resolvedEndDate,
       filteredMatches: [],
-      seasonRows: [],
-      summary: {
-        leader: null,
-        mostActiveSeason: null,
-        uniquePlayers: 0,
-        seasonEntries: 0,
-        ratedMatches: 0,
-        selectedMatches: 0,
-        skippedMatches: 0,
-        latestProcessedMatch: null,
-        selectedYears: [],
-        selectedYearRangeLabel: ''
-      }
-    };
+      seasonRowsSource: []
+    });
+    logRankingsTiming('Resolved empty rankings dataset', loadStartedAt);
+    return emptyDataset;
+  }
+
+  const canUsePrecalculated = resolvedOptions.preferPrecalculated !== false && typeof matchFilter !== 'function';
+  const precalculatedDataset = canUsePrecalculated
+    ? await loadPrecalculatedRankingsData({
+        eventTypes: normalizedEventTypes,
+        startDate: resolvedStartDate,
+        endDate: resolvedEndDate,
+        resetByYear: resolvedOptions.resetByYear,
+        entityMode: resolvedOptions.entityMode
+      })
+    : null;
+
+  if (precalculatedDataset && resolvedOptions.includeHistory === false) {
+    const emptyEloResults = buildYearlyEloRatings([], {
+      ...resolvedOptions
+    });
+    const dataset = finalizeRankingsDataset({
+      eloResults: emptyEloResults,
+      resolvedOptions,
+      normalizedEventTypes,
+      availableDates,
+      defaultRange,
+      resolvedStartDate,
+      resolvedEndDate,
+      filteredMatches: [],
+      seasonRowsSource: precalculatedDataset.rows,
+      ratedMatchCount: precalculatedDataset.matchCount,
+      selectedMatchCount: precalculatedDataset.selectedMatchCount,
+      skippedMatchCount: Math.max(0, precalculatedDataset.selectedMatchCount - precalculatedDataset.matchCount),
+      latestProcessedMatch: null
+    });
+    logRankingsTiming(`Loaded ${resolvedOptions.entityMode} rankings from precalculated data (${precalculatedDataset.relativePath})`, loadStartedAt);
+    return dataset;
   }
 
   const loadedMatches = dedupeMatches(await getEloMatches({
@@ -208,54 +362,28 @@ export async function buildRankingsDataset(
   const eloResults = buildYearlyEloRatings(filteredMatches, {
     ...resolvedOptions
   });
-  const selectedYears = [...new Set(
-    filteredMatches
-      .map(getMatchYear)
-      .filter(Boolean)
-  )].sort();
-  const selectedYearRangeLabel = getYearRangeLabel(selectedYears);
-  const seasonRows = [...eloResults.seasonRows]
-    .map(row => ({
-      ...row,
-      // Continuous all-time mode still needs a human-readable period label in
-      // tables and reports, so derive it from the selected match years.
-      displaySeasonYear: eloResults.resetByYear
-        ? row.seasonYear
-        : (selectedYearRangeLabel || row.seasonYear || 'Selected Range')
-    }))
-    .sort(compareSeasonRows);
-  const leader = seasonRows[0] || null;
-  const mostActiveSeason = [...seasonRows].sort((a, b) => {
-    return (
-      Number(b.matches) - Number(a.matches) ||
-      Number(b.rating) - Number(a.rating) ||
-      String(a.displayName).localeCompare(String(b.displayName), undefined, { sensitivity: 'base' }) ||
-      String(a.playerKey).localeCompare(String(b.playerKey))
-    );
-  })[0] || null;
-  const uniquePlayers = new Set(seasonRows.map(row => row.basePlayerKey || row.playerKey)).size;
-  const latestProcessedMatch = eloResults.processedMatches[eloResults.processedMatches.length - 1] || null;
-
-  return {
-    ...eloResults,
+  const dataset = finalizeRankingsDataset({
+    eloResults,
+    resolvedOptions,
+    normalizedEventTypes,
     availableDates,
     defaultRange,
-    eventTypes: normalizedEventTypes,
-    startDate: resolvedStartDate,
-    endDate: resolvedEndDate,
+    resolvedStartDate,
+    resolvedEndDate,
     filteredMatches,
-    seasonRows,
-    summary: {
-      leader,
-      mostActiveSeason,
-      uniquePlayers,
-      seasonEntries: seasonRows.length,
-      ratedMatches: eloResults.processedMatches.length,
-      selectedMatches: filteredMatches.length,
-      skippedMatches: eloResults.skippedMatchCount,
-      latestProcessedMatch,
-      selectedYears,
-      selectedYearRangeLabel
-    }
-  };
+    seasonRowsSource: precalculatedDataset?.rows || eloResults.seasonRows,
+    ratedMatchCount: precalculatedDataset?.matchCount ?? eloResults.processedMatches.length,
+    selectedMatchCount: precalculatedDataset?.selectedMatchCount ?? filteredMatches.length,
+    skippedMatchCount: precalculatedDataset
+      ? Math.max(0, precalculatedDataset.selectedMatchCount - precalculatedDataset.matchCount)
+      : eloResults.skippedMatchCount,
+    latestProcessedMatch: eloResults.processedMatches[eloResults.processedMatches.length - 1] || null
+  });
+  logRankingsTiming(
+    precalculatedDataset
+      ? `Loaded ${resolvedOptions.entityMode} rankings with precalculated rows and runtime history fallback`
+      : `Loaded ${resolvedOptions.entityMode} rankings with runtime Elo calculation`,
+    loadStartedAt
+  );
+  return dataset;
 }

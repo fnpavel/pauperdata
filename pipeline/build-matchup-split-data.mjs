@@ -5,7 +5,6 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const projectRoot = path.resolve(__dirname, '..');
-const legacyInputPath = path.join(projectRoot, 'data', 'matchups.json');
 const outputRoot = path.join(projectRoot, 'data', 'matchups');
 
 function getYearFromDate(dateValue = '') {
@@ -45,7 +44,7 @@ async function removeStaleSplitFiles(rootPath, desiredNames) {
     }
 
     if (
-      /^(manifest|events|matches-\d{4}|rounds-\d{4}|matches-unknown|rounds-unknown)\.json$/i.test(entry.name)
+      /^(manifest|events|matches-\d{4}|rounds-\d{4}|matches-unknown|rounds-unknown)\.(json|js)$/i.test(entry.name)
       && !desiredNames.has(entry.name)
     ) {
       await fs.unlink(path.join(rootPath, entry.name));
@@ -71,42 +70,41 @@ async function writeJsonFileIfChanged(filePath, payload) {
   return true;
 }
 
+function sortDates(values = []) {
+  return [...new Set(values.filter(Boolean))].sort((a, b) => a.localeCompare(b));
+}
+
 async function loadSourcePayload() {
-  try {
-    const rawText = await fs.readFile(legacyInputPath, 'utf8');
-    return JSON.parse(rawText);
-  } catch (error) {
-    const manifestPath = path.join(outputRoot, 'manifest.json');
-    const manifestText = await fs.readFile(manifestPath, 'utf8');
-    const manifest = JSON.parse(manifestText);
-    const eventsText = await fs.readFile(path.join(outputRoot, String(manifest.events_file || 'events.json')), 'utf8');
-    const years = Array.isArray(manifest.years) ? manifest.years : [];
-    const rounds = [];
-    const matches = [];
+  const manifestPath = path.join(outputRoot, 'manifest.json');
+  const manifestText = await fs.readFile(manifestPath, 'utf8');
+  const manifest = JSON.parse(manifestText);
+  const eventsText = await fs.readFile(path.join(outputRoot, String(manifest.events_file || 'events.json')), 'utf8');
+  const years = Array.isArray(manifest.years) ? manifest.years : [];
+  const rounds = [];
+  const matches = [];
 
-    for (const year of years) {
-      const roundFile = String((manifest.round_files_by_year || {})[year] || '').trim();
-      const matchFile = String((manifest.match_files_by_year || {})[year] || '').trim();
+  for (const year of years) {
+    const roundFile = String((manifest.round_files_by_year || {})[year] || '').trim();
+    const matchFile = String((manifest.match_files_by_year || {})[year] || '').trim();
 
-      if (roundFile) {
-        rounds.push(...JSON.parse(await fs.readFile(path.join(outputRoot, roundFile), 'utf8')));
-      }
-
-      if (matchFile) {
-        matches.push(...JSON.parse(await fs.readFile(path.join(outputRoot, matchFile), 'utf8')));
-      }
+    if (roundFile) {
+      rounds.push(...JSON.parse(await fs.readFile(path.join(outputRoot, roundFile), 'utf8')));
     }
 
-    return {
-      generated_at: manifest.generated_at || '',
-      generated_from: manifest.generated_from || 'pipeline/build-matchup-split-data.mjs',
-      last_updated_at: manifest.last_updated_at || manifest.last_updated_date || '',
-      last_updated_date: manifest.last_updated_date || '',
-      events: JSON.parse(eventsText),
-      rounds,
-      matches
-    };
+    if (matchFile) {
+      matches.push(...JSON.parse(await fs.readFile(path.join(outputRoot, matchFile), 'utf8')));
+    }
   }
+
+  return {
+    generated_at: manifest.generated_at || '',
+    generated_from: manifest.generated_from || 'pipeline/build-matchup-split-data.mjs',
+    last_updated_at: manifest.last_updated_at || manifest.last_updated_date || '',
+    last_updated_date: manifest.last_updated_date || '',
+    events: JSON.parse(eventsText),
+    rounds,
+    matches
+  };
 }
 
 async function main() {
@@ -130,6 +128,16 @@ async function main() {
   await removeStaleSplitFiles(outputRoot, desiredNames);
   await writeJsonFileIfChanged(path.join(outputRoot, 'events.json'), events);
 
+  const datesByEventType = new Map();
+  matches.forEach(match => {
+    const eventType = String(match?.event_type || '').trim().toLowerCase() || 'unknown';
+    const matchDate = String(match?.date || '').trim();
+    if (!datesByEventType.has(eventType)) {
+      datesByEventType.set(eventType, []);
+    }
+    datesByEventType.get(eventType).push(matchDate);
+  });
+
   const manifest = {
     generated_at: payload.generated_at || '',
     generated_from: payload.generated_from || 'pipeline/build-matchup-split-data.mjs',
@@ -140,6 +148,9 @@ async function main() {
     match_count: matches.length,
     years,
     events_file: 'events.json',
+    available_dates_by_event_type: Object.fromEntries(
+      [...datesByEventType.entries()].map(([eventType, dates]) => [eventType, sortDates(dates)])
+    ),
     round_files_by_year: Object.fromEntries(years.map(year => [year, `rounds-${year}.json`])),
     match_files_by_year: Object.fromEntries(years.map(year => [year, `matches-${year}.json`])),
     round_counts_by_year: Object.fromEntries(years.map(year => [year, (roundsByYear.get(year) || []).length])),
@@ -153,6 +164,8 @@ async function main() {
   await writeJsonFileIfChanged(path.join(outputRoot, 'manifest.json'), manifest);
 
   console.log(`Built split matchup data in ${path.relative(projectRoot, outputRoot)}`);
+  console.log(`Read source matchup payload from ${path.relative(projectRoot, path.join(outputRoot, 'manifest.json'))}`);
+  console.log(`Wrote matchup manifest to ${path.relative(projectRoot, path.join(outputRoot, 'manifest.json'))}`);
   console.log(`Years: ${years.join(', ')}`);
   console.log(`Events: ${events.length}`);
   console.log(`Rounds: ${rounds.length}`);

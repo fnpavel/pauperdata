@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Sync missing Google Drive workbooks, rebuild project data, and refresh the site thumbnail."""
+"""Sync Drive workbooks into the local archive, rebuild derived data, and refresh the thumbnail.
+
+This entrypoint intentionally exposes two different sync mental models:
+- normal sync: only new eligible Drive workbooks
+- validation replay: newest visible Drive workbooks, even if they were processed before
+"""
 
 from __future__ import annotations
 
@@ -22,6 +27,7 @@ from pipeline_common import (
     download_drive_file,
     get_drive_request_metrics,
     inspect_workbook_readiness,
+    prepare_publish_branch,
     list_archive_relative_paths,
     list_drive_files,
     load_json_file,
@@ -30,7 +36,6 @@ from pipeline_common import (
     log,
     reset_drive_request_metrics,
     resolve_archive_relative_path,
-    run_git,
     run_subprocess,
     save_state,
 )
@@ -41,9 +46,10 @@ SUMMARY_PATH = PIPELINE_ROOT / "pipeline-run-summary.json"
 EXTRACT_SCRIPT = PIPELINE_ROOT / "extract_input_csv.py"
 REBUILD_SCRIPT = PIPELINE_ROOT / "rebuild_event_matchup_data.py"
 MATCHUP_SPLIT_BUILD_SCRIPT = PIPELINE_ROOT / "build-matchup-split-data.mjs"
-ELO_BUILD_SCRIPT = PIPELINE_ROOT / "build-elo-data.mjs"
+PRECALCULATED_ELO_BUILD_SCRIPT = PIPELINE_ROOT / "build-precalculated-elo.mjs"
 PUBLISH_SCRIPT = PIPELINE_ROOT / "publish_pipeline_changes.py"
-ELO_MANIFEST_PATH = PROJECT_ROOT / "data" / "elo-data" / "manifest.js"
+MATCHUP_MANIFEST_PATH = PROJECT_ROOT / "data" / "matchups" / "manifest.json"
+ELO_MANIFEST_PATH = PROJECT_ROOT / "data" / "precalculated-elo" / "manifest.json"
 THUMBNAIL_UPDATE_SCRIPT = PIPELINE_ROOT / "update-thumbnail.mjs"
 THUMBNAIL_OUTPUT_PATH = PROJECT_ROOT / "thumbnail.png"
 EVENTS_PATH = PROJECT_ROOT / "data" / "events.json"
@@ -158,6 +164,11 @@ def resolve_candidate_event_info(
     workbook_name: str,
     overrides: PipelineOverrides,
 ) -> CandidateEventInfo | None:
+    """Resolve one workbook into the event identity used for duplicate prompts.
+
+    - Applies saved date overrides before building the event ID.
+    - Skips incomplete or unsupported workbook names so prompt behavior matches the importer.
+    """
     normalized_relative_path = normalize_relative_path(relative_path)
     if not normalized_relative_path or "[Incomplete]" in workbook_name:
         return None
@@ -214,6 +225,11 @@ def resolve_candidate_event_info(
 
 
 def load_latest_online_event() -> dict[str, str] | None:
+    """Return the newest generated online event for duplicate checks.
+
+    Reads `data/events.json` and returns `None` when the generated dataset is too
+    incomplete to make the prompt trustworthy.
+    """
     if not EVENTS_PATH.exists():
         return None
 
@@ -259,6 +275,11 @@ def confirm_duplicate_latest_event(
     *,
     assume_yes: bool,
 ) -> None:
+    """Prompt before replacing the current latest online event.
+
+    - Compares selected workbooks to the newest generated online event.
+    - Logs the matching workbook/event details and prompts unless `--yes` was used.
+    """
     latest_event = load_latest_online_event()
     if latest_event is None:
         return
@@ -296,10 +317,15 @@ def confirm_duplicate_latest_event(
 
 
 class PipelineHelpFormatter(argparse.RawTextHelpFormatter):
-    """Preserve multi-line examples in CLI help output."""
+    pass
 
 
 def parse_args() -> argparse.Namespace:
+    """Parse the pipeline CLI surface.
+
+    - Normal sync, replay sync, local sync, and rebuild stay separate on purpose.
+    - Validation flags like `--limit` and `--reimport-latest` are opt-in only.
+    """
     raw_args = list(sys.argv[1:])
     if not raw_args:
         raw_args = ["sync"]
@@ -337,14 +363,10 @@ def parse_args() -> argparse.Namespace:
             "Examples:\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --force-redownload\n"
+            "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --ignore-cutoff\n"
             "  python .\\pipeline\\sync_drive_and_rebuild_all.py sync --yes"
         ),
         formatter_class=PipelineHelpFormatter,
-    )
-    sync_parser.add_argument(
-        "--ignore_cutoff",
-        action="store_true",
-        help="Ignore cutoff validation and force execution"
     )
     sync_parser.add_argument(
         "--force-redownload",
@@ -367,6 +389,25 @@ def parse_args() -> argparse.Namespace:
             "Run the full sync, extraction, rebuild, thumbnail refresh, and manifest update without "
             "switching branches or publishing git changes."
         ),
+    )
+    sync_parser.add_argument(
+        "--ignore-cutoff",
+        action="store_true",
+        help="Ignore cutoff time and process latest workbook regardless of last processed time",
+    )
+    sync_parser.add_argument(
+        "--reimport-latest",
+        action="store_true",
+        help=(
+            "Validation replay mode: select the newest visible complete Drive workbooks even if they were already "
+            "processed, then rebuild through the normal include-relative-path replacement path."
+        ),
+    )
+    sync_parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Process only the most recent N candidate Drive workbooks for this sync run.",
     )
 
     sync_local_parser = subparsers.add_parser(
@@ -578,6 +619,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Accepted for readability. This command always performs a full online rebuild.",
     )
+    rebuild_parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Rebuild from only the most recent N local archive workbooks after exclusions and overrides.",
+    )
 
     rebuild_local_parser = subparsers.add_parser(
         "rebuild-local",
@@ -599,6 +646,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Accepted for readability. This command always performs a full online rebuild.",
     )
+    rebuild_local_parser.add_argument(
+        "--limit",
+        type=int,
+        default=0,
+        help="Rebuild from only the most recent N local archive workbooks after exclusions and overrides.",
+    )
 
     return parser.parse_args(raw_args)
 
@@ -609,6 +662,7 @@ def add_selection_arguments(
     require_selector: bool,
     allow_latest: bool,
 ) -> None:
+    # Shared selector wiring keeps list/download/override commands aligned.
     selector_group = parser.add_mutually_exclusive_group(required=require_selector)
     selector_group.add_argument(
         "--match",
@@ -635,6 +689,11 @@ def default_overrides() -> PipelineOverrides:
 
 
 def load_pipeline_overrides() -> PipelineOverrides:
+    """Load archive exclusions and per-workbook metadata overrides.
+
+    Missing or malformed content falls back to safe defaults so rebuilds stay
+    predictable even when the overrides file needs manual cleanup.
+    """
     payload = load_json_file(PIPELINE_OVERRIDES_PATH, default={})
     if not isinstance(payload, dict):
         raise SystemExit(
@@ -684,35 +743,28 @@ def save_pipeline_overrides(overrides: PipelineOverrides) -> None:
 
 
 def load_elo_manifest_snapshot() -> dict[str, object]:
+    """Read the generated Elo manifest into a small reporting snapshot."""
     if not ELO_MANIFEST_PATH.exists():
         return {}
 
-    raw_text = ELO_MANIFEST_PATH.read_text(encoding="utf-8")
-    prefix = "export const eloManifest = "
-    if not raw_text.startswith(prefix):
-        return {}
-
-    manifest_text = raw_text[len(prefix) :].strip()
-    if manifest_text.endswith(";"):
-        manifest_text = manifest_text[:-1]
-
     try:
-        manifest = json.loads(manifest_text)
+        manifest = json.loads(ELO_MANIFEST_PATH.read_text(encoding="utf-8"))
     except json.JSONDecodeError:
         return {}
 
     return {
         "manifest_path": str(ELO_MANIFEST_PATH),
         "generated_at": manifest.get("generatedAt"),
-        "last_updated_at": manifest.get("lastUpdatedAt"),
-        "last_updated_date": manifest.get("lastUpdatedDate"),
-        "total_match_count": manifest.get("totalMatchCount"),
+        "source_generated_at": manifest.get("sourceGeneratedAt"),
+        "source_match_count": manifest.get("sourceMatchCount"),
         "years": manifest.get("years"),
-        "match_counts_by_year": manifest.get("matchCountsByYear"),
+        "available_dates_by_event_type": manifest.get("available_dates_by_event_type"),
+        "scopes": manifest.get("scopes"),
     }
 
 
 def load_thumbnail_snapshot() -> dict[str, object]:
+    """Read lightweight thumbnail metadata for pipeline reporting."""
     if not THUMBNAIL_OUTPUT_PATH.exists():
         return {}
 
@@ -727,6 +779,7 @@ def load_thumbnail_snapshot() -> dict[str, object]:
 
 
 def list_local_archive_records(archive_root: Path) -> list[LocalArchiveRecord]:
+    """Return local archive workbooks in newest-first order."""
     if not archive_root.exists():
         return []
 
@@ -754,6 +807,11 @@ def list_local_archive_records(archive_root: Path) -> list[LocalArchiveRecord]:
 def build_drive_records(
     drive_files: list[object], settings, archive_paths: set[str]
 ) -> list[DriveArchiveRecord]:
+    """Convert Drive rows into normalized newest-first archive records.
+
+    This ordering is the shared baseline for `list --drive` and replay sync before
+    later processed/exclusion filters narrow the candidate set.
+    """
     records: list[DriveArchiveRecord] = []
     for drive_file in reversed(drive_files):
         archive_relative = resolve_archive_relative_path(
@@ -769,6 +827,31 @@ def build_drive_records(
             )
         )
     return records
+
+
+def normalize_limit(limit_value: int) -> int:
+    limit = int(limit_value or 0)
+    if limit < 0:
+        raise SystemExit("Invalid --limit value. Expected a positive integer.")
+    return limit
+
+
+def limit_recent_items[T](items: list[T], limit_value: int) -> list[T]:
+    limit = normalize_limit(limit_value)
+    if limit == 0 or len(items) <= limit:
+        return list(items)
+    return list(items[-limit:])
+
+
+def limit_recent_records[T](records: list[T], limit_value: int) -> list[T]:
+    limit = normalize_limit(limit_value)
+    if limit == 0 or len(records) <= limit:
+        return list(records)
+    return list(records[:limit])
+
+
+def is_complete_drive_record(record: DriveArchiveRecord) -> bool:
+    return "[Incomplete]" not in record.workbook_name
 
 
 def is_drive_file_excluded(drive_file: object, overrides: PipelineOverrides) -> bool:
@@ -796,6 +879,11 @@ def match_drive_file_by_relative_path(relative_path: str, drive_files: list[obje
 def resolve_force_redownload_target(
     drive_files: list[object], state: dict[str, object]
 ) -> tuple[object | None, str]:
+    """Choose the workbook to redownload in repair mode.
+
+    Prefers the last archive-relative match from pipeline state, then falls back
+    to the newest visible Drive workbook so the override stays deterministic.
+    """
     state_relative_path = str(
         state.get("downloaded_relative_path")
         or state.get("archive_relative_path")
@@ -821,6 +909,11 @@ def select_local_records(
     relative_path: str,
     latest: bool,
 ) -> list[LocalArchiveRecord]:
+    """Filter local archive records while preserving newest-first ordering.
+
+    Later sync-local and rebuild limit handling assumes this selector result is
+    already ordered by recency.
+    """
     selected = list(records)
     normalized_relative_path = normalize_relative_path(relative_path)
     if normalized_relative_path:
@@ -879,6 +972,11 @@ def resolve_local_sync_selection(
     latest: bool,
     missing: bool,
 ) -> tuple[list[LocalArchiveRecord], str, list[LocalArchiveRecord]]:
+    """Resolve which local archive workbooks a sync-local run should operate on.
+
+    - Defaults to the "missing debug CSV" view so sync-local behaves like an archive repair tool.
+    - Returns both the selected records and the missing baseline for reporting.
+    """
     available_records = [
         record
         for record in records
@@ -985,6 +1083,11 @@ def select_drive_records(
     relative_path: str,
     latest: bool,
 ) -> list[DriveArchiveRecord]:
+    """Filter visible Drive records while preserving newest-first ordering.
+
+    This selector is the reference view for `list --drive` and replay sync before
+    processed or exclusion filters narrow the candidate set.
+    """
     selected = list(records)
     normalized_relative_path = normalize_relative_path(relative_path)
     if normalized_relative_path:
@@ -1064,6 +1167,7 @@ def write_summary(payload: dict[str, object]) -> None:
 
 
 def load_processed_drive_workbooks_manifest() -> dict[str, object]:
+    """Load the incremental-sync manifest that tells normal sync which archive paths were already processed."""
     manifest = load_json_file(
         PROCESSED_DRIVE_WORKBOOKS_PATH,
         default={
@@ -1100,6 +1204,11 @@ def load_processed_drive_workbooks_manifest() -> dict[str, object]:
 
 
 def build_processed_relative_paths_set(manifest: dict[str, object]) -> set[str]:
+    """Convert the processed manifest into the lookup set normal sync uses.
+
+    Replay sync intentionally bypasses this filter so validation can revisit the
+    newest visible workbooks without mutating default sync semantics.
+    """
     raw_paths = manifest.get("processed_relative_paths", [])
     if not isinstance(raw_paths, list):
         return set()
@@ -1132,6 +1241,11 @@ def update_state_after_download(
     *,
     new_workbook_detected_at: str | None,
 ) -> None:
+    """Persist the sync selection that later rebuild and notify steps consume.
+
+    This state is the handoff contract between sync, rebuild, publish, and
+    notification, so even partial selections need to be written explicitly.
+    """
     latest_download = downloaded_files[-1] if downloaded_files else None
     state.update(
         {
@@ -1182,6 +1296,11 @@ def download_selected_workbooks(
     selected_files: list[object],
     archive_paths: set[str],
 ) -> tuple[list[dict[str, str]], list[dict[str, object]], set[str]]:
+    """Download the already-selected Drive workbooks and apply readiness checks.
+
+    - Pending/incomplete files are logged and excluded from rebuild inputs.
+    - Replay and force-redownload reuse this same download/readiness path.
+    """
     downloaded_files: list[dict[str, str]] = []
     pending_files: list[dict[str, object]] = []
 
@@ -1239,6 +1358,10 @@ def download_selected_workbooks(
 def prepare_local_selected_workbooks(
     selected_records: list[LocalArchiveRecord],
 ) -> tuple[list[dict[str, str]], list[dict[str, object]]]:
+    """Validate local workbooks and shape them like downloaded sync inputs.
+
+    This keeps local replay behavior aligned with the normal Drive-backed rebuild path.
+    """
     prepared_files: list[dict[str, str]] = []
     pending_files: list[dict[str, object]] = []
 
@@ -1278,40 +1401,12 @@ def prepare_local_selected_workbooks(
     return prepared_files, pending_files
 
 
-def local_git_branch_exists(branch_name: str) -> bool:
-    try:
-        run_git("rev-parse", "--verify", branch_name)
-    except RuntimeError:
-        return False
-    return True
-
-
-def git_worktree_has_tracked_changes() -> bool:
-    return bool(run_git("status", "--short", "--untracked-files=no").strip())
-
-
 def prepare_data_updates_branch(settings) -> None:
-    if git_worktree_has_tracked_changes():
-        raise SystemExit(
-            "Refusing to switch and reset the publish branches because the git worktree has tracked changes.\n"
-            "Commit or stash those changes first, then run the sync again."
-        )
-
-    starting_branch = current_branch()
-    log("Preparing the publish branch for the incoming data update...")
-    log(f"- starting branch: {starting_branch}")
-
-    run_git("checkout", settings.main_branch)
-    run_git("pull", "--ff-only", settings.remote, settings.main_branch)
-
-    if local_git_branch_exists(settings.data_branch):
-        run_git("checkout", settings.data_branch)
-    else:
-        run_git("checkout", "-b", settings.data_branch, settings.main_branch)
-
-    run_git("reset", "--hard", settings.main_branch)
-    log(f"- active branch: {settings.data_branch}")
-    log(f"- copied from: {settings.main_branch}")
+    prepare_publish_branch(
+        remote_name=settings.remote,
+        base_branch=settings.main_branch,
+        data_branch=settings.data_branch,
+    )
 
 
 def publish_pipeline_changes() -> None:
@@ -1324,7 +1419,13 @@ def publish_pipeline_changes() -> None:
 def run_pipeline_rebuild(
     *,
     full_rebuild_online: bool,
+    included_relative_paths: list[str] | None = None,
 ) -> None:
+    """Run the Python import + Node post-processing chain.
+
+    included_relative_paths keeps replay/limited runs focused on known workbook inputs
+    so the importer replaces those event IDs instead of rebuilding from every archive file.
+    """
     if full_rebuild_online:
         log(
             "Rebuilding the project event and matchup data from the full workbook archive..."
@@ -1336,6 +1437,9 @@ def run_pipeline_rebuild(
         )
         rebuild_command = [sys.executable, str(REBUILD_SCRIPT)]
 
+    for relative_path in included_relative_paths or []:
+        rebuild_command.extend(["--include-relative-path", relative_path])
+
     run_subprocess(rebuild_command, cwd=PIPELINE_ROOT, stream_output=True)
 
     log("Rebuilding the split matchup archive from the refreshed matchup source...")
@@ -1343,11 +1447,18 @@ def run_pipeline_rebuild(
         ["node", str(MATCHUP_SPLIT_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
     )
 
-    log("Regenerating Elo data from the refreshed matchup archive...")
+    log("Rebuilding precomputed Elo leaderboards from the refreshed matchup archive...")
+    elo_command = ["node", str(PRECALCULATED_ELO_BUILD_SCRIPT)]
+    if full_rebuild_online:
+        elo_command.append("--full-rebuild")
     run_subprocess(
-        ["node", str(ELO_BUILD_SCRIPT)], cwd=PROJECT_ROOT, stream_output=True
+        elo_command,
+        cwd=PROJECT_ROOT,
+        stream_output=True,
     )
 
+    # Thumbnail generation depends on the refreshed data files, so it belongs after
+    # events/matchups/Elo complete instead of in the publish step.
     log("Refreshing the site thumbnail from the rebuilt project data...")
     try:
         run_subprocess(
@@ -1366,6 +1477,11 @@ def finalize_pipeline_state(
     pipeline_started_monotonic: float,
     include_drive_metrics: bool,
 ) -> None:
+    """Finalize summary and state after rebuild and thumbnail work completes.
+
+    - Writes timing plus manifest/thumbnail snapshots to both summary and rolling state.
+    - Sync runs can optionally attach Drive request metrics here.
+    """
     elo_snapshot = load_elo_manifest_snapshot()
     thumbnail_snapshot = load_thumbnail_snapshot()
     pipeline_finished_at = datetime.now()
@@ -1386,6 +1502,7 @@ def finalize_pipeline_state(
     state.update(
         {
             "data_refresh_completed_at": datetime.now().isoformat(timespec="seconds"),
+            "matchup_manifest_path": str(MATCHUP_MANIFEST_PATH),
             "elo_manifest_path": str(ELO_MANIFEST_PATH),
             "elo_manifest_snapshot": elo_snapshot,
             "thumbnail_snapshot": thumbnail_snapshot,
@@ -1400,6 +1517,11 @@ def finalize_pipeline_state(
 
 
 def run_sync_command(args: argparse.Namespace) -> int:
+    """Run the Drive-backed sync path from selection through optional publish.
+
+    - Normal sync limits the newest eligible unprocessed files; replay mode limits the newest visible complete files.
+    - Downloads, rebuilds, refreshes thumbnail/state, and skips publish only when `--skip-publish` is set.
+    """
     pipeline_started_at = datetime.now()
     pipeline_started_monotonic = time.perf_counter()
     settings = load_settings()
@@ -1408,19 +1530,21 @@ def run_sync_command(args: argparse.Namespace) -> int:
 
     reset_drive_request_metrics()
     service = build_drive_service(settings.credentials_path)
-    drive_files = list_drive_files(service, settings.drive_folder_id)
+    drive_files = list_drive_files(
+        service,
+        settings.drive_folder_id,
+        settings.ignored_drive_folders,
+    )
     processed_manifest = load_processed_drive_workbooks_manifest()
     processed_paths = build_processed_relative_paths_set(processed_manifest)
     archive_paths = list_archive_relative_paths(settings.archive_root)
+    drive_records = build_drive_records(drive_files, settings, archive_paths)
     current_utc_time = datetime.now(timezone.utc)
-    # Cutoff time for to avoid downloading files that were modified very recently, 
-    # which may still be in the process of being edited and saved by the user.
-    # This cutoff can be overridden with the --ignore_cutoff flag for testing or exceptional cases
     if args.ignore_cutoff:
-        print("Ignore cutoff mode enabled: skipping 10-minute cutoff")
-        cutoff = current_utc_time
+        log("[INFO] Running with --ignore-cutoff (forcing latest workbook processing)")
+        cutoff = None
     else:
-        cutoff = current_utc_time - timedelta(minutes=10)
+        cutoff = current_utc_time - timedelta(minutes=30)
     excluded_drive_files_count = sum(
         1 for drive_file in drive_files if is_drive_file_excluded(drive_file, overrides)
     )
@@ -1433,22 +1557,61 @@ def run_sync_command(args: argparse.Namespace) -> int:
             for candidate in archive_relative_path_candidates(drive_file)
         )
     ]
-    missing_files = [
-        drive_file
-        for drive_file in unprocessed_files
-        if drive_file.modified_time <= cutoff
-    ]
-    too_recent_files = [
-        drive_file
-        for drive_file in unprocessed_files
-        if drive_file.modified_time > cutoff
-    ]
+    # Normal sync is deliberately conservative: only files that are both visible on
+    # Drive and absent from the processed manifest are eligible for selection.
+    if cutoff is None:
+        missing_files = list(unprocessed_files)
+        too_recent_files = []
+    else:
+        missing_files = [
+            drive_file
+            for drive_file in unprocessed_files
+            if drive_file.modified_time <= cutoff
+        ]
+        too_recent_files = [
+            drive_file
+            for drive_file in unprocessed_files
+            if drive_file.modified_time > cutoff
+        ]
     new_workbook_detected_at = (
         datetime.now().isoformat(timespec="seconds") if missing_files else None
     )
     selected_files = list(missing_files)
     forced_file = None
     forced_file_source = ""
+
+    if args.reimport_latest:
+        # Replay mode is for validation. It intentionally ignores the processed
+        # manifest so we can retest the latest visible complete workbooks end to end.
+        visible_complete_records = [
+            record for record in drive_records if is_complete_drive_record(record)
+        ]
+        selected_candidate_records = limit_recent_records(
+            visible_complete_records, args.limit
+        )
+        selected_files = [record.drive_file for record in selected_candidate_records]
+        log(
+            f"Applying replay mode: reimporting the {len(selected_files)} most recent visible complete Drive workbook(s)."
+        )
+        for record in selected_candidate_records:
+            already_processed = "yes" if record.relative_path in processed_paths else "no"
+            log(f"- selected workbook: {record.workbook_name}")
+            log(f"  relative path: {record.relative_path}")
+            log(f"  modified time: {record.modified_time.isoformat()}")
+            log(f"  already processed: {already_processed}")
+    elif normalize_limit(args.limit):
+        # In normal sync, the limit applies after eligibility filtering so it does
+        # not silently change the meaning of "new workbooks waiting to be processed".
+        candidate_records = build_drive_records(missing_files, settings, archive_paths)
+        selected_candidate_records = candidate_records[: normalize_limit(args.limit)]
+        selected_files = [record.drive_file for record in selected_candidate_records]
+        log(
+            f"Applying sync limit: processing the {len(selected_files)} most recent eligible Drive workbook(s)."
+        )
+        for record in selected_candidate_records:
+            log(f"- selected workbook: {record.workbook_name}")
+            log(f"  relative path: {record.relative_path}")
+            log(f"  modified time: {record.modified_time.isoformat()}")
 
     if too_recent_files:
         log(
@@ -1509,15 +1672,18 @@ def run_sync_command(args: argparse.Namespace) -> int:
     summary: dict[str, object] = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "command": "sync",
+        "ignore_cutoff": bool(args.ignore_cutoff),
+        "reimport_latest": bool(args.reimport_latest),
         "drive_file_count": len(drive_files),
         "excluded_drive_files_count": excluded_drive_files_count,
         "local_archive_file_count": len(archive_paths),
         "force_redownload": args.force_redownload,
         "force_redownload_source": forced_file_source,
-        "minimum_drive_file_age_minutes": 30,
+        "minimum_drive_file_age_minutes": 0 if args.ignore_cutoff else 30,
         "processed_manifest_path": str(PROCESSED_DRIVE_WORKBOOKS_PATH),
         "processed_manifest_entries_count": len(processed_paths),
         "selected_file_count": len(selected_files),
+        "selection_limit": normalize_limit(args.limit),
         "missing_file_count": len(missing_files),
         "too_recent_file_count": len(too_recent_files),
         "too_recent_files": [
@@ -1606,6 +1772,11 @@ def run_sync_command(args: argparse.Namespace) -> int:
 
     run_pipeline_rebuild(
         full_rebuild_online=False,
+        included_relative_paths=[
+            normalize_relative_path(item["relative_path"])
+            for item in downloaded_files
+            if normalize_relative_path(item.get("relative_path"))
+        ],
     )
 
     state = load_state()
@@ -1641,6 +1812,10 @@ def run_sync_command(args: argparse.Namespace) -> int:
 
 
 def run_local_sync_command(args: argparse.Namespace) -> int:
+    """Run the local-archive repair path through the same rebuild and publish chain.
+
+    - Selection stays local, but once files are chosen this shares the same state, rebuild, and duplicate-check flow as Drive sync.
+    """
     pipeline_started_at = datetime.now()
     pipeline_started_monotonic = time.perf_counter()
     settings = load_settings()
@@ -1759,13 +1934,18 @@ def run_local_sync_command(args: argparse.Namespace) -> int:
 
 
 def run_list_command(args: argparse.Namespace) -> int:
+    """List Drive or local workbook candidates without mutating pipeline state."""
     settings = load_settings()
     overrides = load_pipeline_overrides()
 
     if args.drive:
         reset_drive_request_metrics()
         service = build_drive_service(settings.credentials_path)
-        drive_files = list_drive_files(service, settings.drive_folder_id)
+        drive_files = list_drive_files(
+            service,
+            settings.drive_folder_id,
+            settings.ignored_drive_folders,
+        )
         archive_paths = list_archive_relative_paths(settings.archive_root)
         records = build_drive_records(drive_files, settings, archive_paths)
         selected_records = select_drive_records(
@@ -1833,13 +2013,18 @@ def run_list_command(args: argparse.Namespace) -> int:
 
 
 def run_download_command(args: argparse.Namespace) -> int:
+    """Download one explicit Drive workbook and update state for a later rebuild."""
     settings = load_settings()
     state = load_state()
     overrides = load_pipeline_overrides()
 
     reset_drive_request_metrics()
     service = build_drive_service(settings.credentials_path)
-    drive_files = list_drive_files(service, settings.drive_folder_id)
+    drive_files = list_drive_files(
+        service,
+        settings.drive_folder_id,
+        settings.ignored_drive_folders,
+    )
     archive_paths = list_archive_relative_paths(settings.archive_root)
     records = build_drive_records(drive_files, settings, archive_paths)
     selected_record = require_single_drive_record(
@@ -1904,6 +2089,7 @@ def run_download_command(args: argparse.Namespace) -> int:
 
 
 def run_exclude_command(args: argparse.Namespace) -> int:
+    """Exclude one local workbook from future rebuilds."""
     settings = load_settings()
     overrides = load_pipeline_overrides()
     record = require_single_local_record(
@@ -1933,6 +2119,7 @@ def run_exclude_command(args: argparse.Namespace) -> int:
 
 
 def run_include_command(args: argparse.Namespace) -> int:
+    """Remove one local workbook from the rebuild exclusion list."""
     settings = load_settings()
     overrides = load_pipeline_overrides()
     record = require_single_local_record(
@@ -1962,6 +2149,7 @@ def run_include_command(args: argparse.Namespace) -> int:
 
 
 def run_override_date_command(args: argparse.Namespace) -> int:
+    """Save an effective event-date override for one local workbook."""
     settings = load_settings()
     overrides = load_pipeline_overrides()
     record = require_single_local_record(
@@ -2002,6 +2190,7 @@ def run_override_date_command(args: argparse.Namespace) -> int:
 
 
 def run_clear_override_date_command(args: argparse.Namespace) -> int:
+    """Remove a saved event-date override from one local workbook."""
     settings = load_settings()
     overrides = load_pipeline_overrides()
     record = require_single_local_record(
@@ -2040,20 +2229,50 @@ def run_clear_override_date_command(args: argparse.Namespace) -> int:
 
 
 def run_rebuild_command(args: argparse.Namespace) -> int:
+    """Run the archive-backed full rebuild path.
+
+    - Rebuild scope can be validation-bounded with `--limit`.
+    - Full rebuild replaces selected online-derived rows, then refreshes matchup, Elo, thumbnail, and state outputs.
+    """
     _ = args.full
     pipeline_started_at = datetime.now()
     pipeline_started_monotonic = time.perf_counter()
     settings = load_settings()
     state = load_state()
+    overrides = load_pipeline_overrides()
+    local_records = list_local_archive_records(settings.archive_root)
+    available_records = [
+        record
+        for record in local_records
+        if record.relative_path not in overrides.excluded_relative_paths
+    ]
+    selected_records = limit_recent_records(available_records, args.limit)
+
+    if normalize_limit(args.limit):
+        log(
+            f"Applying rebuild limit: rebuilding from the {len(selected_records)} most recent local workbook(s)."
+        )
+
+    selected_relative_paths = [
+        record.relative_path
+        for record in selected_records
+        if normalize_relative_path(record.relative_path)
+    ]
 
     run_pipeline_rebuild(
         full_rebuild_online=True,
+        included_relative_paths=selected_relative_paths,
     )
 
     summary: dict[str, object] = {
         "generated_at": datetime.now().isoformat(timespec="seconds"),
         "command": str(args.command),
         "full_rebuild_online": True,
+        "selection_limit": normalize_limit(args.limit),
+        "local_archive_file_count": len(local_records),
+        "available_local_file_count": len(available_records),
+        "selected_file_count": len(selected_relative_paths),
+        "selected_relative_paths": selected_relative_paths,
         "pipeline_overrides_path": str(PIPELINE_OVERRIDES_PATH),
     }
     finalize_pipeline_state(
@@ -2075,6 +2294,7 @@ def run_rebuild_command(args: argparse.Namespace) -> int:
 
 
 def main() -> int:
+    """Dispatch the selected subcommand to its pipeline runner."""
     args = parse_args()
 
     if args.command == "sync":

@@ -8,9 +8,17 @@ import { getChartTheme } from '../utils/theme.js';
 import { formatDate, formatEventName } from '../utils/format.js';
 
 export let deckEvolutionChart = null;
+let deckEvolutionModalChart = null;
 // Empty means hover controls the detail panel; otherwise the clicked date remains
 // pinned so the user can compare the chart with the table below.
 let pinnedDeckEvolutionPointKey = '';
+let pinnedDeckEvolutionModalPointKey = '';
+
+const DECK_EVOLUTION_DEFAULT_PLACEHOLDER = 'Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.';
+
+function normalizeDeckName(value) {
+  return String(value || '').trim();
+}
 
 function setMultiEventTableToggleState(tableType = 'aggregate') {
   const toggleButtons = document.querySelectorAll('#multiEventCharts .table-toggle-btn');
@@ -28,8 +36,61 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function setDeckEvolutionDetailsMarkup(markup) {
-  const detailsEl = document.getElementById('deckEvolutionEventDetails');
+function getDeckEvolutionTargets(target = 'main') {
+  if (target === 'modal') {
+    return {
+      target,
+      canvasId: 'deckEvolutionFocusChart',
+      loadingId: 'deckEvolutionFocusChartLoading',
+      detailsId: 'deckEvolutionFocusDetails'
+    };
+  }
+
+  return {
+    target: 'main',
+    canvasId: 'deckEvolutionChart',
+    loadingId: 'deckEvolutionChartLoading',
+    detailsId: 'deckEvolutionEventDetails'
+  };
+}
+
+function getDeckEvolutionChartInstance(target = 'main') {
+  return target === 'modal' ? deckEvolutionModalChart : deckEvolutionChart;
+}
+
+function setDeckEvolutionChartInstance(target = 'main', chartInstance = null) {
+  if (target === 'modal') {
+    deckEvolutionModalChart = chartInstance;
+    return;
+  }
+
+  deckEvolutionChart = chartInstance;
+}
+
+function getPinnedDeckEvolutionPointKey(target = 'main') {
+  return target === 'modal' ? pinnedDeckEvolutionModalPointKey : pinnedDeckEvolutionPointKey;
+}
+
+function setPinnedDeckEvolutionPointKey(target = 'main', pointKey = '') {
+  if (target === 'modal') {
+    pinnedDeckEvolutionModalPointKey = pointKey;
+    return;
+  }
+
+  pinnedDeckEvolutionPointKey = pointKey;
+}
+
+function destroyDeckEvolutionChart(target = 'main') {
+  const chartInstance = getDeckEvolutionChartInstance(target);
+  if (chartInstance) {
+    chartInstance.destroy();
+  }
+
+  setDeckEvolutionChartInstance(target, null);
+}
+
+function setDeckEvolutionDetailsMarkup(markup, { detailsId = 'deckEvolutionEventDetails' } = {}) {
+  const detailsEl = document.getElementById(detailsId);
   if (!detailsEl) {
     return;
   }
@@ -37,10 +98,13 @@ function setDeckEvolutionDetailsMarkup(markup) {
   detailsEl.innerHTML = markup;
 }
 
-function renderDeckEvolutionDetailsPlaceholder(message) {
+function renderDeckEvolutionDetailsPlaceholder(
+  message,
+  { detailsId = 'deckEvolutionEventDetails' } = {}
+) {
   setDeckEvolutionDetailsMarkup(`
     <div class="player-chart-event-placeholder">${escapeHtml(message)}</div>
-  `);
+  `, { detailsId });
 }
 
 function getDeckEvolutionPointKey(point) {
@@ -130,7 +194,7 @@ function buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaSh
   // counts, pilots, finish extremes, and records for the same date.
   return dates.map((date, index) => {
     const dateRows = filteredData.filter(row => row.Date === date);
-    const deckRows = dateRows.filter(row => String(row?.Deck || '').trim() === currentDeck);
+    const deckRows = dateRows.filter(row => normalizeDeckName(row?.Deck) === currentDeck);
     const eventNames = [...new Set(dateRows.map(row => String(row?.Event || '').trim()).filter(Boolean))];
     const totalPlayers = dateRows.length;
     const deckCopies = deckRows.length;
@@ -170,9 +234,15 @@ function buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaSh
   });
 }
 
-function renderDeckEvolutionDetails(point, { pinned = false } = {}) {
+function renderDeckEvolutionDetails(
+  point,
+  {
+    pinned = false,
+    detailsId = 'deckEvolutionEventDetails'
+  } = {}
+) {
   if (!point?.date) {
-    renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+    renderDeckEvolutionDetailsPlaceholder(DECK_EVOLUTION_DEFAULT_PLACEHOLDER, { detailsId });
     return;
   }
 
@@ -261,74 +331,85 @@ function renderDeckEvolutionDetails(point, { pinned = false } = {}) {
         }
       </div>
     </div>
-  `);
+  `, { detailsId });
 }
 
-// Programmatically selects a deck in the multi-event deck evolution control and
-// optionally scrolls the chart into view.
-export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
-  const deckSelect = document.getElementById('deckEvolutionSelect');
-  const normalizedDeckName = String(deckName || '').trim();
-
-  if (!deckSelect || !normalizedDeckName) {
-    return false;
+function setDeckEvolutionChartFocus(chartInstance, pointDetails, pointIndex) {
+  if (!chartInstance || !Array.isArray(pointDetails) || pointIndex < 0 || pointIndex >= pointDetails.length) {
+    return;
   }
 
-  deckSelect.value = normalizedDeckName;
-  setMultiEventTableToggleState('deck');
-  updateDeckEvolutionChart();
-
-  if (scrollIntoView) {
-    deckSelect.closest('.chart-container')?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    });
+  const preferredDatasetIndex = chartInstance.data?.datasets?.length > 1 ? 1 : 0;
+  const element = chartInstance.getDatasetMeta(preferredDatasetIndex)?.data?.[pointIndex];
+  if (!element) {
+    return;
   }
 
-  return true;
+  const activeElements = [{ datasetIndex: preferredDatasetIndex, index: pointIndex }];
+  const position = typeof element.getCenterPoint === 'function'
+    ? element.getCenterPoint()
+    : { x: element.x, y: element.y };
+
+  chartInstance.setActiveElements(activeElements);
+  if (chartInstance.tooltip?.setActiveElements) {
+    chartInstance.tooltip.setActiveElements(activeElements, position);
+  }
+  chartInstance.update();
 }
 
-// Redraws the selected deck's date-by-date meta share and win-rate evolution.
-export function updateDeckEvolutionChart() {
-  console.log("updateDeckEvolutionChart called...");
-  setChartLoading("deckEvolutionChart", true);
+function bindMainDeckEvolutionTableToggles(filteredData, currentDeck) {
+  const toggleButtons = document.querySelectorAll('#multiEventCharts .table-toggle-btn');
+  toggleButtons.forEach(button => {
+    button.onclick = () => {
+      toggleButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      const tableType = button.dataset.table;
+      updateMultiEventTables(filteredData, tableType, currentDeck);
+    };
+  });
+}
+
+function renderDeckEvolutionChartView({
+  target = 'main',
+  filteredData = [],
+  currentDeck = '',
+  syncTables = false,
+  persistentFocusOnOpen = false,
+  emptyStateMessage = 'Choose a deck to inspect its date-by-date meta share and win rate.'
+} = {}) {
+  const { canvasId, loadingId, detailsId } = getDeckEvolutionTargets(target);
   const theme = getChartTheme();
-  pinnedDeckEvolutionPointKey = '';
+  const canvas = document.getElementById(canvasId);
 
-  const filteredData = getDeckEvolutionChartData();
-  const deckSelect = document.getElementById("deckEvolutionSelect");
-  if (!deckSelect) {
-    console.error("Deck selection dropdown not found!");
-    setChartLoading("deckEvolutionChart", false);
+  setChartLoading(loadingId, true);
+
+  if (!canvas) {
+    console.error(`Deck Evolution Chart canvas not found for target "${target}"!`);
+    setChartLoading(loadingId, false);
     return;
   }
 
-  const decks = [...new Set(filteredData.map(row => row.Deck))].sort((a, b) => a.localeCompare(b));
-  const currentDeck = deckSelect.value || (decks.length > 0 ? decks[0] : "");
-  deckSelect.innerHTML = decks.map(deck => 
-    `<option value="${deck}" ${deck === currentDeck ? 'selected' : ''}>${deck}</option>`
-  ).join("");
+  destroyDeckEvolutionChart(target);
+  setPinnedDeckEvolutionPointKey(target, '');
 
-  if (!deckSelect.dataset.listenerAdded) {
-    deckSelect.addEventListener("change", () => updateDeckEvolutionChart());
-    deckSelect.dataset.listenerAdded = "true";
-  }
+  const normalizedCurrentDeck = normalizeDeckName(currentDeck);
+  const hasDeckRows = normalizedCurrentDeck
+    ? filteredData.some(row => normalizeDeckName(row?.Deck) === normalizedCurrentDeck)
+    : false;
 
-  if (deckEvolutionChart) deckEvolutionChart.destroy();
-  const deckEvolutionCtx = document.getElementById("deckEvolutionChart");
-  if (!deckEvolutionCtx) {
-    console.error("Deck Evolution Chart canvas not found!");
-    setChartLoading("deckEvolutionChart", false);
-    return;
-  }
+  if (filteredData.length === 0 || !normalizedCurrentDeck || !hasDeckRows) {
+    renderDeckEvolutionDetailsPlaceholder(
+      normalizedCurrentDeck
+        ? `No evolution data is available for ${normalizedCurrentDeck} in the current multi-event filters.`
+        : emptyStateMessage,
+      { detailsId }
+    );
 
-  if (filteredData.length === 0 || !currentDeck) {
-    renderDeckEvolutionDetailsPlaceholder('Choose a deck to inspect its date-by-date meta share and win rate.');
-    deckEvolutionChart = new Chart(deckEvolutionCtx, {
+    const emptyChart = new Chart(canvas, {
       type: 'bar',
       data: {
-        labels: ["No Data"],
-        datasets: [{ label: "Meta Share %", data: [0], backgroundColor: '#808080' }]
+        labels: ['No Data'],
+        datasets: [{ label: 'Meta Share %', data: [0], backgroundColor: '#808080' }]
       },
       options: {
         responsive: true,
@@ -337,20 +418,33 @@ export function updateDeckEvolutionChart() {
         scales: { y: { display: false }, x: { ticks: { color: theme.text } } }
       }
     });
-    updateMultiEventTables(filteredData, 'deck', currentDeck);
-    setChartLoading("deckEvolutionChart", false);
+
+    setDeckEvolutionChartInstance(target, emptyChart);
+    if (syncTables) {
+      updateMultiEventTables(filteredData, 'deck', normalizedCurrentDeck);
+      bindMainDeckEvolutionTableToggles(filteredData, normalizedCurrentDeck);
+    }
+    setChartLoading(loadingId, false);
     return;
   }
 
-  const { dates, metaShares, winRates } = calculateDeckEvolutionStats(filteredData, currentDeck);
-  const pointDetails = buildDeckEvolutionPointDetails(filteredData, currentDeck, dates, metaShares, winRates);
+  const { dates, metaShares, winRates } = calculateDeckEvolutionStats(filteredData, normalizedCurrentDeck);
+  const pointDetails = buildDeckEvolutionPointDetails(filteredData, normalizedCurrentDeck, dates, metaShares, winRates);
   const maxMetaShare = Math.max(...metaShares, 1);
   const metaShareMax = Math.ceil(maxMetaShare / 10) * 10;
-  renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+  const initialFocusIndex = pointDetails.length > 0 ? pointDetails.length - 1 : -1;
+
+  if (persistentFocusOnOpen && initialFocusIndex >= 0) {
+    const focusedPoint = pointDetails[initialFocusIndex];
+    setPinnedDeckEvolutionPointKey(target, getDeckEvolutionPointKey(focusedPoint));
+    renderDeckEvolutionDetails(focusedPoint, { pinned: true, detailsId });
+  } else {
+    renderDeckEvolutionDetailsPlaceholder(DECK_EVOLUTION_DEFAULT_PLACEHOLDER, { detailsId });
+  }
 
   const datasets = [
     {
-      label: `Meta Share %`,
+      label: 'Meta Share %',
       data: metaShares,
       backgroundColor: '#FF6347',
       borderColor: '#FF6347',
@@ -361,7 +455,7 @@ export function updateDeckEvolutionChart() {
     },
     {
       type: 'line',
-      label: `Win Rate %`,
+      label: 'Win Rate %',
       data: winRates,
       borderColor: '#FFD700',
       backgroundColor: '#FFD700',
@@ -377,38 +471,38 @@ export function updateDeckEvolutionChart() {
   ];
 
   try {
-    deckEvolutionChart = new Chart(deckEvolutionCtx, {
+    const chartInstance = new Chart(canvas, {
       type: 'bar',
       data: { labels: dates, datasets },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: { 
-            beginAtZero: true, 
+          y: {
+            beginAtZero: true,
             max: metaShareMax,
-            title: { display: true, text: "Meta Share %", color: theme.text },
+            title: { display: true, text: 'Meta Share %', color: theme.text },
             grid: { color: theme.grid },
-            ticks: { color: theme.text } 
+            ticks: { color: theme.text }
           },
-          y2: { 
-            position: 'right', 
-            beginAtZero: true, 
+          y2: {
+            position: 'right',
+            beginAtZero: true,
             max: 100,
-            title: { display: true, text: "Win Rate %", color: theme.text },
+            title: { display: true, text: 'Win Rate %', color: theme.text },
             grid: { color: theme.grid },
-            ticks: { color: theme.text } 
+            ticks: { color: theme.text }
           },
-          x: { 
-            title: { display: true, text: "Date", color: theme.text },
+          x: {
+            title: { display: true, text: 'Date', color: theme.text },
             grid: { borderDash: [5, 5], color: theme.grid },
-            ticks: { color: theme.text, autoSkip: true, maxRotation: 45, minRotation: 0 } 
+            ticks: { color: theme.text, autoSkip: true, maxRotation: 45, minRotation: 0 }
           }
         },
         plugins: {
-          legend: { 
-            position: 'top', 
-            labels: { color: theme.mutedText, font: { size: 12 }, boxWidth: 20, padding: 10 } 
+          legend: {
+            position: 'top',
+            labels: { color: theme.mutedText, font: { size: 12 }, boxWidth: 20, padding: 10 }
           },
           tooltip: {
             mode: 'nearest',
@@ -440,8 +534,8 @@ export function updateDeckEvolutionChart() {
               },
               afterBody(context) {
                 const point = pointDetails[context[0]?.dataIndex];
-                if (!pinnedDeckEvolutionPointKey) {
-                  renderDeckEvolutionDetails(point);
+                if (!getPinnedDeckEvolutionPointKey(target)) {
+                  renderDeckEvolutionDetails(point, { detailsId });
                 }
                 return '';
               }
@@ -455,13 +549,13 @@ export function updateDeckEvolutionChart() {
             borderWidth: 1,
             padding: 10
           },
-          datalabels: {display: false}
+          datalabels: { display: false }
         },
-        onClick(event, activeElements) {
+        onClick(_event, activeElements) {
           if (!activeElements?.length) {
-            if (pinnedDeckEvolutionPointKey) {
-              pinnedDeckEvolutionPointKey = '';
-              renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+            if (getPinnedDeckEvolutionPointKey(target)) {
+              setPinnedDeckEvolutionPointKey(target, '');
+              renderDeckEvolutionDetailsPlaceholder(DECK_EVOLUTION_DEFAULT_PLACEHOLDER, { detailsId });
             }
             return;
           }
@@ -469,64 +563,205 @@ export function updateDeckEvolutionChart() {
           const point = pointDetails[activeElements[0].index];
           const pointKey = getDeckEvolutionPointKey(point);
 
-          if (pinnedDeckEvolutionPointKey === pointKey) {
-            pinnedDeckEvolutionPointKey = '';
-            renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+          if (getPinnedDeckEvolutionPointKey(target) === pointKey) {
+            setPinnedDeckEvolutionPointKey(target, '');
+            renderDeckEvolutionDetailsPlaceholder(DECK_EVOLUTION_DEFAULT_PLACEHOLDER, { detailsId });
             return;
           }
 
-          pinnedDeckEvolutionPointKey = pointKey;
-          renderDeckEvolutionDetails(point, { pinned: true });
+          setPinnedDeckEvolutionPointKey(target, pointKey);
+          renderDeckEvolutionDetails(point, { pinned: true, detailsId });
         },
-        onHover(event, activeElements) {
-          deckEvolutionCtx.style.cursor = activeElements?.length ? 'pointer' : 'default';
+        onHover(_event, activeElements) {
+          canvas.style.cursor = activeElements?.length ? 'pointer' : 'default';
 
           if (activeElements?.length) {
             const hoveredPoint = pointDetails[activeElements[0].index];
             const hoveredPointKey = getDeckEvolutionPointKey(hoveredPoint);
 
-            if (pinnedDeckEvolutionPointKey === hoveredPointKey) {
-              renderDeckEvolutionDetails(hoveredPoint, { pinned: true });
+            if (getPinnedDeckEvolutionPointKey(target) === hoveredPointKey) {
+              renderDeckEvolutionDetails(hoveredPoint, { pinned: true, detailsId });
               return;
             }
 
-            renderDeckEvolutionDetails(hoveredPoint);
+            renderDeckEvolutionDetails(hoveredPoint, { detailsId });
             return;
           }
 
-          if (pinnedDeckEvolutionPointKey) {
-            const pinnedPoint = getDeckEvolutionPointByKey(pointDetails, pinnedDeckEvolutionPointKey);
+          if (getPinnedDeckEvolutionPointKey(target)) {
+            const pinnedPoint = getDeckEvolutionPointByKey(pointDetails, getPinnedDeckEvolutionPointKey(target));
             if (pinnedPoint) {
-              renderDeckEvolutionDetails(pinnedPoint, { pinned: true });
+              renderDeckEvolutionDetails(pinnedPoint, { pinned: true, detailsId });
               return;
             }
 
-            pinnedDeckEvolutionPointKey = '';
-            renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
-            return;
+            setPinnedDeckEvolutionPointKey(target, '');
           }
 
-          renderDeckEvolutionDetailsPlaceholder('Hover a date to inspect the selected deck across that day. Click a bar or point to lock it.');
+          renderDeckEvolutionDetailsPlaceholder(DECK_EVOLUTION_DEFAULT_PLACEHOLDER, { detailsId });
+        },
+        animation: {
+          duration: target === 'modal' ? 0 : 1000,
+          easing: 'easeOutQuart'
         }
       }
     });
+
+    setDeckEvolutionChartInstance(target, chartInstance);
+
+    if (persistentFocusOnOpen && initialFocusIndex >= 0) {
+      requestAnimationFrame(() => {
+        setDeckEvolutionChartFocus(chartInstance, pointDetails, initialFocusIndex);
+      });
+    }
   } catch (error) {
-    console.error("Error initializing Deck Evolution Chart:", error);
+    console.error(`Error initializing Deck Evolution Chart for target "${target}":`, error);
   }
 
-  deckEvolutionCtx.style.cursor = 'default';
+  canvas.style.cursor = 'default';
 
-  updateMultiEventTables(filteredData, 'deck', currentDeck);
+  if (syncTables) {
+    updateMultiEventTables(filteredData, 'deck', normalizedCurrentDeck);
+    bindMainDeckEvolutionTableToggles(filteredData, normalizedCurrentDeck);
+  }
 
-  const toggleButtons = document.querySelectorAll('#multiEventCharts .table-toggle-btn');
-  toggleButtons.forEach(button => {
-    button.onclick = () => {
-      toggleButtons.forEach(btn => btn.classList.remove('active'));
-      button.classList.add('active');
-      const tableType = button.dataset.table;
-      updateMultiEventTables(filteredData, tableType, currentDeck);
-    };
+  setChartLoading(loadingId, false);
+}
+
+function getDeckEvolutionModalElements() {
+  return {
+    overlay: document.getElementById('deckEvolutionFocusOverlay'),
+    title: document.getElementById('deckEvolutionFocusTitle'),
+    subtitle: document.getElementById('deckEvolutionFocusSubtitle'),
+    closeButton: document.getElementById('deckEvolutionFocusClose')
+  };
+}
+
+function closeMultiEventDeckEvolutionModal() {
+  const { overlay } = getDeckEvolutionModalElements();
+  if (!overlay) {
+    return;
+  }
+
+  overlay.hidden = true;
+  setPinnedDeckEvolutionPointKey('modal', '');
+  destroyDeckEvolutionChart('modal');
+  setDeckEvolutionDetailsMarkup('', { detailsId: 'deckEvolutionFocusDetails' });
+  document.body.classList.remove('modal-open');
+}
+
+function ensureDeckEvolutionModalListeners() {
+  const { overlay, closeButton } = getDeckEvolutionModalElements();
+  if (!overlay || overlay.dataset.initialized === 'true') {
+    return;
+  }
+
+  overlay.dataset.initialized = 'true';
+
+  closeButton?.addEventListener('click', () => {
+    closeMultiEventDeckEvolutionModal();
   });
 
-  setChartLoading("deckEvolutionChart", false);
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) {
+      closeMultiEventDeckEvolutionModal();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !overlay.hidden) {
+      closeMultiEventDeckEvolutionModal();
+    }
+  });
+}
+
+export function openMultiEventDeckEvolutionModal(deckName) {
+  const normalizedDeckName = normalizeDeckName(deckName);
+  const { overlay, title, subtitle } = getDeckEvolutionModalElements();
+  if (!overlay || !normalizedDeckName) {
+    return false;
+  }
+
+  ensureDeckEvolutionModalListeners();
+
+  if (title) {
+    title.textContent = `${normalizedDeckName} Deck Evolution`;
+  }
+  if (subtitle) {
+    subtitle.textContent = 'Meta share and win rate across the current multi-event window.';
+  }
+
+  overlay.hidden = false;
+  document.body.classList.add('modal-open');
+
+  renderDeckEvolutionChartView({
+    target: 'modal',
+    filteredData: getDeckEvolutionChartData(),
+    currentDeck: normalizedDeckName,
+    syncTables: false,
+    persistentFocusOnOpen: true,
+    emptyStateMessage: `No evolution data is available for ${normalizedDeckName} in the current multi-event filters.`
+  });
+
+  return true;
+}
+
+// Programmatically selects a deck in the multi-event deck evolution control and
+// optionally scrolls the chart into view.
+export function focusMultiEventDeck(deckName, { scrollIntoView = false } = {}) {
+  const deckSelect = document.getElementById('deckEvolutionSelect');
+  const normalizedDeckName = normalizeDeckName(deckName);
+
+  if (!deckSelect || !normalizedDeckName) {
+    return false;
+  }
+
+  deckSelect.value = normalizedDeckName;
+  setMultiEventTableToggleState('deck');
+  updateDeckEvolutionChart();
+
+  if (scrollIntoView) {
+    deckSelect.closest('.chart-container')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  return true;
+}
+
+// Redraws the selected deck's date-by-date meta share and win-rate evolution.
+export function updateDeckEvolutionChart() {
+  const deckSelect = document.getElementById("deckEvolutionSelect");
+  const deckEvolutionCanvas = document.getElementById('deckEvolutionChart');
+  if (!deckSelect || !deckEvolutionCanvas) {
+    return;
+  }
+
+  console.log("updateDeckEvolutionChart called...");
+  setChartLoading("deckEvolutionChart", true);
+  const filteredData = getDeckEvolutionChartData();
+
+  const decks = [...new Set(filteredData.map(row => normalizeDeckName(row?.Deck)).filter(Boolean))]
+    .sort((a, b) => a.localeCompare(b));
+  const selectedDeck = normalizeDeckName(deckSelect.value);
+  const currentDeck = selectedDeck || (decks.length > 0 ? decks[0] : '');
+
+  deckSelect.innerHTML = decks.map(deck =>
+    `<option value="${deck}" ${deck === currentDeck ? 'selected' : ''}>${deck}</option>`
+  ).join("");
+
+  if (!deckSelect.dataset.listenerAdded) {
+    deckSelect.addEventListener("change", () => updateDeckEvolutionChart());
+    deckSelect.dataset.listenerAdded = "true";
+  }
+
+  renderDeckEvolutionChartView({
+    target: 'main',
+    filteredData,
+    currentDeck,
+    syncTables: true,
+    persistentFocusOnOpen: false,
+    emptyStateMessage: 'Choose a deck to inspect its date-by-date meta share and win rate.'
+  });
 }

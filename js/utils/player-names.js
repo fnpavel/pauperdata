@@ -9,9 +9,15 @@ export function normalizePlayerName(value) {
   return String(value ?? '').replace(/\s+/g, ' ').trim();
 }
 
+// Converts any player-facing identifier into the canonical key used for joins
+// and aggregations across event rows, matchup rows, and Elo datasets.
+export function normalizePlayerIdentity(value) {
+  return normalizePlayerName(value).toLowerCase();
+}
+
 // Converts a player display name into the stable identity key used for joins.
 export function getPlayerIdentityKey(value) {
-  return normalizePlayerName(value).toLowerCase();
+  return normalizePlayerIdentity(value);
 }
 
 function comparePlayerVariantStats(a, b) {

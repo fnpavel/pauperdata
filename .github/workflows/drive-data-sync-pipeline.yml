@@ -7,35 +7,29 @@ on:
   workflow_dispatch:
     inputs:
       run_inspect:
-        description: Run inspect phase
+        description: Run both Drive and local inspect commands
         required: false
         type: boolean
         default: true
-      run_download:
-        description: Run download phase
+      run_sync:
+        description: Run the current sync and rebuild pipeline
         required: false
         type: boolean
         default: true
-      run_extract:
-        description: Run extract phase
+      ignore_cutoff:
+        description: Ignore cutoff and force latest workbook processing
         required: false
         type: boolean
-        default: true
-      run_rebuild:
-        description: Run rebuild phase
+        default: false
+      run_full_rebuild:
+        description: Run a full local rebuild from the archived workbooks
         required: false
         type: boolean
-        default: true
-      run_matchup_split:
-        description: Run matchup split phase
+        default: false
+      max_workbooks:
+        description: Optional limit for validation runs, for example 5
         required: false
-        type: boolean
-        default: true
-      run_elo_build:
-        description: Run Elo build phase
-        required: false
-        type: boolean
-        default: true
+        default: ""
       drive_list_command:
         description: Drive inspect command
         required: false
@@ -56,11 +50,6 @@ on:
         default: false
       upload_debug_artifact:
         description: Upload generated outputs for inspection
-        required: false
-        type: boolean
-        default: false
-      force_run:
-        description: Ignore cutoff checks to avoid downloading and syncing files still being edited 
         required: false
         type: boolean
         default: false
@@ -85,19 +74,16 @@ jobs:
           ref: main
 
       - name: Prepare data-updates branch
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
         shell: bash
         run: |
           set -euxo pipefail
-          git fetch origin main data-updates
-          git switch -C data-updates origin/data-updates
-          if git merge-base --is-ancestor origin/main HEAD; then
-            echo "data-updates already contains origin/main"
-          else
-            git merge --no-edit origin/main
-          fi
-          echo "Prepared branch:"
-          git branch --show-current
-          git log -1 --oneline
+          python pipeline/prepare_publish_branch.py
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -132,7 +118,7 @@ jobs:
           set -euxo pipefail
           npx --prefix pipeline playwright install --with-deps chromium
 
-      - name: Validate secrets and write config
+      - name: Validate automation settings
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
@@ -143,40 +129,22 @@ jobs:
         run: |
           set -euxo pipefail
           python - <<'PY'
-          import json
-          import os
-          from pathlib import Path
+          from pipeline.pipeline_env import load_automation_settings
 
-          service_account = os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "").strip()
-          drive_folder_id = os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "").strip()
-          if not service_account:
-              raise SystemExit("Missing GOOGLE_SERVICE_ACCOUNT_JSON secret.")
-          if not drive_folder_id:
-              raise SystemExit("Missing GOOGLE_DRIVE_FOLDER_ID secret.")
-
-          payload = json.loads(service_account)
-          print("Service account JSON parsed successfully.")
-          print(f"client_email present: {bool(str(payload.get('client_email', '')).strip())}")
-          print(f"project_id present: {bool(str(payload.get('project_id', '')).strip())}")
-          pipeline_root = Path("pipeline")
-          pipeline_root.mkdir(parents=True, exist_ok=True)
-
-          service_account_path = pipeline_root / "github-actions-service-account.json"
-          service_account_path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-
-          config_payload = {
-              "credentials_path": str(service_account_path.resolve()),
-              "drive_folder_id": drive_folder_id,
-              "remote": os.environ.get("PIPELINE_REMOTE", "origin"),
-              "data_branch": os.environ.get("PIPELINE_DATA_BRANCH", "data-updates"),
-              "main_branch": os.environ.get("PIPELINE_MAIN_BRANCH", "main"),
-              "commit_message_template": "chore(data): import {workbook_name}",
-          }
-          Path("pipeline/pipeline-config.json").write_text(
-              json.dumps(config_payload, indent=2) + "\n",
-              encoding="utf-8",
+          settings = load_automation_settings()
+          print("Automation settings validated successfully.")
+          print(f"drive_folder_id present: {bool(settings.drive_folder_id)}")
+          print(f"remote: {settings.remote}")
+          print(f"data_branch: {settings.data_branch}")
+          print(f"main_branch: {settings.main_branch}")
+          print(
+              "service_account client_email present: "
+              f"{bool(str(settings.service_account_payload.get('client_email', '')).strip())}"
           )
-          print("Wrote pipeline/pipeline-config.json")
+          print(
+              "service_account project_id present: "
+              f"{bool(str(settings.service_account_payload.get('project_id', '')).strip())}"
+          )
           PY
 
       - name: Syntax checks
@@ -186,64 +154,121 @@ jobs:
           python -m py_compile \
             pipeline/pipeline_common.py \
             pipeline/pipeline_env.py \
+            pipeline/prepare_publish_branch.py \
+            pipeline/backfill_processed_drive_workbooks.py \
             pipeline/import-google-drive-folder.py \
             pipeline/extract_input_csv.py \
             pipeline/rebuild_event_matchup_data.py \
             pipeline/publish_pipeline_changes.py \
+            pipeline/discord_notify.py \
             pipeline/sync_drive_and_rebuild_all.py \
             pipeline/run_github_action_pipeline.py
           node --check pipeline/build-matchup-split-data.mjs
-          node --check pipeline/build-elo-data.mjs
+          node --check pipeline/build-normalized-dataset.mjs
+          node --check pipeline/build-precalculated-elo.mjs
           node --check pipeline/update-thumbnail.mjs
 
       - name: Print workflow context
         if: ${{ inputs.run_inspect }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
         shell: bash
         run: |
           set -euxo pipefail
           echo "Running inspect phase"
+          echo "run_sync=${{ inputs.run_sync }}"
+          echo "ignore_cutoff=${{ inputs.ignore_cutoff }}"
+          echo "run_full_rebuild=${{ inputs.run_full_rebuild }}"
+          echo "run_publish=${{ inputs.run_publish }}"
+          echo "run_discord_notification=${{ inputs.run_discord_notification }}"
+          echo "max_workbooks=${{ inputs.max_workbooks }}"
           echo "drive_list_command=${{ inputs.drive_list_command }}"
           echo "local_list_command=${{ inputs.local_list_command }}"
           ls -la pipeline
-          cat pipeline/pipeline-config.json
+          python - <<'PY'
+          from pipeline.pipeline_env import load_automation_settings
+
+          settings = load_automation_settings()
+          print("Workflow will run through pipeline/run_github_action_pipeline.py")
+          print(f"Resolved remote: {settings.remote}")
+          print(f"Resolved data branch: {settings.data_branch}")
+          print(f"Resolved main branch: {settings.main_branch}")
+          PY
 
       - name: Run Drive inspect
         if: ${{ inputs.run_inspect }}
         env:
-          PIPELINE_ARGS: ${{ inputs.drive_list_command }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+          PIPELINE_COMMAND: ${{ inputs.drive_list_command }}
         shell: bash
         run: |
           set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Drive inspect args: {args}")
-          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
+          python pipeline/run_github_action_pipeline.py
 
       - name: Run local inspect
         if: ${{ inputs.run_inspect }}
         env:
-          PIPELINE_ARGS: ${{ inputs.local_list_command }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+          PIPELINE_COMMAND: ${{ inputs.local_list_command }}
         shell: bash
         run: |
           set -euxo pipefail
-          python - <<'PY'
-          import os, shlex, subprocess, sys
-          args = shlex.split(os.environ["PIPELINE_ARGS"])
-          print(f"Local inspect args: {args}")
-          subprocess.run([sys.executable, "pipeline/sync_drive_and_rebuild_all.py", *args], check=True)
-          PY
+          python pipeline/run_github_action_pipeline.py
 
       - name: Run full manifest sync
-        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+        if: ${{ github.event_name == 'schedule' || inputs.run_sync || (inputs.run_publish && !inputs.run_full_rebuild) }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
         shell: bash
         run: |
           set -euxo pipefail
-          python pipeline/sync_drive_and_rebuild_all.py sync --yes --skip-publish ${{ inputs.force_run && '--ignore_cutoff' || '' }}
+          LIMIT_ARG=""
+          IGNORE_CUTOFF_ARG=""
+          if [ -n "${{ inputs.max_workbooks }}" ]; then
+            LIMIT_ARG=" --limit ${{ inputs.max_workbooks }}"
+          fi
+          if [ "${{ inputs.ignore_cutoff }}" = "true" ]; then
+            IGNORE_CUTOFF_ARG=" --ignore-cutoff"
+          fi
+          export PIPELINE_COMMAND="sync --yes --skip-publish${IGNORE_CUTOFF_ARG}${LIMIT_ARG}"
+          python pipeline/run_github_action_pipeline.py
 
-      - name: Print sync outputs
-        if: ${{ github.event_name == 'schedule' || inputs.run_download || inputs.run_extract || inputs.run_rebuild || inputs.run_matchup_split || inputs.run_elo_build || inputs.run_publish }}
+      - name: Run full local rebuild
+        if: ${{ inputs.run_full_rebuild }}
+        env:
+          GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
+          GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          PIPELINE_REMOTE: origin
+          PIPELINE_DATA_BRANCH: data-updates
+          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          LIMIT_ARG=""
+          if [ -n "${{ inputs.max_workbooks }}" ]; then
+            LIMIT_ARG=" --limit ${{ inputs.max_workbooks }}"
+          fi
+          export PIPELINE_COMMAND="rebuild --full${LIMIT_ARG}"
+          python pipeline/run_github_action_pipeline.py
+
+      - name: Print rebuild outputs
+        if: ${{ github.event_name == 'schedule' || inputs.run_sync || inputs.run_full_rebuild || inputs.run_publish }}
         shell: bash
         run: |
           set -euxo pipefail
@@ -267,11 +292,12 @@ jobs:
               print(row)
           PY
           find dataGoogleDrive -maxdepth 4 -type f | sort | tail -n 50 || true
+          echo "Inspectable extracted Input-sheet CSVs written for debug review only:"
           find pipeline/output/extracted-csv -maxdepth 5 -type f | sort | tail -n 50 || true
           find data/matchups -maxdepth 2 -type f | sort || true
           test -f data/matchups/manifest.json && cat data/matchups/manifest.json || true
-          find data/elo-data -maxdepth 2 -type f | sort || true
-          test -f data/elo-data/manifest.js && cat data/elo-data/manifest.js || true
+          find data/precalculated-elo -maxdepth 3 -type f | sort || true
+          test -f data/precalculated-elo/meta.json && cat data/precalculated-elo/meta.json || true
 
       - name: Debug manifest and git status after sync
         if: ${{ github.event_name == 'schedule' || inputs.run_publish }}
@@ -311,8 +337,8 @@ jobs:
 
           state_path = Path("pipeline/pipeline-state.json")
           state = json.loads(state_path.read_text(encoding="utf-8")) if state_path.exists() else {}
-          should_notify = bool(state.get("publish_data_changed_this_run")) and int(state.get("publish_data_changed_files_count") or 0) > 0
-          print(f"discord_should_run={'true' if should_notify else 'false'}")
+          should_run = bool(state.get("published_data_any_changes")) and int(state.get("published_data_changed_files_count") or 0) > 0
+          print(f"discord_should_run={'true' if should_run else 'false'}")
           PY
 
       - name: Discord notification
@@ -322,9 +348,29 @@ jobs:
           DISCORD_WEBHOOK_1: ${{ secrets.DISCORD_WEBHOOK_1 }}
           DISCORD_WEBHOOK_2: ${{ secrets.DISCORD_WEBHOOK_2 }}
           DISCORD_WEBHOOK_3: ${{ secrets.DISCORD_WEBHOOK_3 }}
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          PIPELINE_STATE_PATH: pipeline/pipeline-state.json
         run: |
           set -euxo pipefail
-          python pipeline/discord_notify.py
+          echo "Running Discord notification step"
+          echo "DISCORD_WEBHOOK_1 configured: $([ -n "${DISCORD_WEBHOOK_1:-}" ] && echo yes || echo no)"
+          echo "DISCORD_WEBHOOK_2 configured: $([ -n "${DISCORD_WEBHOOK_2:-}" ] && echo yes || echo no)"
+          echo "DISCORD_WEBHOOK_3 configured: $([ -n "${DISCORD_WEBHOOK_3:-}" ] && echo yes || echo no)"
+
+          if [ -z "${DISCORD_WEBHOOK_1:-}" ] && [ -z "${DISCORD_WEBHOOK_2:-}" ] && [ -z "${DISCORD_WEBHOOK_3:-}" ]; then
+            echo "Skipping Discord notification because no webhook secrets are configured."
+            exit 0
+          fi
+
+          if python pipeline/discord_notify.py; then
+            echo "Discord notification step completed successfully."
+          else
+            status=$?
+            echo "Discord notification failed with exit code ${status}, but the workflow will continue."
+            exit 0
+          fi
 
       - name: Upload debug artifacts
         if: ${{ failure() || inputs.upload_debug_artifact }}

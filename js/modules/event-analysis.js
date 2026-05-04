@@ -6,8 +6,9 @@ import {
 } from '../utils/analysis-data.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
-import { updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
-import { updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
+import { metaWinRateChart, updateMultiMetaWinRateChart } from '../charts/multi-meta-win-rate.js';
+import { updateMultiEventFunnelChart } from '../multi-funnel.js';
+import { multiPlayerWinRateChart, updateMultiPlayerWinRateChart } from '../charts/multi-player-win-rate.js';
 import { updateDeckEvolutionChart } from '../charts/multi-deck-evolution.js';
 import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
@@ -23,6 +24,71 @@ function getSelectedEventAnalysisTypes() {
   return Array.from(eventAnalysisSection?.querySelectorAll('.event-type-filter.active') || []).map(button =>
     button.dataset.type.toLowerCase()
   );
+}
+
+let activeMultiEventScatterMode = 'deck';
+
+function syncMultiEventScatterChartVisibility() {
+  const deckPanel = document.getElementById('multiEventDeckScatterPanel');
+  const playerPanel = document.getElementById('multiEventPlayerScatterPanel');
+  const toggleButtons = document.querySelectorAll('#multiEventScatterModeButtons .multi-event-scatter-mode-button');
+  const showDeck = activeMultiEventScatterMode !== 'player';
+
+  if (deckPanel) {
+    deckPanel.hidden = !showDeck;
+    deckPanel.classList.toggle('active', showDeck);
+  }
+
+  if (playerPanel) {
+    playerPanel.hidden = showDeck;
+    playerPanel.classList.toggle('active', !showDeck);
+  }
+
+  toggleButtons.forEach(button => {
+    button.classList.toggle('active', button.dataset.multiEventScatterMode === activeMultiEventScatterMode);
+  });
+}
+
+function resizeActiveMultiEventScatterChart() {
+  window.requestAnimationFrame(() => {
+    if (activeMultiEventScatterMode === 'player') {
+      multiPlayerWinRateChart?.resize();
+      multiPlayerWinRateChart?.update('none');
+      return;
+    }
+
+    metaWinRateChart?.resize();
+    metaWinRateChart?.update('none');
+  });
+}
+
+function setupMultiEventScatterModeToggle() {
+  const toggleContainer = document.getElementById('multiEventScatterModeButtons');
+  if (!toggleContainer) {
+    return;
+  }
+
+  if (toggleContainer.dataset.listenerAdded !== 'true') {
+    toggleContainer.addEventListener('click', event => {
+      const button = event.target.closest('.multi-event-scatter-mode-button');
+      if (!button) {
+        return;
+      }
+
+      const nextMode = button.dataset.multiEventScatterMode === 'player' ? 'player' : 'deck';
+      if (nextMode === activeMultiEventScatterMode) {
+        return;
+      }
+
+      activeMultiEventScatterMode = nextMode;
+      syncMultiEventScatterChartVisibility();
+      resizeActiveMultiEventScatterChart();
+    });
+
+    toggleContainer.dataset.listenerAdded = 'true';
+  }
+
+  syncMultiEventScatterChartVisibility();
 }
 
 const singleEventStatCardIds = [
@@ -1595,6 +1661,7 @@ export function initEventAnalysis() {
   setupSingleEventDrilldownModal();
   setupSingleEventDrilldownCards();
   setupMultiEventDrilldownCards();
+  setupMultiEventScatterModeToggle();
   updateSingleEventDrilldownCardStates();
   updateMultiEventDrilldownCardStates();
   console.log('Event Analysis initialized');
@@ -1640,12 +1707,15 @@ export function updateMultiEventAnalysis(data) {
     closeSingleEventDrilldown();
   }
 
+  setupMultiEventScatterModeToggle();
   currentMultiEventRows = Array.isArray(data) ? [...data] : [];
   updateMultiMetaWinRateChart();
+  updateMultiEventFunnelChart();
   updateMultiPlayerWinRateChart();
-  updateDeckEvolutionChart();
   updateMultiEventTables(data, 'aggregate');
   populateMultiEventStats(data);
+  syncMultiEventScatterChartVisibility();
+  resizeActiveMultiEventScatterChart();
 }
 
 // Resolves current single-event filters and refreshes Single Event Analysis.
@@ -1849,7 +1919,6 @@ export function updateMultiEventTables(filteredData, tableType = 'aggregate', de
   const startDate = document.getElementById("startDateSelect")?.value;
   const endDate = document.getElementById("endDateSelect")?.value;
   if (!tableElement || !tableHead || !tableBody || !tableTitle) {
-    console.error("Multi event table elements not found!");
     return;
   }
 

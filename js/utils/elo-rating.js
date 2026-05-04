@@ -1,6 +1,8 @@
 // Implements the Elo engine for player and player-deck leaderboards. The code
 // rates only clean, resolved matches and can reset ratings per calendar year or
 // run one continuous all-time ladder.
+import { getPlayerIdentityKey, normalizePlayerName } from './player-names.js';
+
 const DEFAULT_STARTING_RATING = 1500;
 const DEFAULT_K_FACTOR = 16;
 const DEFAULT_RESET_BY_YEAR = true;
@@ -45,19 +47,19 @@ function getMatchDate(match) {
 }
 
 function getPlayerAKey(match) {
-  return normalizeText(match?.player_a_key || match?.player_key);
+  return getPlayerIdentityKey(match?.player_a_key || match?.player_key || match?.player_a || match?.player);
 }
 
 function getPlayerAName(match) {
-  return normalizeText(match?.player_a || match?.player);
+  return normalizePlayerName(match?.player_a || match?.player);
 }
 
 function getPlayerBKey(match) {
-  return normalizeText(match?.player_b_key || match?.opponent_key);
+  return getPlayerIdentityKey(match?.player_b_key || match?.opponent_key || match?.player_b || match?.opponent);
 }
 
 function getPlayerBName(match) {
-  return normalizeText(match?.player_b || match?.opponent);
+  return normalizePlayerName(match?.player_b || match?.opponent);
 }
 
 function getDeckAName(match) {
@@ -76,9 +78,9 @@ function getEntityDetails(match, side = 'a', entityMode = DEFAULT_ENTITY_MODE) {
 
   if (isPlayerDeckMode(entityMode)) {
     // Deck-scoped Elo treats "player on deck" as a separate ladder identity from
-    // the same player on a different deck.
+    // the same player on a different deck, but names should remain player-only.
     const entityKey = basePlayerKey && deck ? `${basePlayerKey}:::${deck}` : '';
-    const displayName = [basePlayerName || basePlayerKey, deck].filter(Boolean).join(' - ');
+    const displayName = basePlayerName || basePlayerKey;
 
     return {
       entityKey,
