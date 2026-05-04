@@ -194,15 +194,48 @@ function formatDeckEventLabel(eventName) {
   return formatEventName(eventName) || String(eventName || '').trim() || '--';
 }
 
-function formatDeckEventWinRateText(eventData) {
+function getRecordParts(source = {}) {
+  const wins = Number(source?.wins ?? source?.Wins) || 0;
+  const losses = Number(source?.losses ?? source?.Losses) || 0;
+  const draws = Number(source?.draws ?? source?.Draws ?? source?.Draw) || 0;
+  return { wins, losses, draws };
+}
+
+function formatScoreText(source = {}) {
+  const { wins, losses, draws } = getRecordParts(source);
+  return draws > 0 ? `${wins}-${losses}-${draws}` : `${wins}-${losses}`;
+}
+
+function formatDeckEventWinRateValue(eventData, formatter) {
   if (!eventData || !Number.isFinite(eventData.winRate)) {
     return '--';
   }
 
   const eventLabel = formatDeckEventLabel(eventData.event);
+  const valueText = formatter(eventData.winRate);
   return eventLabel && eventLabel !== '--'
-    ? `${eventData.winRate.toFixed(2)}% (${eventLabel})`
-    : `${eventData.winRate.toFixed(2)}%`;
+    ? `${valueText} (${eventLabel})`
+    : valueText;
+}
+
+function formatDeckEventWinRateText(eventData) {
+  return formatDeckEventWinRateValue(eventData, winRate => `${winRate.toFixed(2)}%`);
+}
+
+function formatDeckEventWinRateRawText(eventData) {
+  return formatDeckEventWinRateValue(eventData, winRate => (winRate / 100).toFixed(4));
+}
+
+function formatDeckEventScoreText(eventData) {
+  if (!eventData) {
+    return '--';
+  }
+
+  const eventLabel = formatDeckEventLabel(eventData.event);
+  const scoreText = formatScoreText(eventData);
+  return eventLabel && eventLabel !== '--'
+    ? `${scoreText} (${eventLabel})`
+    : scoreText;
 }
 
 // Player Stat Cards
@@ -330,33 +363,46 @@ export function calculatePlayerStats(data, options = {}) {
   // per-deck aggregates with different tie-breaking and display rules.
   const deckStats = filteredDataNoShow.reduce((acc, row) => {
     if (!acc[row.Deck]) {
-      acc[row.Deck] = { wins: 0, losses: 0, events: new Set(), eventWinRates: [] };
+      acc[row.Deck] = { wins: 0, losses: 0, draws: 0, events: new Set(), eventWinRates: [] };
     }
     acc[row.Deck].wins += row.Wins || 0;
     acc[row.Deck].losses += row.Losses || 0;
+    acc[row.Deck].draws += Number(row.Draws ?? row.Draw) || 0;
     acc[row.Deck].events.add(row.Event);
-    const winRate = (row.Wins + row.Losses) > 0 ? (row.Wins / (row.Wins + row.Losses)) * 100 : 0;
-    acc[row.Deck].eventWinRates.push({ winRate, event: row.Event });
+    const draws = Number(row.Draws ?? row.Draw) || 0;
+    const totalMatches = (row.Wins || 0) + (row.Losses || 0) + draws;
+    const winRate = totalMatches > 0 ? ((row.Wins || 0) / totalMatches) * 100 : 0;
+    acc[row.Deck].eventWinRates.push({
+      winRate,
+      event: row.Event,
+      wins: Number(row.Wins) || 0,
+      losses: Number(row.Losses) || 0,
+      draws
+    });
     return acc;
   }, {});
 
   const deckPerformance = Object.entries(deckStats).map(([deck, stats]) => {
-    const overallWinRate = (stats.wins + stats.losses) > 0 ? (stats.wins / (stats.wins + stats.losses)) * 100 : 0;
+    const totalMatches = stats.wins + stats.losses + (stats.draws || 0);
+    const overallWinRate = totalMatches > 0 ? (stats.wins / totalMatches) * 100 : 0;
     const validWinRates = stats.eventWinRates.filter(e => e.winRate !== null && !isNaN(e.winRate));
     const bestEvent = validWinRates.length > 0 
       ? validWinRates.reduce((best, curr) => curr.winRate > best.winRate ? curr : best)
-      : { winRate: 0, event: "--" };
+      : { winRate: 0, event: "--", wins: 0, losses: 0, draws: 0 };
     const worstEvent = validWinRates.length > 0 
       ? validWinRates.reduce((worst, curr) => curr.winRate < worst.winRate ? curr : worst)
-      : { winRate: 0, event: "--" };
+      : { winRate: 0, event: "--", wins: 0, losses: 0, draws: 0 };
     return {
       deck,
       eventCount: stats.events.size,
       wins: stats.wins,
       losses: stats.losses,
+      draws: stats.draws || 0,
       overallWinRate,
       bestEventData: { winRate: bestEvent.winRate, event: bestEvent.event },
-      worstEventData: { winRate: worstEvent.winRate, event: worstEvent.event }
+      bestEventRecord: { winRate: bestEvent.winRate, event: bestEvent.event, wins: bestEvent.wins, losses: bestEvent.losses, draws: bestEvent.draws },
+      worstEventData: { winRate: worstEvent.winRate, event: worstEvent.event },
+      worstEventRecord: { winRate: worstEvent.winRate, event: worstEvent.event, wins: worstEvent.wins, losses: worstEvent.losses, draws: worstEvent.draws }
     };
   });
 
@@ -387,10 +433,13 @@ export function calculatePlayerStats(data, options = {}) {
       title: 'Deck Stats',
       name: deck.deck,
       events: String(deck.eventCount || 0),
-      record: `${Number(deck.wins || 0)}-${Number(deck.losses || 0)}`,
-      winRate: `${Number(deck.overallWinRate || 0).toFixed(2)}%`,
-      bestWinRate: formatDeckEventWinRateText(deck.bestEventData),
-      worstWinRate: formatDeckEventWinRateText(deck.worstEventData)
+      record: formatScoreText(deck),
+      overallWinRateRaw: `${formatScoreText(deck)}`,
+      overallWinRatePercent: `${Number(deck.overallWinRate || 0).toFixed(2)}%`,
+      bestWinRateRaw: `${formatDeckEventScoreText(deck.bestEventRecord)}`,
+      bestWinRatePercent: `${formatDeckEventWinRateText(deck.bestEventData)}`,
+      worstWinRateRaw: `${formatDeckEventScoreText(deck.worstEventRecord)}`,
+      worstWinRatePercent: `${formatDeckEventWinRateText(deck.worstEventData)}`
     }));
 
   // Deck Titles and Data

@@ -299,17 +299,33 @@ function renderPlayerDeckStatsCards(deckStatsCards = []) {
       data-player-deck-stats-deck="${escapeHtml(card.name || '')}"
     >
       <div class="stat-title">${escapeHtml(card.title || 'Deck Stats')}</div>
+      <div class="stat-value">${escapeHtml(card.name || '--')}</div>
       <div class="stat-details">
-        <div><span class="label">Deck:</span> <span class="value">${escapeHtml(card.name || '--')}</span></div>
         <div><span class="label">Events:</span> <span class="value">${escapeHtml(card.events || '--')}</span></div>
         <div><span class="label">Match Record:</span> <span class="value">${escapeHtml(card.record || '--')}</span></div>
-        <div><span class="label">Overall Win Rate:</span> <span class="value">${escapeHtml(card.winRate || '--')}</span></div>
-        <div><span class="label">Best Win Rate:</span> <span class="value">${escapeHtml(card.bestWinRate || '--')}</span></div>
-        <div><span class="label">Worst Win Rate:</span> <span class="value">${escapeHtml(card.worstWinRate || '--')}</span></div>
+        <div><span class="label">Overall Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.overallWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.overallWinRatePercent || '--')}">${escapeHtml(card.overallWinRateRaw || '--')}</span></div>
+        <div><span class="label">Current Elo:</span> <span class="value">${escapeHtml(card.currentElo || '--')}</span></div>
+        <div><span class="label">Peak Elo:</span> <span class="value">${escapeHtml(card.peakElo || '--')}</span></div>
+        <div><span class="label">Best Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.bestWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.bestWinRatePercent || '--')}">${escapeHtml(card.bestWinRateRaw || '--')}</span></div>
+        <div><span class="label">Worst Win Rate:</span> <span class="value player-deck-stats-hover-percent" data-raw-value="${escapeHtml(card.worstWinRateRaw || '--')}" data-percent-value="${escapeHtml(card.worstWinRatePercent || '--')}">${escapeHtml(card.worstWinRateRaw || '--')}</span></div>
       </div>
       <div class="stat-icon">🃏</div>
     </div>
   `).join('');
+}
+
+function setPlayerDeckStatsCardHoverState(card, isHovering) {
+  if (!card) {
+    return;
+  }
+
+  card.querySelectorAll('.player-deck-stats-hover-percent').forEach(field => {
+    field.classList.toggle('player-deck-stats-hover-percent-active', isHovering);
+    const nextValue = isHovering
+      ? String(field.dataset.percentValue || '').trim()
+      : String(field.dataset.rawValue || '').trim();
+    field.textContent = nextValue || '--';
+  });
 }
 
 function exportPlayerRawTableCsv() {
@@ -2916,6 +2932,24 @@ function setupPlayerDeckStatsCardInteractions() {
     openFromTarget(event.target);
   });
 
+  root.addEventListener('mouseover', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setPlayerDeckStatsCardHoverState(card, true);
+  });
+
+  root.addEventListener('mouseout', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.contains(event.relatedTarget)) {
+      return;
+    }
+
+    setPlayerDeckStatsCardHoverState(card, false);
+  });
+
   root.addEventListener('keydown', event => {
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
@@ -2928,6 +2962,20 @@ function setupPlayerDeckStatsCardInteractions() {
 
     event.preventDefault();
     openPlayerDeckStatsDrilldown(card.dataset.playerDeckStatsDeck || '');
+  });
+
+  root.addEventListener('focusin', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (card) {
+      setPlayerDeckStatsCardHoverState(card, true);
+    }
+  });
+
+  root.addEventListener('focusout', event => {
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (card && !card.contains(event.relatedTarget)) {
+      setPlayerDeckStatsCardHoverState(card, false);
+    }
   });
 
   root.dataset.drilldownBound = 'true';
@@ -3497,9 +3545,26 @@ export function populatePlayerAnalysisRawData(data, eloInsights = currentPlayerE
 export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights) {
   console.log("populatePlayerStats called with data:", data);
   const resolvedSelectedDeck = renderPlayerEloDeckFilter(eloInsights);
-  const stats = calculatePlayerStats(data, {
+  const baseStats = calculatePlayerStats(data, {
     selectedTopFinishDeck: resolvedSelectedDeck
   });
+  const deckEloMap = new Map(
+    (Array.isArray(eloInsights?.deckGroups) ? eloInsights.deckGroups : []).map(group => [
+      String(group?.deck || '').trim(),
+      group
+    ])
+  );
+  const stats = {
+    ...baseStats,
+    deckStatsCards: (Array.isArray(baseStats.deckStatsCards) ? baseStats.deckStatsCards : []).map(card => {
+      const deckElo = deckEloMap.get(String(card?.name || '').trim());
+      return {
+        ...card,
+        currentElo: Number.isFinite(Number(deckElo?.latestElo)) ? formatEloRating(deckElo.latestElo) : '--',
+        peakElo: Number.isFinite(Number(deckElo?.peakElo)) ? formatEloRating(deckElo.peakElo) : '--'
+      };
+    })
+  };
   const selectedPlayerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'No Player Selected';
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';

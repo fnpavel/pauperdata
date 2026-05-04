@@ -3010,6 +3010,10 @@ button.leaderboard-deck-result-card {
   font-size: 0.78rem;
 }
 
+.player-deck-stats-hover-percent-active {
+  color: #5aa9e6 !important;
+}
+
 .top-conversion-header {
   text-align: center;
   position: relative;
