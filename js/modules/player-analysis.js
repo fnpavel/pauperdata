@@ -138,6 +138,7 @@ const PLAYER_SIDEBAR_DRILLDOWN_CONFIG = {};
 // state without repeatedly querying the DOM.
 let currentPlayerAnalysisRows = [];
 let activePlayerDrilldownCategory = '';
+let activePlayerDeckStatsDrilldownDeck = '';
 let currentPlayerEloInsights = createEmptyPlayerEloInsights();
 let playerAnalyticsRequestId = 0;
 let activePlayerPrimaryChartView = 'win-rate';
@@ -291,7 +292,12 @@ function renderPlayerDeckStatsCards(deckStatsCards = []) {
   }
 
   root.innerHTML = deckStatsCards.map((card, index) => `
-    <div class="stat-card combined player-deck-stats-card" id="playerDeckStatsCard${index}" data-player-deck-stats-card="${index}">
+    <div
+      class="stat-card combined player-deck-stats-card"
+      id="playerDeckStatsCard${index}"
+      data-player-deck-stats-card="${index}"
+      data-player-deck-stats-deck="${escapeHtml(card.name || '')}"
+    >
       <div class="stat-title">${escapeHtml(card.title || 'Deck Stats')}</div>
       <div class="stat-details">
         <div><span class="label">Deck:</span> <span class="value">${escapeHtml(card.name || '--')}</span></div>
@@ -856,6 +862,15 @@ function sortDeckGroupsByOverallWinRate(groups = []) {
 
     return a.deck.localeCompare(b.deck);
   });
+}
+
+function getPlayerDeckStatsDrilldownGroup(deckName = '', data = currentPlayerAnalysisRows) {
+  const normalizedDeckName = String(deckName || '').trim();
+  if (!normalizedDeckName) {
+    return null;
+  }
+
+  return buildPlayerDeckGroups(data).find(group => String(group?.deck || '').trim() === normalizedDeckName) || null;
 }
 
 function getPlayerSummaryDrilldownItems(categoryKey, data = currentPlayerAnalysisRows) {
@@ -2421,6 +2436,24 @@ function updatePlayerSidebarDrilldownCardStates(data = currentPlayerAnalysisRows
   });
 }
 
+function updatePlayerDeckStatsCardStates(data = currentPlayerAnalysisRows) {
+  const cards = document.querySelectorAll('.player-deck-stats-card[data-player-deck-stats-deck]');
+  cards.forEach(card => {
+    const deckName = String(card.dataset.playerDeckStatsDeck || '').trim();
+    const group = getPlayerDeckStatsDrilldownGroup(deckName, data);
+    const isDisabled = !group || !Array.isArray(group.rows) || group.rows.length === 0;
+
+    card.classList.add('drilldown-card');
+    card.classList.toggle('drilldown-disabled', isDisabled);
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-disabled', isDisabled ? 'true' : 'false');
+    card.tabIndex = isDisabled ? -1 : 0;
+    card.title = isDisabled
+      ? 'No deck data in the current Player Analysis filters.'
+      : `Open deck stats details for ${deckName}`;
+  });
+}
+
 function renderPlayerRankDrilldown(categoryKey) {
   // Renders the modal for finish-band stat cards.
   const elements = getPlayerRankDrilldownElements();
@@ -2497,8 +2530,31 @@ function renderPlayerSidebarDrilldown(categoryKey) {
     : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
 }
 
+function renderPlayerDeckStatsDrilldown(deckName = activePlayerDeckStatsDrilldownDeck) {
+  const elements = getPlayerRankDrilldownElements();
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content) {
+    return;
+  }
+
+  const playerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'Selected Player';
+  const group = getPlayerDeckStatsDrilldownGroup(deckName);
+
+  elements.title.textContent = `${playerLabel} - Deck Stats`;
+  elements.subtitle.textContent = group
+    ? `${group.deck} | ${group.eventCount} event${group.eventCount === 1 ? '' : 's'} in the current Player Analysis filters`
+    : 'No deck data in the current Player Analysis filters.';
+  elements.content.innerHTML = group
+    ? buildPlayerDeckGroupDrilldownHtml([group])
+    : '<div class="player-rank-drilldown-empty">No deck data in the current Player Analysis filters.</div>';
+}
+
 function renderPlayerDrilldown(categoryKey) {
   // Delegates modal body rendering based on which Player Analysis card opened it.
+  if (categoryKey === 'deckStatsCard') {
+    renderPlayerDeckStatsDrilldown();
+    return;
+  }
+
   if (PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) {
     renderPlayerRankDrilldown(categoryKey);
     return;
@@ -2518,6 +2574,7 @@ function openPlayerDrilldown(categoryKey) {
   // Opens any Player Analysis stat-card drilldown.
   const elements = getPlayerRankDrilldownElements();
   const hasConfig =
+    categoryKey === 'deckStatsCard' ||
     Boolean(PLAYER_RANK_DRILLDOWN_CONFIG[categoryKey]) ||
     Boolean(PLAYER_SUMMARY_DRILLDOWN_CONFIG[categoryKey]) ||
     Boolean(PLAYER_SIDEBAR_DRILLDOWN_CONFIG[categoryKey]);
@@ -2631,6 +2688,21 @@ function closePlayerRankDrilldown() {
   overlay.hidden = true;
   activePlayerDrilldownCategory = '';
   document.body.classList.remove('modal-open');
+}
+
+function openPlayerDeckStatsDrilldown(deckName = '') {
+  const normalizedDeckName = String(deckName || '').trim();
+  if (!normalizedDeckName) {
+    return;
+  }
+
+  const group = getPlayerDeckStatsDrilldownGroup(normalizedDeckName);
+  if (!group) {
+    return;
+  }
+
+  activePlayerDeckStatsDrilldownDeck = normalizedDeckName;
+  openPlayerDrilldown('deckStatsCard');
 }
 
 function openPlayerEventInAnalysis(eventName = '', eventType = '') {
@@ -2823,6 +2895,42 @@ function setupPlayerSidebarDrilldownCards() {
       }
     });
   });
+}
+
+function setupPlayerDeckStatsCardInteractions() {
+  const root = getPlayerDeckStatsCardsRoot();
+  if (!root || root.dataset.drilldownBound === 'true') {
+    return;
+  }
+
+  const openFromTarget = target => {
+    const card = target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.getAttribute('aria-disabled') === 'true') {
+      return;
+    }
+
+    openPlayerDeckStatsDrilldown(card.dataset.playerDeckStatsDeck || '');
+  };
+
+  root.addEventListener('click', event => {
+    openFromTarget(event.target);
+  });
+
+  root.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') {
+      return;
+    }
+
+    const card = event.target.closest('.player-deck-stats-card[data-player-deck-stats-deck]');
+    if (!card || card.getAttribute('aria-disabled') === 'true') {
+      return;
+    }
+
+    event.preventDefault();
+    openPlayerDeckStatsDrilldown(card.dataset.playerDeckStatsDeck || '');
+  });
+
+  root.dataset.drilldownBound = 'true';
 }
 
 function initPlayerSearchDropdown() {
@@ -3090,6 +3198,7 @@ export function initPlayerAnalysis() {
   setupPlayerEventHistoryInteractions();
   setupPlayerSummaryDrilldownCards();
   setupPlayerSidebarDrilldownCards();
+  setupPlayerDeckStatsCardInteractions();
   setupPlayerEloDeckFilterListeners();
   document.addEventListener('playerDeckFilterChanged', event => {
     const requestedDeck = String(event?.detail?.selectedDeck || '').trim();
@@ -3103,6 +3212,7 @@ export function initPlayerAnalysis() {
   updatePlayerRankDrilldownCardStates();
   updatePlayerSummaryDrilldownCardStates();
   updatePlayerSidebarDrilldownCardStates();
+  updatePlayerDeckStatsCardStates();
   console.log('Player Analysis initialized');
 }
 
@@ -3484,6 +3594,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updatePlayerRankCardHoverNotes(data);
   updatePlayerSummaryDrilldownCardStates(data);
   updatePlayerSidebarDrilldownCardStates(data);
+  updatePlayerDeckStatsCardStates(data);
 
   if (activePlayerDrilldownCategory) {
     renderPlayerDrilldown(activePlayerDrilldownCategory);
