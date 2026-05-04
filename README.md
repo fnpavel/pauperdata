@@ -18,6 +18,7 @@ This repository includes both a front-end dashboard and a full data pipeline tha
 - `css/` - layout, components, charts, tables, and responsive styles
 - `js/` - chart logic, filters, analytics modules, and utilities
 - `data/` - local dataset files
+- `pipeline/` - files to keep the dashboard data in sync with Kirblinxy open Google Drive workbook archive
 
 ## Running Locally
 
