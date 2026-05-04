@@ -118,32 +118,74 @@ jobs:
           set -euxo pipefail
           npx --prefix pipeline playwright install --with-deps chromium
 
-      - name: Validate automation settings
+      - name: Validate secrets and write config
         env:
           GOOGLE_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}
           GOOGLE_DRIVE_FOLDER_ID: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          PIPELINE_REMOTE: origin
+          PIPELINE_REMOTE: ${{ vars.PIPELINE_REMOTE || 'origin' }}
           PIPELINE_DATA_BRANCH: data-updates
-          PIPELINE_MAIN_BRANCH: ${{ github.event.repository.default_branch }}
+          PIPELINE_MAIN_BRANCH: main
         shell: bash
         run: |
           set -euxo pipefail
           python - <<'PY'
-          from pipeline.pipeline_env import load_automation_settings
+          import json
+          import os
+          from pathlib import Path
 
-          settings = load_automation_settings()
-          print("Automation settings validated successfully.")
-          print(f"drive_folder_id present: {bool(settings.drive_folder_id)}")
-          print(f"remote: {settings.remote}")
-          print(f"data_branch: {settings.data_branch}")
-          print(f"main_branch: {settings.main_branch}")
+          project_root = Path.cwd()
+          pipeline_root = project_root / "pipeline"
+          credentials_path = (pipeline_root / "github-actions-service-account.json").resolve()
+          config_path = (pipeline_root / "pipeline-config.json").resolve()
+
+          raw_service_account = str(os.environ.get("GOOGLE_SERVICE_ACCOUNT_JSON", "")).strip()
+          if not raw_service_account:
+              raise SystemExit("Missing required secret: GOOGLE_SERVICE_ACCOUNT_JSON")
+
+          drive_folder_id = str(os.environ.get("GOOGLE_DRIVE_FOLDER_ID", "")).strip()
+          if not drive_folder_id:
+              raise SystemExit("Missing required secret: GOOGLE_DRIVE_FOLDER_ID")
+
+          try:
+              service_account_payload = json.loads(raw_service_account)
+          except json.JSONDecodeError as exc:
+              raise SystemExit("GOOGLE_SERVICE_ACCOUNT_JSON is not valid JSON.") from exc
+
+          if not isinstance(service_account_payload, dict):
+              raise SystemExit("GOOGLE_SERVICE_ACCOUNT_JSON must decode to a JSON object.")
+
+          remote = str(os.environ.get("PIPELINE_REMOTE", "origin")).strip() or "origin"
+          data_branch = str(os.environ.get("PIPELINE_DATA_BRANCH", "data-updates")).strip() or "data-updates"
+          main_branch = str(os.environ.get("PIPELINE_MAIN_BRANCH", "main")).strip() or "main"
+
+          pipeline_root.mkdir(parents=True, exist_ok=True)
+          credentials_path.write_text(
+              json.dumps(service_account_payload, indent=2) + "\n",
+              encoding="utf-8",
+          )
+
+          config_payload = {
+              "credentials_path": str(credentials_path),
+              "drive_folder_id": drive_folder_id,
+              "remote": remote,
+              "data_branch": data_branch,
+              "main_branch": main_branch,
+              "commit_message_template": "chore(data): import {workbook_name}",
+              "ignored_drive_folders": ["Combined Matchups"],
+          }
+          config_path.write_text(
+              json.dumps(config_payload, indent=2) + "\n",
+              encoding="utf-8",
+          )
+
+          print("service account parsed successfully")
           print(
-              "service_account client_email present: "
-              f"{bool(str(settings.service_account_payload.get('client_email', '')).strip())}"
+              "service account client_email present: "
+              f"{bool(str(service_account_payload.get('client_email', '')).strip())}"
           )
           print(
-              "service_account project_id present: "
-              f"{bool(str(settings.service_account_payload.get('project_id', '')).strip())}"
+              "service account project_id present: "
+              f"{bool(str(service_account_payload.get('project_id', '')).strip())}"
           )
           PY
 
