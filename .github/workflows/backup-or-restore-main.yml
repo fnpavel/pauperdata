@@ -1,0 +1,49 @@
+name: Backup or restore main
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: Choose whether to create backup-main from main or restore main from backup-main
+        required: true
+        type: choice
+        options:
+          - backup
+          - restore
+        default: backup
+
+permissions:
+  contents: write
+
+jobs:
+  backup-or-restore:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Backup or restore main
+        shell: bash
+        run: |
+          set -euxo pipefail
+
+          git fetch origin main backup-main
+
+          if [ "${{ inputs.action }}" = "backup" ]; then
+            MAIN_COMMIT="$(git rev-parse origin/main)"
+            git branch -f backup-main "$MAIN_COMMIT"
+            git push origin backup-main --force-with-lease
+            echo "backup-main now points to $MAIN_COMMIT"
+          elif [ "${{ inputs.action }}" = "restore" ]; then
+            BACKUP_COMMIT="$(git rev-parse origin/backup-main)"
+            git branch -f main "$BACKUP_COMMIT"
+            git push origin main --force-with-lease
+            echo "main restored to backup-main commit $BACKUP_COMMIT"
+          else
+            echo "Invalid action: ${{ inputs.action }}"
+            exit 1
+          fi
