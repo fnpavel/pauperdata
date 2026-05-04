@@ -351,23 +351,23 @@
     <div id="playerAnalysisSection" style="display: none;">
       <div class="stats-container" id="playerStats">
         <div class="player-stats-row player-stats-row-primary">
+          <div class="stat-card" id="playerFocusedPlayerCard">
+            <div class="stat-title">Focused Player</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">Select a player to inspect</div>
+            <div class="stat-icon">👤</div>
+          </div>
           <div class="stat-card" id="playerEventsCard">
             <div class="stat-title">Total Events</div>
             <div class="stat-value">Loading...</div>
             <div class="stat-change"></div>
             <div class="stat-icon">📅</div>
           </div>
-          <div class="stat-card" id="playerPeriodEloCard">
-            <div class="stat-title">Elo for the Period</div>
+          <div class="stat-card" id="playerOverallWinRateCard">
+            <div class="stat-title">Overall Win Rate</div>
             <div class="stat-value">--</div>
-            <div class="stat-change">No rated Elo matches yet</div>
-            <div class="stat-icon">🏆</div>
-          </div>
-          <div class="stat-card" id="playerPeakEloCard">
-            <div class="stat-title">Peak Elo</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change">No Elo peak yet</div>
-            <div class="stat-icon">⚡</div>
+            <div class="stat-change"></div>
+            <div class="stat-icon">📊</div>
           </div>
           <div class="stat-card" id="playerUniqueDecksCard">
             <div class="stat-title">Unique Decks Used</div>
@@ -514,56 +514,19 @@
         </div>
 
         <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
-          <div class="stat-card combined" id="playerWinRateStatsCard">
-            <div class="stat-title">Overall Win Rate</div>
-            <div class="stat-details" id="playerWinRateStatsDetails">
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerOverallWinRate">--</span></div>
-            </div>
-            <div class="stat-icon">📊</div>
+          <div class="stat-card" id="playerPeriodEloCard">
+            <div class="stat-title">Elo for the Period</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">No rated Elo matches yet</div>
+            <div class="stat-icon">🏆</div>
           </div>
-          <div class="stat-card combined" id="playerMostPlayedDeckCard" style="display: none;">
-            <div class="stat-title">Most Played Deck</div>
-            <div class="stat-details" id="playerMostPlayedDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerMostPlayedDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerMostPlayedDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerMostPlayedDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerMostPlayedDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerMostPlayedDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">⬆️</div>
+          <div class="stat-card" id="playerPeakEloCard">
+            <div class="stat-title">Peak Elo</div>
+            <div class="stat-value">--</div>
+            <div class="stat-change">No Elo peak yet</div>
+            <div class="stat-icon">⚡</div>
           </div>
-          <div class="stat-card combined" id="playerLeastPlayedDeckCard" style="display: none;">
-            <div class="stat-title">Least Played Deck</div>
-            <div class="stat-details" id="playerLeastPlayedDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerLeastPlayedDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerLeastPlayedDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerLeastPlayedDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerLeastPlayedDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">⬇️</div>
-          </div>
-          <div class="stat-card combined" id="playerBestDeckCard">
-            <div class="stat-title">Best Performing Deck</div>
-            <div class="stat-details" id="playerBestDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerBestDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerBestDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerBestDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerBestDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerBestDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">👑</div>
-          </div>
-          <div class="stat-card combined" id="playerWorstDeckCard">
-            <div class="stat-title">Worst Performing Deck</div>
-            <div class="stat-details" id="playerWorstDeckDetails">
-              <div><span class="label">Deck:</span> <span class="value" id="playerWorstDeckName">--</span></div>
-              <div><span class="label">Events:</span> <span class="value" id="playerWorstDeckEvents">0</span></div>
-              <div><span class="label">Overall Win Rate:</span> <span class="value" id="playerWorstDeckWinRate">0%</span></div>
-              <div><span class="label">Best Win Rate:</span> <span class="value" id="playerWorstDeckBestWinRate">-- (Event: --)</span></div>
-              <div><span class="label">Worst Win Rate:</span> <span class="value" id="playerWorstDeckWorstWinRate">-- (Event: --)</span></div>
-            </div>
-            <div class="stat-icon">☠️</div>
+          <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
         </div>
       </div>
     </div>

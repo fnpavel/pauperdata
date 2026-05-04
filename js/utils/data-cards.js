@@ -245,6 +245,7 @@ export function calculatePlayerStats(data, options = {}) {
         top33PlusPercent: "--"
       },
       overallWinRate: "--",
+      overallRecord: "--",
       bestDeckTitle: "Best Performing Deck",
       bestDecks: { name: "--", events: "--", winRate: "--", bestWinRate: "--", worstWinRate: "--" },
       worstDeckTitle: "Worst Performing Deck",
@@ -253,6 +254,7 @@ export function calculatePlayerStats(data, options = {}) {
       mostPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" },
       leastPlayedDeckTitle: "Least Played Deck",
       leastPlayedDecksData: { name: "--", events: "0", winRate: "0%", bestWinRate: "--", worstWinRate: "--" },
+      deckStatsCards: [],
       eventHistoryHTML: "<div>No events selected</div>"
     };
   }
@@ -370,6 +372,26 @@ export function calculatePlayerStats(data, options = {}) {
   const totalWins = filteredDataNoShow.reduce((sum, row) => sum + (row.Wins || 0), 0);
   const totalLosses = filteredDataNoShow.reduce((sum, row) => sum + (row.Losses || 0), 0);
   const overallWinRate = (totalWins + totalLosses) > 0 ? `${((totalWins / (totalWins + totalLosses)) * 100).toFixed(2)}%` : "--";
+  const overallRecord = (totalWins + totalLosses) > 0 ? `${totalWins}-${totalLosses} record` : '--';
+
+  const deckStatsCards = deckPerformance
+    .sort((a, b) => {
+      const eventCountComparison = Number(b.eventCount || 0) - Number(a.eventCount || 0);
+      if (eventCountComparison !== 0) {
+        return eventCountComparison;
+      }
+
+      return String(a.deck || '').localeCompare(String(b.deck || ''));
+    })
+    .map(deck => ({
+      title: 'Deck Stats',
+      name: deck.deck,
+      events: String(deck.eventCount || 0),
+      record: `${Number(deck.wins || 0)}-${Number(deck.losses || 0)}`,
+      winRate: `${Number(deck.overallWinRate || 0).toFixed(2)}%`,
+      bestWinRate: formatDeckEventWinRateText(deck.bestEventData),
+      worstWinRate: formatDeckEventWinRateText(deck.worstEventData)
+    }));
 
   // Deck Titles and Data
   const bestDeckTitle = bestDecks.length > 1 ? "Best (Tied) Performing Deck" : "Best Performing Deck";
@@ -426,6 +448,7 @@ export function calculatePlayerStats(data, options = {}) {
     leastPlayedCount,
     rankStats: rankStatsFormatted,
     overallWinRate,
+    overallRecord,
     bestDeckTitle,
     bestDecks: bestDecksData,
     worstDeckTitle,
@@ -434,6 +457,7 @@ export function calculatePlayerStats(data, options = {}) {
     mostPlayedDecksData,
     leastPlayedDeckTitle,
     leastPlayedDecksData,
+    deckStatsCards,
     eventHistoryHTML
   };
 }

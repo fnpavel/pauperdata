@@ -2990,6 +2990,12 @@ button.leaderboard-deck-result-card {
   align-self: start;
 }
 
+.deck-stats-sidebar-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
 .deck-stats-sidebar .stat-title {
   font-size: 0.78rem;
 }
