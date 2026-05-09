@@ -87,6 +87,8 @@
   --badge-border: 1px solid rgba(217, 164, 65, 0.24);
   --badge-text: var(--accent);
   --chart-padding: var(--spacing-xl);
+  --chart-primary-min-height: 31rem;
+  --chart-secondary-min-height: 22rem;
   --chart-padding-compact: var(--spacing-md);
   --chart-header-gap: var(--spacing-md);
   --section-gap: var(--spacing-xl);

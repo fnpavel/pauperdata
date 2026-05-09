@@ -512,26 +512,31 @@
             <div class="player-analysis-section-body dashboard-grid player-core-analytics-grid">
               <div class="player-core-analytics-main dashboard-panel dashboard-panel-hero">
                 <div id="playerCharts">
-                  <div class="chart-container player-primary-chart dashboard-panel-body">
-                    <div class="player-chart-header">
-                      <h2 class="chart-title">Player Analytics</h2>
-                      <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                  <div class="chart-container player-primary-chart dashboard-chart-panel dashboard-panel-body">
+                    <div class="player-chart-header dashboard-chart-header">
+                      <div class="dashboard-chart-heading">
+                        <h2 class="chart-title dashboard-chart-title">Player Performance Trend</h2>
+                        <p class="dashboard-chart-subtitle">Track win rate movement and deck-level performance across the selected player window.</p>
+                      </div>
+                      <div class="bubble-menu player-chart-view-toggle dashboard-chart-controls" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
                         <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
                         <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
                       </div>
                     </div>
-                    <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
-                    <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-                    <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-                    <div id="playerWinRatePanel" class="player-chart-panel">
-                      <div id="playerWinRateChartLoading">Loading...</div>
-                      <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
-                      <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
-                    </div>
-                    <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
-                      <div id="playerDeckPerformanceChartLoading">Loading...</div>
-                      <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
-                      <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                    <div class="dashboard-chart-body player-primary-chart-body">
+                      <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
+                      <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                      <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                      <div id="playerWinRatePanel" class="player-chart-panel">
+                        <div id="playerWinRateChartLoading">Loading...</div>
+                        <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
+                        <div id="playerEventDetails" class="player-chart-details"> </div>
+                      </div>
+                      <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
+                        <div id="playerDeckPerformanceChartLoading">Loading...</div>
+                        <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
+                        <div id="playerDeckPerformanceDetails" class="player-chart-details"> </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -541,7 +546,14 @@
                 <div class="dashboard-panel dashboard-panel-side player-filter-summary-panel">
                   <div id="playerEloDeckFilter" class="player-chart-filter-panel dashboard-panel-body"></div>
                 </div>
-                <div class="stats-container dashboard-panel dashboard-panel-side" id="playerStats">
+              </div>
+
+              <div class="stats-container dashboard-panel dashboard-panel-full player-overview-stats-panel" id="playerStats">
+                <div class="player-analysis-subsection-header player-overview-stats-header">
+                  <h3>Performance Snapshot</h3>
+                  <p>Key summary metrics and finish-band context for the current player scope.</p>
+                </div>
+                <div class="player-overview-stats-grid">
                   <div class="player-stats-row player-stats-row-primary">
                     <div class="stat-card" id="playerEventsCard">
                       <div class="stat-title">Total Events</div>

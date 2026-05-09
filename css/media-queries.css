@@ -2,6 +2,11 @@
    to very small phones so later blocks can tighten earlier decisions. */
 /* Tablet: keep side filters visible while reducing chart/card density. */
 @media (max-width: 1024px) {
+  :root {
+    --chart-primary-min-height: 26rem;
+    --chart-secondary-min-height: 20rem;
+  }
+
   .dashboard-grid {
     grid-template-columns: repeat(6, minmax(0, 1fr));
   }
@@ -94,6 +99,17 @@
     min-height: 74px;
   }
 
+  .dashboard-chart-header,
+  .player-chart-header {
+    flex-direction: column;
+  }
+
+  .dashboard-chart-controls,
+  .player-chart-view-toggle {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
   canvas {
     max-height: 350px;
   }
@@ -182,8 +198,9 @@
   }
 
   .player-primary-chart-canvas {
-    height: 500px !important;
-    max-height: 500px !important;
+    height: auto !important;
+    min-height: 22rem;
+    max-height: 28rem !important;
   }
 
   canvas {
@@ -214,6 +231,11 @@
 
 /* Phones: reduce spacing and typography so dense controls remain tappable. */
 @media (max-width: 600px) {
+  :root {
+    --chart-primary-min-height: 22rem;
+    --chart-secondary-min-height: 18rem;
+  }
+
   .header-content {
     flex-direction: column;
     align-items: center;
@@ -413,6 +435,11 @@
 
   canvas {
     max-height: 250px;
+  }
+
+  .player-primary-chart-canvas {
+    min-height: 18rem;
+    max-height: 20rem !important;
   }
 }
 

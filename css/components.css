@@ -2658,19 +2658,38 @@ button.leaderboard-deck-result-card {
 }
 
 .player-core-analytics-grid > .player-core-analytics-main {
-  grid-column: span 8;
+  grid-column: span 9;
 }
 
 .player-core-analytics-grid > .player-core-analytics-sidebar {
-  grid-column: span 4;
+  grid-column: span 3;
 }
 
 .player-core-analytics-main .player-primary-chart {
-  min-height: 100%;
+  min-height: var(--chart-primary-min-height);
 }
 
 .player-filter-summary-panel .player-chart-filter-panel {
   width: 100%;
+}
+
+.player-filter-summary-panel {
+  align-self: start;
+}
+
+.player-overview-stats-panel {
+  padding: var(--panel-padding);
+  gap: var(--spacing-md);
+}
+
+.player-overview-stats-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.player-overview-stats-header {
+  margin-bottom: 0;
 }
 
 .player-exploration-grid > .dashboard-panel-side {
@@ -3102,22 +3121,22 @@ button.leaderboard-deck-result-card {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-md);
   max-width: none;
   position: relative;
 }
 
 #playerStats.stats-container .player-stats-row {
   display: grid;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-sm);
 }
 
 #playerStats.stats-container .player-stats-row-primary {
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
 }
 
 #playerStats.stats-container .player-stats-row-secondary {
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 #playerStats.stats-container .stat-card {
