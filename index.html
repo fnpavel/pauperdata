@@ -406,218 +406,503 @@
         </div>
       </section>
 
-      <section class="player-analysis-section player-core-analytics-layer">
+      <section class="player-analysis-section player-exploration-layer player-analysis-controls-layer">
         <div class="player-analysis-section-header">
           <div>
-            <h2>Core Analytics</h2>
-            <p>The main chart, Elo context, and performance summary cards for the selected player.</p>
+            <h2>Player Analysis</h2>
+            <p>Switch between overview, matchup intelligence, deck details, and event history without leaving the focused player view.</p>
           </div>
         </div>
-        <div class="player-analysis-section-body dashboard-grid player-core-analytics-grid">
-          <div class="player-core-analytics-main dashboard-panel dashboard-panel-hero">
-            <div id="playerCharts">
-              <div class="chart-container player-primary-chart dashboard-panel-body">
-                <div class="player-chart-header">
-                  <h2 class="chart-title">Player Analytics</h2>
-                  <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
-                    <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
-                    <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+        <div class="player-analysis-section-body dashboard-grid">
+          <div class="dashboard-panel dashboard-panel-full">
+            <div class="filters dashboard-panel-body player-analysis-master-controls">
+              <div class="player-analysis-master-controls-grid">
+                <div class="filter-section">
+                  <h4>Event Type</h4>
+                  <div class="bubble-menu">
+                    <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+                    <button class="bubble-button event-type-filter" data-type="online">Online</button>
                   </div>
                 </div>
-                <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
-                <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-                <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-                <div id="playerWinRatePanel" class="player-chart-panel">
-                  <div id="playerWinRateChartLoading">Loading...</div>
-                  <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
-                  <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                <div class="filter-section">
+                  <h4>Player</h4>
+                  <div class="bubble-menu">
+                    <select id="playerFilterMenu" class="player-filter-select">
+                      <!-- Populated dynamically -->
+                    </select>
+                  </div>
                 </div>
-                <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
-                  <div id="playerDeckPerformanceChartLoading">Loading...</div>
-                  <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
-                  <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                <div class="filter-section">
+                  <h4>Quick Views</h4>
+                  <div id="playerQuickViewButtons" class="quick-view-control"></div>
                 </div>
               </div>
             </div>
           </div>
-
-          <div class="player-core-analytics-sidebar dashboard-metric-stack dashboard-panel-side">
-            <div class="dashboard-panel dashboard-panel-side player-filter-summary-panel">
-              <div id="playerEloDeckFilter" class="player-chart-filter-panel dashboard-panel-body"></div>
+          <div class="dashboard-panel dashboard-panel-full player-analysis-tab-navigation-shell">
+            <div class="player-analysis-tab-navigation" role="tablist" aria-label="Player Analysis sections">
+              <button
+                type="button"
+                class="bubble-button player-analysis-tab active"
+                id="playerAnalysisTabOverview"
+                data-player-analysis-tab="overview"
+                role="tab"
+                aria-selected="true"
+                aria-controls="playerAnalysisOverviewPanel"
+                tabindex="0"
+              >
+                Overview
+              </button>
+              <button
+                type="button"
+                class="bubble-button player-analysis-tab"
+                id="playerAnalysisTabMatchups"
+                data-player-analysis-tab="matchups"
+                role="tab"
+                aria-selected="false"
+                aria-controls="playerAnalysisMatchupsPanel"
+                tabindex="-1"
+              >
+                Matchups
+              </button>
+              <button
+                type="button"
+                class="bubble-button player-analysis-tab"
+                id="playerAnalysisTabDecks"
+                data-player-analysis-tab="decks"
+                role="tab"
+                aria-selected="false"
+                aria-controls="playerAnalysisDecksPanel"
+                tabindex="-1"
+              >
+                Decks
+              </button>
+              <button
+                type="button"
+                class="bubble-button player-analysis-tab"
+                id="playerAnalysisTabEventHistory"
+                data-player-analysis-tab="event-history"
+                role="tab"
+                aria-selected="false"
+                aria-controls="playerAnalysisEventHistoryPanel"
+                tabindex="-1"
+              >
+                Event History
+              </button>
             </div>
-            <div class="stats-container dashboard-panel dashboard-panel-side" id="playerStats">
-              <div class="player-stats-row player-stats-row-primary">
-                <div class="stat-card" id="playerEventsCard">
+          </div>
+        </div>
+      </section>
+
+      <div class="player-analysis-tab-panels">
+        <div
+          id="playerAnalysisOverviewPanel"
+          class="player-analysis-tab-panel"
+          data-player-analysis-panel="overview"
+          role="tabpanel"
+          aria-labelledby="playerAnalysisTabOverview"
+        >
+          <section class="player-analysis-section player-core-analytics-layer">
+            <div class="player-analysis-section-header">
+              <div>
+                <h2>Overview</h2>
+                <p>The high-level player summary, Elo context, and primary performance analytics.</p>
+              </div>
+            </div>
+            <div class="player-analysis-section-body dashboard-grid player-core-analytics-grid">
+              <div class="player-core-analytics-main dashboard-panel dashboard-panel-hero">
+                <div id="playerCharts">
+                  <div class="chart-container player-primary-chart dashboard-panel-body">
+                    <div class="player-chart-header">
+                      <h2 class="chart-title">Player Analytics</h2>
+                      <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                        <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
+                        <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+                      </div>
+                    </div>
+                    <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
+                    <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                    <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                    <div id="playerWinRatePanel" class="player-chart-panel">
+                      <div id="playerWinRateChartLoading">Loading...</div>
+                      <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
+                      <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                    </div>
+                    <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
+                      <div id="playerDeckPerformanceChartLoading">Loading...</div>
+                      <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
+                      <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="player-core-analytics-sidebar dashboard-metric-stack dashboard-panel-side">
+                <div class="dashboard-panel dashboard-panel-side player-filter-summary-panel">
+                  <div id="playerEloDeckFilter" class="player-chart-filter-panel dashboard-panel-body"></div>
+                </div>
+                <div class="stats-container dashboard-panel dashboard-panel-side" id="playerStats">
+                  <div class="player-stats-row player-stats-row-primary">
+                    <div class="stat-card" id="playerEventsCard">
+                      <div class="stat-title">Total Events</div>
+                      <div class="stat-value">Loading...</div>
+                      <div class="stat-change"></div>
+                      <div class="stat-icon">📅</div>
+                    </div>
+                    <div class="stat-card" id="playerOverallWinRateCard">
+                      <div class="stat-title">Overall Win Rate</div>
+                      <div class="stat-value">--</div>
+                      <div class="stat-change"></div>
+                      <div class="stat-icon">📊</div>
+                    </div>
+                    <div class="stat-card" id="playerUniqueDecksCard">
+                      <div class="stat-title">Unique Decks Used</div>
+                      <div class="stat-value">Loading...</div>
+                      <div class="stat-icon">🃏</div>
+                    </div>
+                    <div class="stat-card" id="playerMostPlayedCard">
+                      <div class="stat-title">Most Played Deck</div>
+                      <div class="stat-value">Loading...</div>
+                      <div class="stat-change"></div>
+                      <div class="stat-icon">⬆️</div>
+                    </div>
+                    <div class="stat-card" id="playerLeastPlayedCard">
+                      <div class="stat-title">Least Played Deck</div>
+                      <div class="stat-value">Loading...</div>
+                      <div class="stat-change"></div>
+                      <div class="stat-icon">⬇️</div>
+                    </div>
+                    <div class="stat-card" id="playerPeriodEloCard">
+                      <div class="stat-title">Elo for the Period</div>
+                      <div class="stat-value">--</div>
+                      <div class="stat-change">No rated Elo matches yet</div>
+                      <div class="stat-icon">🏆</div>
+                    </div>
+                    <div class="stat-card" id="playerPeakEloCard">
+                      <div class="stat-title">Peak Elo</div>
+                      <div class="stat-value">--</div>
+                      <div class="stat-change">No Elo peak yet</div>
+                      <div class="stat-icon">⚡</div>
+                    </div>
+                  </div>
+                  <div class="player-stats-row player-stats-row-secondary">
+                    <div class="stat-card" id="playerTop1Card">
+                      <div class="stat-title">Number of Top 1</div>
+                      <div class="stat-value" id="playerTop1">0</div>
+                      <div class="stat-change" id="playerTop1%"></div>
+                      <div class="stat-icon">🥇</div>
+                    </div>
+                    <div class="stat-card" id="playerTop1_8Card">
+                      <div class="stat-title">Number of Top 2-8</div>
+                      <div class="stat-value" id="playerTop1_8">0</div>
+                      <div class="stat-change" id="playerTop1_8%"></div>
+                      <div class="stat-icon">🏆</div>
+                    </div>
+                    <div class="stat-card" id="playerTop9_16Card">
+                      <div class="stat-title">Number of Top 9-16</div>
+                      <div class="stat-value" id="playerTop9_16">0</div>
+                      <div class="stat-change" id="playerTop9_16%"></div>
+                      <div class="stat-icon">🏅</div>
+                    </div>
+                    <div class="stat-card" id="playerTop17_32Card">
+                      <div class="stat-title">Number of Top 17-32</div>
+                      <div class="stat-value" id="playerTop17_32">0</div>
+                      <div class="stat-change" id="playerTop17_32%"></div>
+                      <div class="stat-icon">🏅</div>
+                    </div>
+                    <div class="stat-card" id="playerTop33PlusCard">
+                      <div class="stat-title">Number of Top 33+</div>
+                      <div class="stat-value" id="playerTop33Plus">0</div>
+                      <div class="stat-change" id="playerTop33Plus%"></div>
+                      <div class="stat-icon">🏅</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div
+          id="playerAnalysisMatchupsPanel"
+          class="player-analysis-tab-panel"
+          data-player-analysis-panel="matchups"
+          role="tabpanel"
+          aria-labelledby="playerAnalysisTabMatchups"
+          hidden
+        >
+          <div id="matchupSection" class="player-analysis-section player-matchup-intelligence-layer" style="display: none;">
+            <div class="player-analysis-section-header player-matchup-intelligence-header">
+              <div>
+                <h2>Matchup Intelligence</h2>
+                <p>Head-to-head player matchup views, deck-vs-opponent tables, and opposing deck breakdowns.</p>
+              </div>
+            </div>
+            <div class="player-analysis-section-body dashboard-grid player-matchup-intelligence-body">
+              <div class="stats-container dashboard-panel dashboard-panel-full" id="matchupStats">
+                <div class="stat-card" id="matchupTotalEventsCard">
                   <div class="stat-title">Total Events</div>
-                  <div class="stat-value">Loading...</div>
-                  <div class="stat-change"></div>
+                  <div class="stat-value" id="matchupTotalEvents">0</div>
+                  <div class="stat-change" id="matchupTotalEventsDetails">Select a set window</div>
                   <div class="stat-icon">📅</div>
                 </div>
-                <div class="stat-card" id="playerOverallWinRateCard">
-                  <div class="stat-title">Overall Win Rate</div>
-                  <div class="stat-value">--</div>
-                  <div class="stat-change"></div>
-                  <div class="stat-icon">📊</div>
+                <div class="stat-card" id="matchupTotalMatchesCard">
+                  <div class="stat-title">Resolved Matches</div>
+                  <div class="stat-value" id="matchupTotalMatches">0</div>
+                  <div class="stat-change" id="matchupTotalMatchesDetails">Deck vs deck results</div>
+                  <div class="stat-icon">⚔️</div>
                 </div>
-                <div class="stat-card" id="playerUniqueDecksCard">
-                  <div class="stat-title">Unique Decks Used</div>
-                  <div class="stat-value">Loading...</div>
+                <div class="stat-card" id="matchupTrackedDecksCard">
+                  <div class="stat-title" id="matchupTrackedEntitiesLabel">Decks In Range</div>
+                  <div class="stat-value" id="matchupTrackedDecks">0</div>
+                  <div class="stat-change" id="matchupTrackedDecksDetails">No decks available</div>
                   <div class="stat-icon">🃏</div>
                 </div>
-                <div class="stat-card" id="playerMostPlayedCard">
-                  <div class="stat-title">Most Played Deck</div>
-                  <div class="stat-value">Loading...</div>
-                  <div class="stat-change"></div>
-                  <div class="stat-icon">⬆️</div>
+                <div class="stat-card" id="matchupMostPlayedDeckCard">
+                  <div class="stat-title" id="matchupMostSampledEntityLabel">Most Sampled Deck</div>
+                  <div class="stat-value" id="matchupMostPlayedDeckName">--</div>
+                  <div class="stat-change" id="matchupMostPlayedDeckDetails">No deck samples</div>
+                  <div class="stat-icon">📈</div>
                 </div>
-                <div class="stat-card" id="playerLeastPlayedCard">
-                  <div class="stat-title">Least Played Deck</div>
-                  <div class="stat-value">Loading...</div>
-                  <div class="stat-change"></div>
-                  <div class="stat-icon">⬇️</div>
+                <div class="stat-card" id="matchupMostCommonPairCard">
+                  <div class="stat-title">Most Common Pairing</div>
+                  <div class="stat-value" id="matchupMostCommonPairName">--</div>
+                  <div class="stat-change" id="matchupMostCommonPairDetails">No sampled pairings</div>
+                  <div class="stat-icon">🔄</div>
                 </div>
-                <div class="stat-card" id="playerPeriodEloCard">
-                  <div class="stat-title">Elo for the Period</div>
-                  <div class="stat-value">--</div>
-                  <div class="stat-change">No rated Elo matches yet</div>
-                  <div class="stat-icon">🏆</div>
+                <div class="stat-card" id="matchupResultsHeroCard">
+                  <div class="stat-title">Least Common Pairing</div>
+                  <div class="stat-value" id="matchupResultsHeroName">--</div>
+                  <div class="stat-change" id="matchupResultsHeroDetails">No sampled pairings</div>
+                  <div class="stat-icon">🪶</div>
                 </div>
-                <div class="stat-card" id="playerPeakEloCard">
-                  <div class="stat-title">Peak Elo</div>
-                  <div class="stat-value">--</div>
-                  <div class="stat-change">No Elo peak yet</div>
-                  <div class="stat-icon">⚡</div>
-                </div>
-              </div>
-              <div class="player-stats-row player-stats-row-secondary">
-                <div class="stat-card" id="playerTop1Card">
-                  <div class="stat-title">Number of Top 1</div>
-                  <div class="stat-value" id="playerTop1">0</div>
-                  <div class="stat-change" id="playerTop1%"></div>
+                <div class="stat-card" id="matchupResultsVillainCard">
+                  <div class="stat-title">Best Win Rate</div>
+                  <div class="stat-value" id="matchupResultsVillainName">--</div>
+                  <div class="stat-change" id="matchupResultsVillainDetails">No deck samples</div>
                   <div class="stat-icon">🥇</div>
                 </div>
-                <div class="stat-card" id="playerTop1_8Card">
-                  <div class="stat-title">Number of Top 2-8</div>
-                  <div class="stat-value" id="playerTop1_8">0</div>
-                  <div class="stat-change" id="playerTop1_8%"></div>
-                  <div class="stat-icon">🏆</div>
-                </div>
-                <div class="stat-card" id="playerTop9_16Card">
-                  <div class="stat-title">Number of Top 9-16</div>
-                  <div class="stat-value" id="playerTop9_16">0</div>
-                  <div class="stat-change" id="playerTop9_16%"></div>
-                  <div class="stat-icon">🏅</div>
-                </div>
-                <div class="stat-card" id="playerTop17_32Card">
-                  <div class="stat-title">Number of Top 17-32</div>
-                  <div class="stat-value" id="playerTop17_32">0</div>
-                  <div class="stat-change" id="playerTop17_32%"></div>
-                  <div class="stat-icon">🏅</div>
-                </div>
-                <div class="stat-card" id="playerTop33PlusCard">
-                  <div class="stat-title">Number of Top 33+</div>
-                  <div class="stat-value" id="playerTop33Plus">0</div>
-                  <div class="stat-change" id="playerTop33Plus%"></div>
-                  <div class="stat-icon">🏅</div>
-                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </section>
 
-      <section class="player-analysis-section player-exploration-layer">
-        <div class="player-analysis-section-header">
-          <div>
-            <h2>Exploration</h2>
-            <p>Filters, event history, deck summaries, and detailed tables for deeper inspection.</p>
-          </div>
-        </div>
-        <div class="player-analysis-section-body dashboard-grid player-exploration-grid">
-          <div class="dashboard-panel dashboard-panel-side">
-            <div class="filters dashboard-panel-body">
-              <h3>Filter Options</h3>
-              <div class="filter-section">
-                <h4>Event Type</h4>
-                <div class="bubble-menu">
-                  <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
-                  <button class="bubble-button event-type-filter" data-type="online">Online</button>
-                </div>
-              </div>
-              <div class="filter-section">
-                <h4>Player</h4>
-                <div class="bubble-menu">
-                  <select id="playerFilterMenu" class="player-filter-select">
-                    <!-- Populated dynamically -->
-                  </select>
-                </div>
-              </div>
-              <div class="filter-section">
-                <h4>Quick Views</h4>
-                <div id="playerQuickViewButtons" class="quick-view-control"></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-panel dashboard-panel-half player-event-history-panel">
-            <div id="playerSelectionPanels" class="event-calendar-summary-stack dashboard-panel-body" style="display: none;">
-              <div id="playerSelectionSummary" class="event-calendar-summary">
-                <div class="event-calendar-summary-label">Current Events Selected</div>
-                <div class="multi-event-selection-scroll">
-                  <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
-                </div>
-              </div>
-              <div id="playerEventHistoryBox" class="event-calendar-summary">
-                <div class="event-calendar-summary-label">Event History</div>
-                <div class="multi-event-selection-scroll">
-                  <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="dashboard-panel dashboard-panel-half dashboard-table-panel deck-stats-sidebar" id="playerDeckStatsSidebar">
-            <div class="dashboard-panel-body">
-              <div class="player-analysis-subsection-header">
-                <h3>Deck Performance</h3>
-                <p>Deck-specific snapshots and Elo context across the current player scope.</p>
-              </div>
-              <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
-            </div>
-          </div>
-
-          <div class="dashboard-panel dashboard-panel-full dashboard-table-panel">
-            <div class="charts-and-tables">
-              <div class="data-table-container dashboard-panel-body" id="playerRawTableContainer">
-                <div class="leaderboard-table-toolbar">
-                  <h2 class="chart-title" id="playerRawTableTitle">--</h2>
-                  <div class="matchup-table-actions">
-                    <button type="button" class="bubble-button" id="playerRawTableFullscreenButton">Full Screen</button>
-                    <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+              <div class="dashboard matchup-dashboard dashboard-grid dashboard-panel-full" id="matchupDashboard">
+                <div class="filters">
+                  <h3>Filter Options</h3>
+                  <div class="filter-section">
+                    <h4>Event Type</h4>
+                    <div class="bubble-menu">
+                      <button class="bubble-button matchup-event-type-filter" data-type="offline">Offline</button>
+                      <button class="bubble-button matchup-event-type-filter" data-type="online">Online</button>
+                    </div>
+                  </div>
+                  <div class="filter-section" id="matchupPlayerFocusSection" style="display: none;">
+                    <h4>Player Search</h4>
+                    <div class="bubble-menu">
+                      <select id="matchupPlayerFocusSelect">
+                        <option value="">Search for a player</option>
+                      </select>
+                    </div>
+                    <div class="event-calendar-summary-label" id="matchupPlayerFocusStatus">Search for a player to inspect matchup results.</div>
+                  </div>
+                  <div class="filter-section">
+                    <h4>Quick Views</h4>
+                    <div id="matchupQuickViewButtons" class="quick-view-control"></div>
+                  </div>
+                  <div id="matchupSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+                    <div id="matchupSelectionSummary" class="event-calendar-summary">
+                      <div class="event-calendar-summary-label">Current Events Selected</div>
+                      <div class="multi-event-selection-scroll">
+                        <div id="matchupSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+                      </div>
+                    </div>
+                    <div id="matchupSelectionListBox" class="event-calendar-summary">
+                      <div class="event-calendar-summary-label">Selected Event List</div>
+                      <div class="multi-event-selection-scroll">
+                        <div id="matchupSelectionList" class="multi-event-selection-list player-event-history-list">No events selected</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <div class="data-table-scroll player-data-table-scroll">
-                  <table class="data-table" id="playerRawTable">
-                    <thead id="playerRawTableHead">
-                      <tr>
-                        <th>Event (Players)</th>
-                        <th>Position</th>
-                        <th>Deck</th>
-                        <th>Wins</th>
-                        <th>Losses</th>
-                        <th>Win Rate</th>
-                        <th>%Meta, %WR</th>
-                        <th>Winner's Deck (%Meta, %WR)</th>
-                      </tr>
-                    </thead>
-                    <tbody id="playerRawTableBody"></tbody>
-                  </table>
+
+                <div class="charts-and-tables dashboard-grid dashboard-panel-full">
+                  <div class="chart-container dashboard-panel dashboard-panel-full dashboard-panel-hero">
+                    <div class="matchup-chart-header">
+                      <h2 class="chart-title" id="matchupPrimaryTitle">Deck vs Deck Matchup Matrix</h2>
+                    </div>
+                    <div id="matchupDateRangeCalendar" class="range-calendar-container"></div>
+                    <select id="matchupStartDateSelect" hidden aria-hidden="true"></select>
+                    <select id="matchupEndDateSelect" hidden aria-hidden="true"></select>
+                    <div id="matchupMatrixSummary" class="leaderboard-chart-details matchup-matrix-summary">
+                      Choose an event type and a date window to build the deck matchup matrix.
+                    </div>
+                  </div>
+
+                  <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupPrimaryTableContainer">
+                    <div class="matchup-table-header">
+                      <h2 class="chart-title" id="matchupTableTitle">Deck Matchup Matrix</h2>
+                      <div class="matchup-table-actions">
+                        <button type="button" class="bubble-button matchup-fullscreen-button" id="matchupPrimaryFullscreenButton">Full Screen</button>
+                        <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadPrimaryRecordCsv" style="display: none;" disabled>
+                          Download W-L CSV
+                        </button>
+                        <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadPrimaryWinRateCsv" style="display: none;" disabled>
+                          Download WR CSV
+                        </button>
+                      </div>
+                    </div>
+                    <div class="leaderboard-table-helper" id="matchupTableHelper">
+                      Each cell shows the row deck's match win rate against the column deck. Diagonal cells count mirrors.
+                    </div>
+                    <div class="matchup-deck-search-panel" id="matchupDeckSearchPanel" hidden>
+                      <label class="matchup-deck-search-label" for="matchupDeckSearchInput">Jump to deck</label>
+                      <div class="player-search-select matchup-deck-search-select">
+                        <input
+                          type="search"
+                          class="player-search-input"
+                          id="matchupDeckSearchInput"
+                          list="matchupDeckSearchOptions"
+                          placeholder="Search decks in this matrix..."
+                          autocomplete="off"
+                        />
+                      </div>
+                      <datalist id="matchupDeckSearchOptions"></datalist>
+                      <button type="button" class="bubble-button matchup-deck-search-clear" id="matchupDeckSearchClearButton" disabled>Clear</button>
+                      <div class="matchup-deck-search-status" id="matchupDeckSearchStatus" aria-live="polite">
+                        Search a deck to center and highlight its row and column.
+                      </div>
+                    </div>
+                    <div class="data-table-scroll matchup-matrix-scroll">
+                      <table class="data-table matchup-matrix-table" id="matchupMatrixTable">
+                        <thead id="matchupMatrixTableHead"></thead>
+                        <tbody id="matchupMatrixTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupSecondaryTableContainer" style="display: none;">
+                    <div class="matchup-table-header">
+                      <h2 class="chart-title" id="matchupSecondaryTableTitle">Player Deck vs Opposing Decks</h2>
+                      <div class="matchup-table-actions">
+                        <button type="button" class="bubble-button matchup-fullscreen-button" id="matchupSecondaryFullscreenButton">Full Screen</button>
+                        <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadSecondaryRecordCsv" style="display: none;" disabled>
+                          Download W-L CSV
+                        </button>
+                        <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadSecondaryWinRateCsv" style="display: none;" disabled>
+                          Download WR CSV
+                        </button>
+                      </div>
+                    </div>
+                    <div class="leaderboard-table-helper" id="matchupSecondaryTableHelper">
+                      Search for a player to populate the second matchup table.
+                    </div>
+                    <div class="data-table-scroll matchup-matrix-scroll">
+                      <table class="data-table matchup-matrix-table" id="matchupSecondaryMatrixTable">
+                        <thead id="matchupSecondaryMatrixTableHead"></thead>
+                        <tbody id="matchupSecondaryMatrixTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </section>
+
+        <div
+          id="playerAnalysisDecksPanel"
+          class="player-analysis-tab-panel"
+          data-player-analysis-panel="decks"
+          role="tabpanel"
+          aria-labelledby="playerAnalysisTabDecks"
+          hidden
+        >
+          <section class="player-analysis-section player-exploration-layer player-decks-layer">
+            <div class="player-analysis-section-header">
+              <div>
+                <h2>Decks</h2>
+                <p>Deck-specific performance snapshots and deck-focused detail cards for the current player scope.</p>
+              </div>
+            </div>
+            <div class="player-analysis-section-body dashboard-grid">
+              <div class="dashboard-panel dashboard-panel-full dashboard-table-panel deck-stats-sidebar" id="playerDeckStatsSidebar">
+                <div class="dashboard-panel-body">
+                  <div class="player-analysis-subsection-header">
+                    <h3>Deck Performance</h3>
+                    <p>Deck-specific snapshots and Elo context across the current player scope.</p>
+                  </div>
+                  <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div
+          id="playerAnalysisEventHistoryPanel"
+          class="player-analysis-tab-panel"
+          data-player-analysis-panel="event-history"
+          role="tabpanel"
+          aria-labelledby="playerAnalysisTabEventHistory"
+          hidden
+        >
+          <section class="player-analysis-section player-exploration-layer player-event-history-layer">
+            <div class="player-analysis-section-header">
+              <div>
+                <h2>Event History</h2>
+                <p>Selected-event history, raw player rows, and export controls for the current filter scope.</p>
+              </div>
+            </div>
+            <div class="player-analysis-section-body dashboard-grid player-exploration-grid">
+              <div class="dashboard-panel dashboard-panel-full player-event-history-panel">
+                <div id="playerSelectionPanels" class="event-calendar-summary-stack dashboard-panel-body" style="display: none;">
+                  <div id="playerSelectionSummary" class="event-calendar-summary">
+                    <div class="event-calendar-summary-label">Current Events Selected</div>
+                    <div class="multi-event-selection-scroll">
+                      <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+                    </div>
+                  </div>
+                  <div id="playerEventHistoryBox" class="event-calendar-summary">
+                    <div class="event-calendar-summary-label">Event History</div>
+                    <div class="multi-event-selection-scroll">
+                      <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dashboard-panel dashboard-panel-full dashboard-table-panel">
+                <div class="charts-and-tables">
+                  <div class="data-table-container dashboard-panel-body" id="playerRawTableContainer">
+                    <div class="leaderboard-table-toolbar">
+                      <h2 class="chart-title" id="playerRawTableTitle">--</h2>
+                      <div class="matchup-table-actions">
+                        <button type="button" class="bubble-button" id="playerRawTableFullscreenButton">Full Screen</button>
+                        <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+                      </div>
+                    </div>
+                    <div class="data-table-scroll player-data-table-scroll">
+                      <table class="data-table" id="playerRawTable">
+                        <thead id="playerRawTableHead">
+                          <tr>
+                            <th>Event (Players)</th>
+                            <th>Position</th>
+                            <th>Deck</th>
+                            <th>Wins</th>
+                            <th>Losses</th>
+                            <th>Win Rate</th>
+                            <th>%Meta, %WR</th>
+                            <th>Winner's Deck (%Meta, %WR)</th>
+                          </tr>
+                        </thead>
+                        <tbody id="playerRawTableBody"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
     </div>
 
     <div id="multiPlayerAggregateOverlay" class="player-rank-drilldown-overlay" hidden>
@@ -638,207 +923,30 @@
     <div id="playerRankDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
       <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="playerRankDrilldownTitle">
         <div class="player-rank-drilldown-header">
-            <div class="player-rank-drilldown-heading">
-              <h3 id="playerRankDrilldownTitle">Player Finish Details</h3>
-              <p id="playerRankDrilldownSubtitle">Select a finish card to inspect the matching events.</p>
-            </div>
-            <button type="button" class="bubble-button player-rank-drilldown-close" id="playerRankDrilldownClose" aria-label="Close finish details">
-              Close
-            </button>
+          <div class="player-rank-drilldown-heading">
+            <h3 id="playerRankDrilldownTitle">Player Finish Details</h3>
+            <p id="playerRankDrilldownSubtitle">Select a finish card to inspect the matching events.</p>
           </div>
-          <div id="playerRankDrilldownContent" class="player-rank-drilldown-content"></div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="playerRankDrilldownClose" aria-label="Close finish details">
+            Close
+          </button>
         </div>
+        <div id="playerRankDrilldownContent" class="player-rank-drilldown-content"></div>
       </div>
     </div>
 
-    <!-- Matchup Section: reused by deck-vs-deck and player-vs-player top modes. -->
-    <div id="matchupSection" class="player-analysis-section player-matchup-intelligence-layer" style="display: none;">
-      <div class="player-analysis-section-header player-matchup-intelligence-header">
-        <div>
-          <h2>Matchup Intelligence</h2>
-          <p>Head-to-head player matchup views, deck-vs-opponent tables, and opposing deck breakdowns.</p>
-        </div>
-      </div>
-      <div class="player-analysis-section-body dashboard-grid player-matchup-intelligence-body">
-      <div class="stats-container dashboard-panel dashboard-panel-full" id="matchupStats">
-        <div class="stat-card" id="matchupTotalEventsCard">
-          <div class="stat-title">Total Events</div>
-          <div class="stat-value" id="matchupTotalEvents">0</div>
-          <div class="stat-change" id="matchupTotalEventsDetails">Select a set window</div>
-          <div class="stat-icon">📅</div>
-        </div>
-        <div class="stat-card" id="matchupTotalMatchesCard">
-          <div class="stat-title">Resolved Matches</div>
-          <div class="stat-value" id="matchupTotalMatches">0</div>
-          <div class="stat-change" id="matchupTotalMatchesDetails">Deck vs deck results</div>
-          <div class="stat-icon">⚔️</div>
-        </div>
-        <div class="stat-card" id="matchupTrackedDecksCard">
-          <div class="stat-title" id="matchupTrackedEntitiesLabel">Decks In Range</div>
-          <div class="stat-value" id="matchupTrackedDecks">0</div>
-          <div class="stat-change" id="matchupTrackedDecksDetails">No decks available</div>
-          <div class="stat-icon">🃏</div>
-        </div>
-        <div class="stat-card" id="matchupMostPlayedDeckCard">
-          <div class="stat-title" id="matchupMostSampledEntityLabel">Most Sampled Deck</div>
-          <div class="stat-value" id="matchupMostPlayedDeckName">--</div>
-          <div class="stat-change" id="matchupMostPlayedDeckDetails">No deck samples</div>
-          <div class="stat-icon">📈</div>
-        </div>
-        <div class="stat-card" id="matchupMostCommonPairCard">
-          <div class="stat-title">Most Common Pairing</div>
-          <div class="stat-value" id="matchupMostCommonPairName">--</div>
-          <div class="stat-change" id="matchupMostCommonPairDetails">No sampled pairings</div>
-          <div class="stat-icon">🔄</div>
-        </div>
-        <div class="stat-card" id="matchupResultsHeroCard">
-          <div class="stat-title">Least Common Pairing</div>
-          <div class="stat-value" id="matchupResultsHeroName">--</div>
-          <div class="stat-change" id="matchupResultsHeroDetails">No sampled pairings</div>
-          <div class="stat-icon">🪶</div>
-        </div>
-        <div class="stat-card" id="matchupResultsVillainCard">
-          <div class="stat-title">Best Win Rate</div>
-          <div class="stat-value" id="matchupResultsVillainName">--</div>
-          <div class="stat-change" id="matchupResultsVillainDetails">No deck samples</div>
-          <div class="stat-icon">🥇</div>
-        </div>
-      </div>
-
-      <div class="dashboard matchup-dashboard dashboard-grid dashboard-panel-full" id="matchupDashboard">
-        <div class="filters">
-          <h3>Filter Options</h3>
-          <div class="filter-section">
-            <h4>Event Type</h4>
-            <div class="bubble-menu">
-              <button class="bubble-button matchup-event-type-filter" data-type="offline">Offline</button>
-              <button class="bubble-button matchup-event-type-filter" data-type="online">Online</button>
-            </div>
+    <div id="matchupStatDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
+      <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="matchupStatDrilldownTitle">
+        <div class="player-rank-drilldown-header">
+          <div class="player-rank-drilldown-heading">
+            <h3 id="matchupStatDrilldownTitle">Matchup Details</h3>
+            <p id="matchupStatDrilldownSubtitle">Select a matchup stat card to inspect the filtered matrix details.</p>
           </div>
-          <div class="filter-section" id="matchupPlayerFocusSection" style="display: none;">
-            <h4>Player Search</h4>
-            <div class="bubble-menu">
-              <select id="matchupPlayerFocusSelect">
-                <option value="">Search for a player</option>
-              </select>
-            </div>
-            <div class="event-calendar-summary-label" id="matchupPlayerFocusStatus">Search for a player to inspect matchup results.</div>
-          </div>
-          <div class="filter-section">
-            <h4>Quick Views</h4>
-            <div id="matchupQuickViewButtons" class="quick-view-control"></div>
-          </div>
-          <div id="matchupSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
-            <div id="matchupSelectionSummary" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Current Events Selected</div>
-              <div class="multi-event-selection-scroll">
-                <div id="matchupSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
-              </div>
-            </div>
-            <div id="matchupSelectionListBox" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Selected Event List</div>
-              <div class="multi-event-selection-scroll">
-                <div id="matchupSelectionList" class="multi-event-selection-list player-event-history-list">No events selected</div>
-              </div>
-            </div>
-          </div>
+          <button type="button" class="bubble-button player-rank-drilldown-close" id="matchupStatDrilldownClose" aria-label="Close matchup details">
+            Close
+          </button>
         </div>
-
-        <div class="charts-and-tables dashboard-grid dashboard-panel-full">
-          <div class="chart-container dashboard-panel dashboard-panel-full dashboard-panel-hero">
-            <div class="matchup-chart-header">
-              <h2 class="chart-title" id="matchupPrimaryTitle">Deck vs Deck Matchup Matrix</h2>
-            </div>
-            <div id="matchupDateRangeCalendar" class="range-calendar-container"></div>
-            <select id="matchupStartDateSelect" hidden aria-hidden="true"></select>
-            <select id="matchupEndDateSelect" hidden aria-hidden="true"></select>
-            <div id="matchupMatrixSummary" class="leaderboard-chart-details matchup-matrix-summary">
-              Choose an event type and a date window to build the deck matchup matrix.
-            </div>
-          </div>
-
-          <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupPrimaryTableContainer">
-            <div class="matchup-table-header">
-              <h2 class="chart-title" id="matchupTableTitle">Deck Matchup Matrix</h2>
-              <div class="matchup-table-actions">
-                <button type="button" class="bubble-button matchup-fullscreen-button" id="matchupPrimaryFullscreenButton">Full Screen</button>
-                <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadPrimaryRecordCsv" style="display: none;" disabled>
-                  Download W-L CSV
-                </button>
-                <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadPrimaryWinRateCsv" style="display: none;" disabled>
-                  Download WR CSV
-                </button>
-              </div>
-            </div>
-            <div class="leaderboard-table-helper" id="matchupTableHelper">
-              Each cell shows the row deck's match win rate against the column deck. Diagonal cells count mirrors.
-            </div>
-            <div class="matchup-deck-search-panel" id="matchupDeckSearchPanel" hidden>
-              <label class="matchup-deck-search-label" for="matchupDeckSearchInput">Jump to deck</label>
-              <div class="player-search-select matchup-deck-search-select">
-                <input
-                  type="search"
-                  class="player-search-input"
-                  id="matchupDeckSearchInput"
-                  list="matchupDeckSearchOptions"
-                  placeholder="Search decks in this matrix..."
-                  autocomplete="off"
-                />
-              </div>
-              <datalist id="matchupDeckSearchOptions"></datalist>
-              <button type="button" class="bubble-button matchup-deck-search-clear" id="matchupDeckSearchClearButton" disabled>Clear</button>
-              <div class="matchup-deck-search-status" id="matchupDeckSearchStatus" aria-live="polite">
-                Search a deck to center and highlight its row and column.
-              </div>
-            </div>
-            <div class="data-table-scroll matchup-matrix-scroll">
-              <table class="data-table matchup-matrix-table" id="matchupMatrixTable">
-                <thead id="matchupMatrixTableHead"></thead>
-                <tbody id="matchupMatrixTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-
-          <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupSecondaryTableContainer" style="display: none;">
-            <div class="matchup-table-header">
-              <h2 class="chart-title" id="matchupSecondaryTableTitle">Player Deck vs Opposing Decks</h2>
-              <div class="matchup-table-actions">
-                <button type="button" class="bubble-button matchup-fullscreen-button" id="matchupSecondaryFullscreenButton">Full Screen</button>
-                <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadSecondaryRecordCsv" style="display: none;" disabled>
-                  Download W-L CSV
-                </button>
-                <button type="button" class="bubble-button matchup-download-button" id="matchupDownloadSecondaryWinRateCsv" style="display: none;" disabled>
-                  Download WR CSV
-                </button>
-              </div>
-            </div>
-            <div class="leaderboard-table-helper" id="matchupSecondaryTableHelper">
-              Search for a player to populate the second matchup table.
-            </div>
-            <div class="data-table-scroll matchup-matrix-scroll">
-              <table class="data-table matchup-matrix-table" id="matchupSecondaryMatrixTable">
-                <thead id="matchupSecondaryMatrixTableHead"></thead>
-                <tbody id="matchupSecondaryMatrixTableBody"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="matchupStatDrilldownOverlay" class="player-rank-drilldown-overlay" hidden>
-        <div class="player-rank-drilldown-modal" role="dialog" aria-modal="true" aria-labelledby="matchupStatDrilldownTitle">
-          <div class="player-rank-drilldown-header">
-            <div class="player-rank-drilldown-heading">
-              <h3 id="matchupStatDrilldownTitle">Matchup Details</h3>
-              <p id="matchupStatDrilldownSubtitle">Select a matchup stat card to inspect the filtered matrix details.</p>
-            </div>
-            <button type="button" class="bubble-button player-rank-drilldown-close" id="matchupStatDrilldownClose" aria-label="Close matchup details">
-              Close
-            </button>
-          </div>
-          <div id="matchupStatDrilldownContent" class="player-rank-drilldown-content"></div>
-        </div>
-      </div>
+        <div id="matchupStatDrilldownContent" class="player-rank-drilldown-content"></div>
       </div>
     </div>
 

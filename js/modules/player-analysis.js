@@ -143,12 +143,14 @@ let activePlayerDeckStatsDrilldownDeck = '';
 let currentPlayerEloInsights = createEmptyPlayerEloInsights();
 let playerAnalyticsRequestId = 0;
 let activePlayerPrimaryChartView = 'win-rate';
+let activePlayerAnalysisTab = 'overview';
 let currentPlayerRawTableState = {
   tableType: 'event',
   title: 'player-event-data',
   rows: []
 };
 const UNKNOWN_ELO_DECK_NAMES = new Set(['UNKNOWN', 'UNKNOWN DECK', 'UNKNOW']);
+const PLAYER_ANALYSIS_TABS = ['overview', 'matchups', 'decks', 'event-history'];
 
 // Elo widgets derive several related views from the same normalized structure.
 // An explicit empty object keeps the rendering code simple while async data is
@@ -271,6 +273,115 @@ function setupPlayerPrimaryChartToggleListeners() {
 
   root.dataset.listenerAdded = 'true';
   syncPlayerPrimaryChartView();
+}
+
+function getPlayerAnalysisTabButtons() {
+  return Array.from(document.querySelectorAll('[data-player-analysis-tab]'));
+}
+
+function getPlayerAnalysisTabPanel(tabKey) {
+  return document.querySelector(`[data-player-analysis-panel="${tabKey}"]`);
+}
+
+function isPlayerAnalysisTabActive(tabKey) {
+  return activePlayerAnalysisTab === tabKey;
+}
+
+function refreshPlayerAnalysisVisiblePanelLayout(tabKey = activePlayerAnalysisTab) {
+  window.requestAnimationFrame(() => {
+    if (tabKey === 'overview') {
+      syncPlayerPrimaryChartView({ refreshVisibleChart: true });
+    }
+
+    window.dispatchEvent(new Event('resize'));
+  });
+}
+
+function setActivePlayerAnalysisTab(tabKey, { focusButton = false } = {}) {
+  const normalizedTab = PLAYER_ANALYSIS_TABS.includes(tabKey) ? tabKey : 'overview';
+  activePlayerAnalysisTab = normalizedTab;
+
+  getPlayerAnalysisTabButtons().forEach(button => {
+    const buttonTab = String(button.dataset.playerAnalysisTab || '').trim();
+    const isActive = buttonTab === normalizedTab;
+    button.classList.toggle('active', isActive);
+    button.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    button.tabIndex = isActive ? 0 : -1;
+
+    if (isActive && focusButton) {
+      button.focus();
+    }
+  });
+
+  PLAYER_ANALYSIS_TABS.forEach(panelTab => {
+    const panel = getPlayerAnalysisTabPanel(panelTab);
+    if (!panel) {
+      return;
+    }
+
+    const isActive = panelTab === normalizedTab;
+    panel.hidden = !isActive;
+    panel.dataset.active = isActive ? 'true' : 'false';
+  });
+
+  refreshPlayerAnalysisVisiblePanelLayout(normalizedTab);
+}
+
+function movePlayerAnalysisTabFocus(currentTabKey, direction) {
+  const currentIndex = PLAYER_ANALYSIS_TABS.indexOf(currentTabKey);
+  if (currentIndex === -1) {
+    return;
+  }
+
+  const nextIndex = (currentIndex + direction + PLAYER_ANALYSIS_TABS.length) % PLAYER_ANALYSIS_TABS.length;
+  setActivePlayerAnalysisTab(PLAYER_ANALYSIS_TABS[nextIndex], { focusButton: true });
+}
+
+function setupPlayerAnalysisTabs() {
+  const buttons = getPlayerAnalysisTabButtons();
+  if (buttons.length === 0) {
+    return;
+  }
+
+  buttons.forEach(button => {
+    if (button.dataset.listenerAdded === 'true') {
+      return;
+    }
+
+    button.addEventListener('click', () => {
+      setActivePlayerAnalysisTab(button.dataset.playerAnalysisTab || 'overview');
+    });
+
+    button.addEventListener('keydown', event => {
+      const currentTab = String(button.dataset.playerAnalysisTab || '').trim();
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        movePlayerAnalysisTabFocus(currentTab, 1);
+        return;
+      }
+
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        movePlayerAnalysisTabFocus(currentTab, -1);
+        return;
+      }
+
+      if (event.key === 'Home') {
+        event.preventDefault();
+        setActivePlayerAnalysisTab('overview', { focusButton: true });
+        return;
+      }
+
+      if (event.key === 'End') {
+        event.preventDefault();
+        setActivePlayerAnalysisTab('event-history', { focusButton: true });
+      }
+    });
+
+    button.dataset.listenerAdded = 'true';
+  });
+
+  setActivePlayerAnalysisTab(activePlayerAnalysisTab);
 }
 
 function renderPlayerDeckStatsCards(deckStatsCards = []) {
@@ -3253,6 +3364,7 @@ export function initPlayerAnalysis() {
   initPlayerSearchDropdown();
   setupPlayerRawTableFullscreenAction();
   setupPlayerPrimaryChartToggleListeners();
+  setupPlayerAnalysisTabs();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();
@@ -3284,7 +3396,7 @@ export function updatePlayerAnalysis(data, eloInsights = currentPlayerEloInsight
   currentPlayerEloInsights = eloInsights || createEmptyPlayerEloInsights();
   populatePlayerAnalysisRawData(data, currentPlayerEloInsights);
   populatePlayerStats(data, currentPlayerEloInsights);
-  syncPlayerPrimaryChartView({ refreshVisibleChart: true });
+  syncPlayerPrimaryChartView({ refreshVisibleChart: isPlayerAnalysisTabActive('overview') });
 }
 
 // Resolves current player/date/type filters, builds Elo insights, and refreshes

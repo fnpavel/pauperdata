@@ -2401,7 +2401,7 @@ button.leaderboard-deck-result-card {
 }
 
 #matchupSection.matchup-section-embedded {
-  margin-top: 20px;
+  margin-top: 0;
 }
 
 #matchupSection.matchup-section-embedded #matchupStats.stats-container {
@@ -2472,6 +2472,12 @@ button.leaderboard-deck-result-card {
   gap: var(--spacing-md);
 }
 
+.player-analysis-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+
 .player-analysis-section-header {
   display: flex;
   align-items: flex-end;
@@ -2507,6 +2513,58 @@ button.leaderboard-deck-result-card {
   margin: 0;
   color: var(--text-secondary);
   line-height: var(--line-height-body);
+}
+
+.player-analysis-master-controls {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.player-analysis-master-controls-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+  align-items: start;
+}
+
+.player-analysis-tab-navigation-shell {
+  min-width: 0;
+}
+
+.player-analysis-tab-navigation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xs);
+  border-radius: calc(var(--panel-radius) + 2px);
+  border: var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
+}
+
+.player-analysis-tab {
+  min-height: var(--button-height);
+}
+
+.player-analysis-tab[aria-selected="true"] {
+  background: var(--button-bg-active);
+  border-color: var(--button-border-active);
+  color: var(--button-text-active);
+}
+
+.player-analysis-tab-panels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.player-analysis-tab-panel {
+  min-width: 0;
+}
+
+.player-analysis-tab-panel[hidden] {
+  display: none !important;
 }
 
 .player-identity-card {
@@ -2588,7 +2646,7 @@ button.leaderboard-deck-result-card {
 }
 
 .player-core-analytics-sidebar {
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 #playerCharts {
@@ -2621,6 +2679,10 @@ button.leaderboard-deck-result-card {
 
 .player-event-history-panel {
   grid-column: span 4;
+}
+
+.player-event-history-layer .player-event-history-panel {
+  grid-column: 1 / -1;
 }
 
 .player-exploration-grid > .dashboard-table-panel.dashboard-panel-half {
