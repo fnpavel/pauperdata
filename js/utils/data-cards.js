@@ -279,6 +279,8 @@ export function calculatePlayerStats(data, options = {}) {
       },
       overallWinRate: "--",
       overallRecord: "--",
+      selectedDeckWinRate: "--",
+      selectedDeckRecord: "--",
       bestDeckTitle: "Best Performing Deck",
       bestDecks: { name: "--", events: "--", winRate: "--", bestWinRate: "--", worstWinRate: "--" },
       worstDeckTitle: "Worst Performing Deck",
@@ -419,6 +421,18 @@ export function calculatePlayerStats(data, options = {}) {
   const totalLosses = filteredDataNoShow.reduce((sum, row) => sum + (row.Losses || 0), 0);
   const overallWinRate = (totalWins + totalLosses) > 0 ? `${((totalWins / (totalWins + totalLosses)) * 100).toFixed(2)}%` : "--";
   const overallRecord = (totalWins + totalLosses) > 0 ? `${totalWins}-${totalLosses} record` : '--';
+  const selectedDeckPerformance = selectedTopFinishDeck
+    ? deckPerformance.find(deck => String(deck?.deck || '').trim() === selectedTopFinishDeck) || null
+    : null;
+  const selectedDeckTrackedMatches = selectedDeckPerformance
+    ? Number(selectedDeckPerformance.wins || 0) + Number(selectedDeckPerformance.losses || 0) + Number(selectedDeckPerformance.draws || 0)
+    : 0;
+  const selectedDeckWinRate = selectedDeckTrackedMatches > 0
+    ? `${Number(selectedDeckPerformance.overallWinRate || 0).toFixed(2)}%`
+    : '--';
+  const selectedDeckRecord = selectedDeckTrackedMatches > 0
+    ? `${formatScoreText(selectedDeckPerformance)} record`
+    : '--';
 
   const deckStatsCards = deckPerformance
     .sort((a, b) => {
@@ -498,6 +512,8 @@ export function calculatePlayerStats(data, options = {}) {
     rankStats: rankStatsFormatted,
     overallWinRate,
     overallRecord,
+    selectedDeckWinRate,
+    selectedDeckRecord,
     bestDeckTitle,
     bestDecks: bestDecksData,
     worstDeckTitle,

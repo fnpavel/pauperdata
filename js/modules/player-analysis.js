@@ -226,6 +226,21 @@ function getPlayerRawTableContainer() {
   return document.getElementById('playerRawTableContainer');
 }
 
+function triggerPlayerCardAnimationWhenKeyChanges(elementId, animationKey) {
+  const element = document.getElementById(elementId);
+  if (!element) {
+    return;
+  }
+
+  const normalizedKey = String(animationKey ?? '');
+  if (element.dataset.playerAnimationKey === normalizedKey) {
+    return;
+  }
+
+  element.dataset.playerAnimationKey = normalizedKey;
+  triggerUpdateAnimation(elementId);
+}
+
 function getPlayerDeckStatsCardsRoot() {
   return document.getElementById('playerDeckStatsCards');
 }
@@ -3703,6 +3718,9 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
     })
   };
   const selectedPlayerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'No Player Selected';
+  const selectedPlayerIdentity = String(document.getElementById('playerFilterMenu')?.value || selectedPlayerLabel || '').trim();
+  const playerScopedAnimationKey = selectedPlayerIdentity || '__no_player__';
+  const deckScopedAnimationKey = `${playerScopedAnimationKey}::${resolvedSelectedDeck || '__all_decks__'}`;
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
 
@@ -3735,8 +3753,21 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateQueryElement("playerEventsCard", ".stat-title", stats.eventsTitle);
   updateQueryElement("playerEventsCard", ".stat-value", stats.totalEvents);
   updateQueryElement("playerEventsCard", ".stat-change", stats.eventsDetails);
-  updateQueryElement("playerOverallWinRateCard", ".stat-value", stats.overallWinRate);
-  updateQueryElement("playerOverallWinRateCard", ".stat-change", stats.overallRecord);
+  updateQueryElement(
+    "playerOverallWinRateCard",
+    ".stat-title",
+    resolvedSelectedDeck ? `Win Rate - ${resolvedSelectedDeck}` : 'Win Rate'
+  );
+  updateQueryElement(
+    "playerOverallWinRateCard",
+    ".stat-value",
+    resolvedSelectedDeck ? stats.selectedDeckWinRate : stats.overallWinRate
+  );
+  updateQueryElement(
+    "playerOverallWinRateCard",
+    ".stat-change",
+    resolvedSelectedDeck ? stats.selectedDeckRecord : stats.overallRecord
+  );
   updateQueryElement("playerPeriodEloCard", ".stat-title", eloScopeLabel);
   updateQueryElement("playerPeriodEloCard", ".stat-value", eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--');
   updateQueryElement(
@@ -3769,7 +3800,13 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   renderPlayerPlacementDistribution(stats, resolvedSelectedDeck);
   renderPlayerDeckStatsCards(stats.deckStatsCards);
 
-  playerSidebarCardIds.forEach(triggerUpdateAnimation);
+  triggerPlayerCardAnimationWhenKeyChanges('playerFocusedPlayerCard', playerScopedAnimationKey);
+  triggerPlayerCardAnimationWhenKeyChanges('playerUniqueDecksCard', playerScopedAnimationKey);
+  triggerPlayerCardAnimationWhenKeyChanges('playerMostPlayedCard', playerScopedAnimationKey);
+  triggerPlayerCardAnimationWhenKeyChanges('playerLeastPlayedCard', playerScopedAnimationKey);
+  playerSidebarCardIds.forEach(cardId => {
+    triggerPlayerCardAnimationWhenKeyChanges(cardId, deckScopedAnimationKey);
+  });
   Array.from(document.querySelectorAll('.player-deck-stats-card')).forEach(card => {
     if (card.id) {
       triggerUpdateAnimation(card.id);
