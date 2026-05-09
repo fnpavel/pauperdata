@@ -22,6 +22,10 @@ function normalizeEntityScope(entityMode = 'player') {
     : 'player';
 }
 
+function isPlayerDeckScope(entityMode = 'player') {
+  return normalizeEntityScope(entityMode) === 'player-on-deck';
+}
+
 function getYearFromDate(dateValue = '') {
   return /^\d{4}-\d{2}-\d{2}$/.test(String(dateValue || '').trim())
     ? String(dateValue).slice(0, 4)
@@ -110,7 +114,7 @@ function resolveDateWindowDescriptor(manifest, {
   };
 }
 
-function mapPayloadRow(row = {}, descriptor = null) {
+function mapPayloadRow(row = {}, descriptor = null, entityMode = 'player') {
   const isContinuousMultiYear = descriptor?.type === 'multi-year' && descriptor?.mode === 'continuous';
   const seasonKey = isContinuousMultiYear
     ? 'all-time'
@@ -120,15 +124,31 @@ function mapPayloadRow(row = {}, descriptor = null) {
     );
   const seasonYear = normalizeText(row?.seasonYear)
     || (descriptor?.type === 'seasonal' ? String(descriptor.year || '') : '');
+  const normalizedDeck = normalizeText(row?.deck);
+  const rawPlayerKey = normalizeText(row?.playerKey);
+  const rawBasePlayerKey = normalizeText(row?.basePlayerKey);
+  const rawDisplayName = normalizePlayerName(row?.displayName || row?.basePlayerName || row?.playerKey);
+  const playerDeckScope = isPlayerDeckScope(entityMode);
+  const inferredBasePlayerKey = playerDeckScope && rawPlayerKey.includes(':::')
+    ? rawPlayerKey.split(':::')[0]
+    : rawPlayerKey;
+  const basePlayerKey = getPlayerIdentityKey(rawBasePlayerKey || inferredBasePlayerKey || row?.basePlayerName || row?.displayName);
+  const playerKey = playerDeckScope
+    ? (
+        rawPlayerKey.includes(':::')
+          ? rawPlayerKey
+          : (basePlayerKey && normalizedDeck ? `${basePlayerKey}:::${normalizedDeck}` : '')
+      )
+    : getPlayerIdentityKey(rawPlayerKey || rawBasePlayerKey || row?.displayName || row?.basePlayerName);
 
   return {
     seasonKey,
     seasonYear,
-    playerKey: getPlayerIdentityKey(row?.playerKey || row?.basePlayerKey || row?.displayName || row?.basePlayerName),
-    displayName: normalizePlayerName(row?.displayName || row?.basePlayerName || row?.playerKey),
-    basePlayerKey: getPlayerIdentityKey(row?.basePlayerKey || row?.playerKey || row?.basePlayerName || row?.displayName),
-    basePlayerName: normalizePlayerName(row?.basePlayerName || row?.displayName || row?.playerKey),
-    deck: normalizeText(row?.deck),
+    playerKey,
+    displayName: rawDisplayName,
+    basePlayerKey,
+    basePlayerName: normalizePlayerName(row?.basePlayerName || row?.displayName || basePlayerKey),
+    deck: normalizedDeck,
     rating: Number(row?.rating) || 0,
     matches: Number(row?.matches) || 0,
     wins: Number(row?.wins) || 0,
@@ -201,7 +221,7 @@ export async function loadPrecalculatedRankingsData({
 
     const payload = await response.json();
     const rows = Array.isArray(payload?.rows)
-      ? payload.rows.map(row => mapPayloadRow(row, descriptor))
+      ? payload.rows.map(row => mapPayloadRow(row, descriptor, entityMode))
       : null;
     if (!rows) {
       throw new Error(`Invalid row payload in ${relativePath}`);
