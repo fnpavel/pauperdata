@@ -6,6 +6,11 @@
   --light: #f2e9d5;
   --dark: #08141a;
   --accent: #d9a441;
+  --accent-teal: #167a72;
+  --accent-purple: #6d4aa7;
+  --danger: #c85c5c;
+  --success: #4ca878;
+  --warning: #d9a441;
   --mana-red: #FF4500; /* Red mana */
   --mana-blue: #1E90FF; /* Blue mana */
   --mana-green: #228B22; /* Green mana */
@@ -41,6 +46,50 @@
   --dropdown-border: rgba(120, 145, 154, 0.38);
   --dropdown-item-border: rgba(120, 145, 154, 0.25);
   --link-color: #6fa8ff;
+  --spacing-2xs: 0.25rem;
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.25rem;
+  --spacing-xl: 1.5rem;
+  --spacing-2xl: 2rem;
+  --font-xs: 0.75rem;
+  --font-sm: 0.875rem;
+  --font-md: 1rem;
+  --font-lg: 1.125rem;
+  --font-xl: 1.375rem;
+  --font-hero: 1.9rem;
+  --font-metric: 1.4rem;
+  --font-metric-compact: 1.1rem;
+  --line-height-tight: 1.15;
+  --line-height-body: 1.5;
+  --panel-bg: linear-gradient(160deg, var(--surface-2), var(--surface-1));
+  --panel-bg-hover: linear-gradient(160deg, var(--surface-3), var(--surface-2));
+  --panel-border: 1px solid var(--border-subtle);
+  --panel-radius-sm: 0.75rem;
+  --panel-radius: 1rem;
+  --panel-radius-lg: 1.25rem;
+  --panel-padding-sm: var(--spacing-sm);
+  --panel-padding: var(--spacing-lg);
+  --panel-padding-lg: var(--spacing-xl);
+  --panel-shadow: 0 0.75rem 1.5rem var(--shadow-color);
+  --panel-shadow-hover: 0 1rem 2rem var(--shadow-color);
+  --button-height: 2.5rem;
+  --button-padding-x: var(--spacing-md);
+  --button-radius: 999px;
+  --button-gap: var(--spacing-xs);
+  --badge-padding-y: 0.2rem;
+  --badge-padding-x: 0.625rem;
+  --badge-radius: 999px;
+  --badge-font-size: 0.72rem;
+  --badge-letter-spacing: 0.06em;
+  --badge-bg: rgba(217, 164, 65, 0.16);
+  --badge-border: 1px solid rgba(217, 164, 65, 0.24);
+  --badge-text: var(--accent);
+  --chart-padding: var(--spacing-xl);
+  --chart-padding-compact: var(--spacing-md);
+  --chart-header-gap: var(--spacing-md);
+  --section-gap: var(--spacing-xl);
 }
 
 /* Light mode mirrors the dark-mode token names. Add new colors to both blocks so
@@ -51,6 +100,11 @@ html[data-theme="light"] {
   --light: #19292f;
   --dark: #fffaf1;
   --accent: #ba7f22;
+  --accent-teal: #1e7b74;
+  --accent-purple: #7d5ec2;
+  --danger: #ba5f52;
+  --success: #2f8b63;
+  --warning: #ba7f22;
   --page-bg: #efe7d6;
   --page-pattern-opacity: 0.06;
   --page-pattern-color: #b9ab8e;
@@ -79,6 +133,9 @@ html[data-theme="light"] {
   --dropdown-border: rgba(137, 97, 34, 0.22);
   --dropdown-item-border: rgba(137, 97, 34, 0.16);
   --link-color: #225fd6;
+  --badge-bg: rgba(186, 127, 34, 0.14);
+  --badge-border: 1px solid rgba(186, 127, 34, 0.2);
+  --badge-text: #8d611d;
 }
 
 /* Global reset keeps the static dashboard predictable across browsers. */

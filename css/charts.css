@@ -1,13 +1,13 @@
 /* Shared Chart.js containers, loading states, chart-specific sizing, and
    reusable search/dropdown controls used by chart modules. */
 .chart-container {
-  background-color: var(--secondary);
+  background: var(--panel-bg);
   max-width: 100%;
   width: 100%;
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-bottom: 30px;
+  border-radius: var(--panel-radius);
+  padding: var(--chart-padding);
+  box-shadow: var(--panel-shadow);
+  margin-bottom: var(--spacing-xl);
   position: relative;
   opacity: 0;
   animation: fadeInUp 0.2s ease forwards;
@@ -17,7 +17,7 @@
 
 .chart-container:hover {
   transform: translateY(-2px);
-  background: linear-gradient(145deg, #2c2c40, var(--secondary));
+  background: var(--panel-bg-hover);
 }
 
 .chart-container.updated {
@@ -25,19 +25,19 @@
 }
 
 .player-primary-chart {
-  padding: 26px 24px;
+  padding: calc(var(--chart-padding) + var(--spacing-xs)) var(--chart-padding);
 }
 
 .player-secondary-chart {
-  padding: 16px 18px;
+  padding: var(--chart-padding-compact);
 }
 
 .player-chart-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 16px;
+  gap: var(--chart-header-gap);
+  margin-bottom: var(--chart-header-gap);
 }
 
 .player-chart-header .chart-title {
@@ -46,7 +46,7 @@
 
 .player-chart-view-toggle {
   justify-content: flex-end;
-  gap: 8px;
+  gap: var(--button-gap);
   flex-wrap: wrap;
 }
 
@@ -55,9 +55,9 @@
 }
 
 .chart-title {
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-  color: var(--light);
+  font-size: var(--font-xl);
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-primary);
 }
 
 .chart-container div[id$="Loading"] {
@@ -180,10 +180,10 @@ canvas {
   inset: 52px 0 0;
   display: grid;
   place-items: center;
-  padding: 24px;
+  padding: var(--panel-padding);
   color: var(--chart-text);
   font-family: 'Bitter', serif;
-  font-size: 0.95rem;
+  font-size: var(--font-md);
   text-align: center;
   pointer-events: none;
 }

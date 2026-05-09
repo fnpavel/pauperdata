@@ -1,11 +1,11 @@
 /* Shared table shells, sticky headers/columns, matchup matrices, and leaderboard
    table interactions. */
 .data-table-container {
-  background-color: var(--secondary);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  margin-top: 30px;
+  background: var(--panel-bg);
+  border-radius: var(--panel-radius);
+  padding: var(--panel-padding);
+  box-shadow: var(--panel-shadow);
+  margin-top: var(--spacing-xl);
   opacity: 0;
   animation: fadeInUp 0.2s ease forwards;
   animation-delay: 0.225s;
@@ -15,7 +15,7 @@
   width: 100%;
   overflow-x: auto;
   overflow-y: hidden;
-  border-radius: 8px;
+  border-radius: var(--panel-radius-sm);
   -webkit-overflow-scrolling: touch;
 }
 
@@ -57,12 +57,12 @@
   width: 100%;
   min-width: max-content;
   border-collapse: collapse;
-  margin-top: 15px;
+  margin-top: var(--spacing-md);
 }
 
 .data-table th,
 .data-table td {
-  padding: 12px;
+  padding: var(--spacing-sm);
   text-align: left;
   border-bottom: 1px solid var(--dark);
   transition: background 0.3s ease;
@@ -94,7 +94,7 @@
   right: 5px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 12px;
+  font-size: var(--font-xs);
 }
 
 th.asc .sort-arrow {
@@ -137,17 +137,22 @@ th.desc .sort-arrow {
 }
 
 .table-toggle {
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
 }
 
 .table-toggle-btn {
-  padding: 8px 16px;
-  border-radius: 20px;
+  min-height: var(--button-height);
+  padding: 0 var(--button-padding-x);
+  border-radius: var(--button-radius);
   background-color: var(--dark);
   color: var(--light);
   border: 1px solid #444;
   cursor: pointer;
   transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  font-size: var(--font-sm);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .table-toggle-btn.active {
@@ -163,9 +168,9 @@ th.desc .sort-arrow {
 }
 
 .sort-toggle {
-  margin-bottom: 15px;
+  margin-bottom: var(--spacing-md);
   display: flex;
-  gap: 10px;
+  gap: var(--button-gap);
   justify-content: center;
 }
 

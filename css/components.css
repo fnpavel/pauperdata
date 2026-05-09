@@ -2,14 +2,14 @@
    cards, theme controls, and feature-specific UI chrome. */
 .mode-buttons {
   display: flex;
-  gap: 10px;
+  gap: var(--spacing-sm);
   align-items: center;
 }
 
 .header-utility-stack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
   align-items: stretch;
   min-width: 180px;
 }
@@ -28,13 +28,13 @@ body[data-top-mode="about"] .header-analysis-filter-toggle {
 .analysis-quality-status-chip {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: var(--spacing-sm);
   min-width: 0;
-  padding: 8px 12px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle);
-  background: linear-gradient(145deg, rgba(24, 41, 50, 0.82), rgba(18, 32, 41, 0.9));
-  box-shadow: 0 8px 18px var(--shadow-color);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--panel-radius);
+  border: var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
   transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
 }
 
@@ -56,14 +56,14 @@ body[data-top-mode="about"] .header-analysis-filter-toggle {
 }
 
 .analysis-quality-status-chip-label {
-  font-size: 0.68rem;
+  font-size: var(--font-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .analysis-quality-status-chip-state {
-  font-size: 0.82rem;
+  font-size: var(--font-sm);
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -94,16 +94,21 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .top-mode-button {
-  padding: 8px 16px;
-  border-radius: 20px;
+  min-height: var(--button-height);
+  padding: 0 var(--button-padding-x);
+  border-radius: var(--button-radius);
   background-color: var(--dark);
   color: var(--light);
   border: 1px solid var(--accent);
   cursor: pointer;
   transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  font-size: 1rem;
+  font-size: var(--font-md);
   position: relative;
   overflow: hidden;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .top-mode-button[data-top-mode="leaderboard"] {
@@ -145,10 +150,10 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 
 /* Filter panels are shared by Event, Player, Matchup, and Leaderboard modes. */
 .filters {
-  background-color: var(--secondary);
-  border-radius: 10px;
-  padding: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: var(--panel-bg);
+  border-radius: var(--panel-radius);
+  padding: var(--panel-padding);
+  box-shadow: var(--panel-shadow);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -158,14 +163,14 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .filters h3 {
-  font-size: 1.3rem;
-  margin-bottom: 15px;
-  padding-bottom: 10px;
+  font-size: var(--font-xl);
+  margin-bottom: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
   border-bottom: 2px solid var(--primary);
 }
 
 .filter-section {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
 .filter-section.hidden {
@@ -173,27 +178,28 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .filter-section h4 {
-  margin-bottom: 2px;
+  margin-bottom: var(--spacing-2xs);
   color: var(--accent);
+  font-size: var(--font-sm);
 }
 
 .filter-section h5 {
   margin-bottom: 20 px;
-  font-size: 0.8rem;
+  font-size: var(--font-sm);
   color: var(--accent);
 }
 
 .bubble-menu {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: var(--button-gap);
 }
 
 /* Quick-view controls group all-period/year/set-window preset chips. */
 .quick-view-control {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
 }
 
 .quick-view-divider {
@@ -264,14 +270,19 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .bubble-button {
-  padding: 8px 16px;
-  border-radius: 20px;
+  min-height: var(--button-height);
+  padding: 0 var(--button-padding-x);
+  border-radius: var(--button-radius);
   background-color: var(--dark);
   color: var(--light);
   border: 1px solid #444;
   cursor: pointer;
   transition: all 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-  font-size: 1rem;
+  font-size: var(--font-md);
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .bubble-button.active {
@@ -306,8 +317,8 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .bubble-menu select {
-  padding: 5px;
-  border-radius: 5px;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--panel-radius-sm);
   background-color: var(--dark);
   color: var(--light);
   border: 1px solid #444;
@@ -485,15 +496,15 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 .event-calendar-summary {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  padding: 8px 10px;
-  border-radius: 8px;
+  gap: var(--spacing-2xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--panel-radius-sm);
   background: linear-gradient(135deg, rgba(50, 50, 70, 0.95), rgba(22, 22, 32, 0.95));
   border: 1px solid rgba(255, 215, 0, 0.12);
 }
 
 .event-calendar-summary-label {
-  font-size: 0.64rem;
+  font-size: var(--font-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: #aaa;
@@ -502,7 +513,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 .event-calendar-summary strong {
   color: var(--light);
   line-height: 1.25;
-  font-size: 0.82rem;
+  font-size: var(--font-sm);
   word-break: break-word;
 }
 
@@ -982,12 +993,12 @@ body.modal-open {
   max-height: min(84vh, 920px);
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px;
-  border-radius: 20px;
-  border: 1px solid var(--border-subtle);
-  background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
-  box-shadow: 0 20px 44px var(--shadow-color);
+  gap: var(--spacing-md);
+  padding: var(--panel-padding);
+  border-radius: var(--panel-radius-lg);
+  border: var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: 0 1.25rem 2.75rem var(--shadow-color);
   color: var(--text-primary);
 }
 
@@ -1007,25 +1018,25 @@ body.modal-open {
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 .player-rank-drilldown-heading {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-2xs);
 }
 
 .player-rank-drilldown-heading h3 {
   margin: 0;
-  font-size: 1.3rem;
+  font-size: var(--font-xl);
   color: var(--text-primary);
 }
 
 .player-rank-drilldown-heading p {
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: var(--line-height-body);
 }
 
 .player-rank-drilldown-close {
@@ -1997,20 +2008,22 @@ button.leaderboard-deck-result-card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-xs);
 }
 
 .player-rank-drilldown-badge {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 2px 8px;
-  border-radius: 999px;
-  background: rgba(217, 164, 65, 0.16);
-  border: 1px solid rgba(217, 164, 65, 0.24);
-  color: var(--accent);
-  font-size: 0.68rem;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-radius);
+  background: var(--badge-bg);
+  border: var(--badge-border);
+  color: var(--badge-text);
+  font-size: var(--badge-font-size);
   font-weight: 700;
+  letter-spacing: var(--badge-letter-spacing);
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -2152,7 +2165,7 @@ button.leaderboard-deck-result-card {
 }
 
 .range-calendar-container {
-  margin-bottom: 18px;
+  margin-bottom: var(--spacing-lg);
 }
 
 #playerAnalysisSection #playerDateRangeCalendar {
@@ -2162,13 +2175,13 @@ button.leaderboard-deck-result-card {
 .player-chart-filter-panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: -6px 0 18px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  box-shadow: 0 10px 22px var(--shadow-color);
+  gap: var(--spacing-sm);
+  margin: calc(var(--spacing-xs) * -1) 0 var(--spacing-lg);
+  padding: var(--panel-padding-sm);
+  border-radius: var(--panel-radius);
+  border: var(--panel-border);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
 }
 
 .player-chart-filter-header {
@@ -2176,17 +2189,17 @@ button.leaderboard-deck-result-card {
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 10px;
+  gap: var(--spacing-sm);
 }
 
 .player-chart-filter-copy {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-2xs);
 }
 
 .player-chart-filter-label {
-  font-size: 0.72rem;
+  font-size: var(--font-xs);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2195,17 +2208,18 @@ button.leaderboard-deck-result-card {
 .player-chart-filter-note,
 .player-chart-filter-empty {
   color: var(--text-secondary);
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: var(--font-sm);
+  line-height: var(--line-height-body);
 }
 
 .player-chart-filter-chips {
-  gap: 8px;
+  gap: var(--button-gap);
 }
 
 .player-win-rate-deck-chip {
-  padding: 6px 12px;
-  font-size: 0.84rem;
+  min-height: calc(var(--button-height) - 0.5rem);
+  padding: 0 var(--spacing-sm);
+  font-size: var(--font-sm);
 }
 
 .player-win-rate-deck-chip-reset {
@@ -2223,15 +2237,15 @@ button.leaderboard-deck-result-card {
 .range-calendar-wrapper {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 14px;
+  gap: var(--spacing-md);
 }
 
 /* Dual-calendar date range picker used by multi-event, player, and matchup views. */
 .range-calendar-panel {
-  padding: 12px;
-  border-radius: 12px;
-  background: linear-gradient(145deg, rgba(24, 24, 36, 0.98), rgba(36, 36, 52, 0.98));
-  border: 1px solid #3f3f52;
+  padding: var(--panel-padding-sm);
+  border-radius: var(--panel-radius);
+  background: var(--panel-bg);
+  border: var(--panel-border);
 }
 
 .range-calendar-header {
@@ -2406,7 +2420,7 @@ button.leaderboard-deck-result-card {
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--spacing-md);
   min-width: 0;
 }
 
@@ -2433,7 +2447,7 @@ button.leaderboard-deck-result-card {
 
 .dashboard-metric-stack {
   display: grid;
-  gap: 16px;
+  gap: var(--spacing-md);
   align-content: start;
 }
 
@@ -2455,25 +2469,25 @@ button.leaderboard-deck-result-card {
 .player-analysis-section {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 .player-analysis-section-header {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 .player-analysis-section-header h2 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: var(--font-xl);
 }
 
 .player-analysis-section-header p {
-  margin: 4px 0 0;
+  margin: var(--spacing-2xs) 0 0;
   color: var(--text-secondary);
-  line-height: 1.45;
+  line-height: var(--line-height-body);
 }
 
 .player-analysis-section-body {
@@ -2481,28 +2495,28 @@ button.leaderboard-deck-result-card {
 }
 
 .player-analysis-subsection-header {
-  margin-bottom: 12px;
+  margin-bottom: var(--spacing-sm);
 }
 
 .player-analysis-subsection-header h3 {
-  margin: 0 0 4px;
-  font-size: 1rem;
+  margin: 0 0 var(--spacing-2xs);
+  font-size: var(--font-lg);
 }
 
 .player-analysis-subsection-header p {
   margin: 0;
   color: var(--text-secondary);
-  line-height: 1.4;
+  line-height: var(--line-height-body);
 }
 
 .player-identity-card {
-  padding: 16px;
+  padding: var(--panel-padding);
 }
 
 .player-identity-card-shell {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
-  gap: 16px;
+  gap: var(--spacing-md);
   align-items: center;
 }
 
@@ -2513,9 +2527,12 @@ button.leaderboard-deck-result-card {
   width: 64px;
   height: 64px;
   border-radius: 999px;
-  font-size: 1.35rem;
+  font-size: var(--font-xl);
   font-weight: 800;
   letter-spacing: 0.04em;
+  background: var(--badge-bg);
+  border: var(--badge-border);
+  color: var(--text-primary);
 }
 
 .player-identity-copy {
@@ -2529,14 +2546,14 @@ button.leaderboard-deck-result-card {
 }
 
 .player-identity-copy .stat-value {
-  font-size: 1.85rem;
-  line-height: 1.1;
+  font-size: var(--font-hero);
+  line-height: var(--line-height-tight);
 }
 
 .player-identity-highlights {
   display: grid;
   grid-template-columns: repeat(3, minmax(110px, 1fr));
-  gap: 10px;
+  gap: var(--spacing-sm);
   min-width: min(100%, 420px);
 }
 
@@ -2544,12 +2561,12 @@ button.leaderboard-deck-result-card {
 .player-identity-meta-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: var(--spacing-2xs);
 }
 
 .player-identity-highlight-label,
 .player-identity-meta-label {
-  font-size: 0.72rem;
+  font-size: var(--font-xs);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2558,16 +2575,16 @@ button.leaderboard-deck-result-card {
 
 .player-identity-highlight-value,
 .player-identity-meta-value {
-  font-size: 1rem;
-  line-height: 1.2;
+  font-size: var(--font-md);
+  line-height: var(--line-height-tight);
 }
 
 .player-identity-meta-grid {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
-  margin-top: 16px;
-  padding-top: 16px;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
 }
 
 .player-core-analytics-sidebar {
@@ -2688,13 +2705,15 @@ button.leaderboard-deck-result-card {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  background: rgba(217, 164, 65, 0.16);
-  border: 1px solid rgba(217, 164, 65, 0.24);
-  color: var(--accent);
-  font-size: 0.72rem;
+  padding: var(--badge-padding-y) var(--badge-padding-x);
+  border-radius: var(--badge-radius);
+  background: var(--badge-bg);
+  border: var(--badge-border);
+  color: var(--badge-text);
+  font-size: var(--badge-font-size);
   font-weight: 700;
+  letter-spacing: var(--badge-letter-spacing);
+  line-height: 1;
   white-space: nowrap;
 }
 
@@ -2842,12 +2861,12 @@ button.leaderboard-deck-result-card {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 10px;
-  margin: 12px 0 14px;
-  padding: 12px;
-  border: 1px solid var(--border-subtle);
-  border-radius: 18px;
-  background: linear-gradient(135deg, rgba(22, 122, 114, 0.12), rgba(217, 164, 65, 0.09));
+  gap: var(--spacing-sm);
+  margin: var(--spacing-sm) 0 var(--spacing-md);
+  padding: var(--panel-padding-sm);
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
+  background: var(--panel-bg);
 }
 
 .matchup-deck-search-panel[hidden] {
@@ -2856,7 +2875,7 @@ button.leaderboard-deck-result-card {
 
 .matchup-deck-search-label {
   flex: 0 0 auto;
-  font-size: 0.78rem;
+  font-size: var(--font-sm);
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2875,8 +2894,8 @@ button.leaderboard-deck-result-card {
 .matchup-deck-search-status {
   flex: 1 0 100%;
   color: var(--text-secondary);
-  font-size: 0.78rem;
-  line-height: 1.35;
+  font-size: var(--font-sm);
+  line-height: var(--line-height-body);
 }
 
 .matchup-matrix-table-container:fullscreen {
@@ -3021,14 +3040,14 @@ button.leaderboard-deck-result-card {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--spacing-xs);
   max-width: none;
   position: relative;
 }
 
 #playerStats.stats-container .player-stats-row {
   display: grid;
-  gap: 8px;
+  gap: var(--spacing-xs);
 }
 
 #playerStats.stats-container .player-stats-row-primary {
@@ -3041,10 +3060,10 @@ button.leaderboard-deck-result-card {
 
 #playerStats.stats-container .stat-card {
   min-height: 82px;
-  padding: 6px 8px 20px;
+  padding: var(--spacing-xs) var(--spacing-sm) calc(var(--spacing-lg) + var(--spacing-2xs));
   display: grid;
   align-content: start;
-  gap: 2px;
+  gap: var(--spacing-2xs);
 }
 
 #playerStats.stats-container .player-stats-row-secondary .stat-card {
@@ -3052,32 +3071,32 @@ button.leaderboard-deck-result-card {
 }
 
 #playerStats.stats-container .stat-title {
-  font-size: 0.72rem;
+  font-size: var(--font-xs);
   margin-bottom: 0;
-  line-height: 1.1;
+  line-height: var(--line-height-tight);
 }
 
 #playerStats.stats-container .stat-value {
-  font-size: 1.2rem;
-  line-height: 1.1;
+  font-size: var(--font-metric);
+  line-height: var(--line-height-tight);
 }
 
 #playerStats.stats-container .stat-change {
-  font-size: 0.84rem;
+  font-size: var(--font-sm);
   margin-top: 0;
-  line-height: 1.1;
+  line-height: var(--line-height-tight);
 }
 
 #playerLeastPlayedCard .stat-title {
-  font-size: 0.64rem;
+  font-size: 0.68rem;
 }
 
 #playerLeastPlayedCard .stat-value {
-  font-size: 1.08rem;
+  font-size: var(--font-metric-compact);
 }
 
 #playerLeastPlayedCard .stat-change {
-  font-size: 0.76rem;
+  font-size: var(--font-xs);
 }
 
 #playerStats.stats-container .stat-change:empty {
@@ -3085,16 +3104,16 @@ button.leaderboard-deck-result-card {
 }
 
 #playerStats.stats-container .stat-icon {
-  right: 7px;
-  bottom: 5px;
-  font-size: 0.95rem;
+  right: var(--spacing-xs);
+  bottom: var(--spacing-xs);
+  font-size: var(--font-md);
 }
 
 .stat-card {
-  background: linear-gradient(135deg, var(--secondary), #2c2c40);
-  padding: 10px;
-  border-radius: 8px;
-  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+  background: var(--panel-bg);
+  padding: var(--panel-padding-sm);
+  border-radius: var(--panel-radius);
+  box-shadow: var(--panel-shadow);
   position: relative;
   overflow: hidden;
   transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.5s ease;
@@ -3103,8 +3122,8 @@ button.leaderboard-deck-result-card {
 
 .stat-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-  background: linear-gradient(135deg, #2c2c40, var(--secondary));
+  box-shadow: var(--panel-shadow-hover);
+  background: var(--panel-bg-hover);
 }
 
 .stat-card.hidden {
@@ -3151,35 +3170,35 @@ button.leaderboard-deck-result-card {
 }
 
 .stat-title {
-  font-size: 0.7rem;
-  color: #aaa;
-  margin-bottom: 3px;
-  line-height: 1.2;
+  font-size: var(--font-xs);
+  color: var(--text-muted);
+  margin-bottom: var(--spacing-2xs);
+  line-height: var(--line-height-tight);
 }
 
 .stat-value {
-  font-size: 1.2rem;
+  font-size: var(--font-metric);
   font-weight: bold;
-  color: var(--light);
+  color: var(--text-primary);
 }
 
 .stat-change {
-  font-size: 0.8rem;
-  color: var(--mana-green);
-  margin-top: 3px;
-  line-height: 1.2;
+  font-size: var(--font-sm);
+  color: var(--success);
+  margin-top: var(--spacing-2xs);
+  line-height: var(--line-height-tight);
 }
 
 .stat-change.negative {
-  color: var(--mana-red);
+  color: var(--danger);
 }
 
 .stat-icon {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
+  right: var(--spacing-sm);
+  bottom: var(--spacing-sm);
   opacity: 0.1;
-  font-size: 1.5rem;
+  font-size: var(--font-xl);
   transition: opacity 0.3s ease;
 }
 
@@ -3508,6 +3527,9 @@ button.leaderboard-deck-result-card {
   background-color: var(--input-bg);
   color: var(--input-text);
   border-color: var(--input-border);
+  min-height: var(--button-height);
+  border-radius: var(--button-radius);
+  font-size: var(--font-sm);
 }
 
 .top-mode-button.active,
@@ -3538,7 +3560,7 @@ button.leaderboard-deck-result-card {
 .player-event-summary-card {
   background: linear-gradient(160deg, var(--surface-2), var(--surface-1));
   border-color: var(--border-subtle);
-  box-shadow: 0 14px 26px var(--shadow-color);
+  box-shadow: var(--panel-shadow);
 }
 
 .filters,
@@ -3546,7 +3568,8 @@ button.leaderboard-deck-result-card {
 .data-table-container,
 .stat-card,
 #aboutSection {
-  border: 1px solid var(--border-subtle);
+  border: var(--panel-border);
+  border-radius: var(--panel-radius);
 }
 
 .filters h3 {
@@ -3578,13 +3601,13 @@ button.leaderboard-deck-result-card {
 }
 
 .stat-card {
-  background: linear-gradient(145deg, var(--surface-2), var(--surface-1));
-  box-shadow: 0 10px 22px var(--shadow-color);
+  background: var(--panel-bg);
+  box-shadow: var(--panel-shadow);
 }
 
 .stat-card:hover {
-  background: linear-gradient(145deg, var(--surface-3), var(--surface-2));
-  box-shadow: 0 14px 28px var(--shadow-color);
+  background: var(--panel-bg-hover);
+  box-shadow: var(--panel-shadow-hover);
 }
 
 /* Data-quality mode visually distinguishes the filtered dataset without changing
