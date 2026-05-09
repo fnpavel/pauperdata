@@ -146,6 +146,7 @@ let activePlayerPrimaryChartView = 'win-rate';
 let activePlayerAnalysisTab = 'overview';
 let playerTopXMiniChart = null;
 let playerOverallWinRateRingChart = null;
+let playerEloMiniChart = null;
 let currentPlayerRawTableState = {
   tableType: 'event',
   title: 'player-event-data',
@@ -301,6 +302,11 @@ function refreshPlayerAnalysisVisiblePanelLayout(tabKey = activePlayerAnalysisTa
       if (playerOverallWinRateRingChart) {
         playerOverallWinRateRingChart.resize();
         playerOverallWinRateRingChart.update('none');
+      }
+
+      if (playerEloMiniChart) {
+        playerEloMiniChart.resize();
+        playerEloMiniChart.update('none');
       }
     }
 
@@ -596,6 +602,33 @@ function getPlayerCurrentLeaderboardIdentity(eloInsights = currentPlayerEloInsig
   };
 }
 
+function getPlayerAnalysisPeriodLabel(eloInsights = currentPlayerEloInsights) {
+  const dataset = eloInsights?.overallDataset || eloInsights?.dataset || null;
+  const selectedYears = Array.isArray(dataset?.summary?.selectedYears)
+    ? dataset.summary.selectedYears.filter(Boolean)
+    : [];
+  const startDate = String(dataset?.startDate || '').trim();
+  const endDate = String(dataset?.endDate || '').trim();
+
+  if (selectedYears.length === 1) {
+    return `Season ${selectedYears[0]}`;
+  }
+
+  if (selectedYears.length > 1) {
+    return selectedYears.join('–');
+  }
+
+  if (startDate && endDate) {
+    const startYear = startDate.slice(0, 4);
+    const endYear = endDate.slice(0, 4);
+    if (startYear && endYear) {
+      return startYear === endYear ? `Season ${startYear}` : `${startYear}–${endYear}`;
+    }
+  }
+
+  return '--';
+}
+
 function getPlayerLatestSeasonLeaderboardRank(eloInsights = currentPlayerEloInsights) {
   const identity = getPlayerCurrentLeaderboardIdentity(eloInsights);
   const eventTypes = Array.isArray(identity?.eventTypes) ? identity.eventTypes : [];
@@ -720,90 +753,89 @@ function destroyPlayerOverviewCharts() {
     playerOverallWinRateRingChart.destroy();
     playerOverallWinRateRingChart = null;
   }
+
+  if (playerEloMiniChart) {
+    playerEloMiniChart.destroy();
+    playerEloMiniChart = null;
+  }
 }
 
-function renderPlayerOverviewCharts(stats = {}) {
+function renderPlayerTopXFunnel(stats = {}) {
+  const funnelRoot = document.getElementById('playerTopXFunnelChart');
+  if (!funnelRoot) {
+    return;
+  }
+
+  const rankStats = stats?.rankStats || {};
+  const funnelBands = [
+    {
+      label: 'Top 1',
+      value: Number.parseFloat(String(rankStats.top1Percent || '').replace('%', '').trim()) || 0,
+      themeClass: 'is-top1'
+    },
+    {
+      label: 'Top 2-8',
+      value: Number.parseFloat(String(rankStats.top1_8Percent || '').replace('%', '').trim()) || 0,
+      themeClass: 'is-top8'
+    },
+    {
+      label: 'Top 9-16',
+      value: Number.parseFloat(String(rankStats.top9_16Percent || '').replace('%', '').trim()) || 0,
+      themeClass: 'is-top16'
+    },
+    {
+      label: 'Top 17-32',
+      value: Number.parseFloat(String(rankStats.top17_32Percent || '').replace('%', '').trim()) || 0,
+      themeClass: 'is-top32'
+    },
+    {
+      label: 'Top 33+',
+      value: Number.parseFloat(String(rankStats.top33PlusPercent || '').replace('%', '').trim()) || 0,
+      themeClass: 'is-below32'
+    }
+  ];
+  const hasData = funnelBands.some(band => band.value > 0);
+
+  if (!hasData) {
+    funnelRoot.innerHTML = '<div class="player-analysis-v2-empty-state">No TopX conversion data for this scope.</div>';
+    return;
+  }
+
+  funnelRoot.innerHTML = `
+    <div class="player-analysis-v2-placement-bands" role="img" aria-label="TopX conversion placement bands">
+      ${funnelBands.map(band => {
+        const width = Math.min(100, Math.max(0, band.value));
+        return `
+          <div class="player-analysis-v2-placement-band-row">
+            <div class="player-analysis-v2-placement-band ${band.themeClass}">
+              <div class="player-analysis-v2-placement-band-fill" style="width: ${width}%;"></div>
+              <div class="player-analysis-v2-placement-band-copy">
+                <span class="player-analysis-v2-placement-band-label">${band.label}</span>
+                <strong class="player-analysis-v2-placement-band-value">${band.value.toFixed(0)}%</strong>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderPlayerOverviewCharts(stats = {}, eloInsights = currentPlayerEloInsights) {
+  renderPlayerTopXFunnel(stats);
   const chartConstructor = globalThis.Chart;
   if (typeof chartConstructor !== 'function') {
     destroyPlayerOverviewCharts();
     return;
   }
 
-  const topXCanvas = document.getElementById('playerTopXMiniChart');
   const ringCanvas = document.getElementById('playerOverallWinRateRingChart');
-  const rankStats = stats?.rankStats || {};
-  const parsePercent = value => {
-    const numeric = Number.parseFloat(String(value || '').replace('%', '').trim());
-    return Number.isFinite(numeric) ? numeric : 0;
-  };
-  const topXValues = [
-    parsePercent(rankStats.top1Percent),
-    parsePercent(rankStats.top1_8Percent),
-    parsePercent(rankStats.top9_16Percent),
-    parsePercent(rankStats.top17_32Percent),
-    parsePercent(rankStats.top33PlusPercent)
-  ];
+  const miniEloCanvas = document.getElementById('playerEloMiniChart');
+  const miniEloShell = miniEloCanvas?.parentElement || null;
 
   if (playerTopXMiniChart) {
     playerTopXMiniChart.destroy();
     playerTopXMiniChart = null;
-  }
-
-  if (topXCanvas) {
-    playerTopXMiniChart = new chartConstructor(topXCanvas.getContext('2d'), {
-      type: 'line',
-      data: {
-        labels: ['Top 1', 'Top 2-8', 'Top 9-16', 'Top 17-32', 'Top 33+'],
-        datasets: [{
-          data: topXValues,
-          borderColor: '#2fe3d2',
-          backgroundColor: 'rgba(47, 227, 210, 0.14)',
-          borderWidth: 2,
-          pointRadius: 3,
-          pointHoverRadius: 4,
-          pointBackgroundColor: '#2fe3d2',
-          pointBorderWidth: 0,
-          tension: 0.34,
-          fill: false
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        animation: false,
-        plugins: {
-          legend: { display: false },
-          tooltip: {
-            enabled: true,
-            callbacks: {
-              label(context) {
-                const value = Number(context?.raw) || 0;
-                return `${value.toFixed(0)}%`;
-              }
-            }
-          }
-        },
-        scales: {
-          x: {
-            ticks: { color: 'rgba(193, 211, 232, 0.72)', maxRotation: 0, autoSkip: false, font: { size: 10 } },
-            grid: { display: false }
-          },
-          y: {
-            beginAtZero: true,
-            max: 100,
-            ticks: {
-              color: 'rgba(193, 211, 232, 0.62)',
-              precision: 0,
-              font: { size: 10 },
-              callback(value) {
-                return `${value}%`;
-              }
-            },
-            grid: { color: 'rgba(193, 211, 232, 0.08)' }
-          }
-        }
-      }
-    });
   }
 
   if (playerOverallWinRateRingChart) {
@@ -863,6 +895,110 @@ function renderPlayerOverviewCharts(stats = {}) {
       }]
     });
   }
+
+  if (playerEloMiniChart) {
+    playerEloMiniChart.destroy();
+    playerEloMiniChart = null;
+  }
+
+  const historyEntries = Array.isArray(eloInsights?.historyEntries) ? eloInsights.historyEntries : [];
+  const eloMiniPoints = historyEntries
+    .filter(entry => Number.isFinite(Number(entry?.ratingAfter)))
+    .map(entry => ({
+      x: String(entry?.date || '').trim(),
+      y: Number(entry.ratingAfter)
+    }));
+
+  if (!miniEloCanvas || !miniEloShell) {
+    return;
+  }
+
+  miniEloShell.querySelector('.player-analysis-v2-empty-state')?.remove();
+  miniEloCanvas.hidden = false;
+
+  if (eloMiniPoints.length === 0) {
+    miniEloCanvas.hidden = true;
+    miniEloShell.insertAdjacentHTML('beforeend', '<div class="player-analysis-v2-empty-state">No Elo evolution data for this scope.</div>');
+    return;
+  }
+
+  const multiYear = new Set(eloMiniPoints.map(point => point.x.slice(0, 4))).size > 1;
+  playerEloMiniChart = new chartConstructor(miniEloCanvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels: eloMiniPoints.map(point => point.x),
+      datasets: [{
+        data: eloMiniPoints.map(point => point.y),
+        borderColor: '#f3c96a',
+        backgroundColor: 'rgba(243, 201, 106, 0.14)',
+        pointRadius: 0,
+        pointHoverRadius: 3,
+        pointHitRadius: 12,
+        borderWidth: 2,
+        tension: 0.3,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      animation: false,
+      plugins: {
+        legend: { display: false },
+        datalabels: { display: false },
+        tooltip: {
+          enabled: true,
+          displayColors: false,
+          callbacks: {
+            title(context) {
+              const dateValue = String(context?.[0]?.label || '').trim();
+              return dateValue ? formatDate(dateValue) : '';
+            },
+            label(context) {
+              return `Elo: ${formatEloRating(context?.raw)}`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: {
+            color: 'rgba(193, 211, 232, 0.62)',
+            maxRotation: 0,
+            autoSkip: true,
+            maxTicksLimit: 5,
+            font: { size: 10 },
+            callback(value) {
+              const dateValue = String(this.getLabelForValue(value) || '');
+              const [year, month, day] = dateValue.split('-').map(Number);
+              if (!year || !month || !day) {
+                return dateValue;
+              }
+
+              return new Date(Date.UTC(year, month - 1, day)).toLocaleDateString('en-US', {
+                timeZone: 'UTC',
+                month: 'short',
+                day: 'numeric',
+                ...(multiYear ? { year: '2-digit' } : {})
+              });
+            }
+          }
+        },
+        y: {
+          grid: { color: 'rgba(193, 211, 232, 0.08)' },
+          ticks: {
+            color: 'rgba(193, 211, 232, 0.62)',
+            maxTicksLimit: 4,
+            font: { size: 10 },
+            callback(value) {
+              return `${Math.round(Number(value) || 0)}`;
+            }
+          }
+        }
+      }
+    }
+  });
 }
 
 function setPlayerAnalysisCollapseState(button, panel, isExpanded) {
@@ -4083,8 +4219,38 @@ function populatePlayerIdentitySummary({
     .filter(Boolean)
     .sort((a, b) => a.localeCompare(b));
   const latestDate = dateValues[dateValues.length - 1] || '';
+  const latestEventRow = (Array.isArray(currentPlayerAnalysisRows) ? [...currentPlayerAnalysisRows] : [])
+    .filter(row => String(row?.Date || '').trim())
+    .sort((a, b) => {
+      const dateCompare = String(b?.Date || '').localeCompare(String(a?.Date || ''));
+      if (dateCompare !== 0) {
+        return dateCompare;
+      }
+
+      return String(b?.Event || '').localeCompare(String(a?.Event || ''));
+    })[0] || null;
   const currentEloLabel = eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--';
   const currentWinRateLabel = String(stats?.overallWinRate || '--');
+  const formatDeckUsageLabel = (deckName, deckCount) => {
+    if (!deckName || deckName === '--') {
+      return '--';
+    }
+
+    const countMatch = String(deckCount || '').trim().match(/^(\d+)x$/i);
+    if (!countMatch) {
+      return String(deckName);
+    }
+
+    const count = Number(countMatch[1]);
+    return `${deckName} (${count} ${count === 1 ? 'copy' : 'copies'})`;
+  };
+  const mostPlayedDeckLabel = stats?.mostPlayedDecks && stats?.mostPlayedDecks !== '--'
+    ? formatDeckUsageLabel(stats.mostPlayedDecks, stats?.mostPlayedCount)
+    : '--';
+  const leastPlayedDeckLabel = stats?.leastPlayedDecks && stats?.leastPlayedDecks !== '--'
+    ? formatDeckUsageLabel(stats.leastPlayedDecks, stats?.leastPlayedCount)
+    : '--';
+  const lastEventPlayed = latestEventRow?.Event ? `${formatEventName(latestEventRow.Event) || latestEventRow.Event}${latestDate ? ` • ${formatDate(latestDate)}` : ''}` : '--';
 
   updateText('playerIdentityAvatar', getPlayerIdentityInitials(selectedPlayerLabel));
   updateText('playerIdentityCurrentRank', '--');
@@ -4093,8 +4259,9 @@ function populatePlayerIdentitySummary({
   updateText('playerIdentityEventsPlayed', String(stats?.totalEvents || '--'));
   updateText('playerIdentityMatchesPlayed', matchesPlayed > 0 ? String(matchesPlayed) : '--');
   updateText('playerIdentityDecksUsed', String(stats?.uniqueDecks || '--'));
-  updateText('playerIdentityMostPlayedDeck', String(stats?.mostPlayedDecks || '--'));
-  updateText('playerIdentityLastUpdated', latestDate ? formatDate(latestDate) : '--');
+  updateText('playerIdentityMostPlayedDeck', mostPlayedDeckLabel);
+  updateText('playerIdentityLeastPlayedDeck', leastPlayedDeckLabel);
+  updateText('playerIdentityLastEventPlayed', lastEventPlayed);
 }
 
 function renderPlayerRawTableRows(rows = [], tableType = 'event') {
@@ -4292,6 +4459,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
   const topFinishScopeSuffix = resolvedSelectedDeck ? ` (${resolvedSelectedDeck})` : '';
   const peakEloDate = eloInsights?.peakEntries?.[0]?.date ? formatDate(eloInsights.peakEntries[0].date) : '--';
+  const periodLabel = getPlayerAnalysisPeriodLabel(eloInsights);
 
   // Ensure all stat cards are visible
   ['playerFocusedPlayerCard', 'playerEventsCard', 'playerOverallWinRateCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
@@ -4375,6 +4543,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-change", 'Loading current leaderboard rank...');
   updateQueryElement("playerPeakRankLeaderboardCard", ".stat-value", '--');
   updateQueryElement("playerPeakRankLeaderboardCard", ".stat-change", 'Calculating peak rank...');
+  updateElement("playerPerformanceTrendPeriod", periodLabel);
 
   populatePlayerIdentitySummary({
     selectedPlayerLabel,
@@ -4382,7 +4551,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
     eloInsights
   });
   renderPlayerDeckStatsCards(stats.deckStatsCards);
-  renderPlayerOverviewCharts(stats);
+  renderPlayerOverviewCharts(stats, eloInsights);
 
   getPlayerLatestSeasonLeaderboardRank(eloInsights).then(currentRankEntry => {
     const currentRankLabel = currentRankEntry?.rank ? `#${currentRankEntry.rank}` : '--';

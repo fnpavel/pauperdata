@@ -1206,6 +1206,10 @@ export function updatePlayerDateOptions(options = {}) {
     currentPlayer === defaultSelection.player && dates.includes(defaultSelection.startDate)
       ? defaultSelection.startDate
       : dates[dates.length - 1];
+  const latestSeasonYear = fallbackDate ? String(fallbackDate).slice(0, 4) : '';
+  const latestSeasonDates = latestSeasonYear
+    ? dates.filter(date => String(date).startsWith(`${latestSeasonYear}-`))
+    : [];
 
   let currentStartDate = selectedStartDate;
   let currentEndDate = selectedEndDate;
@@ -1228,8 +1232,8 @@ export function updatePlayerDateOptions(options = {}) {
       currentStartDate = presetRange.startDate;
       currentEndDate = presetRange.endDate;
     } else {
-      currentStartDate = fallbackDate;
-      currentEndDate = fallbackDate;
+      currentStartDate = latestSeasonDates[0] || fallbackDate;
+      currentEndDate = latestSeasonDates[latestSeasonDates.length - 1] || fallbackDate;
     }
   } else if (!currentStartDate) {
     currentStartDate = currentEndDate;

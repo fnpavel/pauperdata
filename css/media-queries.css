@@ -178,6 +178,11 @@
     grid-template-columns: 1fr;
   }
 
+  .player-chart-view-toggle {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
   .player-analysis-master-controls-grid {
     grid-template-columns: 1fr;
   }

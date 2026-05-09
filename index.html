@@ -398,8 +398,12 @@
                 <strong class="player-identity-meta-value" id="playerIdentityMostPlayedDeck">--</strong>
               </div>
               <div class="player-identity-meta-item">
-                <span class="player-identity-meta-label">Last Updated</span>
-                <strong class="player-identity-meta-value" id="playerIdentityLastUpdated">--</strong>
+                <span class="player-identity-meta-label">Least Played Deck</span>
+                <strong class="player-identity-meta-value" id="playerIdentityLeastPlayedDeck">--</strong>
+              </div>
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Last Event Played</span>
+                <strong class="player-identity-meta-value" id="playerIdentityLastEventPlayed">--</strong>
               </div>
             </div>
           </div>
@@ -534,11 +538,14 @@
               <div class="player-core-analytics-main dashboard-panel dashboard-panel-hero">
                 <div id="playerCharts">
                   <div class="chart-container player-primary-chart dashboard-chart-panel dashboard-panel-body">
-                    <div class="player-chart-header dashboard-chart-header">
-                      <div class="dashboard-chart-heading">
-                        <h2 class="chart-title dashboard-chart-title">Player Performance Trend</h2>
-                        <p class="dashboard-chart-subtitle">Track win rate movement and deck-level performance across the selected player window.</p>
-                      </div>
+                      <div class="player-chart-header dashboard-chart-header">
+                        <div class="dashboard-chart-heading">
+                          <h2 class="chart-title dashboard-chart-title">Player Performance Trend</h2>
+                          <p class="dashboard-chart-subtitle">Track win rate movement and deck-level performance across the selected player window.</p>
+                          <div class="dashboard-chart-meta">
+                            <span class="dashboard-chart-period-badge leaderboard-info-badge" id="playerPerformanceTrendPeriod">--</span>
+                          </div>
+                        </div>
                       <div class="bubble-menu player-chart-view-toggle dashboard-chart-controls" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
                         <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
                         <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
@@ -989,6 +996,40 @@
             <div class="player-analysis-v2-summary-stack">
               <section class="player-analysis-v2-panel">
                 <div class="player-analysis-v2-panel-header">
+                  <h3>Performance</h3>
+                </div>
+                <div class="player-analysis-v2-performance-stack">
+                  <div class="player-analysis-v2-live-card-grid player-analysis-v2-performance-card-grid">
+                    <div id="playerAnalysisV2EventsSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2UniqueDecksSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2MostPlayedSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2LeastPlayedSlot" class="player-analysis-v2-slot"></div>
+                  </div>
+                  <div class="player-analysis-v2-performance-chart-grid">
+                    <div class="player-analysis-v2-overview-chart-card">
+                      <div class="player-analysis-v2-overview-chart-header">
+                        <h4>TopX Conversion</h4>
+                        <p>Finish conversion across the current player scope.</p>
+                      </div>
+                      <div class="player-analysis-v2-overview-chart-shell">
+                        <div id="playerTopXFunnelChart" class="player-analysis-v2-funnel-chart" aria-label="TopX conversion funnel chart"></div>
+                      </div>
+                    </div>
+                    <div class="player-analysis-v2-overview-chart-card player-analysis-v2-overview-chart-card-ring">
+                      <div class="player-analysis-v2-overview-chart-header">
+                        <h4>Overall Win Rate</h4>
+                        <p>Compact overall result split for the current scope.</p>
+                      </div>
+                      <div class="player-analysis-v2-overview-chart-shell player-analysis-v2-overview-chart-shell-ring">
+                        <canvas id="playerOverallWinRateRingChart" aria-label="Overall win rate ring chart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="player-analysis-v2-panel">
+                <div class="player-analysis-v2-panel-header">
                   <h3>Elo Summary</h3>
                 </div>
                 <div class="player-analysis-v2-summary-grid player-analysis-v2-summary-grid-overview">
@@ -1007,38 +1048,13 @@
                     <div class="stat-icon">⇧</div>
                   </div>
                 </div>
-              </section>
-
-              <section class="player-analysis-v2-panel">
-                <div class="player-analysis-v2-panel-header">
-                  <h3>Performance</h3>
-                </div>
-                <div class="player-analysis-v2-performance-stack">
-                  <div class="player-analysis-v2-live-card-grid player-analysis-v2-performance-card-grid">
-                    <div id="playerAnalysisV2EventsSlot" class="player-analysis-v2-slot"></div>
-                    <div id="playerAnalysisV2UniqueDecksSlot" class="player-analysis-v2-slot"></div>
-                    <div id="playerAnalysisV2MostPlayedSlot" class="player-analysis-v2-slot"></div>
-                    <div id="playerAnalysisV2LeastPlayedSlot" class="player-analysis-v2-slot"></div>
+                <div class="player-analysis-v2-elo-mini-panel">
+                  <div class="player-analysis-v2-overview-chart-header">
+                    <h4>Elo Evolution</h4>
+                    <p>Compact Elo movement for the currently selected Player Analysis scope.</p>
                   </div>
-                  <div class="player-analysis-v2-performance-chart-grid">
-                    <div class="player-analysis-v2-overview-chart-card">
-                      <div class="player-analysis-v2-overview-chart-header">
-                        <h4>TopX Conversion</h4>
-                        <p>Finish conversion across the current player scope.</p>
-                      </div>
-                      <div class="player-analysis-v2-overview-chart-shell">
-                        <canvas id="playerTopXMiniChart" aria-label="TopX conversion mini chart"></canvas>
-                      </div>
-                    </div>
-                    <div class="player-analysis-v2-overview-chart-card player-analysis-v2-overview-chart-card-ring">
-                      <div class="player-analysis-v2-overview-chart-header">
-                        <h4>Overall Win Rate</h4>
-                        <p>Compact overall result split for the current scope.</p>
-                      </div>
-                      <div class="player-analysis-v2-overview-chart-shell player-analysis-v2-overview-chart-shell-ring">
-                        <canvas id="playerOverallWinRateRingChart" aria-label="Overall win rate ring chart"></canvas>
-                      </div>
-                    </div>
+                  <div class="player-analysis-v2-overview-chart-shell player-analysis-v2-overview-chart-shell-mini-line">
+                    <canvas id="playerEloMiniChart" aria-label="Compact Elo evolution chart"></canvas>
                   </div>
                 </div>
               </section>

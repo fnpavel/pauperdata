@@ -65,6 +65,19 @@
   max-width: 40rem;
 }
 
+.dashboard-chart-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.dashboard-chart-period-badge {
+  min-height: 1.95rem;
+  font-size: var(--font-xs);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
 .dashboard-chart-controls {
   align-items: flex-start;
 }
@@ -86,9 +99,18 @@
 }
 
 .player-chart-view-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(9.5rem, 1fr));
   justify-content: flex-end;
   gap: var(--button-gap);
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+}
+
+.player-chart-view-toggle .bubble-button {
+  width: 100%;
+  min-width: 9.5rem;
+  justify-content: center;
+  text-align: center;
 }
 
 .player-chart-panel {
@@ -106,7 +128,9 @@
   color: var(--text-secondary);
   padding: var(--spacing-sm) var(--spacing-xs) 0;
   text-align: center;
-  min-height: 2.75rem;
+  min-height: 13.5rem;
+  max-height: 13.5rem;
+  overflow: auto;
 }
 
 .dashboard-chart-header {
