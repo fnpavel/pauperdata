@@ -416,7 +416,7 @@
         <div class="player-analysis-section-body dashboard-grid">
           <div class="dashboard-panel dashboard-panel-full">
             <div class="filters dashboard-panel-body player-analysis-master-controls">
-              <div class="player-analysis-master-controls-grid">
+              <div class="player-analysis-master-controls-grid player-analysis-primary-filters">
                 <div class="filter-section">
                   <h4>Event Type</h4>
                   <div class="bubble-menu">
@@ -432,9 +432,30 @@
                     </select>
                   </div>
                 </div>
-                <div class="filter-section">
-                  <h4>Quick Views</h4>
-                  <div id="playerQuickViewButtons" class="quick-view-control"></div>
+              </div>
+              <div class="player-analysis-filter-actions">
+                <button
+                  type="button"
+                  class="bubble-button player-analysis-collapse-toggle"
+                  id="playerAnalysisAdvancedFiltersToggle"
+                  data-player-analysis-collapse-target="playerAnalysisAdvancedFiltersPanel"
+                  aria-expanded="false"
+                  aria-controls="playerAnalysisAdvancedFiltersPanel"
+                >
+                  Advanced Filters
+                </button>
+              </div>
+              <div
+                class="player-analysis-collapsible-panel"
+                id="playerAnalysisAdvancedFiltersPanel"
+                data-player-analysis-collapsible-panel
+                hidden
+              >
+                <div class="player-analysis-master-controls-grid player-analysis-secondary-filters">
+                  <div class="filter-section">
+                    <h4>Quick Views</h4>
+                    <div id="playerQuickViewButtons" class="quick-view-control"></div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -544,7 +565,32 @@
 
               <div class="player-core-analytics-sidebar dashboard-metric-stack dashboard-panel-side">
                 <div class="dashboard-panel dashboard-panel-side player-filter-summary-panel">
-                  <div id="playerEloDeckFilter" class="player-chart-filter-panel dashboard-panel-body"></div>
+                  <div class="player-analysis-filter-card dashboard-panel-body">
+                    <div class="player-analysis-filter-card-header">
+                      <div>
+                        <h3>Deck Scope</h3>
+                        <p>Optional deck-specific Elo and finish filters for the focused player.</p>
+                      </div>
+                      <button
+                        type="button"
+                        class="bubble-button player-analysis-collapse-toggle"
+                        id="playerOverviewDeckFiltersToggle"
+                        data-player-analysis-collapse-target="playerOverviewDeckFiltersPanel"
+                        aria-expanded="false"
+                        aria-controls="playerOverviewDeckFiltersPanel"
+                      >
+                        Show Filters
+                      </button>
+                    </div>
+                    <div
+                      id="playerOverviewDeckFiltersPanel"
+                      class="player-analysis-collapsible-panel player-analysis-filter-card-body"
+                      data-player-analysis-collapsible-panel
+                      hidden
+                    >
+                      <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
+                    </div>
+                  </div>
                 </div>
               </div>
 

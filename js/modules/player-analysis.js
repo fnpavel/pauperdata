@@ -384,6 +384,49 @@ function setupPlayerAnalysisTabs() {
   setActivePlayerAnalysisTab(activePlayerAnalysisTab);
 }
 
+function setPlayerAnalysisCollapseState(button, panel, isExpanded) {
+  if (!button || !panel) {
+    return;
+  }
+
+  button.setAttribute('aria-expanded', isExpanded ? 'true' : 'false');
+  button.classList.toggle('active', isExpanded);
+  panel.hidden = !isExpanded;
+  panel.dataset.expanded = isExpanded ? 'true' : 'false';
+
+  if (button.id === 'playerOverviewDeckFiltersToggle') {
+    button.textContent = isExpanded ? 'Hide Filters' : 'Show Filters';
+  }
+}
+
+function setupPlayerAnalysisFilterCollapses() {
+  const buttons = Array.from(document.querySelectorAll('[data-player-analysis-collapse-target]'));
+  if (buttons.length === 0) {
+    return;
+  }
+
+  buttons.forEach(button => {
+    const targetId = String(button.dataset.playerAnalysisCollapseTarget || '').trim();
+    const panel = targetId ? document.getElementById(targetId) : null;
+    if (!panel) {
+      return;
+    }
+
+    if (button.dataset.listenerAdded !== 'true') {
+      button.addEventListener('click', () => {
+        const isExpanded = button.getAttribute('aria-expanded') === 'true';
+        setPlayerAnalysisCollapseState(button, panel, !isExpanded);
+      });
+
+      button.dataset.listenerAdded = 'true';
+    }
+
+    const defaultExpanded = button.dataset.defaultExpanded === 'true';
+    const currentExpanded = panel.dataset.expanded === 'true';
+    setPlayerAnalysisCollapseState(button, panel, currentExpanded || defaultExpanded);
+  });
+}
+
 function renderPlayerDeckStatsCards(deckStatsCards = []) {
   const root = getPlayerDeckStatsCardsRoot();
   if (!root) {
@@ -3365,6 +3408,7 @@ export function initPlayerAnalysis() {
   setupPlayerRawTableFullscreenAction();
   setupPlayerPrimaryChartToggleListeners();
   setupPlayerAnalysisTabs();
+  setupPlayerAnalysisFilterCollapses();
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();

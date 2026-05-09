@@ -2528,6 +2528,63 @@ button.leaderboard-deck-result-card {
   align-items: start;
 }
 
+.player-analysis-primary-filters {
+  grid-template-columns: minmax(0, 220px) minmax(0, 1fr);
+}
+
+.player-analysis-secondary-filters {
+  grid-template-columns: 1fr;
+}
+
+.player-analysis-filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--spacing-sm);
+}
+
+.player-analysis-collapse-toggle {
+  align-self: flex-start;
+}
+
+.player-analysis-collapsible-panel[hidden] {
+  display: none !important;
+}
+
+.player-analysis-collapsible-panel {
+  min-width: 0;
+}
+
+.player-analysis-filter-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.player-analysis-filter-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.player-analysis-filter-card-header h3 {
+  margin: 0;
+  font-size: var(--font-md);
+}
+
+.player-analysis-filter-card-header p {
+  margin: var(--spacing-2xs) 0 0;
+  color: var(--text-secondary);
+  font-size: var(--font-sm);
+  line-height: var(--line-height-body);
+}
+
+.player-analysis-filter-card-body {
+  border-top: var(--panel-border);
+  padding-top: var(--spacing-sm);
+}
+
 .player-analysis-tab-navigation-shell {
   min-width: 0;
 }
