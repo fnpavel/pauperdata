@@ -968,6 +968,133 @@
       </div>
     </div>
 
+    <!-- Player Analysis V2 shell: live-slot layout host that reuses existing Player Analysis render targets. -->
+    <div id="playerAnalysisV2" class="player-analysis-v2" style="display: none;" aria-label="Player Analysis V2">
+      <div class="player-analysis-v2-shell">
+        <section class="player-analysis-v2-hero">
+          <div id="playerAnalysisV2HeroSlot" class="player-analysis-v2-slot player-analysis-v2-slot-hero"></div>
+        </section>
+
+        <div id="playerAnalysisV2TabsSlot" class="player-analysis-v2-tabs" aria-label="Player Analysis sections"></div>
+
+        <div class="player-analysis-v2-panel-group" data-player-analysis-v2-panel="overview">
+          <div class="player-analysis-v2-overview-grid">
+            <section class="player-analysis-v2-panel player-analysis-v2-panel-chart">
+              <div class="player-analysis-v2-panel-header">
+                <h3>Elo Trend</h3>
+              </div>
+              <div id="playerAnalysisV2ChartSlot" class="player-analysis-v2-slot"></div>
+            </section>
+
+            <div class="player-analysis-v2-summary-stack">
+              <section class="player-analysis-v2-panel">
+                <div class="player-analysis-v2-panel-header">
+                  <h3>Elo Summary</h3>
+                </div>
+                <div class="player-analysis-v2-summary-grid player-analysis-v2-summary-grid-overview">
+                  <div id="playerAnalysisV2PeriodEloSlot" class="player-analysis-v2-slot"></div>
+                  <div class="stat-card player-analysis-v2-overview-card" id="playerCurrentRankLeaderboardCard">
+                    <div class="stat-title">Current Rank Leaderboards</div>
+                    <div class="stat-value">--</div>
+                    <div class="stat-change">No leaderboard rank available</div>
+                    <div class="stat-icon">#</div>
+                  </div>
+                  <div id="playerAnalysisV2PeakEloSlot" class="player-analysis-v2-slot"></div>
+                  <div class="stat-card player-analysis-v2-overview-card" id="playerPeakRankLeaderboardCard">
+                    <div class="stat-title">Peak Rank Leaderboards</div>
+                    <div class="stat-value">--</div>
+                    <div class="stat-change">No peak rank available</div>
+                    <div class="stat-icon">⇧</div>
+                  </div>
+                </div>
+              </section>
+
+              <section class="player-analysis-v2-panel">
+                <div class="player-analysis-v2-panel-header">
+                  <h3>Performance</h3>
+                </div>
+                <div class="player-analysis-v2-performance-stack">
+                  <div class="player-analysis-v2-live-card-grid player-analysis-v2-performance-card-grid">
+                    <div id="playerAnalysisV2EventsSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2UniqueDecksSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2MostPlayedSlot" class="player-analysis-v2-slot"></div>
+                    <div id="playerAnalysisV2LeastPlayedSlot" class="player-analysis-v2-slot"></div>
+                  </div>
+                  <div class="player-analysis-v2-performance-chart-grid">
+                    <div class="player-analysis-v2-overview-chart-card">
+                      <div class="player-analysis-v2-overview-chart-header">
+                        <h4>TopX Conversion</h4>
+                        <p>Finish conversion across the current player scope.</p>
+                      </div>
+                      <div class="player-analysis-v2-overview-chart-shell">
+                        <canvas id="playerTopXMiniChart" aria-label="TopX conversion mini chart"></canvas>
+                      </div>
+                    </div>
+                    <div class="player-analysis-v2-overview-chart-card player-analysis-v2-overview-chart-card-ring">
+                      <div class="player-analysis-v2-overview-chart-header">
+                        <h4>Overall Win Rate</h4>
+                        <p>Compact overall result split for the current scope.</p>
+                      </div>
+                      <div class="player-analysis-v2-overview-chart-shell player-analysis-v2-overview-chart-shell-ring">
+                        <canvas id="playerOverallWinRateRingChart" aria-label="Overall win rate ring chart"></canvas>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <section class="player-analysis-v2-panel player-analysis-v2-filterbar">
+            <div id="playerAnalysisV2FilterBarSlot" class="player-analysis-v2-slot player-analysis-v2-slot-filterbar"></div>
+          </section>
+        </div>
+
+        <div class="player-analysis-v2-panel-group" data-player-analysis-v2-panel="decks" hidden>
+          <section class="player-analysis-v2-panel">
+            <div class="player-analysis-v2-panel-header">
+              <h3>Deck Performance</h3>
+            </div>
+            <div id="playerAnalysisV2DeckSlot" class="player-analysis-v2-slot"></div>
+          </section>
+        </div>
+
+        <div class="player-analysis-v2-panel-group" data-player-analysis-v2-panel="event-history" hidden>
+          <section class="player-analysis-v2-panel">
+            <div class="player-analysis-v2-panel-header">
+              <h3>Event Activity</h3>
+            </div>
+            <div id="playerAnalysisV2EventSlot" class="player-analysis-v2-slot player-analysis-v2-slot-event"></div>
+          </section>
+        </div>
+
+        <div class="player-analysis-v2-panel-group" data-player-analysis-v2-panel="matchups" hidden>
+          <section class="player-analysis-v2-panel player-analysis-v2-matrix-panel">
+            <div class="player-analysis-v2-panel-header">
+              <h3>Player Matchup Matrix</h3>
+            </div>
+            <div id="playerAnalysisV2MatchupMainSlot" class="player-analysis-v2-slot player-analysis-v2-slot-matchup-main"></div>
+          </section>
+
+          <div class="player-analysis-v2-matchup-details">
+            <section class="player-analysis-v2-panel">
+              <div class="player-analysis-v2-panel-header">
+                <h3>Deck vs Opponents</h3>
+              </div>
+              <div id="playerAnalysisV2MatchupDetailPrimarySlot" class="player-analysis-v2-slot"></div>
+            </section>
+
+            <section class="player-analysis-v2-panel">
+              <div class="player-analysis-v2-panel-header">
+                <h3>Deck vs Opposing Decks</h3>
+              </div>
+              <div id="playerAnalysisV2MatchupDetailSecondarySlot" class="player-analysis-v2-slot"></div>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="multiPlayerAggregateOverlay" class="player-rank-drilldown-overlay" hidden>
       <div class="player-rank-drilldown-modal multi-player-aggregate-modal" role="dialog" aria-modal="true" aria-labelledby="multiPlayerAggregateTitle">
         <div class="player-rank-drilldown-header">

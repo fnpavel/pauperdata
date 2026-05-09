@@ -119,6 +119,36 @@
     justify-content: flex-start;
   }
 
+  .player-analysis-v2-appbar,
+  .player-analysis-v2-hero,
+  .player-analysis-v2-overview-grid,
+  .player-analysis-v2-lower-grid,
+  .player-analysis-v2-matchup-details,
+  .player-analysis-v2-filterbar {
+    grid-template-columns: 1fr;
+  }
+
+  .player-analysis-v2-hero-metrics,
+  .player-analysis-v2-hero-side,
+  .player-analysis-v2-summary-grid,
+  .player-analysis-v2-filterbar,
+  .player-analysis-v2-live-card-grid,
+  .player-analysis-v2-slot-filterbar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .player-analysis-v2-performance-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-analysis-v2-table-row {
+    grid-template-columns: minmax(10rem, 1.2fr) repeat(5, minmax(0, 0.75fr));
+  }
+
+  .player-analysis-v2-matrix-row {
+    grid-template-columns: minmax(9rem, 1.2fr) repeat(8, minmax(4.8rem, 1fr));
+  }
+
   canvas {
     max-height: 350px;
   }
@@ -165,6 +195,68 @@
 
   .player-analysis-tab {
     width: 100%;
+  }
+
+  .player-analysis-v2-shell {
+    gap: 1rem;
+  }
+
+  .player-analysis-v2-appbar,
+  .player-analysis-v2-hero,
+  .player-analysis-v2-panel {
+    padding: 1rem;
+  }
+
+  .player-analysis-v2-brand,
+  .player-analysis-v2-hero-main {
+    align-items: flex-start;
+  }
+
+  .player-analysis-v2-hero-main {
+    flex-direction: column;
+  }
+
+  .player-analysis-v2-hero-metrics,
+  .player-analysis-v2-hero-side,
+  .player-analysis-v2-summary-grid,
+  .player-analysis-v2-filterbar,
+  .player-analysis-v2-live-card-grid,
+  .player-analysis-v2-slot-filterbar {
+    grid-template-columns: 1fr;
+  }
+
+  .player-analysis-v2-summary-grid-overview,
+  .player-analysis-v2-performance-card-grid,
+  .player-analysis-v2-performance-chart-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-analysis-v2-performance-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-analysis-v2-panel-header,
+  .player-analysis-v2-hero-footer {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .player-analysis-v2-tabs {
+    gap: 0.4rem 1rem;
+  }
+
+  .player-analysis-v2-table-shell,
+  .player-analysis-v2-matrix-shell {
+    overflow-x: auto;
+  }
+
+  .player-analysis-v2-table-row,
+  .player-analysis-v2-table-shell-compact .player-analysis-v2-table-row {
+    min-width: 44rem;
+  }
+
+  .player-analysis-v2-matrix-row {
+    min-width: 58rem;
   }
 
   .dashboard {
@@ -292,6 +384,30 @@
     min-width: 80px;
     padding: 6px 10px;
     font-size: 0.85rem;
+  }
+
+  .player-analysis-v2-brand-copy strong {
+    font-size: 1.05rem;
+  }
+
+  .player-analysis-v2-hero-title-row h2 {
+    font-size: 1.75rem;
+  }
+
+  .player-analysis-v2-avatar {
+    width: 5.2rem;
+    height: 5.2rem;
+    font-size: 1.8rem;
+  }
+
+  .player-analysis-v2-appnav {
+    justify-content: flex-start;
+  }
+
+  .player-analysis-v2-appnav-item,
+  .player-analysis-v2-shell-chip {
+    width: 100%;
+    justify-content: center;
   }
 
   .stats-container {

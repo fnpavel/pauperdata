@@ -144,6 +144,8 @@ let currentPlayerEloInsights = createEmptyPlayerEloInsights();
 let playerAnalyticsRequestId = 0;
 let activePlayerPrimaryChartView = 'win-rate';
 let activePlayerAnalysisTab = 'overview';
+let playerTopXMiniChart = null;
+let playerOverallWinRateRingChart = null;
 let currentPlayerRawTableState = {
   tableType: 'event',
   title: 'player-event-data',
@@ -291,6 +293,15 @@ function refreshPlayerAnalysisVisiblePanelLayout(tabKey = activePlayerAnalysisTa
   window.requestAnimationFrame(() => {
     if (tabKey === 'overview') {
       syncPlayerPrimaryChartView({ refreshVisibleChart: true });
+      if (playerTopXMiniChart) {
+        playerTopXMiniChart.resize();
+        playerTopXMiniChart.update('none');
+      }
+
+      if (playerOverallWinRateRingChart) {
+        playerOverallWinRateRingChart.resize();
+        playerOverallWinRateRingChart.update('none');
+      }
     }
 
     window.dispatchEvent(new Event('resize'));
@@ -382,6 +393,349 @@ function setupPlayerAnalysisTabs() {
   });
 
   setActivePlayerAnalysisTab(activePlayerAnalysisTab);
+}
+
+function movePlayerAnalysisNodeToSlot(nodeOrSelector, slotOrId) {
+  const node = typeof nodeOrSelector === 'string'
+    ? document.querySelector(nodeOrSelector)
+    : nodeOrSelector;
+  const slot = typeof slotOrId === 'string'
+    ? document.getElementById(slotOrId)
+    : slotOrId;
+
+  if (!node || !slot || node.parentElement === slot) {
+    return;
+  }
+
+  slot.appendChild(node);
+}
+
+function movePlayerAnalysisCardsToSlot(cardIds = [], slotId = '') {
+  const slot = document.getElementById(slotId);
+  if (!slot) {
+    return;
+  }
+
+  cardIds.forEach(cardId => {
+    const card = document.getElementById(cardId);
+    if (card) {
+      slot.appendChild(card);
+    }
+  });
+}
+
+function mountPlayerAnalysisV2Shell() {
+  const playerAnalysisSection = document.getElementById('playerAnalysisSection');
+  const playerAnalysisV2 = document.getElementById('playerAnalysisV2');
+
+  if (!playerAnalysisSection || !playerAnalysisV2 || playerAnalysisSection.dataset.v2Mounted === 'true') {
+    return;
+  }
+
+  playerAnalysisSection.appendChild(playerAnalysisV2);
+  playerAnalysisV2.style.display = 'block';
+
+  const legacyPanelMap = {
+    overview: document.getElementById('playerAnalysisOverviewPanel'),
+    matchups: document.getElementById('playerAnalysisMatchupsPanel'),
+    decks: document.getElementById('playerAnalysisDecksPanel'),
+    'event-history': document.getElementById('playerAnalysisEventHistoryPanel')
+  };
+
+  Object.entries(legacyPanelMap).forEach(([panelKey, panel]) => {
+    if (!panel) {
+      return;
+    }
+
+    panel.id = `${panel.id}Legacy`;
+    panel.removeAttribute('data-player-analysis-panel');
+    panel.hidden = true;
+    panel.style.display = 'none';
+
+    const v2Panel = playerAnalysisV2.querySelector(`[data-player-analysis-v2-panel="${panelKey}"]`);
+    if (!v2Panel) {
+      return;
+    }
+
+    const idMap = {
+      overview: 'playerAnalysisOverviewPanel',
+      matchups: 'playerAnalysisMatchupsPanel',
+      decks: 'playerAnalysisDecksPanel',
+      'event-history': 'playerAnalysisEventHistoryPanel'
+    };
+
+    const tabIdMap = {
+      overview: 'playerAnalysisTabOverview',
+      matchups: 'playerAnalysisTabMatchups',
+      decks: 'playerAnalysisTabDecks',
+      'event-history': 'playerAnalysisTabEventHistory'
+    };
+
+    v2Panel.id = idMap[panelKey];
+    v2Panel.dataset.playerAnalysisPanel = panelKey;
+    v2Panel.setAttribute('role', 'tabpanel');
+    v2Panel.setAttribute('aria-labelledby', tabIdMap[panelKey]);
+    v2Panel.hidden = panelKey !== 'overview';
+  });
+
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerFocusedPlayerCard'), 'playerAnalysisV2HeroSlot');
+  movePlayerAnalysisNodeToSlot(
+    playerAnalysisSection.querySelector('.player-analysis-tab-navigation-shell'),
+    'playerAnalysisV2TabsSlot'
+  );
+  movePlayerAnalysisNodeToSlot(
+    playerAnalysisSection.querySelector('.player-analysis-master-controls')?.closest('.dashboard-panel'),
+    'playerAnalysisV2FilterBarSlot'
+  );
+  movePlayerAnalysisNodeToSlot(
+    playerAnalysisSection.querySelector('.player-filter-summary-panel'),
+    'playerAnalysisV2FilterBarSlot'
+  );
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerCharts'), 'playerAnalysisV2ChartSlot');
+
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerPeriodEloCard'), 'playerAnalysisV2PeriodEloSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerPeakEloCard'), 'playerAnalysisV2PeakEloSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerEventsCard'), 'playerAnalysisV2EventsSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerUniqueDecksCard'), 'playerAnalysisV2UniqueDecksSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerMostPlayedCard'), 'playerAnalysisV2MostPlayedSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerLeastPlayedCard'), 'playerAnalysisV2LeastPlayedSlot');
+
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerDeckStatsSidebar'), 'playerAnalysisV2DeckSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerSelectionPanels'), 'playerAnalysisV2EventSlot');
+  movePlayerAnalysisNodeToSlot(document.getElementById('playerRawTableContainer'), 'playerAnalysisV2EventSlot');
+
+  movePlayerAnalysisNodeToSlot(document.getElementById('matchupStats'), 'playerAnalysisV2MatchupMainSlot');
+  movePlayerAnalysisNodeToSlot(
+    playerAnalysisSection.querySelector('#matchupDashboard .matchup-workspace-header'),
+    'playerAnalysisV2MatchupMainSlot'
+  );
+  movePlayerAnalysisNodeToSlot(document.getElementById('matchupPrimaryTableContainer'), 'playerAnalysisV2MatchupMainSlot');
+  movePlayerAnalysisNodeToSlot(
+    playerAnalysisSection.querySelector('#matchupDashboard .matchup-control-panel'),
+    'playerAnalysisV2MatchupDetailPrimarySlot'
+  );
+  movePlayerAnalysisNodeToSlot(document.getElementById('matchupSecondaryTableContainer'), 'playerAnalysisV2MatchupDetailSecondarySlot');
+
+  Array.from(playerAnalysisSection.children).forEach(child => {
+    if (child === playerAnalysisV2) {
+      return;
+    }
+
+    child.hidden = true;
+    child.style.display = 'none';
+  });
+
+  playerAnalysisSection.dataset.v2Mounted = 'true';
+}
+
+function getPlayerRankHistoryEntry(eloInsights = currentPlayerEloInsights, targetRank = 1) {
+  const selectedEventTypes = Array.isArray(eloInsights?.overallDataset?.eventTypes)
+    ? eloInsights.overallDataset.eventTypes
+    : [];
+  const startDate = String(eloInsights?.overallDataset?.startDate || '').trim();
+  const endDate = String(eloInsights?.overallDataset?.endDate || '').trim();
+  const playerKey = String(eloInsights?.overallPeriodRow?.playerKey || eloInsights?.periodRow?.playerKey || '').trim();
+
+  if (!playerKey || !startDate || !endDate || selectedEventTypes.length === 0) {
+    return Promise.resolve(null);
+  }
+
+  const cacheKey = ['player-rank-history', playerKey, startDate, endDate, selectedEventTypes.join(','), String(targetRank)].join('::');
+  if (playerEloInsightsCache.has(cacheKey)) {
+    return playerEloInsightsCache.get(cacheKey);
+  }
+
+  const historyPromise = (async () => {
+    const availableDates = getRankingsAvailableDates(selectedEventTypes)
+      .filter(date => date >= startDate && date <= endDate);
+    let bestEntry = null;
+
+    for (const date of availableDates) {
+      const dataset = await getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate,
+        endDate: date,
+        entityMode: 'player'
+      });
+
+      const seasonRows = Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : [];
+      const index = seasonRows.findIndex(row => String(row?.playerKey || '').trim() === playerKey);
+      if (index < 0) {
+        continue;
+      }
+
+      const rank = index + 1;
+      if (!bestEntry || rank < bestEntry.rank) {
+        bestEntry = { rank, date };
+        if (rank <= targetRank) {
+          break;
+        }
+      }
+    }
+
+    return bestEntry;
+  })().catch(error => {
+    playerEloInsightsCache.delete(cacheKey);
+    throw error;
+  });
+
+  playerEloInsightsCache.set(cacheKey, historyPromise);
+  return historyPromise;
+}
+
+function destroyPlayerOverviewCharts() {
+  if (playerTopXMiniChart) {
+    playerTopXMiniChart.destroy();
+    playerTopXMiniChart = null;
+  }
+
+  if (playerOverallWinRateRingChart) {
+    playerOverallWinRateRingChart.destroy();
+    playerOverallWinRateRingChart = null;
+  }
+}
+
+function renderPlayerOverviewCharts(stats = {}) {
+  const chartConstructor = globalThis.Chart;
+  if (typeof chartConstructor !== 'function') {
+    destroyPlayerOverviewCharts();
+    return;
+  }
+
+  const topXCanvas = document.getElementById('playerTopXMiniChart');
+  const ringCanvas = document.getElementById('playerOverallWinRateRingChart');
+  const rankStats = stats?.rankStats || {};
+  const parsePercent = value => {
+    const numeric = Number.parseFloat(String(value || '').replace('%', '').trim());
+    return Number.isFinite(numeric) ? numeric : 0;
+  };
+  const topXValues = [
+    parsePercent(rankStats.top1Percent),
+    parsePercent(rankStats.top1_8Percent),
+    parsePercent(rankStats.top9_16Percent),
+    parsePercent(rankStats.top17_32Percent),
+    parsePercent(rankStats.top33PlusPercent)
+  ];
+
+  if (playerTopXMiniChart) {
+    playerTopXMiniChart.destroy();
+    playerTopXMiniChart = null;
+  }
+
+  if (topXCanvas) {
+    playerTopXMiniChart = new chartConstructor(topXCanvas.getContext('2d'), {
+      type: 'line',
+      data: {
+        labels: ['Top 1', 'Top 2-8', 'Top 9-16', 'Top 17-32', 'Top 33+'],
+        datasets: [{
+          data: topXValues,
+          borderColor: '#2fe3d2',
+          backgroundColor: 'rgba(47, 227, 210, 0.14)',
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 4,
+          pointBackgroundColor: '#2fe3d2',
+          pointBorderWidth: 0,
+          tension: 0.34,
+          fill: false
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            enabled: true,
+            callbacks: {
+              label(context) {
+                const value = Number(context?.raw) || 0;
+                return `${value.toFixed(0)}%`;
+              }
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: { color: 'rgba(193, 211, 232, 0.72)', maxRotation: 0, autoSkip: false, font: { size: 10 } },
+            grid: { display: false }
+          },
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              color: 'rgba(193, 211, 232, 0.62)',
+              precision: 0,
+              font: { size: 10 },
+              callback(value) {
+                return `${value}%`;
+              }
+            },
+            grid: { color: 'rgba(193, 211, 232, 0.08)' }
+          }
+        }
+      }
+    });
+  }
+
+  if (playerOverallWinRateRingChart) {
+    playerOverallWinRateRingChart.destroy();
+    playerOverallWinRateRingChart = null;
+  }
+
+  const overallWinRateText = String(stats?.overallWinRate || '--').replace('%', '');
+  const overallWinRateValue = Number.parseFloat(overallWinRateText);
+  const hasOverallWinRate = Number.isFinite(overallWinRateValue);
+  const winRateValue = hasOverallWinRate ? overallWinRateValue : 0;
+  const lossRateValue = hasOverallWinRate ? Math.max(0, 100 - winRateValue) : 0;
+
+  if (ringCanvas) {
+    playerOverallWinRateRingChart = new chartConstructor(ringCanvas.getContext('2d'), {
+      type: 'doughnut',
+      data: {
+        labels: hasOverallWinRate ? ['Wins', 'Losses'] : ['No Data'],
+        datasets: [{
+          data: hasOverallWinRate ? [winRateValue, lossRateValue] : [1],
+          backgroundColor: hasOverallWinRate ? ['#2fe3d2', 'rgba(242, 99, 114, 0.88)'] : ['rgba(154, 171, 195, 0.32)'],
+          borderWidth: 0,
+          hoverOffset: 2
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '72%',
+        animation: false,
+        plugins: {
+          legend: { display: false },
+          tooltip: { enabled: true }
+        }
+      },
+      plugins: [{
+        id: 'player-overall-win-rate-label',
+        afterDraw(chart) {
+          const { ctx } = chart;
+          const meta = chart.getDatasetMeta(0);
+          const center = meta?.data?.[0];
+          if (!center) {
+            return;
+          }
+
+          ctx.save();
+          ctx.fillStyle = '#edf4ff';
+          ctx.font = '700 18px Arial';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(hasOverallWinRate ? `${winRateValue.toFixed(1)}%` : '--', center.x, center.y - 6);
+          ctx.fillStyle = 'rgba(193, 211, 232, 0.68)';
+          ctx.font = '12px Arial';
+          ctx.fillText(hasOverallWinRate ? (stats?.overallRecord || '--') : 'No data', center.x, center.y + 14);
+          ctx.restore();
+        }
+      }]
+    });
+  }
 }
 
 function setPlayerAnalysisCollapseState(button, panel, isExpanded) {
@@ -3404,6 +3758,7 @@ function initPlayerSearchDropdown() {
 
 // Wires Player Analysis controls, drilldown modals, card handlers, and exports.
 export function initPlayerAnalysis() {
+  mountPlayerAnalysisV2Shell();
   initPlayerSearchDropdown();
   setupPlayerRawTableFullscreenAction();
   setupPlayerPrimaryChartToggleListeners();
@@ -3808,6 +4163,10 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
   const topFinishScopeSuffix = resolvedSelectedDeck ? ` (${resolvedSelectedDeck})` : '';
+  const currentRankLabel = getPlayerCurrentRankLabel(eloInsights);
+  const peakEloDate = eloInsights?.peakEntries?.[0]?.date ? formatDate(eloInsights.peakEntries[0].date) : '--';
+  const overviewWindowEnd = String(eloInsights?.overallDataset?.endDate || eloInsights?.dataset?.endDate || '').trim();
+  const currentRankDateLabel = overviewWindowEnd ? formatDate(overviewWindowEnd) : '--';
 
   // Ensure all stat cards are visible
   ['playerFocusedPlayerCard', 'playerEventsCard', 'playerOverallWinRateCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
@@ -3846,7 +4205,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
     "playerPeriodEloCard",
     ".stat-change",
     eloInsights?.periodRow
-      ? `${eloInsights.periodRow.matches || 0} rated matches | ${formatWinRatePercentage((Number(eloInsights.periodRow.winRate) || 0) * 100)} WR${resolvedSelectedDeck ? '' : ` | ${eloInsights.availableDecks?.length || 0} decks tracked`}`
+      ? `${eloInsights.periodRow.matches || 0} rated matches | ${formatWinRatePercentage((Number(eloInsights.periodRow.winRate) || 0) * 100)} WR`
       : 'No rated Elo matches yet'
   );
   updateQueryElement("playerPeakEloCard", ".stat-title", peakScopeLabel);
@@ -3861,7 +4220,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
     "playerPeakEloCard",
     ".stat-change",
     eloInsights?.peakEntries?.length
-      ? `${formatEventName(eloInsights.peakEntries[0].event) || eloInsights.peakEntries[0].event || '--'} | ${Number.isFinite(Number(eloInsights.peakEntries[0].round)) ? `Round ${Number(eloInsights.peakEntries[0].round)}` : '--'}${eloInsights.peakEntries[0].deck ? ` | ${eloInsights.peakEntries[0].deck}` : ''}`
+      ? peakEloDate
       : 'No Elo peak yet'
   );
   updateQueryElement("playerUniqueDecksCard", ".stat-value", stats.uniqueDecks);
@@ -3886,12 +4245,39 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateElement("playerTop9_16%", stats.rankStats.top9_16Percent);
   updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);
   updateElement("playerTop33Plus%", stats.rankStats.top33PlusPercent);
+
+  updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-value", currentRankLabel);
+  updateQueryElement(
+    "playerCurrentRankLeaderboardCard",
+    ".stat-change",
+    currentRankLabel !== '--' ? currentRankDateLabel : 'No leaderboard rank available'
+  );
+  updateQueryElement("playerPeakRankLeaderboardCard", ".stat-value", '--');
+  updateQueryElement("playerPeakRankLeaderboardCard", ".stat-change", 'Calculating peak rank...');
+
   populatePlayerIdentitySummary({
     selectedPlayerLabel,
     stats,
     eloInsights
   });
   renderPlayerDeckStatsCards(stats.deckStatsCards);
+  renderPlayerOverviewCharts(stats);
+
+  getPlayerRankHistoryEntry(eloInsights).then(peakRankEntry => {
+    updateQueryElement(
+      "playerPeakRankLeaderboardCard",
+      ".stat-value",
+      peakRankEntry?.rank ? `#${peakRankEntry.rank}` : '--'
+    );
+    updateQueryElement(
+      "playerPeakRankLeaderboardCard",
+      ".stat-change",
+      peakRankEntry?.date ? formatDate(peakRankEntry.date) : 'No peak rank available'
+    );
+  }).catch(() => {
+    updateQueryElement("playerPeakRankLeaderboardCard", ".stat-value", '--');
+    updateQueryElement("playerPeakRankLeaderboardCard", ".stat-change", 'No peak rank available');
+  });
 
   playerSidebarCardIds.forEach(triggerUpdateAnimation);
   Array.from(document.querySelectorAll('.player-deck-stats-card')).forEach(card => {
