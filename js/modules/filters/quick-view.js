@@ -319,6 +319,20 @@ export function getDefaultSetQuickViewPresetId() {
   return getLatestSetQuickViewPresetId(getAnalysisRows());
 }
 
+// Returns the default Player Analysis preset, preferring the current calendar
+// year's existing "All YYYY" quick view when available.
+export function getDefaultPlayerPresetId() {
+  const analysisRows = getAnalysisRows();
+  const defaultYear = getDefaultQuickViewYear(analysisRows);
+  const calendarYearPresetId = defaultYear ? `all-${defaultYear}` : '';
+
+  if (calendarYearPresetId && getQuickViewPresetDefinitionById(calendarYearPresetId, analysisRows, { includeFuture: true })) {
+    return calendarYearPresetId;
+  }
+
+  return getDefaultSetQuickViewPresetId();
+}
+
 // Ensures multi-event controls have a preset before first render.
 export function ensureDefaultMultiEventPreset() {
   const activePresetId = getActiveMultiEventPreset();
@@ -458,7 +472,7 @@ export function ensureDefaultPlayerPreset() {
     return activePresetId;
   }
 
-  const defaultPresetId = getDefaultSetQuickViewPresetId();
+  const defaultPresetId = getDefaultPlayerPresetId();
   setPlayerPresetButtonState(defaultPresetId);
   return defaultPresetId;
 }

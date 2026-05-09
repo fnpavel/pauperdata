@@ -53,6 +53,7 @@ import {
   setMultiEventPresetButtonState,
   clearMultiEventPresetButtonState,
   getDefaultSetQuickViewPresetId,
+  getDefaultPlayerPresetId,
   ensureDefaultMultiEventPreset,
   setQuickViewYearSelection,
   getScopedPlayerAnalysisRows,
@@ -500,7 +501,7 @@ export function setupFilters() {
   setupAnalysisQualityToggleListeners();
   setDefaultSectionEventType(getPlayerAnalysisSection());
   setMultiEventPresetButtonState(getDefaultSetQuickViewPresetId());
-  setPlayerPresetButtonState(getDefaultSetQuickViewPresetId());
+  setPlayerPresetButtonState(getDefaultPlayerPresetId());
   console.log(`Initial mode is ${getTopMode()}: Event Analysis loads the latest registered event by default`);
 
   applyLatestSingleEventSelection();
