@@ -348,187 +348,267 @@
     </div>
 
     <!-- Player Analysis Section: player filters drive cards, tables, and player-specific charts. -->
-    <div id="playerAnalysisSection" style="display: none;">
-      <div class="stats-container" id="playerStats">
-        <div class="player-stats-row player-stats-row-primary">
-          <div class="stat-card" id="playerFocusedPlayerCard">
-            <div class="stat-title">Focused Player</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change">Select a player to inspect</div>
-            <div class="stat-icon">👤</div>
-          </div>
-          <div class="stat-card" id="playerEventsCard">
-            <div class="stat-title">Total Events</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">📅</div>
-          </div>
-          <div class="stat-card" id="playerOverallWinRateCard">
-            <div class="stat-title">Overall Win Rate</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">📊</div>
-          </div>
-          <div class="stat-card" id="playerUniqueDecksCard">
-            <div class="stat-title">Unique Decks Used</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-icon">🃏</div>
-          </div>
-          <div class="stat-card" id="playerMostPlayedCard">
-            <div class="stat-title">Most Played Deck</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">⬆️</div>
-          </div>
-          <div class="stat-card" id="playerLeastPlayedCard">
-            <div class="stat-title">Least Played Deck</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">⬇️</div>
+    <div id="playerAnalysisSection" class="player-analysis-page" style="display: none;">
+      <section class="player-analysis-section player-identity-layer">
+        <div class="player-analysis-section-header">
+          <div>
+            <h2>Player Identity</h2>
+            <p>The selected player, current standing context, and compact summary metrics.</p>
           </div>
         </div>
-        <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
-        <div class="player-stats-row player-stats-row-secondary">
-          <div class="stat-card" id="playerTop1Card">
-            <div class="stat-title">Number of Top 1</div>
-            <div class="stat-value" id="playerTop1">0</div>
-            <div class="stat-change" id="playerTop1%"></div>
-            <div class="stat-icon">🥇</div>
-          </div>
-          <div class="stat-card" id="playerTop1_8Card">
-            <div class="stat-title">Number of Top 2-8</div>
-            <div class="stat-value" id="playerTop1_8">0</div>
-            <div class="stat-change" id="playerTop1_8%"></div>
-            <div class="stat-icon">🏆</div>
-          </div>
-          <div class="stat-card" id="playerTop9_16Card">
-            <div class="stat-title">Number of Top 9-16</div>
-            <div class="stat-value" id="playerTop9_16">0</div>
-            <div class="stat-change" id="playerTop9_16%"></div>
-            <div class="stat-icon">🏅</div>
-          </div>
-          <div class="stat-card" id="playerTop17_32Card">
-            <div class="stat-title">Number of Top 17-32</div>
-            <div class="stat-value" id="playerTop17_32">0</div>
-            <div class="stat-change" id="playerTop17_32%"></div>
-            <div class="stat-icon">🏅</div>
-          </div>
-          <div class="stat-card" id="playerTop33PlusCard">
-            <div class="stat-title">Number of Top 33+</div>
-            <div class="stat-value" id="playerTop33Plus">0</div>
-            <div class="stat-change" id="playerTop33Plus%"></div>
-            <div class="stat-icon">🏅</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="dashboard player-dashboard" id="playerDashboard">
-        <div class="filters">
-          <h3>Filter Options</h3>
-          <div class="filter-section">
-            <h4>Event Type</h4>
-            <div class="bubble-menu">
-              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
-              <button class="bubble-button event-type-filter" data-type="online">Online</button>
-            </div>
-          </div>
-          <div class="filter-section">
-            <h4>Player</h4>
-            <div class="bubble-menu">
-              <select id="playerFilterMenu" class="player-filter-select">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-          </div>
-          <div class="filter-section">
-            <h4>Quick Views</h4>
-            <div id="playerQuickViewButtons" class="quick-view-control"></div>
-          </div>
-          <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
-            <div id="playerSelectionSummary" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Current Events Selected</div>
-              <div class="multi-event-selection-scroll">
-                <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+        <div class="player-analysis-section-body">
+          <div class="stat-card player-identity-card" id="playerFocusedPlayerCard">
+            <div class="player-identity-card-shell">
+              <div class="player-identity-avatar" id="playerIdentityAvatar" aria-hidden="true">--</div>
+              <div class="player-identity-copy">
+                <div class="stat-title">Focused Player</div>
+                <div class="stat-value">--</div>
+                <div class="stat-change">Select a player to inspect</div>
               </div>
-            </div>
-            <div id="playerEventHistoryBox" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Event History</div>
-              <div class="multi-event-selection-scroll">
-                <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="charts-and-tables">
-          <div id="playerCharts">
-            <div class="chart-container player-primary-chart">
-              <div class="player-chart-header">
-                <h2 class="chart-title">Player Analytics</h2>
-                <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
-                  <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
-                  <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+              <div class="player-identity-highlights">
+                <div class="player-identity-highlight">
+                  <span class="player-identity-highlight-label">Current Rank</span>
+                  <strong class="player-identity-highlight-value" id="playerIdentityCurrentRank">--</strong>
+                </div>
+                <div class="player-identity-highlight">
+                  <span class="player-identity-highlight-label">Current Elo</span>
+                  <strong class="player-identity-highlight-value" id="playerIdentityCurrentElo">--</strong>
+                </div>
+                <div class="player-identity-highlight">
+                  <span class="player-identity-highlight-label">Win Rate</span>
+                  <strong class="player-identity-highlight-value" id="playerIdentityCurrentWinRate">--</strong>
                 </div>
               </div>
-              <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
-              <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-              <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
-              <div id="playerWinRatePanel" class="player-chart-panel">
-                <div id="playerWinRateChartLoading">Loading...</div>
-                <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
-                <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+            </div>
+            <div class="player-identity-meta-grid">
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Events Played</span>
+                <strong class="player-identity-meta-value" id="playerIdentityEventsPlayed">--</strong>
               </div>
-              <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
-                <div id="playerDeckPerformanceChartLoading">Loading...</div>
-                <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
-                <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Matches Played</span>
+                <strong class="player-identity-meta-value" id="playerIdentityMatchesPlayed">--</strong>
+              </div>
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Decks Used</span>
+                <strong class="player-identity-meta-value" id="playerIdentityDecksUsed">--</strong>
+              </div>
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Most Played Deck</span>
+                <strong class="player-identity-meta-value" id="playerIdentityMostPlayedDeck">--</strong>
+              </div>
+              <div class="player-identity-meta-item">
+                <span class="player-identity-meta-label">Last Updated</span>
+                <strong class="player-identity-meta-value" id="playerIdentityLastUpdated">--</strong>
               </div>
             </div>
-            <div class="data-table-container" id="playerRawTableContainer">
-              <div class="leaderboard-table-toolbar">
-                <h2 class="chart-title" id="playerRawTableTitle">--</h2>
-                <div class="matchup-table-actions">
-                  <button type="button" class="bubble-button" id="playerRawTableFullscreenButton">Full Screen</button>
-                  <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="player-analysis-section player-core-analytics-layer">
+        <div class="player-analysis-section-header">
+          <div>
+            <h2>Core Analytics</h2>
+            <p>The main chart, Elo context, and performance summary cards for the selected player.</p>
+          </div>
+        </div>
+        <div class="player-analysis-section-body player-core-analytics-grid">
+          <div class="player-core-analytics-main">
+            <div id="playerCharts">
+              <div class="chart-container player-primary-chart">
+                <div class="player-chart-header">
+                  <h2 class="chart-title">Player Analytics</h2>
+                  <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                    <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
+                    <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+                  </div>
+                </div>
+                <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
+                <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                <select id="playerEndDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>
+                <div id="playerWinRatePanel" class="player-chart-panel">
+                  <div id="playerWinRateChartLoading">Loading...</div>
+                  <canvas id="playerWinRateChart" class="player-primary-chart-canvas"></canvas>
+                  <div id="playerEventDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
+                </div>
+                <div id="playerScatterDeckPanel" class="player-chart-panel" hidden>
+                  <div id="playerDeckPerformanceChartLoading">Loading...</div>
+                  <canvas id="playerDeckPerformanceChart" class="player-primary-chart-canvas"></canvas>
+                  <div id="playerDeckPerformanceDetails" style="color: #fff; padding: 10px; text-align: center;"></div>
                 </div>
               </div>
-              <div class="data-table-scroll player-data-table-scroll">
-                <table class="data-table" id="playerRawTable">
-                  <thead id="playerRawTableHead">
-                    <tr>
-                      <th>Event (Players)</th>
-                      <th>Position</th>
-                      <th>Deck</th>
-                      <th>Wins</th>
-                      <th>Losses</th>
-                      <th>Win Rate</th>
-                      <th>%Meta, %WR</th>
-                      <th>Winner's Deck (%Meta, %WR)</th>
-                    </tr>
-                  </thead>
-                  <tbody id="playerRawTableBody"></tbody>
-                </table>
+            </div>
+          </div>
+
+          <div class="player-core-analytics-sidebar">
+            <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
+            <div class="stats-container" id="playerStats">
+              <div class="player-stats-row player-stats-row-primary">
+                <div class="stat-card" id="playerEventsCard">
+                  <div class="stat-title">Total Events</div>
+                  <div class="stat-value">Loading...</div>
+                  <div class="stat-change"></div>
+                  <div class="stat-icon">📅</div>
+                </div>
+                <div class="stat-card" id="playerOverallWinRateCard">
+                  <div class="stat-title">Overall Win Rate</div>
+                  <div class="stat-value">--</div>
+                  <div class="stat-change"></div>
+                  <div class="stat-icon">📊</div>
+                </div>
+                <div class="stat-card" id="playerUniqueDecksCard">
+                  <div class="stat-title">Unique Decks Used</div>
+                  <div class="stat-value">Loading...</div>
+                  <div class="stat-icon">🃏</div>
+                </div>
+                <div class="stat-card" id="playerMostPlayedCard">
+                  <div class="stat-title">Most Played Deck</div>
+                  <div class="stat-value">Loading...</div>
+                  <div class="stat-change"></div>
+                  <div class="stat-icon">⬆️</div>
+                </div>
+                <div class="stat-card" id="playerLeastPlayedCard">
+                  <div class="stat-title">Least Played Deck</div>
+                  <div class="stat-value">Loading...</div>
+                  <div class="stat-change"></div>
+                  <div class="stat-icon">⬇️</div>
+                </div>
+                <div class="stat-card" id="playerPeriodEloCard">
+                  <div class="stat-title">Elo for the Period</div>
+                  <div class="stat-value">--</div>
+                  <div class="stat-change">No rated Elo matches yet</div>
+                  <div class="stat-icon">🏆</div>
+                </div>
+                <div class="stat-card" id="playerPeakEloCard">
+                  <div class="stat-title">Peak Elo</div>
+                  <div class="stat-value">--</div>
+                  <div class="stat-change">No Elo peak yet</div>
+                  <div class="stat-icon">⚡</div>
+                </div>
+              </div>
+              <div class="player-stats-row player-stats-row-secondary">
+                <div class="stat-card" id="playerTop1Card">
+                  <div class="stat-title">Number of Top 1</div>
+                  <div class="stat-value" id="playerTop1">0</div>
+                  <div class="stat-change" id="playerTop1%"></div>
+                  <div class="stat-icon">🥇</div>
+                </div>
+                <div class="stat-card" id="playerTop1_8Card">
+                  <div class="stat-title">Number of Top 2-8</div>
+                  <div class="stat-value" id="playerTop1_8">0</div>
+                  <div class="stat-change" id="playerTop1_8%"></div>
+                  <div class="stat-icon">🏆</div>
+                </div>
+                <div class="stat-card" id="playerTop9_16Card">
+                  <div class="stat-title">Number of Top 9-16</div>
+                  <div class="stat-value" id="playerTop9_16">0</div>
+                  <div class="stat-change" id="playerTop9_16%"></div>
+                  <div class="stat-icon">🏅</div>
+                </div>
+                <div class="stat-card" id="playerTop17_32Card">
+                  <div class="stat-title">Number of Top 17-32</div>
+                  <div class="stat-value" id="playerTop17_32">0</div>
+                  <div class="stat-change" id="playerTop17_32%"></div>
+                  <div class="stat-icon">🏅</div>
+                </div>
+                <div class="stat-card" id="playerTop33PlusCard">
+                  <div class="stat-title">Number of Top 33+</div>
+                  <div class="stat-value" id="playerTop33Plus">0</div>
+                  <div class="stat-change" id="playerTop33Plus%"></div>
+                  <div class="stat-icon">🏅</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+      </section>
 
-        <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
-          <div class="stat-card" id="playerPeriodEloCard">
-            <div class="stat-title">Elo for the Period</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change">No rated Elo matches yet</div>
-            <div class="stat-icon">🏆</div>
+      <section class="player-analysis-section player-exploration-layer">
+        <div class="player-analysis-section-header">
+          <div>
+            <h2>Exploration</h2>
+            <p>Filters, event history, deck summaries, and detailed tables for deeper inspection.</p>
           </div>
-          <div class="stat-card" id="playerPeakEloCard">
-            <div class="stat-title">Peak Elo</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change">No Elo peak yet</div>
-            <div class="stat-icon">⚡</div>
-          </div>
-          <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
         </div>
-      </div>
+        <div class="player-analysis-section-body">
+          <div class="dashboard player-dashboard" id="playerDashboard">
+            <div class="filters">
+              <h3>Filter Options</h3>
+              <div class="filter-section">
+                <h4>Event Type</h4>
+                <div class="bubble-menu">
+                  <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+                  <button class="bubble-button event-type-filter" data-type="online">Online</button>
+                </div>
+              </div>
+              <div class="filter-section">
+                <h4>Player</h4>
+                <div class="bubble-menu">
+                  <select id="playerFilterMenu" class="player-filter-select">
+                    <!-- Populated dynamically -->
+                  </select>
+                </div>
+              </div>
+              <div class="filter-section">
+                <h4>Quick Views</h4>
+                <div id="playerQuickViewButtons" class="quick-view-control"></div>
+              </div>
+              <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+                <div id="playerSelectionSummary" class="event-calendar-summary">
+                  <div class="event-calendar-summary-label">Current Events Selected</div>
+                  <div class="multi-event-selection-scroll">
+                    <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+                  </div>
+                </div>
+                <div id="playerEventHistoryBox" class="event-calendar-summary">
+                  <div class="event-calendar-summary-label">Event History</div>
+                  <div class="multi-event-selection-scroll">
+                    <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="charts-and-tables">
+              <div class="data-table-container" id="playerRawTableContainer">
+                <div class="leaderboard-table-toolbar">
+                  <h2 class="chart-title" id="playerRawTableTitle">--</h2>
+                  <div class="matchup-table-actions">
+                    <button type="button" class="bubble-button" id="playerRawTableFullscreenButton">Full Screen</button>
+                    <button type="button" class="bubble-button" id="playerRawTableDownloadCsv">Export CSV</button>
+                  </div>
+                </div>
+                <div class="data-table-scroll player-data-table-scroll">
+                  <table class="data-table" id="playerRawTable">
+                    <thead id="playerRawTableHead">
+                      <tr>
+                        <th>Event (Players)</th>
+                        <th>Position</th>
+                        <th>Deck</th>
+                        <th>Wins</th>
+                        <th>Losses</th>
+                        <th>Win Rate</th>
+                        <th>%Meta, %WR</th>
+                        <th>Winner's Deck (%Meta, %WR)</th>
+                      </tr>
+                    </thead>
+                    <tbody id="playerRawTableBody"></tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
+              <div class="player-analysis-subsection-header">
+                <h3>Deck Performance</h3>
+                <p>Deck-specific snapshots and Elo context across the current player scope.</p>
+              </div>
+              <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
 
     <div id="multiPlayerAggregateOverlay" class="player-rank-drilldown-overlay" hidden>
@@ -563,7 +643,14 @@
     </div>
 
     <!-- Matchup Section: reused by deck-vs-deck and player-vs-player top modes. -->
-    <div id="matchupSection" style="display: none;">
+    <div id="matchupSection" class="player-analysis-section player-matchup-intelligence-layer" style="display: none;">
+      <div class="player-analysis-section-header player-matchup-intelligence-header">
+        <div>
+          <h2>Matchup Intelligence</h2>
+          <p>Head-to-head player matchup views, deck-vs-opponent tables, and opposing deck breakdowns.</p>
+        </div>
+      </div>
+      <div class="player-analysis-section-body player-matchup-intelligence-body">
       <div class="stats-container" id="matchupStats">
         <div class="stat-card" id="matchupTotalEventsCard">
           <div class="stat-title">Total Events</div>
@@ -742,6 +829,7 @@
           </div>
           <div id="matchupStatDrilldownContent" class="player-rank-drilldown-content"></div>
         </div>
+      </div>
       </div>
     </div>
 

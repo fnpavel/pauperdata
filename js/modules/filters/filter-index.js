@@ -751,7 +751,7 @@ export function setupTopModeListeners() {
           leaderboardsSection.style.display = 'none';
         }
         if (playerStats) {
-          playerStats.style.display = 'grid';
+          playerStats.style.display = 'flex';
         }
         if (playerCharts) {
           playerCharts.style.display = 'block';

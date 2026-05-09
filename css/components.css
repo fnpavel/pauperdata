@@ -2403,6 +2403,142 @@ button.leaderboard-deck-result-card {
   display: none !important;
 }
 
+.player-analysis-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.player-analysis-section-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.player-analysis-section-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.player-analysis-section-header p {
+  margin: 4px 0 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.player-analysis-section-body {
+  min-width: 0;
+}
+
+.player-analysis-subsection-header {
+  margin-bottom: 12px;
+}
+
+.player-analysis-subsection-header h3 {
+  margin: 0 0 4px;
+  font-size: 1rem;
+}
+
+.player-analysis-subsection-header p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+.player-identity-card {
+  padding: 16px;
+}
+
+.player-identity-card-shell {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.player-identity-avatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.player-identity-copy {
+  min-width: 0;
+}
+
+.player-identity-copy .stat-title,
+.player-identity-copy .stat-value,
+.player-identity-copy .stat-change {
+  margin: 0;
+}
+
+.player-identity-copy .stat-value {
+  font-size: 1.85rem;
+  line-height: 1.1;
+}
+
+.player-identity-highlights {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(110px, 1fr));
+  gap: 10px;
+  min-width: min(100%, 420px);
+}
+
+.player-identity-highlight,
+.player-identity-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.player-identity-highlight-label,
+.player-identity-meta-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.player-identity-highlight-value,
+.player-identity-meta-value {
+  font-size: 1rem;
+  line-height: 1.2;
+}
+
+.player-identity-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.player-core-analytics-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+#playerCharts {
+  min-width: 0;
+}
+
+#playerDashboard {
+  width: 100%;
+}
+
+#matchupSection:not(.matchup-section-embedded) .player-matchup-intelligence-header {
+  display: none;
+}
+
 #leaderboardChartDetails {
   color: var(--text-secondary);
   padding: 10px;
@@ -2800,11 +2936,11 @@ button.leaderboard-deck-result-card {
 }
 
 #playerStats.stats-container .player-stats-row-primary {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 }
 
 #playerStats.stats-container .player-stats-row-secondary {
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 }
 
 #playerStats.stats-container .stat-card {

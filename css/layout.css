@@ -92,6 +92,24 @@ header::before {
   align-items: start;
 }
 
+.player-analysis-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.player-core-analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.player-core-analytics-main,
+.player-core-analytics-sidebar {
+  min-width: 0;
+}
+
 .charts-and-tables {
   flex: 1;
   min-width: 0;

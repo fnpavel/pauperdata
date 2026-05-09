@@ -3395,6 +3395,69 @@ function renderPlayerDeckTableRows(rows = []) {
   `).join("");
 }
 
+function getPlayerIdentityInitials(label = '') {
+  const parts = String(label || '').trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) {
+    return '--';
+  }
+
+  return parts
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join('');
+}
+
+function getPlayerCurrentRankLabel(eloInsights = currentPlayerEloInsights) {
+  const seasonRows = Array.isArray(eloInsights?.overallDataset?.seasonRows)
+    ? eloInsights.overallDataset.seasonRows
+    : Array.isArray(eloInsights?.dataset?.seasonRows)
+      ? eloInsights.dataset.seasonRows
+      : [];
+  const targetRow = eloInsights?.overallPeriodRow || eloInsights?.periodRow || null;
+
+  if (!targetRow || seasonRows.length === 0) {
+    return '--';
+  }
+
+  const rowIndex = seasonRows.findIndex(row => String(row?.playerKey || '').trim() === String(targetRow?.playerKey || '').trim());
+  return rowIndex >= 0 ? `#${rowIndex + 1}` : '--';
+}
+
+function populatePlayerIdentitySummary({
+  selectedPlayerLabel = 'No Player Selected',
+  stats = {},
+  eloInsights = currentPlayerEloInsights
+} = {}) {
+  const updateText = (id, value) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.textContent = value;
+    }
+  };
+
+  const matchesPlayed = Array.isArray(currentPlayerAnalysisRows)
+    ? currentPlayerAnalysisRows.reduce((sum, row) => sum + (Number(row?.Wins) || 0) + (Number(row?.Losses) || 0), 0)
+    : 0;
+  const dateValues = (Array.isArray(currentPlayerAnalysisRows) ? currentPlayerAnalysisRows : [])
+    .map(row => String(row?.Date || '').trim())
+    .filter(Boolean)
+    .sort((a, b) => a.localeCompare(b));
+  const latestDate = dateValues[dateValues.length - 1] || '';
+  const currentEloLabel = eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--';
+  const currentWinRateLabel = String(stats?.overallWinRate || '--');
+  const currentRankLabel = getPlayerCurrentRankLabel(eloInsights);
+
+  updateText('playerIdentityAvatar', getPlayerIdentityInitials(selectedPlayerLabel));
+  updateText('playerIdentityCurrentRank', currentRankLabel);
+  updateText('playerIdentityCurrentElo', currentEloLabel);
+  updateText('playerIdentityCurrentWinRate', currentWinRateLabel);
+  updateText('playerIdentityEventsPlayed', String(stats?.totalEvents || '--'));
+  updateText('playerIdentityMatchesPlayed', matchesPlayed > 0 ? String(matchesPlayed) : '--');
+  updateText('playerIdentityDecksUsed', String(stats?.uniqueDecks || '--'));
+  updateText('playerIdentityMostPlayedDeck', String(stats?.mostPlayedDecks || '--'));
+  updateText('playerIdentityLastUpdated', latestDate ? formatDate(latestDate) : '--');
+}
+
 function renderPlayerRawTableRows(rows = [], tableType = 'event') {
   return tableType === 'event'
     ? renderPlayerEventTableRows(rows)
@@ -3667,6 +3730,11 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateElement("playerTop9_16%", stats.rankStats.top9_16Percent);
   updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);
   updateElement("playerTop33Plus%", stats.rankStats.top33PlusPercent);
+  populatePlayerIdentitySummary({
+    selectedPlayerLabel,
+    stats,
+    eloInsights
+  });
   renderPlayerDeckStatsCards(stats.deckStatsCards);
 
   playerSidebarCardIds.forEach(triggerUpdateAnimation);

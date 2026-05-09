@@ -2,6 +2,21 @@
    to very small phones so later blocks can tighten earlier decisions. */
 /* Tablet: keep side filters visible while reducing chart/card density. */
 @media (max-width: 1024px) {
+  .player-core-analytics-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .player-identity-card-shell {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .player-identity-highlights,
+  .player-identity-meta-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-width: 0;
+  }
+
   .event-dashboard {
     grid-template-columns: 280px 1fr;
   }
@@ -68,6 +83,11 @@
 
 /* Large phones/small tablets: collapse dashboard grids into one column. */
 @media (max-width: 768px) {
+  .player-identity-highlights,
+  .player-identity-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
   .dashboard {
     grid-template-columns: 1fr;
   }
