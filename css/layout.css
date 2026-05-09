@@ -99,9 +99,6 @@ header::before {
 }
 
 .player-core-analytics-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
-  gap: 20px;
   align-items: start;
 }
 

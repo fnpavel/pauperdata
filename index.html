@@ -356,8 +356,8 @@
             <p>The selected player, current standing context, and compact summary metrics.</p>
           </div>
         </div>
-        <div class="player-analysis-section-body">
-          <div class="stat-card player-identity-card" id="playerFocusedPlayerCard">
+        <div class="player-analysis-section-body dashboard-grid">
+          <div class="stat-card player-identity-card dashboard-panel dashboard-panel-hero dashboard-panel-full" id="playerFocusedPlayerCard">
             <div class="player-identity-card-shell">
               <div class="player-identity-avatar" id="playerIdentityAvatar" aria-hidden="true">--</div>
               <div class="player-identity-copy">
@@ -413,10 +413,10 @@
             <p>The main chart, Elo context, and performance summary cards for the selected player.</p>
           </div>
         </div>
-        <div class="player-analysis-section-body player-core-analytics-grid">
-          <div class="player-core-analytics-main">
+        <div class="player-analysis-section-body dashboard-grid player-core-analytics-grid">
+          <div class="player-core-analytics-main dashboard-panel dashboard-panel-hero">
             <div id="playerCharts">
-              <div class="chart-container player-primary-chart">
+              <div class="chart-container player-primary-chart dashboard-panel-body">
                 <div class="player-chart-header">
                   <h2 class="chart-title">Player Analytics</h2>
                   <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
@@ -441,9 +441,11 @@
             </div>
           </div>
 
-          <div class="player-core-analytics-sidebar">
-            <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
-            <div class="stats-container" id="playerStats">
+          <div class="player-core-analytics-sidebar dashboard-metric-stack dashboard-panel-side">
+            <div class="dashboard-panel dashboard-panel-side player-filter-summary-panel">
+              <div id="playerEloDeckFilter" class="player-chart-filter-panel dashboard-panel-body"></div>
+            </div>
+            <div class="stats-container dashboard-panel dashboard-panel-side" id="playerStats">
               <div class="player-stats-row player-stats-row-primary">
                 <div class="stat-card" id="playerEventsCard">
                   <div class="stat-title">Total Events</div>
@@ -531,9 +533,9 @@
             <p>Filters, event history, deck summaries, and detailed tables for deeper inspection.</p>
           </div>
         </div>
-        <div class="player-analysis-section-body">
-          <div class="dashboard player-dashboard" id="playerDashboard">
-            <div class="filters">
+        <div class="player-analysis-section-body dashboard-grid player-exploration-grid">
+          <div class="dashboard-panel dashboard-panel-side">
+            <div class="filters dashboard-panel-body">
               <h3>Filter Options</h3>
               <div class="filter-section">
                 <h4>Event Type</h4>
@@ -554,24 +556,39 @@
                 <h4>Quick Views</h4>
                 <div id="playerQuickViewButtons" class="quick-view-control"></div>
               </div>
-              <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
-                <div id="playerSelectionSummary" class="event-calendar-summary">
-                  <div class="event-calendar-summary-label">Current Events Selected</div>
-                  <div class="multi-event-selection-scroll">
-                    <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
-                  </div>
+            </div>
+          </div>
+
+          <div class="dashboard-panel dashboard-panel-half player-event-history-panel">
+            <div id="playerSelectionPanels" class="event-calendar-summary-stack dashboard-panel-body" style="display: none;">
+              <div id="playerSelectionSummary" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Current Events Selected</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
                 </div>
-                <div id="playerEventHistoryBox" class="event-calendar-summary">
-                  <div class="event-calendar-summary-label">Event History</div>
-                  <div class="multi-event-selection-scroll">
-                    <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
-                  </div>
+              </div>
+              <div id="playerEventHistoryBox" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Event History</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
                 </div>
               </div>
             </div>
+          </div>
 
+          <div class="dashboard-panel dashboard-panel-half dashboard-table-panel deck-stats-sidebar" id="playerDeckStatsSidebar">
+            <div class="dashboard-panel-body">
+              <div class="player-analysis-subsection-header">
+                <h3>Deck Performance</h3>
+                <p>Deck-specific snapshots and Elo context across the current player scope.</p>
+              </div>
+              <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
+            </div>
+          </div>
+
+          <div class="dashboard-panel dashboard-panel-full dashboard-table-panel">
             <div class="charts-and-tables">
-              <div class="data-table-container" id="playerRawTableContainer">
+              <div class="data-table-container dashboard-panel-body" id="playerRawTableContainer">
                 <div class="leaderboard-table-toolbar">
                   <h2 class="chart-title" id="playerRawTableTitle">--</h2>
                   <div class="matchup-table-actions">
@@ -597,14 +614,6 @@
                   </table>
                 </div>
               </div>
-            </div>
-
-            <div class="deck-stats-sidebar" id="playerDeckStatsSidebar">
-              <div class="player-analysis-subsection-header">
-                <h3>Deck Performance</h3>
-                <p>Deck-specific snapshots and Elo context across the current player scope.</p>
-              </div>
-              <div id="playerDeckStatsCards" class="deck-stats-sidebar-cards"></div>
             </div>
           </div>
         </div>
@@ -650,8 +659,8 @@
           <p>Head-to-head player matchup views, deck-vs-opponent tables, and opposing deck breakdowns.</p>
         </div>
       </div>
-      <div class="player-analysis-section-body player-matchup-intelligence-body">
-      <div class="stats-container" id="matchupStats">
+      <div class="player-analysis-section-body dashboard-grid player-matchup-intelligence-body">
+      <div class="stats-container dashboard-panel dashboard-panel-full" id="matchupStats">
         <div class="stat-card" id="matchupTotalEventsCard">
           <div class="stat-title">Total Events</div>
           <div class="stat-value" id="matchupTotalEvents">0</div>
@@ -696,7 +705,7 @@
         </div>
       </div>
 
-      <div class="dashboard matchup-dashboard" id="matchupDashboard">
+      <div class="dashboard matchup-dashboard dashboard-grid dashboard-panel-full" id="matchupDashboard">
         <div class="filters">
           <h3>Filter Options</h3>
           <div class="filter-section">
@@ -735,8 +744,8 @@
           </div>
         </div>
 
-        <div class="charts-and-tables">
-          <div class="chart-container">
+        <div class="charts-and-tables dashboard-grid dashboard-panel-full">
+          <div class="chart-container dashboard-panel dashboard-panel-full dashboard-panel-hero">
             <div class="matchup-chart-header">
               <h2 class="chart-title" id="matchupPrimaryTitle">Deck vs Deck Matchup Matrix</h2>
             </div>
@@ -748,7 +757,7 @@
             </div>
           </div>
 
-          <div class="data-table-container matchup-matrix-table-container" id="matchupPrimaryTableContainer">
+          <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupPrimaryTableContainer">
             <div class="matchup-table-header">
               <h2 class="chart-title" id="matchupTableTitle">Deck Matchup Matrix</h2>
               <div class="matchup-table-actions">
@@ -790,7 +799,7 @@
             </div>
           </div>
 
-          <div class="data-table-container matchup-matrix-table-container" id="matchupSecondaryTableContainer" style="display: none;">
+          <div class="data-table-container matchup-matrix-table-container dashboard-panel dashboard-panel-half dashboard-table-panel" id="matchupSecondaryTableContainer" style="display: none;">
             <div class="matchup-table-header">
               <h2 class="chart-title" id="matchupSecondaryTableTitle">Player Deck vs Opposing Decks</h2>
               <div class="matchup-table-actions">

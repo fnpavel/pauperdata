@@ -2395,12 +2395,61 @@ button.leaderboard-deck-result-card {
 }
 
 #matchupSection.matchup-section-embedded .matchup-dashboard {
-  grid-template-columns: minmax(0, 1fr);
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
 #matchupSection.matchup-section-embedded .matchup-dashboard > .filters,
 #matchupSection.matchup-section-embedded #matchupSelectionPanels {
   display: none !important;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  min-width: 0;
+}
+
+.dashboard-panel {
+  min-width: 0;
+  grid-column: span 12;
+}
+
+.dashboard-panel-hero {
+  grid-column: span 8;
+}
+
+.dashboard-panel-side {
+  grid-column: span 4;
+}
+
+.dashboard-panel-half {
+  grid-column: span 6;
+}
+
+.dashboard-panel-full {
+  grid-column: 1 / -1;
+}
+
+.dashboard-metric-stack {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+.dashboard-panel-body {
+  min-width: 0;
+  height: 100%;
+}
+
+.dashboard-table-panel {
+  min-width: 0;
+}
+
+.dashboard-table-panel .data-table-scroll,
+.dashboard-table-panel .matchup-matrix-scroll,
+.dashboard-table-panel .player-data-table-scroll {
+  min-width: 0;
 }
 
 .player-analysis-section {
@@ -2522,21 +2571,68 @@ button.leaderboard-deck-result-card {
 }
 
 .player-core-analytics-sidebar {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 
 #playerCharts {
   min-width: 0;
 }
 
-#playerDashboard {
+#matchupSection:not(.matchup-section-embedded) .player-matchup-intelligence-header {
+  display: none;
+}
+
+.player-core-analytics-grid > .player-core-analytics-main {
+  grid-column: span 8;
+}
+
+.player-core-analytics-grid > .player-core-analytics-sidebar {
+  grid-column: span 4;
+}
+
+.player-core-analytics-main .player-primary-chart {
+  min-height: 100%;
+}
+
+.player-filter-summary-panel .player-chart-filter-panel {
   width: 100%;
 }
 
-#matchupSection:not(.matchup-section-embedded) .player-matchup-intelligence-header {
-  display: none;
+.player-exploration-grid > .dashboard-panel-side {
+  grid-column: span 4;
+}
+
+.player-event-history-panel {
+  grid-column: span 4;
+}
+
+.player-exploration-grid > .dashboard-table-panel.dashboard-panel-half {
+  grid-column: span 8;
+}
+
+.player-exploration-grid > .dashboard-table-panel.dashboard-panel-full {
+  grid-column: 1 / -1;
+}
+
+.player-matchup-intelligence-body > #matchupStats {
+  grid-column: 1 / -1;
+}
+
+.player-matchup-intelligence-body > #matchupDashboard {
+  grid-column: 1 / -1;
+}
+
+#matchupSection.matchup-section-embedded #matchupDashboard > .charts-and-tables {
+  grid-column: 1 / -1;
+}
+
+#matchupSection.matchup-section-embedded #matchupDashboard > .charts-and-tables > .chart-container {
+  grid-column: 1 / -1;
+}
+
+#matchupSection.matchup-section-embedded #matchupPrimaryTableContainer,
+#matchupSection.matchup-section-embedded #matchupSecondaryTableContainer {
+  grid-column: span 6;
 }
 
 #leaderboardChartDetails {

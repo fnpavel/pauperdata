@@ -2,8 +2,14 @@
    to very small phones so later blocks can tighten earlier decisions. */
 /* Tablet: keep side filters visible while reducing chart/card density. */
 @media (max-width: 1024px) {
-  .player-core-analytics-grid {
-    grid-template-columns: 1fr;
+  .dashboard-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .dashboard-panel-hero,
+  .dashboard-panel-side,
+  .dashboard-panel-half {
+    grid-column: span 6;
   }
 
   .player-identity-card-shell {
@@ -15,6 +21,14 @@
   .player-identity-meta-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     min-width: 0;
+  }
+
+  .player-exploration-grid > .dashboard-panel-side,
+  .player-event-history-panel,
+  .player-exploration-grid > .dashboard-table-panel.dashboard-panel-half,
+  #matchupSection.matchup-section-embedded #matchupPrimaryTableContainer,
+  #matchupSection.matchup-section-embedded #matchupSecondaryTableContainer {
+    grid-column: span 6;
   }
 
   .event-dashboard {
@@ -83,6 +97,23 @@
 
 /* Large phones/small tablets: collapse dashboard grids into one column. */
 @media (max-width: 768px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-panel,
+  .dashboard-panel-hero,
+  .dashboard-panel-side,
+  .dashboard-panel-half,
+  .dashboard-panel-full,
+  .player-exploration-grid > .dashboard-panel-side,
+  .player-event-history-panel,
+  .player-exploration-grid > .dashboard-table-panel.dashboard-panel-half,
+  #matchupSection.matchup-section-embedded #matchupPrimaryTableContainer,
+  #matchupSection.matchup-section-embedded #matchupSecondaryTableContainer {
+    grid-column: 1 / -1;
+  }
+
   .player-identity-highlights,
   .player-identity-meta-grid {
     grid-template-columns: 1fr;
