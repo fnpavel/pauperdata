@@ -2777,6 +2777,28 @@ button.leaderboard-deck-result-card {
   grid-column: 1 / -1;
 }
 
+.matchup-workspace-summary {
+  margin-bottom: 0;
+}
+
+.matchup-control-panel {
+  grid-column: span 3;
+  align-self: start;
+}
+
+.matchup-intelligence-workspace {
+  grid-column: span 9;
+  gap: var(--spacing-md);
+}
+
+.matchup-workspace-header {
+  min-height: 0;
+}
+
+.matchup-workspace-header-body {
+  min-height: 0;
+}
+
 #matchupSection.matchup-section-embedded #matchupDashboard > .charts-and-tables {
   grid-column: 1 / -1;
 }
@@ -2785,8 +2807,13 @@ button.leaderboard-deck-result-card {
   grid-column: 1 / -1;
 }
 
+.matchup-primary-surface,
 #matchupSection.matchup-section-embedded #matchupPrimaryTableContainer,
 #matchupSection.matchup-section-embedded #matchupSecondaryTableContainer {
+  grid-column: 1 / -1;
+}
+
+.matchup-secondary-surface {
   grid-column: span 6;
 }
 
@@ -2876,6 +2903,18 @@ button.leaderboard-deck-result-card {
 
 .matchup-chart-header .chart-title {
   margin-bottom: 0;
+}
+
+.matchup-primary-surface .matchup-table-header {
+  margin-bottom: var(--spacing-sm);
+}
+
+.matchup-primary-surface .matchup-table-helper {
+  margin-bottom: var(--spacing-sm);
+}
+
+.matchup-primary-surface .matchup-matrix-scroll {
+  max-height: clamp(32rem, 76vh, 52rem);
 }
 
 .matchup-matrix-toolbar {

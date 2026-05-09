@@ -259,7 +259,9 @@ th.asc .sort-arrow {
   overflow-y: auto;
   max-height: clamp(28rem, 72vh, 44rem);
   scrollbar-gutter: stable both-edges;
-  box-shadow: inset 0 0 0 1px var(--border-subtle);
+  border-radius: calc(var(--panel-radius) - 0.25rem);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .matchup-matrix-table {
@@ -274,9 +276,9 @@ th.asc .sort-arrow {
 .matchup-matrix-table th,
 .matchup-matrix-table td {
   min-width: 7.25rem;
-  padding: 10px 8px;
-  border-right: 1px solid var(--border-subtle);
-  border-bottom: 1px solid var(--border-subtle);
+  padding: 0.8rem 0.7rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .matchup-matrix-table thead th {
@@ -284,6 +286,7 @@ th.asc .sort-arrow {
   top: 0;
   z-index: 5;
   vertical-align: bottom;
+  backdrop-filter: blur(10px);
 }
 
 .matchup-matrix-table thead tr:first-child > th:first-child,
@@ -292,7 +295,7 @@ th.asc .sort-arrow {
   left: 0;
   z-index: 8;
   box-shadow: 8px 0 14px rgba(0, 0, 0, 0.12);
-  background: linear-gradient(160deg, var(--surface-3), var(--surface-2));
+  background: linear-gradient(160deg, rgba(34, 55, 65, 0.96), rgba(24, 41, 50, 0.98));
 }
 
 #matchupMatrixTable tbody tr:hover {
@@ -302,12 +305,13 @@ th.asc .sort-arrow {
 .matchup-axis-corner,
 .matchup-matrix-column-header,
 .matchup-matrix-row-header {
-  background: linear-gradient(160deg, var(--surface-3), var(--surface-2));
+  background: linear-gradient(160deg, rgba(34, 55, 65, 0.96), rgba(24, 41, 50, 0.98));
 }
 
 .matchup-axis-corner {
   min-width: 14rem !important;
   text-align: left;
+  z-index: 9 !important;
 }
 
 .matchup-matrix-row-header {
@@ -318,35 +322,55 @@ th.asc .sort-arrow {
 .matchup-axis-label {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 0.35rem;
   min-width: 0;
 }
 
 .matchup-axis-deck {
+  font-size: 0.92rem;
   font-weight: 700;
   color: #fffaf1;
-  line-height: 1.25;
+  line-height: 1.3;
 }
 
 .matchup-axis-meta {
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   line-height: 1.35;
-  color: rgba(255, 250, 241, 0.78);
+  color: rgba(255, 250, 241, 0.72);
 }
 
 .matchup-matrix-cell {
   text-align: center !important;
   vertical-align: middle;
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.025);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, outline-color 0.15s ease;
 }
 
 .matchup-matrix-cell-data {
   background: var(--matchup-cell-bg);
-  box-shadow: inset 0 0 0 1px var(--matchup-cell-border);
+  box-shadow: inset 0 0 0 1px var(--matchup-cell-border), inset 0 -10px 22px rgba(0, 0, 0, 0.08);
 }
 
 .matchup-matrix-cell-mirror {
-  background: linear-gradient(145deg, rgba(52, 69, 92, 0.9), rgba(34, 46, 64, 0.96));
+  background: linear-gradient(145deg, rgba(66, 84, 110, 0.9), rgba(37, 49, 66, 0.98));
+}
+
+.matchup-matrix-table .matchup-hover-row,
+.matchup-matrix-table .matchup-hover-column-cell.matchup-matrix-column-header {
+  background: linear-gradient(160deg, rgba(52, 79, 91, 0.98), rgba(24, 41, 50, 0.98));
+}
+
+.matchup-matrix-table .matchup-hover-row-cell {
+  box-shadow: inset 0 0 0 9999px rgba(255, 255, 255, 0.045);
+}
+
+.matchup-matrix-table .matchup-hover-column-cell {
+  outline: 1px solid rgba(242, 233, 213, 0.18);
+  outline-offset: -1px;
+}
+
+.matchup-matrix-table .matchup-hover-primary-cell {
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 241, 0.7), 0 0 0 1px rgba(255, 250, 241, 0.12);
 }
 
 .matchup-matrix-table .matchup-deck-focus-row-cell {
@@ -382,21 +406,25 @@ th.asc .sort-arrow {
 }
 
 .matchup-matrix-rate {
+  font-size: 1rem;
   font-weight: 700;
   color: #fffaf1;
+  letter-spacing: 0.01em;
 }
 
 .matchup-matrix-record {
-  margin-top: 2px;
-  font-size: 0.84rem;
+  margin-top: 0.2rem;
+  font-size: 0.8rem;
   color: var(--text-primary);
 }
 
 .matchup-matrix-sample {
-  margin-top: 4px;
-  font-size: 0.7rem;
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
   line-height: 1.3;
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 
 .matchup-matrix-empty {

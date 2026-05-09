@@ -56,6 +56,11 @@
     grid-template-columns: 280px 1fr;
   }
 
+  .matchup-control-panel,
+  .matchup-intelligence-workspace {
+    grid-column: span 6;
+  }
+
   .player-dashboard {
     gap: 18px;
     grid-template-columns: 248px 1fr;
@@ -147,6 +152,12 @@
     grid-template-columns: 1fr;
   }
 
+  .matchup-control-panel,
+  .matchup-intelligence-workspace,
+  .matchup-secondary-surface {
+    grid-column: 1 / -1;
+  }
+
   .player-analysis-tab-navigation {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,6 +228,17 @@
 
   .filters {
     padding: 15px;
+  }
+
+  .matchup-matrix-table th,
+  .matchup-matrix-table td {
+    min-width: 6.25rem;
+    padding: 0.7rem 0.55rem;
+  }
+
+  .matchup-matrix-row-header,
+  .matchup-axis-corner {
+    min-width: 11.5rem !important;
   }
 
   .event-calendar-day {
@@ -444,6 +466,34 @@
   .player-primary-chart-canvas {
     min-height: 18rem;
     max-height: 20rem !important;
+  }
+
+  .matchup-matrix-table th,
+  .matchup-matrix-table td {
+    min-width: 5.35rem;
+    padding: 0.6rem 0.45rem;
+  }
+
+  .matchup-axis-deck {
+    font-size: 0.82rem;
+  }
+
+  .matchup-axis-meta,
+  .matchup-matrix-sample {
+    font-size: 0.64rem;
+  }
+
+  .matchup-matrix-rate {
+    font-size: 0.88rem;
+  }
+
+  .matchup-matrix-record {
+    font-size: 0.72rem;
+  }
+
+  .matchup-matrix-row-header,
+  .matchup-axis-corner {
+    min-width: 9.25rem !important;
   }
 }
 

@@ -458,6 +458,80 @@ function getMatchupDeckSearchElements() {
   };
 }
 
+function clearMatchupHoverFocus(root = document) {
+  root
+    .querySelectorAll(
+      '.matchup-hover-row, .matchup-hover-row-cell, .matchup-hover-column-cell, .matchup-hover-primary-cell'
+    )
+    .forEach(element => {
+      element.classList.remove(
+        'matchup-hover-row',
+        'matchup-hover-row-cell',
+        'matchup-hover-column-cell',
+        'matchup-hover-primary-cell'
+      );
+    });
+}
+
+function applyMatchupHoverFocus(table, rowKey = '', columnKey = '') {
+  if (!table) {
+    return;
+  }
+
+  clearMatchupHoverFocus(table);
+
+  if (!rowKey && !columnKey) {
+    return;
+  }
+
+  if (rowKey) {
+    table.querySelectorAll(`[data-matchup-row-key="${CSS.escape(rowKey)}"]`).forEach(element => {
+      if (element.tagName === 'TR' || element.tagName === 'TH') {
+        element.classList.add('matchup-hover-row');
+      } else {
+        element.classList.add('matchup-hover-row-cell');
+      }
+    });
+  }
+
+  if (columnKey) {
+    table.querySelectorAll(`[data-matchup-column-key="${CSS.escape(columnKey)}"]`).forEach(element => {
+      element.classList.add('matchup-hover-column-cell');
+    });
+  }
+
+  if (rowKey && columnKey) {
+    table
+      .querySelectorAll(`[data-matchup-row-key="${CSS.escape(rowKey)}"][data-matchup-column-key="${CSS.escape(columnKey)}"]`)
+      .forEach(element => {
+        element.classList.add('matchup-hover-primary-cell');
+      });
+  }
+}
+
+function setupMatchupMatrixHoverFocus(table) {
+  if (!table || table.dataset.hoverFocusBound === 'true') {
+    return;
+  }
+
+  table.addEventListener('mouseover', event => {
+    const targetCell = event.target.closest('[data-matchup-row-key], [data-matchup-column-key]');
+    if (!targetCell || !table.contains(targetCell)) {
+      return;
+    }
+
+    const rowKey = String(targetCell.getAttribute('data-matchup-row-key') || '').trim();
+    const columnKey = String(targetCell.getAttribute('data-matchup-column-key') || '').trim();
+    applyMatchupHoverFocus(table, rowKey, columnKey);
+  });
+
+  table.addEventListener('mouseleave', () => {
+    clearMatchupHoverFocus(table);
+  });
+
+  table.dataset.hoverFocusBound = 'true';
+}
+
 function updateMatchupFullscreenButtonState() {
   // Both primary and secondary matrix tables can enter fullscreen. The button
   // text follows whichever table currently owns document.fullscreenElement.
@@ -2504,12 +2578,13 @@ function buildDeckAxisLabel(deckStats) {
 
 function getMatchupCellTone(winRate, sampleSize) {
   const normalizedSample = Math.min(sampleSize, 12) / 12;
-  const alpha = 0.14 + (normalizedSample * 0.34);
+  const alpha = 0.18 + (normalizedSample * 0.46);
   const hue = Math.round((Math.max(0, Math.min(100, winRate)) / 100) * 120);
+  const lightness = 28 + (normalizedSample * 16);
 
   return {
-    background: `hsla(${hue}, 72%, 42%, ${alpha.toFixed(3)})`,
-    border: `hsla(${hue}, 72%, 60%, ${Math.min(alpha + 0.18, 0.85).toFixed(3)})`
+    background: `hsla(${hue}, 76%, ${lightness.toFixed(1)}%, ${alpha.toFixed(3)})`,
+    border: `hsla(${hue}, 82%, 68%, ${Math.min(alpha + 0.22, 0.92).toFixed(3)})`
   };
 }
 
@@ -3047,7 +3122,7 @@ function renderFocusedPlayerDimensionTable({
       <th scope="col" class="matchup-axis-corner">${escapeHtml(cornerLabel)}</th>
       ${matrixData.columnOrder.map(columnKey => {
         const columnStats = matrixData.columnStatsMap.get(columnKey);
-        return `<th scope="col" class="matchup-matrix-column-header">${buildDeckAxisLabel(columnStats)}</th>`;
+        return `<th scope="col" class="matchup-matrix-column-header" data-matchup-column-key="${escapeHtml(columnKey)}">${buildDeckAxisLabel(columnStats)}</th>`;
       }).join('')}
     </tr>
   `;
@@ -3063,19 +3138,25 @@ function renderFocusedPlayerDimensionTable({
             matrixData.cellMap.get(rowKey)?.get(columnKey),
             rowLabel,
             columnLabel,
-            { allowMirror }
+            {
+              allowMirror,
+              rowKey,
+              columnKey
+            }
           );
         })
         .join('');
 
       return `
-        <tr>
-          <th scope="row" class="matchup-matrix-row-header">${buildDeckAxisLabel(rowStats)}</th>
+        <tr data-matchup-row-key="${escapeHtml(rowKey)}">
+          <th scope="row" class="matchup-matrix-row-header" data-matchup-row-key="${escapeHtml(rowKey)}">${buildDeckAxisLabel(rowStats)}</th>
           ${rowCells}
         </tr>
       `;
     })
     .join('');
+
+  setupMatchupMatrixHoverFocus(headElement.closest('table'));
 }
 
 function getExportFilename(playerLabel, suffix) {
@@ -3516,6 +3597,7 @@ function renderMatchupMatrixTable(matchupMatrix, resolvedMatches = [], focusStat
     })
     .join('');
 
+  setupMatchupMatrixHoverFocus(tableHead.closest('table'));
   syncMatchupDeckSearchControls(matchupMatrix);
 }
 
