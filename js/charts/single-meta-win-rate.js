@@ -14,6 +14,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
   console.log("updateEventMetaWinRateChart called...", { viewType, sortBy });
   setChartLoading("metaWinRateEventChart", true);
   const theme = getChartTheme();
+  const isScatterView = viewType === 'scatter';
 
   const eventData = getMetaWinRateChartData();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || eventData[0]?.Event || '';
@@ -365,10 +366,6 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
               winRateDataset.borderColor[barIndex] = '#B88000'; // Darker Amber border
               winRateDataset.borderWidth[barIndex] = 3; // Increased border width
               
-              // Center view on selected bar - adjust x-axis range
-              metaWinRateEventChart.options.scales.x.min = Math.max(0, barIndex - 5);
-              metaWinRateEventChart.options.scales.x.max = Math.min(metaWinRateEventChart.data.labels.length - 1, barIndex + 5);
-              // Optionally adjust y-axes if needed, but focusing x is usually sufficient for bars
             }
           }
           
@@ -405,6 +402,38 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
 
   try {
     console.log("Creating new chart with viewType:", viewType, "sortBy:", sortBy);
+    const zoomPluginOptions = isScatterView
+      ? {
+          zoom: {
+            wheel: { enabled: true, speed: 0.1 },
+            drag: {
+              enabled: true,
+              backgroundColor: 'rgba(0, 0, 255, 0.3)',
+              borderColor: 'rgba(0, 0, 255, 0.8)',
+              borderWidth: 1
+            },
+            mode: 'xy'
+          },
+          pan: { enabled: false },
+          limits: {
+            x: { min: 0, max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10 },
+            y: { min: 0, max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100 }
+          }
+        }
+      : {
+          zoom: {
+            wheel: { enabled: false },
+            drag: { enabled: false },
+            pinch: { enabled: false },
+            mode: 'xy'
+          },
+          pan: { enabled: false },
+          limits: {
+            y: { min: metaMin, max: metaMax },
+            y2: { min: 0, max: 100 }
+          }
+        };
+
     metaWinRateEventChart = new Chart(metaWinRateCtx, {
       data: { labels, datasets },
       options: {
@@ -437,25 +466,7 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
           },
           // Apply view-specific datalabels or common fallback
           datalabels: options.plugins?.datalabels || { display: false }, 
-          // Apply view-specific zoom settings
-          zoom: {
-            zoom: {
-              wheel: { enabled: true, speed: 0.1 },
-              drag: {
-                enabled: true,
-                backgroundColor: 'rgba(0, 0, 255, 0.3)',
-                borderColor: 'rgba(0, 0, 255, 0.8)',
-                borderWidth: 1
-              },
-              mode: 'xy'
-            },
-            pan: { enabled: false },
-            // View-specific zoom limits
-            limits: viewType === 'bar' 
-              ? { y: { min: metaMin, max: metaMax }, y2: { min: 0, max: 100 } }
-              : { x: { min: 0, max: metaMax > 0 ? Math.ceil(metaMax / 5) * 5 + 5 : 10 }, 
-                  y: { min: 0, max: winRateMax > 0 ? Math.min(100, Math.ceil(winRateMax / 10) * 10 + 10) : 100 } }
-          }
+          zoom: zoomPluginOptions
         },
         // Common animation
         animation: {
@@ -485,9 +496,11 @@ export function updateEventMetaWinRateChart(viewType = 'scatter', sortBy = 'meta
       }
     });
 
-    metaWinRateCtx.ondblclick = () => {
-      metaWinRateEventChart.resetZoom();
-    };
+    metaWinRateCtx.ondblclick = isScatterView
+      ? () => {
+          metaWinRateEventChart.resetZoom();
+        }
+      : null;
   } catch (error) {
     console.error("Error initializing Meta/Win Rate Chart:", error);
   }
