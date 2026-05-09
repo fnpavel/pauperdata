@@ -53,7 +53,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  #playerStats.stats-container .player-stats-row-secondary {
+  #playerStats.stats-container .player-placement-distribution-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
@@ -103,14 +103,18 @@
     gap: 8px;
   }
 
-  #playerStats.stats-container .player-stats-row-primary,
-  #playerStats.stats-container .player-stats-row-secondary {
+  #playerStats.stats-container .player-stats-row-primary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
   }
 
-  #playerStats.stats-container .player-stats-row-secondary .stat-card {
-    min-height: 74px;
+  #playerStats.stats-container .player-placement-distribution-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  #playerStats.stats-container .player-placement-distribution-card {
+    padding: 12px;
   }
 
   .player-primary-chart-canvas {
@@ -230,6 +234,29 @@
     display: grid;
     align-content: start;
     gap: 2px;
+  }
+
+  #playerStats.stats-container .player-placement-distribution-card {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  #playerStats.stats-container .player-placement-distribution-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  #playerStats.stats-container .player-placement-bucket {
+    padding: 10px;
+  }
+
+  #playerStats.stats-container .player-placement-bucket-header,
+  #playerStats.stats-container .player-placement-bucket-meta {
+    gap: 6px;
+  }
+
+  #playerStats.stats-container .player-placement-distribution-subtitle {
+    font-size: 0.74rem;
   }
 
   #singleEventStats.stats-container .stat-title,

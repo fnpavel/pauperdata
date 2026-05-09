@@ -388,36 +388,69 @@
           </div>
         </div>
         <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
-        <div class="player-stats-row player-stats-row-secondary">
-          <div class="stat-card" id="playerTop1Card">
-            <div class="stat-title">Number of Top 1</div>
-            <div class="stat-value" id="playerTop1">0</div>
-            <div class="stat-change" id="playerTop1%"></div>
-            <div class="stat-icon">🥇</div>
+        <div class="stat-card player-placement-distribution-card" id="playerPlacementDistributionCard">
+          <div class="player-placement-distribution-header">
+            <div class="player-placement-distribution-title-wrap">
+              <div class="player-placement-distribution-title" id="playerPlacementDistributionTitle">Placement Distribution</div>
+              <div class="player-placement-distribution-subtitle" id="playerPlacementDistributionSubtitle">Relative finish spread across the active placement buckets.</div>
+            </div>
           </div>
-          <div class="stat-card" id="playerTop1_8Card">
-            <div class="stat-title">Number of Top 2-8</div>
-            <div class="stat-value" id="playerTop1_8">0</div>
-            <div class="stat-change" id="playerTop1_8%"></div>
-            <div class="stat-icon">🏆</div>
-          </div>
-          <div class="stat-card" id="playerTop9_16Card">
-            <div class="stat-title">Number of Top 9-16</div>
-            <div class="stat-value" id="playerTop9_16">0</div>
-            <div class="stat-change" id="playerTop9_16%"></div>
-            <div class="stat-icon">🏅</div>
-          </div>
-          <div class="stat-card" id="playerTop17_32Card">
-            <div class="stat-title">Number of Top 17-32</div>
-            <div class="stat-value" id="playerTop17_32">0</div>
-            <div class="stat-change" id="playerTop17_32%"></div>
-            <div class="stat-icon">🏅</div>
-          </div>
-          <div class="stat-card" id="playerTop33PlusCard">
-            <div class="stat-title">Number of Top 33+</div>
-            <div class="stat-value" id="playerTop33Plus">0</div>
-            <div class="stat-change" id="playerTop33Plus%"></div>
-            <div class="stat-icon">🏅</div>
+          <div class="player-placement-distribution-grid" role="list" aria-label="Placement distribution buckets">
+            <div class="player-placement-bucket" id="playerTop1Card" role="listitem">
+              <div class="player-placement-bucket-header">
+                <span class="player-placement-bucket-label">Top 1</span>
+                <span class="player-placement-bucket-value" id="playerTop1">0</span>
+              </div>
+              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+              <div class="player-placement-bucket-meta">
+                <span class="player-placement-bucket-caption">1st-place finishes</span>
+                <span class="player-placement-bucket-percent" id="playerTop1%"></span>
+              </div>
+            </div>
+            <div class="player-placement-bucket" id="playerTop1_8Card" role="listitem">
+              <div class="player-placement-bucket-header">
+                <span class="player-placement-bucket-label">Top 2-8</span>
+                <span class="player-placement-bucket-value" id="playerTop1_8">0</span>
+              </div>
+              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+              <div class="player-placement-bucket-meta">
+                <span class="player-placement-bucket-caption">Finalist band</span>
+                <span class="player-placement-bucket-percent" id="playerTop1_8%"></span>
+              </div>
+            </div>
+            <div class="player-placement-bucket" id="playerTop9_16Card" role="listitem">
+              <div class="player-placement-bucket-header">
+                <span class="player-placement-bucket-label">Top 9-16</span>
+                <span class="player-placement-bucket-value" id="playerTop9_16">0</span>
+              </div>
+              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+              <div class="player-placement-bucket-meta">
+                <span class="player-placement-bucket-caption">Upper playoff band</span>
+                <span class="player-placement-bucket-percent" id="playerTop9_16%"></span>
+              </div>
+            </div>
+            <div class="player-placement-bucket" id="playerTop17_32Card" role="listitem">
+              <div class="player-placement-bucket-header">
+                <span class="player-placement-bucket-label">Top 17-32</span>
+                <span class="player-placement-bucket-value" id="playerTop17_32">0</span>
+              </div>
+              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+              <div class="player-placement-bucket-meta">
+                <span class="player-placement-bucket-caption">Cut-adjacent finishes</span>
+                <span class="player-placement-bucket-percent" id="playerTop17_32%"></span>
+              </div>
+            </div>
+            <div class="player-placement-bucket" id="playerTop33PlusCard" role="listitem">
+              <div class="player-placement-bucket-header">
+                <span class="player-placement-bucket-label">Top 33+</span>
+                <span class="player-placement-bucket-value" id="playerTop33Plus">0</span>
+              </div>
+              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+              <div class="player-placement-bucket-meta">
+                <span class="player-placement-bucket-caption">Beyond Top 32</span>
+                <span class="player-placement-bucket-percent" id="playerTop33Plus%"></span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -98,6 +98,39 @@ const PLAYER_RANK_DRILLDOWN_CONFIG = {
   }
 };
 
+const PLAYER_PLACEMENT_BUCKET_CONFIG = [
+  {
+    key: 'top1',
+    cardId: 'playerTop1Card',
+    valueId: 'playerTop1',
+    percentId: 'playerTop1%'
+  },
+  {
+    key: 'top1_8',
+    cardId: 'playerTop1_8Card',
+    valueId: 'playerTop1_8',
+    percentId: 'playerTop1_8%'
+  },
+  {
+    key: 'top9_16',
+    cardId: 'playerTop9_16Card',
+    valueId: 'playerTop9_16',
+    percentId: 'playerTop9_16%'
+  },
+  {
+    key: 'top17_32',
+    cardId: 'playerTop17_32Card',
+    valueId: 'playerTop17_32',
+    percentId: 'playerTop17_32%'
+  },
+  {
+    key: 'top33Plus',
+    cardId: 'playerTop33PlusCard',
+    valueId: 'playerTop33Plus',
+    percentId: 'playerTop33Plus%'
+  }
+];
+
 const PLAYER_SUMMARY_DRILLDOWN_CONFIG = {
   totalEvents: {
     cardId: 'playerEventsCard',
@@ -1690,6 +1723,91 @@ function buildPlayerRankCardHoverItems(categoryKey, data = currentPlayerAnalysis
   return items;
 }
 
+function parsePlacementBucketCount(value) {
+  const numericValue = Number(value);
+  return Number.isFinite(numericValue) ? numericValue : 0;
+}
+
+function formatPlacementShareText(count, totalFinishes) {
+  if (totalFinishes <= 0) {
+    return '0.0%';
+  }
+
+  return `${((count / totalFinishes) * 100).toFixed(1)}%`;
+}
+
+function buildPlacementBucketSegmentsMarkup(filledCount, totalSegments) {
+  const segmentCount = Math.max(totalSegments, 0);
+  if (segmentCount === 0) {
+    return '';
+  }
+
+  return Array.from({ length: segmentCount }, (_, index) => `
+    <span class="player-placement-bucket-bar-segment${index < filledCount ? ' is-filled' : ''}"></span>
+  `).join('');
+}
+
+function renderPlayerPlacementDistribution(stats = {}, selectedDeckLabel = '') {
+  const rankStats = stats?.rankStats || {};
+  const buckets = PLAYER_PLACEMENT_BUCKET_CONFIG.map(bucket => ({
+    ...bucket,
+    count: parsePlacementBucketCount(rankStats[bucket.key])
+  }));
+  const totalFinishes = buckets.reduce((sum, bucket) => sum + bucket.count, 0);
+  const highestCount = buckets.reduce((maxCount, bucket) => Math.max(maxCount, bucket.count), 0);
+
+  const titleElement = document.getElementById('playerPlacementDistributionTitle');
+  if (titleElement) {
+    titleElement.textContent = selectedDeckLabel
+      ? `Placement Distribution (${selectedDeckLabel})`
+      : 'Placement Distribution';
+  }
+
+  const subtitleElement = document.getElementById('playerPlacementDistributionSubtitle');
+  if (subtitleElement) {
+    subtitleElement.textContent = totalFinishes > 0
+      ? `${totalFinishes} recorded finish${totalFinishes === 1 ? '' : 'es'} across the active filters.`
+      : 'No recorded finishes in the current filters.';
+  }
+
+  buckets.forEach(bucket => {
+    const card = document.getElementById(bucket.cardId);
+    const valueElement = document.getElementById(bucket.valueId);
+    const percentElement = document.getElementById(bucket.percentId);
+    const barShellElement = card?.querySelector('.player-placement-bucket-bar-shell');
+    const shareText = formatPlacementShareText(bucket.count, totalFinishes);
+
+    if (valueElement) {
+      valueElement.textContent = String(bucket.count);
+    }
+
+    if (percentElement) {
+      percentElement.textContent = totalFinishes > 0
+        ? `${Math.round((bucket.count / totalFinishes) * 100)}% share`
+        : '0% share';
+    }
+
+    if (!card) {
+      return;
+    }
+
+    card.dataset.finishCount = String(bucket.count);
+    card.dataset.finishShare = shareText;
+    card.style.setProperty('--bucket-segment-total', String(Math.max(totalFinishes, 1)));
+    card.classList.toggle('is-leading', highestCount > 0 && bucket.count === highestCount);
+    card.setAttribute(
+      'aria-label',
+      `${card.querySelector('.player-placement-bucket-label')?.textContent || 'Placement bucket'}: ${bucket.count} of ${totalFinishes} recorded finishes, ${shareText} of recorded finishes`
+    );
+
+    if (barShellElement) {
+      barShellElement.innerHTML = buildPlacementBucketSegmentsMarkup(bucket.count, totalFinishes);
+    }
+  });
+
+  triggerUpdateAnimation('playerPlacementDistributionCard');
+}
+
 function updatePlayerRankCardHoverNotes(data = currentPlayerAnalysisRows) {
   Object.entries(PLAYER_RANK_DRILLDOWN_CONFIG).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
@@ -1697,7 +1815,15 @@ function updatePlayerRankCardHoverNotes(data = currentPlayerAnalysisRows) {
       return;
     }
 
-    const hoverItems = buildPlayerRankCardHoverItems(categoryKey, data);
+    const countValue = Number(card.dataset.finishCount) || 0;
+    const shareText = card.dataset.finishShare || '0.0%';
+    const hoverItems = countValue > 0
+      ? [
+          `${highlightDrilldownText('Exact count')} ${highlightDrilldownText(String(countValue), 'number')}`,
+          `${highlightDrilldownText('Share of finishes')} ${highlightDrilldownText(shareText, 'number')}`,
+          ...buildPlayerRankCardHoverItems(categoryKey, data)
+        ]
+      : [];
     const existingNote = card.querySelector('.player-stat-card-hover-note');
 
     if (hoverItems.length === 0) {
@@ -3579,7 +3705,6 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   const selectedPlayerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'No Player Selected';
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
-  const topFinishScopeSuffix = resolvedSelectedDeck ? ` (${resolvedSelectedDeck})` : '';
 
   // Ensure all stat cards are visible
   ['playerFocusedPlayerCard', 'playerEventsCard', 'playerOverallWinRateCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
@@ -3641,23 +3766,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateQueryElement("playerMostPlayedCard", ".stat-change", stats.mostPlayedCount);
   updateQueryElement("playerLeastPlayedCard", ".stat-value", stats.leastPlayedDecks);
   updateQueryElement("playerLeastPlayedCard", ".stat-change", stats.leastPlayedCount);
-  updateQueryElement("playerTop1Card", ".stat-title", `Number of Top 1${topFinishScopeSuffix}`);
-  updateQueryElement("playerTop1_8Card", ".stat-title", `Number of Top 2-8${topFinishScopeSuffix}`);
-  updateQueryElement("playerTop9_16Card", ".stat-title", `Number of Top 9-16${topFinishScopeSuffix}`);
-  updateQueryElement("playerTop17_32Card", ".stat-title", `Number of Top 17-32${topFinishScopeSuffix}`);
-  updateQueryElement("playerTop33PlusCard", ".stat-title", `Number of Top 33+${topFinishScopeSuffix}`);
-
-  // Rank Stats
-  updateElement("playerTop1", stats.rankStats.top1);
-  updateElement("playerTop1_8", stats.rankStats.top1_8);
-  updateElement("playerTop9_16", stats.rankStats.top9_16);
-  updateElement("playerTop17_32", stats.rankStats.top17_32);
-  updateElement("playerTop33Plus", stats.rankStats.top33Plus);
-  updateElement("playerTop1%", stats.rankStats.top1Percent);
-  updateElement("playerTop1_8%", stats.rankStats.top1_8Percent);
-  updateElement("playerTop9_16%", stats.rankStats.top9_16Percent);
-  updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);
-  updateElement("playerTop33Plus%", stats.rankStats.top33PlusPercent);
+  renderPlayerPlacementDistribution(stats, resolvedSelectedDeck);
   renderPlayerDeckStatsCards(stats.deckStatsCards);
 
   playerSidebarCardIds.forEach(triggerUpdateAnimation);
