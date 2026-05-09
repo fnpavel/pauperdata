@@ -2386,6 +2386,23 @@ button.leaderboard-deck-result-card {
   width: var(--dashboard-width);
 }
 
+#matchupSection.matchup-section-embedded {
+  margin-top: 20px;
+}
+
+#matchupSection.matchup-section-embedded #matchupStats.stats-container {
+  width: 100%;
+}
+
+#matchupSection.matchup-section-embedded .matchup-dashboard {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#matchupSection.matchup-section-embedded .matchup-dashboard > .filters,
+#matchupSection.matchup-section-embedded #matchupSelectionPanels {
+  display: none !important;
+}
+
 #leaderboardChartDetails {
   color: var(--text-secondary);
   padding: 10px;

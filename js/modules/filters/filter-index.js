@@ -745,7 +745,7 @@ export function setupTopModeListeners() {
           playerAnalysisSection.style.display = 'block';
         }
         if (matchupSection) {
-          matchupSection.style.display = 'none';
+          matchupSection.style.display = 'block';
         }
         if (leaderboardsSection) {
           leaderboardsSection.style.display = 'none';

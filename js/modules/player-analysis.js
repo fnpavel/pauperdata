@@ -15,6 +15,7 @@ import { getPlayerIdentityKey, getSelectedPlayerLabel, rowMatchesPlayerKey } fro
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
 import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters/filter-index.js';
 import { downloadPlayerAnalysisCsv } from './export-table-csv.js';
+import { updateEmbeddedPlayerAnalysisMatchup } from './matchup-analysis.js';
 
 function getSelectedPlayerEventTypes() {
   const playerAnalysisSection = document.getElementById('playerAnalysisSection');
@@ -3348,6 +3349,14 @@ export async function updatePlayerAnalytics() {
 
   console.log("baseFilteredData length in player-analysis:", baseFilteredData.length);
   updatePlayerAnalysis(filteredData, eloInsights);
+  await updateEmbeddedPlayerAnalysisMatchup({
+    selectedPlayerKey: selectedPlayer || selectedPlayerKey,
+    selectedPlayerLabel,
+    selectedEventTypes,
+    startDate,
+    endDate,
+    playerRows: filteredData
+  });
 }
 
 function renderPlayerEventTableRows(rows = []) {

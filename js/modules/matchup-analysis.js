@@ -66,6 +66,7 @@ let activeMatchupDeckFocusLabel = '';
 let hasAppliedDefaultMatchupPlayerFocus = false;
 let matchupAnalyticsRequestId = 0;
 let matchupCatalogUiPromise = null;
+let embeddedPlayerAnalysisMatchupActive = false;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -185,14 +186,18 @@ function getTopMode() {
 }
 
 function isMatchupTopMode(mode = getTopMode()) {
-  return MATCHUP_TOP_MODES.has(mode);
+  return MATCHUP_TOP_MODES.has(mode) || (embeddedPlayerAnalysisMatchupActive && mode === 'player');
 }
 
 function isPlayerMatchupMode() {
-  return getTopMode() === 'player-matchup';
+  return getTopMode() === 'player-matchup' || (embeddedPlayerAnalysisMatchupActive && getTopMode() === 'player');
 }
 
 function getActiveMatchupViewConfig() {
+  if (isPlayerMatchupMode()) {
+    return MATCHUP_VIEW_CONFIGS['player-matchup'];
+  }
+
   return MATCHUP_VIEW_CONFIGS[getTopMode()] || MATCHUP_VIEW_CONFIGS['deck-matchup'];
 }
 
@@ -267,10 +272,10 @@ function renderMatchupLoadingState(message = 'Loading matchup archive...') {
   updateElementText('matchupTotalEvents', '--');
   updateElementText('matchupTotalMatches', '--');
   updateElementText('matchupTrackedDecks', '--');
-  updateElementText('matchupMostPlayedDeck', '--');
-  updateElementText('matchupMostCommonPair', '--');
-  updateElementText('matchupResultsHero', '--');
-  updateElementText('matchupResultsVillain', '--');
+  updateElementText('matchupMostPlayedDeckName', '--');
+  updateElementText('matchupMostCommonPairName', '--');
+  updateElementText('matchupResultsHeroName', '--');
+  updateElementText('matchupResultsVillainName', '--');
   const tableHead = document.getElementById('matchupMatrixTableHead');
   const tableBody = document.getElementById('matchupMatrixTableBody');
 
@@ -296,10 +301,10 @@ function renderMatchupErrorState(message = 'Unable to load matchup data.') {
   updateElementText('matchupTotalEvents', '--');
   updateElementText('matchupTotalMatches', '--');
   updateElementText('matchupTrackedDecks', '--');
-  updateElementText('matchupMostPlayedDeck', '--');
-  updateElementText('matchupMostCommonPair', '--');
-  updateElementText('matchupResultsHero', '--');
-  updateElementText('matchupResultsVillain', '--');
+  updateElementText('matchupMostPlayedDeckName', '--');
+  updateElementText('matchupMostCommonPairName', '--');
+  updateElementText('matchupResultsHeroName', '--');
+  updateElementText('matchupResultsVillainName', '--');
   const tableHead = document.getElementById('matchupMatrixTableHead');
   const tableBody = document.getElementById('matchupMatrixTableBody');
 
@@ -346,6 +351,14 @@ async function ensureMatchupCatalogUiReady() {
 
 function getMatchupSection() {
   return document.getElementById('matchupSection');
+}
+
+function setEmbeddedPlayerAnalysisMatchupState(isActive) {
+  embeddedPlayerAnalysisMatchupActive = Boolean(isActive);
+  const matchupSection = getMatchupSection();
+  if (matchupSection) {
+    matchupSection.classList.toggle('matchup-section-embedded', embeddedPlayerAnalysisMatchupActive);
+  }
 }
 
 function getMatchupQuickViewRoot() {
@@ -1304,11 +1317,12 @@ function updateMatchupViewCopy() {
   const { secondaryContainer } = getMatchupPlayerTableElements();
   const { panel: deckSearchPanel } = getMatchupDeckSearchElements();
   const isPlayerMode = isPlayerMatchupMode();
+  const isEmbeddedPlayerMode = embeddedPlayerAnalysisMatchupActive && getTopMode() === 'player';
   const hasFocusedPlayer = Boolean(currentMatchupPlayerFocus?.selectedPlayerKey);
   const focusedPlayerLabel = currentMatchupPlayerFocus?.selectedPlayerLabel || 'Player';
 
   if (playerSection) {
-    playerSection.style.display = isPlayerMode ? 'block' : 'none';
+    playerSection.style.display = isPlayerMode && !isEmbeddedPlayerMode ? 'block' : 'none';
   }
 
   if (matrixToolbar) {
@@ -1334,14 +1348,20 @@ function updateMatchupViewCopy() {
   updateElementText(
     'matchupPrimaryTitle',
     isPlayerMode
-      ? 'Player Matchup Explorer'
+      ? isEmbeddedPlayerMode
+        ? 'Player Matchup Matrix'
+        : 'Player Matchup Explorer'
       : viewConfig.primaryTitle
   );
   updateElementText('matchupTableTitle', viewConfig.matrixTitleBase);
   updateElementText(
     'matchupTableHelper',
     isPlayerMode
-      ? hasFocusedPlayer
+      ? isEmbeddedPlayerMode
+        ? hasFocusedPlayer
+          ? `Each row is one deck played by ${focusedPlayerLabel}, and each column is an opponent or opposing deck table below.`
+          : 'Select a player in Player Analysis to populate the matchup tables.'
+        : hasFocusedPlayer
         ? `Each row is one deck played by ${focusedPlayerLabel}, and each column is an opponent.`
         : 'Search for a player to populate the matchup table.'
       : `Each cell shows the row ${viewConfig.entitySingular}'s match win rate against the column ${viewConfig.entitySingular}. Diagonal cells count same-${viewConfig.entitySingular} pairings.`
@@ -1349,15 +1369,17 @@ function updateMatchupViewCopy() {
   updateElementText(
     'matchupMatrixSummary',
     isPlayerMode
-      ? 'Search for a player to see two tables: one for each deck they played versus opponents, and another for each deck they played versus opposing decks.'
+      ? isEmbeddedPlayerMode
+        ? 'Player Analysis feeds this matchup view using the current player, date window, event types, and selected event groups.'
+        : 'Search for a player to see two tables: one for each deck they played versus opponents, and another for each deck they played versus opposing decks.'
       : viewConfig.emptyMatrixSummary
   );
   updateElementText('matchupTotalMatchesDetails', viewConfig.resolvedMatchCopy);
   updateElementText('matchupTrackedDecksDetails', viewConfig.noEntitiesAvailableCopy);
-  updateElementText('matchupMostPlayedDeckDetails', isPlayerMode ? 'Search for a player' : viewConfig.noEntitySamplesCopy);
-  updateElementText('matchupMostCommonPairDetails', isPlayerMode ? 'Search for a player' : 'No sampled pairings');
-  updateElementText('matchupResultsHeroDetails', isPlayerMode ? 'Search for a player' : 'No sampled pairings');
-  updateElementText('matchupResultsVillainDetails', isPlayerMode ? 'Search for a player' : viewConfig.noEntitySamplesCopy);
+  updateElementText('matchupMostPlayedDeckDetails', isPlayerMode ? (isEmbeddedPlayerMode ? 'Select a player in Player Analysis' : 'Search for a player') : viewConfig.noEntitySamplesCopy);
+  updateElementText('matchupMostCommonPairDetails', isPlayerMode ? (isEmbeddedPlayerMode ? 'Select a player in Player Analysis' : 'Search for a player') : 'No sampled pairings');
+  updateElementText('matchupResultsHeroDetails', isPlayerMode ? (isEmbeddedPlayerMode ? 'Select a player in Player Analysis' : 'Search for a player') : 'No sampled pairings');
+  updateElementText('matchupResultsVillainDetails', isPlayerMode ? (isEmbeddedPlayerMode ? 'Select a player in Player Analysis' : 'Search for a player') : viewConfig.noEntitySamplesCopy);
 
   setMatchupCardTitle('matchupTotalEventsCard', 'Total Events');
   setMatchupCardTitle('matchupTotalMatchesCard', 'Resolved Matches');
@@ -1927,6 +1949,66 @@ function buildMatchupSelectionSnapshot() {
     filteredEvents,
     filteredMatches,
     groupSummaries
+  };
+}
+
+function getMatchupRecordEventScopeKey(record = {}) {
+  return [
+    String(record?.event_type || '').trim().toLowerCase(),
+    String(record?.date || '').trim(),
+    String(record?.event || '').trim().toLowerCase()
+  ].join('|||');
+}
+
+function getPlayerAnalysisRowEventScopeKeys(playerRows = []) {
+  return new Set(
+    (Array.isArray(playerRows) ? playerRows : [])
+      .map(row => [
+        String(row?.EventType || '').trim().toLowerCase(),
+        String(row?.Date || '').trim(),
+        String(row?.Event || '').trim().toLowerCase()
+      ].join('|||'))
+      .filter(key => key !== '||||||')
+  );
+}
+
+function filterRecordsToAllowedEventScope(records = [], allowedEventScopeKeys = new Set()) {
+  if (!(allowedEventScopeKeys instanceof Set) || allowedEventScopeKeys.size === 0) {
+    return [];
+  }
+
+  return (Array.isArray(records) ? records : []).filter(record => allowedEventScopeKeys.has(getMatchupRecordEventScopeKey(record)));
+}
+
+function buildEmbeddedPlayerAnalysisMatchupSnapshot({
+  selectedEventTypes = [],
+  startDate = '',
+  endDate = '',
+  playerRows = []
+} = {}) {
+  const filters = {
+    eventTypes: selectedEventTypes,
+    startDate,
+    endDate
+  };
+  const allowedEventScopeKeys = getPlayerAnalysisRowEventScopeKeys(playerRows);
+  const baseEvents = filterRecordsToAllowedEventScope(
+    filterMatchupRecords(getQualityFilteredMatchupEvents(), filters),
+    allowedEventScopeKeys
+  );
+  const filteredMatches = filterRecordsToAllowedEventScope(
+    filterMatchupRecords(getMatchupMatches(), filters),
+    allowedEventScopeKeys
+  ).filter(match => shouldIncludeMatchupEvent(match?.event));
+
+  return {
+    baseEvents,
+    filteredEvents: baseEvents,
+    filteredMatches,
+    groupSummaries: [],
+    startDate,
+    endDate,
+    eventTypes: selectedEventTypes
   };
 }
 
@@ -3279,7 +3361,9 @@ function renderFocusedPlayerMatchupTables(resolvedMatches = [], focusState = cur
       bodyElement: tableElements.primaryBody,
       title: 'Player Deck vs Opponents',
       helper: 'Each row is one deck the selected player used, and each column is an opponent.',
-      emptyMessage: 'Search for a player to inspect deck-by-opponent results across the selected events.',
+      emptyMessage: embeddedPlayerAnalysisMatchupActive
+        ? 'Select a player in Player Analysis to inspect deck-by-opponent results across the selected events.'
+        : 'Search for a player to inspect deck-by-opponent results across the selected events.',
       cornerLabel: 'Played Deck',
       matrixData: null
     });
@@ -3291,7 +3375,9 @@ function renderFocusedPlayerMatchupTables(resolvedMatches = [], focusState = cur
       bodyElement: tableElements.secondaryBody,
       title: 'Player Deck vs Opposing Decks',
       helper: 'Each row is one deck the selected player used, and each column is an opposing deck.',
-      emptyMessage: 'Search for a player to inspect deck-by-opposing-deck results across the selected events.',
+      emptyMessage: embeddedPlayerAnalysisMatchupActive
+        ? 'Select a player in Player Analysis to inspect deck-by-opposing-deck results across the selected events.'
+        : 'Search for a player to inspect deck-by-opposing-deck results across the selected events.',
       cornerLabel: 'Played Deck',
       matrixData: null
     });
@@ -3443,7 +3529,9 @@ function renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches = [], foc
 
   if (isPlayerMatchupMode()) {
     if (!focusState?.selectedPlayerKey) {
-      summaryElement.textContent = 'Search for a player to see two tables: deck versus opponents, and deck versus opposing decks, across all selected events.';
+      summaryElement.textContent = embeddedPlayerAnalysisMatchupActive
+        ? 'Select a player in Player Analysis to see two tables: deck versus opponents, and deck versus opposing decks, across the selected events.'
+        : 'Search for a player to see two tables: deck versus opponents, and deck versus opposing decks, across all selected events.';
       return;
     }
 
@@ -4587,6 +4675,7 @@ export function initMatchupAnalysis() {
   initMatchupPlayerSearchDropdown();
   setupMatchupDeckSearchListeners();
   renderMatchupLoadingState();
+  setEmbeddedPlayerAnalysisMatchupState(false);
   updateMatchupViewCopy();
   setupMatchupFilterListeners();
   setupMatchupCsvExportListeners();
@@ -4594,6 +4683,11 @@ export function initMatchupAnalysis() {
   setupMatchupDrilldownModal();
   setupMatchupDrilldownCards();
   updateMatchupDrilldownCardStates();
+  const playerMatchupButton = document.querySelector('[data-top-mode="player-matchup"]');
+  if (playerMatchupButton) {
+    playerMatchupButton.hidden = true;
+    playerMatchupButton.setAttribute('aria-hidden', 'true');
+  }
   ensureMatchupCatalogUiReady()
     .catch(error => {
       console.error('Failed to load matchup catalog.', error);
@@ -4605,6 +4699,7 @@ export function initMatchupAnalysis() {
 // Loads matchup data for the active window, rebuilds summaries/matrices, and
 // protects against stale async responses.
 export async function updateMatchupAnalytics() {
+  setEmbeddedPlayerAnalysisMatchupState(false);
   const requestId = matchupAnalyticsRequestId + 1;
   matchupAnalyticsRequestId = requestId;
   currentMatchupSnapshot = null;
@@ -4688,6 +4783,117 @@ export async function updateMatchupAnalytics() {
   renderMatchupSummary(snapshot, matchupMatrix, resolvedMatches, currentMatchupPlayerFocus);
   renderMatchupMatrixTable(matchupMatrix, resolvedMatches, currentMatchupPlayerFocus);
   updateMatchupSelectionSummary(selectionSnapshot);
+  updateMatchupDrilldownCardStates();
+
+  if (activeMatchupDrilldownCategory) {
+    renderMatchupDrilldown(activeMatchupDrilldownCategory);
+  }
+}
+
+export async function updateEmbeddedPlayerAnalysisMatchup({
+  selectedPlayerKey = '',
+  selectedPlayerLabel = '',
+  selectedEventTypes = [],
+  startDate = '',
+  endDate = '',
+  playerRows = []
+} = {}) {
+  if (getTopMode() !== 'player') {
+    return;
+  }
+
+  setEmbeddedPlayerAnalysisMatchupState(true);
+  const matchupSection = getMatchupSection();
+  if (matchupSection) {
+    matchupSection.style.display = 'block';
+  }
+
+  const normalizedPlayerKey = normalizeMatchupEntityKey(selectedPlayerKey || selectedPlayerLabel);
+  currentMatchupSnapshot = null;
+  currentMatchupMatrix = null;
+  currentResolvedMatchupMatches = [];
+  currentMatchupPlayerFocus = null;
+  activeMatchupPlayerFocusKey = normalizedPlayerKey;
+  activeMatchupPlayerFocusLabel = String(selectedPlayerLabel || '').trim();
+  updateMatchupExportButtons();
+  renderMatchupLoadingState('Loading player matchup matrix...');
+  updateMatchupViewCopy();
+
+  if (!startDate || !endDate || !Array.isArray(selectedEventTypes) || selectedEventTypes.length === 0) {
+    renderMatchupErrorState('Choose Player Analysis filters to load matchup data.');
+    return;
+  }
+
+  try {
+    await ensureMatchupCatalogLoaded();
+    await ensureMatchupWindowLoaded({
+      startDate,
+      endDate,
+      includeMatches: true,
+      includeRounds: false
+    });
+  } catch (error) {
+    console.error('Failed to load embedded Player Analysis matchup data.', error);
+    currentMatchupSnapshot = null;
+    currentMatchupMatrix = null;
+    currentResolvedMatchupMatches = [];
+    currentMatchupPlayerFocus = null;
+    updateMatchupDrilldownCardStates();
+    updateMatchupExportButtons();
+    renderMatchupErrorState('Unable to load matchup data for the current Player Analysis filters.');
+    return;
+  }
+
+  const selectionSnapshot = buildEmbeddedPlayerAnalysisMatchupSnapshot({
+    selectedEventTypes,
+    startDate,
+    endDate,
+    playerRows
+  });
+  const baseResolvedMatches = selectionSnapshot.filteredMatches.filter(isResolvedMatchupMatch);
+  const filteredMatchesForPlayer = normalizedPlayerKey
+    ? baseResolvedMatches.filter(match => matchIncludesPlayer(match, normalizedPlayerKey))
+    : [];
+  const contributingEventIds = new Set(
+    filteredMatchesForPlayer
+      .map(match => String(match?.event_id || '').trim())
+      .filter(Boolean)
+  );
+  const resolvedPlayerLabel = String(selectedPlayerLabel || '').trim();
+
+  currentMatchupPlayerFocus = {
+    selectedPlayerKey: normalizedPlayerKey,
+    selectedPlayerLabel: resolvedPlayerLabel,
+    playerOptions: [],
+    matchesForPlayer: filteredMatchesForPlayer,
+    filteredMatches: filteredMatchesForPlayer,
+    contributingEventIds
+  };
+
+  const snapshot = normalizedPlayerKey
+    ? {
+        ...selectionSnapshot,
+        filteredEvents: selectionSnapshot.filteredEvents.filter(event =>
+          contributingEventIds.has(String(event?.event_id || '').trim())
+        ),
+        filteredMatches: filteredMatchesForPlayer
+      }
+    : {
+        ...selectionSnapshot,
+        filteredEvents: [],
+        filteredMatches: []
+      };
+  const matchupMatrix = calculateMatchupMatrix(snapshot.filteredMatches);
+  currentMatchupSnapshot = snapshot;
+  currentResolvedMatchupMatches = snapshot.filteredMatches;
+  currentMatchupMatrix = matchupMatrix;
+  updateMatchupViewCopy();
+  updateMatchupExportButtons();
+
+  populateMatchupStats(snapshot, matchupMatrix, snapshot.filteredMatches, currentMatchupPlayerFocus);
+  renderMatchupSummary(snapshot, matchupMatrix, snapshot.filteredMatches, currentMatchupPlayerFocus);
+  renderMatchupMatrixTable(matchupMatrix, snapshot.filteredMatches, currentMatchupPlayerFocus);
+  updateMatchupSelectionSummary(snapshot);
   updateMatchupDrilldownCardStates();
 
   if (activeMatchupDrilldownCategory) {
