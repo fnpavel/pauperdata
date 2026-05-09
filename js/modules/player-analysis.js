@@ -10,7 +10,7 @@ import { calculatePlayerEventTable, calculatePlayerDeckTable } from '../utils/da
 import { countUniqueEvents, formatDate, formatEventName } from '../utils/format.js';
 import { getEventGroupInfo } from '../utils/event-groups.js';
 import { isUnknownHeavyBelowTop32FilterEnabled } from '../utils/analysis-data.js';
-import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
+import { buildRankingsDataset, getDefaultRankingsRange, getRankingsAvailableDates } from '../utils/rankings-data.js';
 import { getPlayerIdentityKey, getSelectedPlayerLabel, rowMatchesPlayerKey } from '../utils/player-names.js';
 import { getPlayerAnalysisActivePreset, getPlayerPresetRows } from '../utils/player-analysis-presets.js';
 import { setSingleEventType, setSelectedSingleEvent, updateEventFilter } from './filters/filter-index.js';
@@ -528,37 +528,164 @@ function mountPlayerAnalysisV2Shell() {
   playerAnalysisSection.dataset.v2Mounted = 'true';
 }
 
-function getPlayerRankHistoryEntry(eloInsights = currentPlayerEloInsights, targetRank = 1) {
-  const selectedEventTypes = Array.isArray(eloInsights?.overallDataset?.eventTypes)
+function getPlayerLeaderboardRankContext(eloInsights = currentPlayerEloInsights) {
+  const selectedDeck = String(eloInsights?.selectedDeck || '').trim();
+  const eventTypes = Array.isArray(eloInsights?.overallDataset?.eventTypes)
     ? eloInsights.overallDataset.eventTypes
-    : [];
-  const startDate = String(eloInsights?.overallDataset?.startDate || '').trim();
-  const endDate = String(eloInsights?.overallDataset?.endDate || '').trim();
-  const playerKey = String(eloInsights?.overallPeriodRow?.playerKey || eloInsights?.periodRow?.playerKey || '').trim();
+    : Array.isArray(eloInsights?.dataset?.eventTypes)
+      ? eloInsights.dataset.eventTypes
+      : [];
+  const startDate = String(eloInsights?.overallDataset?.startDate || eloInsights?.dataset?.startDate || '').trim();
+  const endDate = String(eloInsights?.overallDataset?.endDate || eloInsights?.dataset?.endDate || '').trim();
 
-  if (!playerKey || !startDate || !endDate || selectedEventTypes.length === 0) {
+  if (selectedDeck) {
+    const dataset = eloInsights?.leaderboardDeckDataset || eloInsights?.deckDataset || null;
+    const targetRow = eloInsights?.periodRow || null;
+    const seasonRows = (Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : [])
+      .filter(row => String(row?.deck || '').trim() === selectedDeck);
+
+    return {
+      entityMode: 'player_deck',
+      selectedDeck,
+      eventTypes,
+      startDate,
+      endDate,
+      targetRow,
+      seasonRows
+    };
+  }
+
+  const dataset = eloInsights?.overallDataset || eloInsights?.dataset || null;
+  const targetRow = eloInsights?.overallPeriodRow || eloInsights?.periodRow || null;
+
+  return {
+    entityMode: 'player',
+    selectedDeck: '',
+    eventTypes,
+    startDate,
+    endDate,
+    targetRow,
+    seasonRows: Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : []
+  };
+}
+
+function getPlayerCurrentLeaderboardIdentity(eloInsights = currentPlayerEloInsights) {
+  const selectedDeck = String(eloInsights?.selectedDeck || '').trim();
+  const eventTypes = Array.isArray(eloInsights?.overallDataset?.eventTypes)
+    ? eloInsights.overallDataset.eventTypes
+    : Array.isArray(eloInsights?.dataset?.eventTypes)
+      ? eloInsights.dataset.eventTypes
+      : [];
+  const basePlayerKey = String(
+    eloInsights?.overallPeriodRow?.basePlayerKey
+    || eloInsights?.periodRow?.basePlayerKey
+    || eloInsights?.overallPeriodRow?.playerKey
+    || eloInsights?.periodRow?.playerKey
+    || ''
+  ).trim();
+  const playerKey = selectedDeck && basePlayerKey
+    ? `${basePlayerKey}:::${selectedDeck}`
+    : basePlayerKey;
+
+  return {
+    entityMode: selectedDeck ? 'player_deck' : 'player',
+    selectedDeck,
+    eventTypes,
+    basePlayerKey,
+    playerKey
+  };
+}
+
+function getPlayerLatestSeasonLeaderboardRank(eloInsights = currentPlayerEloInsights) {
+  const identity = getPlayerCurrentLeaderboardIdentity(eloInsights);
+  const eventTypes = Array.isArray(identity?.eventTypes) ? identity.eventTypes : [];
+  const playerKey = String(identity?.playerKey || '').trim();
+  const selectedDeck = String(identity?.selectedDeck || '').trim();
+  const entityMode = identity?.entityMode === 'player_deck' ? 'player_deck' : 'player';
+
+  if (!playerKey || eventTypes.length === 0) {
     return Promise.resolve(null);
   }
 
-  const cacheKey = ['player-rank-history', playerKey, startDate, endDate, selectedEventTypes.join(','), String(targetRank)].join('::');
+  const availableDates = getRankingsAvailableDates(eventTypes);
+  const defaultRange = getDefaultRankingsRange(availableDates);
+  const startDate = String(defaultRange?.startDate || '').trim();
+  const endDate = String(defaultRange?.endDate || '').trim();
+  if (!startDate || !endDate) {
+    return Promise.resolve(null);
+  }
+
+  const cacheKey = ['player-current-leaderboard-rank', entityMode, playerKey, selectedDeck || 'all-decks', startDate, endDate, eventTypes.join(',')].join('::');
+  if (playerEloInsightsCache.has(cacheKey)) {
+    return playerEloInsightsCache.get(cacheKey);
+  }
+
+  const rankPromise = (async () => {
+    const dataset = await getCachedPlayerRankingsDataset({
+      eventTypes,
+      startDate,
+      endDate,
+      entityMode
+    });
+    const seasonRows = (Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : [])
+      .filter(row => !selectedDeck || String(row?.deck || '').trim() === selectedDeck);
+    const index = seasonRows.findIndex(row => String(row?.playerKey || '').trim() === playerKey);
+    if (index < 0) {
+      return null;
+    }
+
+    return {
+      rank: index + 1,
+      date: endDate
+    };
+  })().catch(error => {
+    playerEloInsightsCache.delete(cacheKey);
+    throw error;
+  });
+
+  playerEloInsightsCache.set(cacheKey, rankPromise);
+  return rankPromise;
+}
+
+function getPlayerRankHistoryEntry(eloInsights = currentPlayerEloInsights, targetRank = 1) {
+  const identity = getPlayerCurrentLeaderboardIdentity(eloInsights);
+  const selectedEventTypes = Array.isArray(identity?.eventTypes) ? identity.eventTypes : [];
+  const playerKey = String(identity?.playerKey || '').trim();
+  const selectedDeck = String(identity?.selectedDeck || '').trim();
+  const entityMode = identity?.entityMode === 'player_deck' ? 'player_deck' : 'player';
+
+  if (!playerKey || selectedEventTypes.length === 0) {
+    return Promise.resolve(null);
+  }
+
+  const availableDates = getRankingsAvailableDates(selectedEventTypes);
+  const defaultRange = getDefaultRankingsRange(availableDates);
+  const startDate = String(defaultRange?.startDate || '').trim();
+  const endDate = String(defaultRange?.endDate || '').trim();
+  if (!startDate || !endDate) {
+    return Promise.resolve(null);
+  }
+
+  const cacheKey = ['player-rank-history-current-season', entityMode, playerKey, selectedDeck || 'all-decks', startDate, endDate, selectedEventTypes.join(','), String(targetRank)].join('::');
   if (playerEloInsightsCache.has(cacheKey)) {
     return playerEloInsightsCache.get(cacheKey);
   }
 
   const historyPromise = (async () => {
-    const availableDates = getRankingsAvailableDates(selectedEventTypes)
+    const seasonDates = availableDates
       .filter(date => date >= startDate && date <= endDate);
     let bestEntry = null;
 
-    for (const date of availableDates) {
+    for (const date of seasonDates) {
       const dataset = await getCachedPlayerRankingsDataset({
         eventTypes: selectedEventTypes,
         startDate,
         endDate: date,
-        entityMode: 'player'
+        entityMode
       });
 
-      const seasonRows = Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : [];
+      const seasonRows = (Array.isArray(dataset?.seasonRows) ? dataset.seasonRows : [])
+        .filter(row => !selectedDeck || String(row?.deck || '').trim() === selectedDeck);
       const index = seasonRows.findIndex(row => String(row?.playerKey || '').trim() === playerKey);
       if (index < 0) {
         continue;
@@ -1816,6 +1943,7 @@ async function buildPlayerEloInsights({
     // refresh needs both for comparison and filter options.
     const [
       overallDataset,
+      leaderboardDeckDataset,
       deckDataset,
       runningAllTimeDataset,
       seasonalDataset,
@@ -1834,6 +1962,12 @@ async function buildPlayerEloInsights({
         entityMode: 'player_deck',
         matchFilterKey: allowedDeckEventKeys.join('@@'),
         matchFilter: deckMatchFilter
+      }),
+      getCachedPlayerRankingsDataset({
+        eventTypes: selectedEventTypes,
+        startDate,
+        endDate,
+        entityMode: 'player_deck'
       }),
       getCachedPlayerRankingsDataset({
         eventTypes: selectedEventTypes,
@@ -1918,6 +2052,7 @@ async function buildPlayerEloInsights({
       dataset: resolvedDeck ? deckDataset : overallDataset,
       overallDataset,
       deckDataset,
+      leaderboardDeckDataset,
       periodRow,
       overallPeriodRow,
       historyEntries: historyWithDeckFallbacks,
@@ -3919,13 +4054,7 @@ function getPlayerIdentityInitials(label = '') {
 }
 
 function getPlayerCurrentRankLabel(eloInsights = currentPlayerEloInsights) {
-  const seasonRows = Array.isArray(eloInsights?.overallDataset?.seasonRows)
-    ? eloInsights.overallDataset.seasonRows
-    : Array.isArray(eloInsights?.dataset?.seasonRows)
-      ? eloInsights.dataset.seasonRows
-      : [];
-  const targetRow = eloInsights?.overallPeriodRow || eloInsights?.periodRow || null;
-
+  const { seasonRows = [], targetRow = null } = getPlayerLeaderboardRankContext(eloInsights);
   if (!targetRow || seasonRows.length === 0) {
     return '--';
   }
@@ -3956,10 +4085,9 @@ function populatePlayerIdentitySummary({
   const latestDate = dateValues[dateValues.length - 1] || '';
   const currentEloLabel = eloInsights?.periodRow ? formatEloRating(eloInsights.periodRow.rating) : '--';
   const currentWinRateLabel = String(stats?.overallWinRate || '--');
-  const currentRankLabel = getPlayerCurrentRankLabel(eloInsights);
 
   updateText('playerIdentityAvatar', getPlayerIdentityInitials(selectedPlayerLabel));
-  updateText('playerIdentityCurrentRank', currentRankLabel);
+  updateText('playerIdentityCurrentRank', '--');
   updateText('playerIdentityCurrentElo', currentEloLabel);
   updateText('playerIdentityCurrentWinRate', currentWinRateLabel);
   updateText('playerIdentityEventsPlayed', String(stats?.totalEvents || '--'));
@@ -4163,10 +4291,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   const eloScopeLabel = resolvedSelectedDeck ? `Elo with ${resolvedSelectedDeck}` : 'Elo for the Period';
   const peakScopeLabel = resolvedSelectedDeck ? `Peak Elo with ${resolvedSelectedDeck}` : 'Peak Elo';
   const topFinishScopeSuffix = resolvedSelectedDeck ? ` (${resolvedSelectedDeck})` : '';
-  const currentRankLabel = getPlayerCurrentRankLabel(eloInsights);
   const peakEloDate = eloInsights?.peakEntries?.[0]?.date ? formatDate(eloInsights.peakEntries[0].date) : '--';
-  const overviewWindowEnd = String(eloInsights?.overallDataset?.endDate || eloInsights?.dataset?.endDate || '').trim();
-  const currentRankDateLabel = overviewWindowEnd ? formatDate(overviewWindowEnd) : '--';
 
   // Ensure all stat cards are visible
   ['playerFocusedPlayerCard', 'playerEventsCard', 'playerOverallWinRateCard', 'playerUniqueDecksCard', 'playerMostPlayedCard', 'playerLeastPlayedCard',
@@ -4246,12 +4371,8 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   updateElement("playerTop17_32%", stats.rankStats.top17_32Percent);
   updateElement("playerTop33Plus%", stats.rankStats.top33PlusPercent);
 
-  updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-value", currentRankLabel);
-  updateQueryElement(
-    "playerCurrentRankLeaderboardCard",
-    ".stat-change",
-    currentRankLabel !== '--' ? currentRankDateLabel : 'No leaderboard rank available'
-  );
+  updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-value", '--');
+  updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-change", 'Loading current leaderboard rank...');
   updateQueryElement("playerPeakRankLeaderboardCard", ".stat-value", '--');
   updateQueryElement("playerPeakRankLeaderboardCard", ".stat-change", 'Calculating peak rank...');
 
@@ -4262,6 +4383,31 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   });
   renderPlayerDeckStatsCards(stats.deckStatsCards);
   renderPlayerOverviewCharts(stats);
+
+  getPlayerLatestSeasonLeaderboardRank(eloInsights).then(currentRankEntry => {
+    const currentRankLabel = currentRankEntry?.rank ? `#${currentRankEntry.rank}` : '--';
+    const currentRankDateLabel = currentRankEntry?.date ? formatDate(currentRankEntry.date) : '';
+    updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-value", currentRankLabel);
+    updateQueryElement(
+      "playerCurrentRankLeaderboardCard",
+      ".stat-change",
+      currentRankLabel !== '--' && currentRankDateLabel
+        ? currentRankDateLabel
+        : 'No leaderboard rank available'
+    );
+
+    const identityCurrentRank = document.getElementById('playerIdentityCurrentRank');
+    if (identityCurrentRank) {
+      identityCurrentRank.textContent = currentRankLabel;
+    }
+  }).catch(() => {
+    updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-value", '--');
+    updateQueryElement("playerCurrentRankLeaderboardCard", ".stat-change", 'No leaderboard rank available');
+    const identityCurrentRank = document.getElementById('playerIdentityCurrentRank');
+    if (identityCurrentRank) {
+      identityCurrentRank.textContent = '--';
+    }
+  });
 
   getPlayerRankHistoryEntry(eloInsights).then(peakRankEntry => {
     updateQueryElement(
