@@ -188,7 +188,6 @@ const fixedBucketBarPlugin = {
       return;
     }
 
-    const maxBucketCount = Math.max(Number(pluginOptions?.maxBucketCount || 0), 1);
     const xStep = xScale.ticks.length > 1
       ? Math.abs(xScale.getPixelForTick(1) - xScale.getPixelForTick(0))
       : chartArea.width;
@@ -270,7 +269,10 @@ const fixedBucketBarPlugin = {
         }
 
         const rawCount = Number(point.rawCount || 0);
-        const widthRatio = Math.max(0, Math.min(1, rawCount / maxBucketCount));
+        const rowTotalCopies = Math.max(Number(point.totalCopies || 0), 0);
+        const widthRatio = rowTotalCopies > 0
+          ? Math.max(0, Math.min(1, rawCount / rowTotalCopies))
+          : 0;
         const centerY = element.y;
         const segmentLeft = element.x - (xStep / 2);
         const barLeft = segmentLeft + 6;
