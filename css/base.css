@@ -65,6 +65,7 @@
   --line-height-body: 1.5;
   --panel-bg: linear-gradient(160deg, var(--surface-2), var(--surface-1));
   --panel-bg-hover: linear-gradient(160deg, var(--surface-3), var(--surface-2));
+  --surface-gradient: linear-gradient(155deg, rgba(34, 55, 65, 0.94), rgba(18, 32, 41, 0.98));
   --panel-border: 1px solid var(--border-subtle);
   --panel-radius-sm: 0.75rem;
   --panel-radius: 1rem;
@@ -74,6 +75,11 @@
   --panel-padding-lg: var(--spacing-xl);
   --panel-shadow: 0 0.75rem 1.5rem var(--shadow-color);
   --panel-shadow-hover: 0 1rem 2rem var(--shadow-color);
+  --panel-glow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.03);
+  --hover-shadow: 0 1.15rem 2.5rem rgba(0, 0, 0, 0.34);
+  --focus-ring: 0 0 0 2px rgba(217, 164, 65, 0.34), 0 0 0 5px rgba(22, 122, 114, 0.16);
+  --transition-fast: 150ms ease;
+  --transition-medium: 240ms ease;
   --button-height: 2.5rem;
   --button-padding-x: var(--spacing-md);
   --button-radius: 999px;
@@ -138,6 +144,10 @@ html[data-theme="light"] {
   --badge-bg: rgba(186, 127, 34, 0.14);
   --badge-border: 1px solid rgba(186, 127, 34, 0.2);
   --badge-text: #8d611d;
+  --surface-gradient: linear-gradient(155deg, rgba(255, 250, 241, 0.96), rgba(247, 239, 223, 0.98));
+  --panel-glow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 0 0 1px rgba(137, 97, 34, 0.05);
+  --hover-shadow: 0 1rem 2.2rem rgba(25, 41, 47, 0.14);
+  --focus-ring: 0 0 0 2px rgba(186, 127, 34, 0.26), 0 0 0 5px rgba(30, 123, 116, 0.12);
 }
 
 /* Global reset keeps the static dashboard predictable across browsers. */
@@ -156,6 +166,17 @@ body {
   color: var(--text-primary);
   line-height: 1.6;
   transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 html[data-theme="light"] body {

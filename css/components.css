@@ -2620,6 +2620,10 @@ button.leaderboard-deck-result-card {
   min-width: 0;
 }
 
+.player-analysis-tab-panel[data-active="true"] {
+  animation: fadeInUp 0.22s ease both;
+}
+
 .player-analysis-tab-panel[hidden] {
   display: none !important;
 }
@@ -4539,6 +4543,151 @@ html[data-theme="light"] .range-calendar-day.active {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
+}
+
+/* Final polish layer: adds restrained depth and interaction clarity without
+   changing layout or functionality. */
+.top-mode-button,
+.bubble-button,
+.table-toggle-btn,
+.leaderboard-info-badge,
+.player-analysis-tab,
+.player-analysis-collapse-toggle,
+.stat-card,
+.filters,
+.chart-container,
+.data-table-container,
+.event-calendar-summary,
+.player-rank-drilldown-modal,
+.deck-selector-modal {
+  transition:
+    transform var(--transition-medium),
+    box-shadow var(--transition-medium),
+    background var(--transition-medium),
+    border-color var(--transition-fast),
+    color var(--transition-fast),
+    opacity var(--transition-fast);
+}
+
+.filters,
+.chart-container,
+.data-table-container,
+.event-calendar-summary,
+.player-rank-drilldown-modal,
+.deck-selector-modal {
+  background: var(--surface-gradient);
+  box-shadow: var(--panel-shadow), var(--panel-glow);
+  border: var(--panel-border);
+}
+
+.filters:hover,
+.chart-container:hover,
+.data-table-container:hover,
+.event-calendar-summary:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--hover-shadow), var(--panel-glow);
+}
+
+.bubble-button,
+.table-toggle-btn,
+.top-mode-button {
+  position: relative;
+  overflow: hidden;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0)),
+    var(--input-bg);
+  border-color: rgba(217, 164, 65, 0.18);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
+}
+
+.bubble-button:hover,
+.table-toggle-btn:hover,
+.top-mode-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0.7rem 1.5rem rgba(0, 0, 0, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.bubble-button.active,
+.table-toggle-btn.active,
+.top-mode-button.active,
+.player-analysis-tab[aria-selected="true"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, rgba(22, 122, 114, 0.94), rgba(17, 89, 96, 0.98));
+  border-color: rgba(91, 189, 180, 0.42);
+  box-shadow: 0 0.9rem 1.8rem rgba(13, 63, 68, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.bubble-button:focus-visible,
+.table-toggle-btn:focus-visible,
+.top-mode-button:focus-visible,
+.player-analysis-tab:focus-visible,
+.player-analysis-collapse-toggle:focus-visible,
+.player-search-input:focus-visible,
+.bubble-menu select:focus-visible,
+.player-search-select:focus-within {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.leaderboard-info-badge {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0)),
+    var(--badge-bg);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.stat-card {
+  background: var(--surface-gradient);
+  box-shadow: var(--panel-shadow), var(--panel-glow);
+}
+
+.stat-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--hover-shadow), var(--panel-glow);
+}
+
+.stat-card.drilldown-card:hover {
+  border-color: rgba(91, 189, 180, 0.28);
+}
+
+.player-analysis-tab-navigation,
+.player-analysis-filter-card,
+.matchup-control-panel,
+.matchup-workspace-header {
+  box-shadow: var(--panel-shadow), var(--panel-glow);
+}
+
+.player-analysis-collapse-toggle[aria-expanded="true"] {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0)),
+    linear-gradient(135deg, rgba(109, 74, 167, 0.9), rgba(17, 89, 96, 0.96));
+  border-color: rgba(191, 164, 243, 0.32);
+}
+
+.player-search-input,
+.bubble-menu select {
+  transition:
+    border-color var(--transition-fast),
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.player-rank-drilldown-modal,
+.deck-selector-modal {
+  backdrop-filter: blur(12px);
+}
+
+.matchup-matrix-table .matchup-hover-row-cell,
+.matchup-matrix-table .matchup-hover-column-cell,
+.matchup-matrix-table .matchup-hover-primary-cell,
+.data-table tbody tr,
+.player-event-history-list > div {
+  transition:
+    background-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    transform var(--transition-fast);
 }
 
 @media (max-width: 760px) {

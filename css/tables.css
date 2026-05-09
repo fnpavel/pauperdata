@@ -179,6 +179,14 @@ th.desc .sort-arrow {
   box-shadow: 0 14px 26px var(--shadow-color);
 }
 
+.data-table tbody tr:hover td {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.data-table tbody tr:hover td:first-child:not([colspan]) {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
 .data-table th,
 .data-table td {
   border-bottom-color: var(--border-subtle);
@@ -344,6 +352,11 @@ th.asc .sort-arrow {
   vertical-align: middle;
   background: rgba(255, 255, 255, 0.025);
   transition: background-color 0.15s ease, box-shadow 0.15s ease, outline-color 0.15s ease;
+}
+
+.matchup-matrix-table td:hover,
+.matchup-matrix-table th:hover {
+  transform: translateZ(0);
 }
 
 .matchup-matrix-cell-data {
