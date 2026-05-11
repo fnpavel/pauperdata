@@ -216,6 +216,7 @@ let leaderboardDeckRowsCache = new Map();
 let leaderboardIntegrityTraceSequence = 0;
 let activeLeaderboardAnalyticsModalType = '';
 let activeLeaderboardAnalyticsModalPlaceholder = null;
+let leaderboardDrilldownOverlayPlaceholder = null;
 
 const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
 const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
@@ -595,6 +596,45 @@ function syncLeaderboardModalBodyState() {
   document.body.classList.toggle('modal-open', shouldKeepLocked);
 }
 
+function isLeaderboardTableContainerFullscreen() {
+  const container = getLeaderboardTableContainer();
+  return Boolean(container && document.fullscreenElement === container);
+}
+
+function mountLeaderboardDrilldownOverlayInActiveContext() {
+  const { overlay } = getLeaderboardDrilldownElements();
+  if (!overlay) {
+    return;
+  }
+
+  const container = getLeaderboardTableContainer();
+  if (!container || !isLeaderboardTableContainerFullscreen()) {
+    return;
+  }
+
+  if (!leaderboardDrilldownOverlayPlaceholder && overlay.parentNode) {
+    leaderboardDrilldownOverlayPlaceholder = document.createElement('div');
+    leaderboardDrilldownOverlayPlaceholder.hidden = true;
+    leaderboardDrilldownOverlayPlaceholder.dataset.leaderboardDrilldownOverlayPlaceholder = 'true';
+    overlay.parentNode.insertBefore(leaderboardDrilldownOverlayPlaceholder, overlay);
+  }
+
+  if (overlay.parentElement !== container) {
+    container.appendChild(overlay);
+  }
+}
+
+function restoreLeaderboardDrilldownOverlayMount() {
+  const { overlay } = getLeaderboardDrilldownElements();
+  if (!overlay || !leaderboardDrilldownOverlayPlaceholder?.parentNode) {
+    leaderboardDrilldownOverlayPlaceholder = null;
+    return;
+  }
+
+  leaderboardDrilldownOverlayPlaceholder.parentNode.replaceChild(overlay, leaderboardDrilldownOverlayPlaceholder);
+  leaderboardDrilldownOverlayPlaceholder = null;
+}
+
 function closeLeaderboardAnalyticsModal() {
   const elements = getLeaderboardAnalyticsModalElements();
   const activeType = activeLeaderboardAnalyticsModalType;
@@ -653,14 +693,9 @@ function openLeaderboardAnalyticsModal(type = '') {
 }
 
 async function prepareLeaderboardOverlayPresentation() {
-  if (activeLeaderboardAnalyticsModalType) {
-    closeLeaderboardAnalyticsModal();
-  }
-
-  const container = getLeaderboardTableContainer();
-  if (container && document.fullscreenElement === container && document.exitFullscreen) {
-    shouldRestoreLeaderboardFullscreen = true;
-    await document.exitFullscreen();
+  if (isLeaderboardTableContainerFullscreen()) {
+    shouldRestoreLeaderboardFullscreen = false;
+    mountLeaderboardDrilldownOverlayInActiveContext();
     return;
   }
 
@@ -6525,6 +6560,7 @@ async function closeLeaderboardDrilldown() {
       activeLeaderboardPlayerDrilldown = null;
       activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
       renderLeaderboardDistributionBucketDrilldown(activeBucket);
+      mountLeaderboardDrilldownOverlayInActiveContext();
       updateLeaderboardDrilldownFullscreenButtonState();
       return;
     }
@@ -6532,6 +6568,7 @@ async function closeLeaderboardDrilldown() {
 
   destroyLeaderboardPlayerEloChart();
   overlay.hidden = true;
+  restoreLeaderboardDrilldownOverlayMount();
   activeLeaderboardDrilldownCategory = '';
   activeLeaderboardPlayerDrilldown = null;
   activeLeaderboardDistributionBucketId = '';
@@ -6753,15 +6790,7 @@ function setupLeaderboardTableRowInteractions() {
       return;
     }
 
-    const container = getLeaderboardTableContainer();
-    if (container && document.fullscreenElement === container && document.exitFullscreen) {
-      shouldRestoreLeaderboardFullscreen = true;
-      await document.exitFullscreen();
-    } else {
-      shouldRestoreLeaderboardFullscreen = false;
-    }
-
-    openLeaderboardPlayerDrilldown(
+    await openLeaderboardPlayerDrilldown(
       row.dataset.leaderboardPlayerKey,
       row.dataset.leaderboardSeasonKey
     );
