@@ -1012,6 +1012,26 @@
                 Export CSV
               </button>
             </div>
+            <div class="leaderboard-fullscreen-analytics-controls" id="leaderboardFullscreenAnalyticsControls" aria-label="Open Elo analytics in a temporary modal view">
+              <button
+                type="button"
+                class="bubble-button leaderboard-fullscreen-analytics-button"
+                id="leaderboardHistogramModalButton"
+                title="Open the Elo Distribution histogram in a modal"
+              >
+                <span class="leaderboard-fullscreen-analytics-button-icon" aria-hidden="true">📊</span>
+                <span class="leaderboard-fullscreen-analytics-button-label">Histogram</span>
+              </button>
+              <button
+                type="button"
+                class="bubble-button leaderboard-fullscreen-analytics-button"
+                id="leaderboardTimelineModalButton"
+                title="Open the Elo Timeline chart in a modal"
+              >
+                <span class="leaderboard-fullscreen-analytics-button-icon" aria-hidden="true">📈</span>
+                <span class="leaderboard-fullscreen-analytics-button-label">Timeline</span>
+              </button>
+            </div>
             <div class="leaderboard-fullscreen-badge-strip" id="leaderboardFullscreenBadgeStrip" hidden></div>
             <div class="leaderboard-table-helper" id="leaderboardTableHelper">
               Loading Elo leaderboard details...
@@ -1059,6 +1079,31 @@
                 </thead>
                 <tbody id="leaderboardTableBody"></tbody>
               </table>
+            </div>
+            <div id="leaderboardAnalyticsModalOverlay" class="player-rank-drilldown-overlay leaderboard-analytics-focus-overlay" hidden>
+              <div
+                id="leaderboardAnalyticsModal"
+                class="player-rank-drilldown-modal leaderboard-analytics-focus-modal"
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="leaderboardAnalyticsModalTitle"
+              >
+                <div class="player-rank-drilldown-header leaderboard-analytics-focus-header">
+                  <div class="player-rank-drilldown-heading">
+                    <h3 id="leaderboardAnalyticsModalTitle">Leaderboard Analytics</h3>
+                    <p id="leaderboardAnalyticsModalSubtitle">Open a temporary chart view without restoring the full analytics layout.</p>
+                  </div>
+                  <button
+                    type="button"
+                    class="bubble-button player-rank-drilldown-close"
+                    id="leaderboardAnalyticsModalClose"
+                    aria-label="Close leaderboard analytics modal"
+                  >
+                    Close
+                  </button>
+                </div>
+                <div id="leaderboardAnalyticsModalContent" class="player-rank-drilldown-content leaderboard-analytics-focus-content"></div>
+              </div>
             </div>
           </div>
           <div class="leaderboards-analytics-grid" id="leaderboardAnalyticsGrid">

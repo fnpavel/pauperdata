@@ -2657,6 +2657,55 @@ button.leaderboard-deck-result-card {
   margin-bottom: 12px;
 }
 
+.leaderboard-fullscreen-analytics-controls {
+  display: none;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px;
+  margin: -4px 0 10px;
+}
+
+.leaderboard-fullscreen-analytics-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 7px 11px;
+  border-radius: 12px;
+  border-color: rgba(255, 255, 255, 0.08);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+  color: var(--text-secondary);
+  box-shadow: none;
+}
+
+.leaderboard-fullscreen-analytics-button:hover,
+.leaderboard-fullscreen-analytics-button:focus-visible {
+  border-color: rgba(212, 166, 87, 0.24);
+  background: linear-gradient(145deg, rgba(212, 166, 87, 0.12), rgba(255, 255, 255, 0.03));
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.leaderboard-fullscreen-analytics-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.leaderboard-fullscreen-analytics-button-icon {
+  font-size: 1.15rem;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.leaderboard-fullscreen-analytics-button-label {
+  font-size: 0.72rem;
+  line-height: 1.1;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 .leaderboard-fullscreen-badge-strip {
   display: none;
   flex-wrap: wrap;
@@ -2870,6 +2919,10 @@ button.leaderboard-deck-result-card {
   margin-bottom: 6px;
 }
 
+.data-table-container:fullscreen.leaderboard-compact-fullscreen .leaderboard-fullscreen-analytics-controls {
+  display: flex;
+}
+
 .data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTitleBadgeRow {
   display: block !important;
   margin-top: -2px;
@@ -2887,6 +2940,40 @@ button.leaderboard-deck-result-card {
 body.leaderboard-compact-fullscreen #leaderboardStats,
 body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   display: none !important;
+}
+
+.leaderboard-analytics-focus-overlay {
+  z-index: 60;
+}
+
+.leaderboard-analytics-focus-modal {
+  width: min(1280px, 100%);
+  max-height: min(90vh, 1040px);
+  padding: 18px;
+  gap: 14px;
+  background: linear-gradient(160deg, rgba(20, 25, 31, 0.98), rgba(11, 15, 20, 0.98));
+  box-shadow: 0 28px 60px rgba(0, 0, 0, 0.34);
+}
+
+.leaderboard-analytics-focus-content {
+  padding-right: 0;
+  overflow: hidden;
+}
+
+.leaderboard-analytics-focus-content > .chart-container {
+  height: 100%;
+  margin: 0;
+  min-height: 0;
+}
+
+.leaderboard-analytics-focus-content > .leaderboard-timeline-section,
+.leaderboard-analytics-focus-content > .leaderboard-distribution-section {
+  min-height: min(72vh, 760px);
+}
+
+.leaderboard-analytics-focus-content > .leaderboard-distribution-section #leaderboardDistributionChart {
+  max-height: none !important;
+  min-height: min(62vh, 620px);
 }
 
 @media (max-width: 1200px) {

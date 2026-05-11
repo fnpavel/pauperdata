@@ -214,6 +214,8 @@ let leaderboardThresholdRenderTimer = null;
 let leaderboardDatasetCache = new Map();
 let leaderboardDeckRowsCache = new Map();
 let leaderboardIntegrityTraceSequence = 0;
+let activeLeaderboardAnalyticsModalType = '';
+let activeLeaderboardAnalyticsModalPlaceholder = null;
 
 const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
 const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
@@ -427,6 +429,14 @@ function getLeaderboardFullscreenButton() {
   return document.getElementById('leaderboardFullscreenButton');
 }
 
+function getLeaderboardHistogramModalButton() {
+  return document.getElementById('leaderboardHistogramModalButton');
+}
+
+function getLeaderboardTimelineModalButton() {
+  return document.getElementById('leaderboardTimelineModalButton');
+}
+
 function getLeaderboardTableContainer() {
   return document.getElementById('leaderboardTableContainer');
 }
@@ -525,6 +535,147 @@ function getLeaderboardDistributionEmptyState() {
 
 function getLeaderboardDistributionLegend() {
   return document.getElementById('leaderboardDistributionLegend');
+}
+
+function getLeaderboardAnalyticsSectionByType(type = '') {
+  const normalizedType = String(type || '').trim();
+  if (normalizedType === 'histogram') {
+    return getLeaderboardDistributionSection();
+  }
+  if (normalizedType === 'timeline') {
+    return getLeaderboardTimelineSection();
+  }
+  return null;
+}
+
+function getLeaderboardAnalyticsChartInstance(type = '') {
+  const normalizedType = String(type || '').trim();
+  if (normalizedType === 'histogram') {
+    return leaderboardDistributionChart;
+  }
+  if (normalizedType === 'timeline') {
+    return leaderboardTimelineChart;
+  }
+  return null;
+}
+
+function resizeLeaderboardAnalyticsChart(type = '') {
+  const chart = getLeaderboardAnalyticsChartInstance(type);
+  if (!chart) {
+    return;
+  }
+
+  globalThis.requestAnimationFrame(() => {
+    chart.resize();
+    chart.update('none');
+  });
+}
+
+function updateLeaderboardAnalyticsModalButtonsState() {
+  const histogramButton = getLeaderboardHistogramModalButton();
+  const timelineButton = getLeaderboardTimelineModalButton();
+  const histogramSection = getLeaderboardDistributionSection();
+  const timelineSection = getLeaderboardTimelineSection();
+
+  if (histogramButton) {
+    histogramButton.disabled = Boolean(histogramSection?.hidden);
+    histogramButton.setAttribute('aria-pressed', activeLeaderboardAnalyticsModalType === 'histogram' ? 'true' : 'false');
+  }
+
+  if (timelineButton) {
+    timelineButton.disabled = Boolean(timelineSection?.hidden);
+    timelineButton.setAttribute('aria-pressed', activeLeaderboardAnalyticsModalType === 'timeline' ? 'true' : 'false');
+  }
+}
+
+function syncLeaderboardModalBodyState() {
+  const drilldownOverlay = getLeaderboardDrilldownElements().overlay;
+  const analyticsOverlay = getLeaderboardAnalyticsModalElements().overlay;
+  const shouldKeepLocked = !(drilldownOverlay?.hidden ?? true) || !(analyticsOverlay?.hidden ?? true);
+  document.body.classList.toggle('modal-open', shouldKeepLocked);
+}
+
+function closeLeaderboardAnalyticsModal() {
+  const elements = getLeaderboardAnalyticsModalElements();
+  const activeType = activeLeaderboardAnalyticsModalType;
+  const section = getLeaderboardAnalyticsSectionByType(activeType);
+  const placeholder = activeLeaderboardAnalyticsModalPlaceholder;
+
+  if (section && placeholder?.parentNode) {
+    placeholder.parentNode.replaceChild(section, placeholder);
+  }
+
+  if (elements.content) {
+    elements.content.innerHTML = '';
+  }
+  if (elements.overlay) {
+    elements.overlay.hidden = true;
+  }
+
+  activeLeaderboardAnalyticsModalType = '';
+  activeLeaderboardAnalyticsModalPlaceholder = null;
+  updateLeaderboardAnalyticsModalButtonsState();
+  syncLeaderboardModalBodyState();
+  resizeLeaderboardAnalyticsChart(activeType);
+}
+
+function openLeaderboardAnalyticsModal(type = '') {
+  const normalizedType = String(type || '').trim();
+  const elements = getLeaderboardAnalyticsModalElements();
+  const section = getLeaderboardAnalyticsSectionByType(normalizedType);
+  const sectionTitle = section?.querySelector('.chart-title');
+  const sectionHelper = normalizedType === 'histogram'
+    ? getLeaderboardDistributionHelper()
+    : getLeaderboardTimelineHelper();
+
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content || !section || section.hidden) {
+    return;
+  }
+
+  if (activeLeaderboardAnalyticsModalType) {
+    closeLeaderboardAnalyticsModal();
+  }
+
+  const placeholder = document.createElement('div');
+  placeholder.hidden = true;
+  placeholder.dataset.leaderboardAnalyticsPlaceholder = normalizedType;
+  section.parentNode?.insertBefore(placeholder, section);
+
+  activeLeaderboardAnalyticsModalType = normalizedType;
+  activeLeaderboardAnalyticsModalPlaceholder = placeholder;
+  elements.title.textContent = sectionTitle?.textContent?.trim() || 'Leaderboard Analytics';
+  elements.subtitle.textContent = sectionHelper?.textContent?.trim() || 'Temporary analytics drilldown';
+  elements.content.appendChild(section);
+  elements.overlay.hidden = false;
+  updateLeaderboardAnalyticsModalButtonsState();
+  syncLeaderboardModalBodyState();
+  resizeLeaderboardAnalyticsChart(normalizedType);
+}
+
+async function prepareLeaderboardOverlayPresentation() {
+  if (activeLeaderboardAnalyticsModalType) {
+    closeLeaderboardAnalyticsModal();
+  }
+
+  const container = getLeaderboardTableContainer();
+  if (container && document.fullscreenElement === container && document.exitFullscreen) {
+    shouldRestoreLeaderboardFullscreen = true;
+    await document.exitFullscreen();
+    return;
+  }
+
+  shouldRestoreLeaderboardFullscreen = false;
+}
+
+function getLeaderboardAnalyticsModalElements() {
+  return {
+    overlay: document.getElementById('leaderboardAnalyticsModalOverlay'),
+    modal: document.getElementById('leaderboardAnalyticsModal'),
+    title: document.getElementById('leaderboardAnalyticsModalTitle'),
+    subtitle: document.getElementById('leaderboardAnalyticsModalSubtitle'),
+    content: document.getElementById('leaderboardAnalyticsModalContent'),
+    closeButton: document.getElementById('leaderboardAnalyticsModalClose')
+  };
 }
 
 function getLeaderboardPlayerChartShowAllLinesButton() {
@@ -2508,6 +2659,7 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   }
   renderLeaderboardTimelineModeButtons();
   renderLeaderboardTimelineLoadingState('Loading chart...');
+  updateLeaderboardAnalyticsModalButtonsState();
 }
 
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
@@ -2528,6 +2680,7 @@ function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard d
   }
   renderLeaderboardTimelineLoadingState('');
   renderLeaderboardDistributionEmptyState('');
+  updateLeaderboardAnalyticsModalButtonsState();
 }
 
 function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
@@ -2559,6 +2712,7 @@ function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
   renderLeaderboardTable(currentLeaderboardDataset);
   renderLeaderboardDistributionChart({ forceRecreate: !thresholdOnly });
   renderLeaderboardTimelineChart({ forceRecreate: !thresholdOnly });
+  updateLeaderboardAnalyticsModalButtonsState();
 
   if (searchInput) {
     searchInput.disabled = currentLeaderboardRows.length === 0;
@@ -3581,8 +3735,9 @@ async function openLeaderboardDistributionBucketDrilldown(bucketId = '') {
     return;
   }
 
+  await prepareLeaderboardOverlayPresentation();
   elements.overlay.hidden = false;
-  document.body.classList.add('modal-open');
+  syncLeaderboardModalBodyState();
   updateLeaderboardDrilldownFullscreenButtonState();
 }
 
@@ -5756,8 +5911,9 @@ async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
     playerKey: String(playerKey || '').trim(),
     seasonKey: String(seasonKey || '').trim()
   };
+  await prepareLeaderboardOverlayPresentation();
   elements.overlay.hidden = false;
-  document.body.classList.add('modal-open');
+  syncLeaderboardModalBodyState();
   updateLeaderboardDrilldownFullscreenButtonState();
 }
 
@@ -6319,8 +6475,9 @@ async function openLeaderboardDrilldown(categoryKey) {
   renderLeaderboardDrilldown(categoryKey);
   updateLeaderboardPlayerReportDownloadButton();
   updateLeaderboardPlayerHistoryDownloadButton();
+  await prepareLeaderboardOverlayPresentation();
   elements.overlay.hidden = false;
-  document.body.classList.add('modal-open');
+  syncLeaderboardModalBodyState();
   updateLeaderboardDrilldownFullscreenButtonState();
 }
 
@@ -6381,7 +6538,7 @@ async function closeLeaderboardDrilldown() {
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
   updateLeaderboardPlayerReportDownloadButton();
   updateLeaderboardPlayerHistoryDownloadButton();
-  document.body.classList.remove('modal-open');
+  syncLeaderboardModalBodyState();
 
   if (shouldRestoreLeaderboardFullscreen) {
     shouldRestoreLeaderboardFullscreen = false;
@@ -7093,6 +7250,7 @@ function updateLeaderboardFullscreenButtonState() {
   const container = getLeaderboardTableContainer();
   syncLeaderboardFullscreenLayout();
   renderLeaderboardFullscreenFilterBadges(currentLeaderboardDataset?.period || ensureActiveLeaderboardWindow().activeWindow);
+  updateLeaderboardAnalyticsModalButtonsState();
   if (!button || !container) {
     return;
   }
@@ -7104,6 +7262,8 @@ function setupLeaderboardTableActions() {
   const searchInput = getLeaderboardSearchInput();
   const downloadButton = getLeaderboardDownloadButton();
   const fullscreenButton = getLeaderboardFullscreenButton();
+  const histogramModalButton = getLeaderboardHistogramModalButton();
+  const timelineModalButton = getLeaderboardTimelineModalButton();
 
   if (searchInput && searchInput.dataset.listenerAdded !== 'true') {
     searchInput.addEventListener('input', () => {
@@ -7147,7 +7307,44 @@ function setupLeaderboardTableActions() {
     document.body.dataset.leaderboardFullscreenBound = 'true';
   }
 
+  if (histogramModalButton && histogramModalButton.dataset.listenerAdded !== 'true') {
+    histogramModalButton.addEventListener('click', () => {
+      openLeaderboardAnalyticsModal('histogram');
+    });
+    histogramModalButton.dataset.listenerAdded = 'true';
+  }
+
+  if (timelineModalButton && timelineModalButton.dataset.listenerAdded !== 'true') {
+    timelineModalButton.addEventListener('click', () => {
+      openLeaderboardAnalyticsModal('timeline');
+    });
+    timelineModalButton.dataset.listenerAdded = 'true';
+  }
+
   updateLeaderboardFullscreenButtonState();
+}
+
+function setupLeaderboardAnalyticsModal() {
+  const { overlay, closeButton } = getLeaderboardAnalyticsModalElements();
+  if (!overlay || overlay.dataset.initialized === 'true') {
+    return;
+  }
+
+  overlay.dataset.initialized = 'true';
+  closeButton?.addEventListener('click', closeLeaderboardAnalyticsModal);
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) {
+      closeLeaderboardAnalyticsModal();
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !overlay.hidden) {
+      closeLeaderboardAnalyticsModal();
+    }
+  });
+
+  updateLeaderboardAnalyticsModalButtonsState();
 }
 
 function setupLeaderboardTimelineInteractions() {
@@ -7760,6 +7957,7 @@ export function initLeaderboards() {
   setupLeaderboardTableSorting();
   setupLeaderboardTableRowInteractions();
   setupLeaderboardTableActions();
+  setupLeaderboardAnalyticsModal();
   setupLeaderboardTimelineInteractions();
   setupLeaderboardDistributionLegendInteractions();
   setupLeaderboardFilterListeners();
