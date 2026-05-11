@@ -109,7 +109,7 @@ const LEADERBOARD_STAT_CARD_IDS = [
   'leaderboardTopEloCard',
   'leaderboardPeakEloCard',
   'leaderboardMostActiveCard',
-  'leaderboardBiggestSwingCard'
+  'leaderboardAverageTop20Card'
 ];
 // Drilldown copy stays declarative so card wiring and empty states remain in
 // sync when cards are renamed or rearranged.
@@ -139,10 +139,10 @@ const LEADERBOARD_DRILLDOWN_CONFIG = {
     title: 'Most Active',
     emptyMessage: 'No active player is available for the current Leaderboards filters.'
   },
-  biggestSwing: {
-    cardId: 'leaderboardBiggestSwingCard',
-    title: 'Biggest Elo Gain / Loss',
-    emptyMessage: 'No Elo swing is available for the current Leaderboards filters.'
+  averageTop20: {
+    cardId: 'leaderboardAverageTop20Card',
+    title: 'Average Elo (Top 20)',
+    emptyMessage: 'No eligible Elo players are available for the current Leaderboards filters.'
   }
 };
 
@@ -3019,6 +3019,18 @@ function getSortedLeaderboardRowsWithRank() {
   const afterRankSnapshot = logLeaderboardIntegritySnapshot('getSortedLeaderboardRowsWithRank:after-rank', rankedRows, { includeRank: true });
   compareLeaderboardIntegritySnapshots('getSortedLeaderboardRowsWithRank', beforeRankSnapshot, afterRankSnapshot);
   return rankedRows;
+}
+
+function getTopLeaderboardRowsByElo(limit = 20, rows = currentLeaderboardRows) {
+  const normalizedLimit = Math.max(0, Number(limit) || 0);
+  if (normalizedLimit === 0) {
+    return [];
+  }
+
+  return [...(Array.isArray(rows) ? rows : [])]
+    .filter(row => Number.isFinite(Number(row?.rating)))
+    .sort(compareEloLeaderboardRows)
+    .slice(0, normalizedLimit);
 }
 
 function getLeaderboardStatsSeasonKey(rowDate = '', dataset = currentLeaderboardDataset) {
@@ -6571,8 +6583,8 @@ function getLeaderboardDrilldownItems(categoryKey) {
       return getPeakEloEntries();
     case 'mostActive':
       return getRowsAtMaxValue(currentLeaderboardRows, 'matches').filter(row => Number(row.matches) > 0);
-    case 'biggestSwing':
-      return [...getBiggestGainEntries(), ...getBiggestLossEntries()];
+    case 'averageTop20':
+      return getTopLeaderboardRowsByElo(20);
     default:
       return [];
   }
@@ -6681,29 +6693,14 @@ function renderLeaderboardDrilldown(categoryKey) {
     return;
   }
 
-  const biggestGainEntries = getBiggestGainEntries();
-  const biggestLossEntries = getBiggestLossEntries();
-  const biggestGain = biggestGainEntries[0]?.delta;
-  const biggestLoss = biggestLossEntries[0]?.delta;
-
   elements.subtitle.textContent = items.length > 0
-    ? `Largest single-match Elo swing in the selected Leaderboards window: ${formatRatingDelta(biggestGain)} / ${formatRatingDelta(biggestLoss)}`
+    ? `Average Elo across the current Top ${items.length} leaderboard player${items.length === 1 ? '' : 's'}`
     : config.emptyMessage;
   elements.content.innerHTML = items.length > 0
-      ? `
-      <div class="player-rank-drilldown-context">
-        <div class="player-rank-drilldown-context-header">
-          <div class="player-rank-drilldown-context-title">Biggest Elo Gain</div>
-        </div>
-        ${buildHistoryHighlightCardsHtml(biggestGainEntries, entry => formatRatingDelta(entry.delta))}
-      </div>
-      <div class="player-rank-drilldown-context">
-        <div class="player-rank-drilldown-context-header">
-          <div class="player-rank-drilldown-context-title">Biggest Elo Loss</div>
-        </div>
-        ${buildHistoryHighlightCardsHtml(biggestLossEntries, entry => formatRatingDelta(entry.delta))}
-      </div>
-    `
+    ? buildLeaderboardPlayerSummaryHtml(items, {
+      collapsePlayers: true,
+      collapseRecentResults: true
+    })
     : `<div class="player-rank-drilldown-empty">${escapeHtml(config.emptyMessage)}</div>`;
 }
 
@@ -7113,7 +7110,7 @@ function populateLeaderboardStats(dataset) {
     setCardTitle('leaderboardTopEloCard', 'Best Top 8 Conversion');
     setCardTitle('leaderboardPeakEloCard', 'Most Top 8s');
     setCardTitle('leaderboardMostActiveCard', 'Most Active');
-    setCardTitle('leaderboardBiggestSwingCard', 'Best Match Win Rate');
+    setCardTitle('leaderboardAverageTop20Card', 'Best Match Win Rate');
 
     updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
     updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
@@ -7172,11 +7169,11 @@ function populateLeaderboardStats(dataset) {
         )
     );
     updateElementText(
-      'leaderboardBiggestSwingName',
+      'leaderboardAverageTop20Value',
       bestMatchWinRateRows.length > 1 ? `${bestMatchWinRateRows.length} Players Tied` : (summary.bestMatchWinRate?.displayName || '--')
     );
     updateElementText(
-      'leaderboardBiggestSwingDetails',
+      'leaderboardAverageTop20Details',
       bestMatchWinRateRows.length > 1
         ? `${formatWinRate(bestMatchWinRateRows[0]?.winRate)} WR / ${formatNameList(bestMatchWinRateRows.map(row => row.displayName))}`
         : (
@@ -7196,8 +7193,10 @@ function populateLeaderboardStats(dataset) {
   const mostActiveRows = getRowsAtMaxValue(currentLeaderboardRows, 'matches').filter(row => Number(row.matches) > 0);
   const topEloNames = topEloRows.map(row => row.displayName).filter(Boolean);
   const peakEloEntries = getPeakEloEntries();
-  const biggestGainEntries = getBiggestGainEntries();
-  const biggestLossEntries = getBiggestLossEntries();
+  const top20Rows = getTopLeaderboardRowsByElo(20);
+  const top20AverageRating = top20Rows.length > 0
+    ? top20Rows.reduce((sum, row) => sum + Number(row.rating || 0), 0) / top20Rows.length
+    : Number.NaN;
   const topRating = topEloRows[0]?.rating;
   const peakRating = peakEloEntries[0]?.ratingAfter;
   const topMatchCount = mostActiveRows[0]?.matches || 0;
@@ -7235,7 +7234,7 @@ function populateLeaderboardStats(dataset) {
   setCardTitle('leaderboardTopEloCard', 'Current Top Elo');
   setCardTitle('leaderboardPeakEloCard', 'Peak Elo');
   setCardTitle('leaderboardMostActiveCard', 'Most Active');
-  setCardTitle('leaderboardBiggestSwingCard', 'Biggest Elo Gain / Loss');
+  setCardTitle('leaderboardAverageTop20Card', 'Average Elo (Top 20)');
 
   updateElementText('leaderboardDateRangeValue', selectedRangeLabel);
   updateElementText('leaderboardDateRangeDetails', selectedRangeDetails || 'Choose a leaderboard window');
@@ -7299,16 +7298,16 @@ function populateLeaderboardStats(dataset) {
       )
   );
   updateElementText(
-    'leaderboardBiggestSwingName',
-    biggestGainEntries[0] && biggestLossEntries[0]
-      ? `${formatRatingDelta(biggestGainEntries[0].delta)} / ${formatRatingDelta(biggestLossEntries[0].delta)}`
-      : 'No swings yet'
+    'leaderboardAverageTop20Value',
+    Number.isFinite(top20AverageRating)
+      ? formatRating(top20AverageRating)
+      : '--'
   );
   updateElementText(
-    'leaderboardBiggestSwingDetails',
-    biggestGainEntries[0] && biggestLossEntries[0]
-      ? `Gain: ${(biggestGainEntries[0].player || biggestGainEntries[0].playerKey || '--')} in ${buildHistoryContextLabel(biggestGainEntries[0])} | Loss: ${(biggestLossEntries[0].player || biggestLossEntries[0].playerKey || '--')} in ${buildHistoryContextLabel(biggestLossEntries[0])}`
-      : 'No swings yet'
+    'leaderboardAverageTop20Details',
+    top20Rows.length > 0
+      ? `Average Elo across current Top ${top20Rows.length}`
+      : 'No Top 20 leaderboard average yet'
   );
 
   LEADERBOARD_STAT_CARD_IDS.forEach(triggerUpdateAnimation);
