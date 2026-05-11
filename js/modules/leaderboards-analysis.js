@@ -203,6 +203,7 @@ let leaderboardPlayerEloChart = null;
 let leaderboardTimelineChart = null;
 let leaderboardDistributionChart = null;
 let currentLeaderboardDistributionBins = [];
+let hiddenLeaderboardDistributionOccupancyIds = new Set();
 let activeLeaderboardTimelineSelections = new Set();
 let activeLeaderboardTimelineSearchTerm = '';
 let activeLeaderboardTimelineChartMode = DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
@@ -3421,14 +3422,19 @@ function buildLeaderboardEloDistributionBins(rows = currentLeaderboardRows) {
     labels: bins.map(bucket => formatRating(bucket.center)),
     counts: bins.map(bucket => bucket.count),
     bucketSize,
-    bucketRanges: bins.map(({ start: bucketStart, endExclusive, center, count, rows, id }) => ({
-      id,
-      start: bucketStart,
-      endExclusive,
-      center,
-      count,
-      rows
-    })),
+    bucketRanges: bins.map(({ start: bucketStart, endExclusive, center, count, rows, id }) => {
+      const occupancy = getLeaderboardDistributionOccupancyBucket(count);
+      return {
+        id,
+        start: bucketStart,
+        endExclusive,
+        center,
+        count,
+        rows,
+        occupancyId: occupancy.id,
+        hidden: !isLeaderboardDistributionOccupancyVisible(occupancy.id)
+      };
+    }),
     bins,
     totalPlayers: rankedRows.length
   };
@@ -3454,15 +3460,25 @@ function renderLeaderboardDistributionLegend() {
 
   legend.hidden = false;
   legend.innerHTML = LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE.map(bucket => `
-    <span class="leaderboard-distribution-legend-item">
+    <button
+      type="button"
+      class="leaderboard-distribution-legend-item${hiddenLeaderboardDistributionOccupancyIds.has(bucket.id) ? ' inactive' : ''}"
+      data-leaderboard-distribution-occupancy-toggle="${escapeHtml(bucket.id)}"
+      aria-pressed="${hiddenLeaderboardDistributionOccupancyIds.has(bucket.id) ? 'false' : 'true'}"
+      title="${escapeHtml(`${hiddenLeaderboardDistributionOccupancyIds.has(bucket.id) ? 'Show' : 'Hide'} ${bucket.label} buckets`)}"
+    >
       <span
         class="leaderboard-distribution-legend-swatch"
         style="background:${escapeHtml(bucket.fill)};border-color:${escapeHtml(bucket.border)};"
         aria-hidden="true"
       ></span>
       <span>${escapeHtml(`${bucket.label}: ${bucket.description}`)}</span>
-    </span>
+    </button>
   `).join('');
+}
+
+function isLeaderboardDistributionOccupancyVisible(occupancyId = '') {
+  return !hiddenLeaderboardDistributionOccupancyIds.has(String(occupancyId || '').trim());
 }
 
 function buildLeaderboardDistributionBucketPlayerListHtml(bucket = null) {
@@ -3627,7 +3643,7 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
     && leaderboardDistributionChart.data.labels.every((label, index) => label === distribution.labels[index])
   ) {
     leaderboardDistributionChart.data.labels = distribution.labels;
-    leaderboardDistributionChart.data.datasets[0].data = distribution.counts;
+    leaderboardDistributionChart.data.datasets[0].data = distribution.bucketRanges.map(range => range.hidden ? null : range.count);
     leaderboardDistributionChart.data.datasets[0].bucketRanges = distribution.bucketRanges;
     if (leaderboardDistributionChart.options?.plugins?.tooltip?.callbacks) {
       leaderboardDistributionChart.options.plugins.tooltip.callbacks.title = items => {
@@ -3652,7 +3668,11 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
   destroyLeaderboardDistributionChart();
   leaderboardDistributionChart = createLeaderboardDistributionChart(canvas, {
     ...distribution,
+    counts: distribution.bucketRanges.map(range => range.hidden ? null : range.count),
     onBucketClick(clickedIndex, bucketRange) {
+      if (bucketRange?.hidden) {
+        return;
+      }
       const clickedBucketId = String(bucketRange?.id || currentLeaderboardDistributionBins?.[clickedIndex]?.id || '').trim();
       if (!clickedBucketId) {
         return;
@@ -3663,6 +3683,36 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
       });
     }
   });
+}
+
+function setupLeaderboardDistributionLegendInteractions() {
+  const legend = getLeaderboardDistributionLegend();
+  if (!legend || legend.dataset.listenerAdded === 'true') {
+    return;
+  }
+
+  legend.addEventListener('click', event => {
+    const toggleButton = event.target.closest('[data-leaderboard-distribution-occupancy-toggle]');
+    if (!toggleButton) {
+      return;
+    }
+
+    const occupancyId = String(toggleButton.dataset.leaderboardDistributionOccupancyToggle || '').trim();
+    if (!occupancyId) {
+      return;
+    }
+
+    if (hiddenLeaderboardDistributionOccupancyIds.has(occupancyId)) {
+      hiddenLeaderboardDistributionOccupancyIds.delete(occupancyId);
+    } else {
+      hiddenLeaderboardDistributionOccupancyIds.add(occupancyId);
+    }
+
+    renderLeaderboardDistributionLegend();
+    renderLeaderboardDistributionChart({ forceRecreate: false });
+  });
+
+  legend.dataset.listenerAdded = 'true';
 }
 
 function shouldShowLeaderboardYearBoundaryMarkers(dataset = currentLeaderboardDataset) {
@@ -7707,6 +7757,7 @@ export function initLeaderboards() {
   setupLeaderboardTableRowInteractions();
   setupLeaderboardTableActions();
   setupLeaderboardTimelineInteractions();
+  setupLeaderboardDistributionLegendInteractions();
   setupLeaderboardFilterListeners();
   setupLeaderboardDrilldownModal();
   setupLeaderboardDrilldownCards();

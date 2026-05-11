@@ -2588,6 +2588,7 @@ button.leaderboard-deck-result-card {
 }
 
 .leaderboard-distribution-legend-item {
+  appearance: none;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -2598,6 +2599,25 @@ button.leaderboard-deck-result-card {
   color: var(--text-secondary);
   font-size: 0.74rem;
   line-height: 1.2;
+  cursor: pointer;
+  transition: opacity 0.18s ease, border-color 0.18s ease, background 0.18s ease, transform 0.18s ease;
+}
+
+.leaderboard-distribution-legend-item:hover,
+.leaderboard-distribution-legend-item:focus-visible {
+  border-color: rgba(212, 166, 87, 0.28);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.leaderboard-distribution-legend-item:focus-visible {
+  outline: 2px solid rgba(212, 166, 87, 0.42);
+  outline-offset: 1px;
+}
+
+.leaderboard-distribution-legend-item.inactive {
+  opacity: 0.48;
+  border-color: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .leaderboard-distribution-legend-swatch {

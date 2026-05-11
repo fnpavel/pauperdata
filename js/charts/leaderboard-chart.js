@@ -516,6 +516,10 @@ const leaderboardDistributionCountLabelPlugin = {
 
     data.forEach((rawValue, index) => {
       const element = meta.data?.[index];
+      const bucketRange = dataset.bucketRanges?.[index] || null;
+      if (bucketRange?.hidden) {
+        return;
+      }
       const count = Math.max(0, Number(rawValue) || 0);
       if (!element) {
         return;
@@ -867,14 +871,26 @@ export function createLeaderboardDistributionChart(canvas, {
         data: counts,
         bucketRanges,
         backgroundColor(context) {
+          const bucketRange = context.dataset?.bucketRanges?.[context.dataIndex] || null;
+          if (bucketRange?.hidden) {
+            return 'rgba(0, 0, 0, 0)';
+          }
           const count = Number(context.raw || 0);
           return getLeaderboardDistributionOccupancyBucket(count).fill;
         },
         borderColor(context) {
+          const bucketRange = context.dataset?.bucketRanges?.[context.dataIndex] || null;
+          if (bucketRange?.hidden) {
+            return 'rgba(0, 0, 0, 0)';
+          }
           const count = Number(context.raw || 0);
           return getLeaderboardDistributionOccupancyBucket(count).border;
         },
         borderWidth(context) {
+          const bucketRange = context.dataset?.bucketRanges?.[context.dataIndex] || null;
+          if (bucketRange?.hidden) {
+            return 0;
+          }
           return Number(context.raw || 0) === 0 ? 1.2 : 1.4;
         },
         borderRadius: 4,
