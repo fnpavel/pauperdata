@@ -678,7 +678,8 @@ export function createLeaderboardDistributionChart(canvas, {
   labels = [],
   counts = [],
   bucketSize = 10,
-  bucketRanges = []
+  bucketRanges = [],
+  onBucketClick = null
 } = {}) {
   if (!canvas || !globalThis.Chart || !labels.length || !counts.length) {
     return null;
@@ -715,6 +716,19 @@ export function createLeaderboardDistributionChart(canvas, {
       responsive: true,
       maintainAspectRatio: false,
       aspectRatio: 2.1,
+      onClick(event, elements, chart) {
+        const clickedElements = Array.isArray(elements) && elements.length > 0
+          ? elements
+          : (typeof chart?.getElementsAtEventForMode === 'function'
+              ? chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
+              : []);
+        const clickedIndex = clickedElements?.[0]?.index;
+        if (!Number.isInteger(clickedIndex) || typeof onBucketClick !== 'function') {
+          return;
+        }
+
+        onBucketClick(clickedIndex, chart?.data?.datasets?.[0]?.bucketRanges?.[clickedIndex] || null);
+      },
       plugins: {
         legend: {
           display: false

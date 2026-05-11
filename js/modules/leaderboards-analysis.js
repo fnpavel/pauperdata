@@ -200,11 +200,13 @@ let shouldRestoreLeaderboardFullscreen = false;
 let leaderboardPlayerEloChart = null;
 let leaderboardTimelineChart = null;
 let leaderboardDistributionChart = null;
+let currentLeaderboardDistributionBins = [];
 let activeLeaderboardTimelineSelections = new Set();
 let activeLeaderboardTimelineSearchTerm = '';
 let activeLeaderboardTimelineChartMode = DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
 let activeLeaderboardTimelineRankCohortGranularity = DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY;
 let leaderboardTimelineVisibilityBySelectionKey = new Map();
+let activeLeaderboardDistributionBucketId = '';
 let leaderboardThresholdRenderTimer = null;
 let leaderboardDatasetCache = new Map();
 let leaderboardDeckRowsCache = new Map();
@@ -2576,6 +2578,15 @@ function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
         console.error('Failed to close leaderboard drilldown after filters removed the active row.', error);
       });
     }
+  } else if (activeLeaderboardDistributionBucketId) {
+    const activeBucket = getLeaderboardDistributionBucketById(activeLeaderboardDistributionBucketId);
+    if (activeBucket) {
+      renderLeaderboardDistributionBucketDrilldown(activeBucket);
+    } else {
+      closeLeaderboardDrilldown().catch(error => {
+        console.error('Failed to close leaderboard drilldown after filters removed the active Elo bucket.', error);
+      });
+    }
   } else if (activeLeaderboardDrilldownCategory) {
     renderLeaderboardDrilldown(activeLeaderboardDrilldownCategory);
   }
@@ -3330,16 +3341,26 @@ function formatLeaderboardDistributionBucketLabel(bucketStart = 0, bucketEndExcl
   return `${formatRating(bucketStart)}-${formatRating(inclusiveEnd)}`;
 }
 
+function getLeaderboardDistributionBucketId(bucketStart = 0, bucketEndExclusive = 0) {
+  return `${bucketStart}-${bucketEndExclusive}`;
+}
+
 function buildLeaderboardEloDistributionBins(rows = currentLeaderboardRows) {
-  const ratings = (Array.isArray(rows) ? rows : [])
-    .map(row => Number(row?.rating))
-    .filter(Number.isFinite);
-  if (ratings.length === 0) {
+  const resolvedRows = (Array.isArray(rows) ? rows : []).filter(row => Number.isFinite(Number(row?.rating)));
+  const rankedRows = [...resolvedRows]
+    .sort(compareEloLeaderboardRows)
+    .map((row, index) => ({
+      ...row,
+      displayRank: index + 1
+    }));
+  const ratings = rankedRows.map(row => Number(row.rating));
+  if (rankedRows.length === 0) {
     return {
       labels: [],
       counts: [],
       bucketSize: getLeaderboardDistributionBucketSize(),
       bucketRanges: [],
+      bins: [],
       totalPlayers: 0
     };
   }
@@ -3350,30 +3371,46 @@ function buildLeaderboardEloDistributionBins(rows = currentLeaderboardRows) {
   const start = Math.floor(minRating / bucketSize) * bucketSize;
   const endExclusive = Math.max(start + bucketSize, (Math.floor(maxRating / bucketSize) + 1) * bucketSize);
   const bucketCount = Math.max(1, Math.ceil((endExclusive - start) / bucketSize));
-  const counts = new Array(bucketCount).fill(0);
-  const bucketRanges = counts.map((_, index) => {
+  const bins = new Array(bucketCount).fill(null).map((_, index) => {
     const bucketStart = start + (index * bucketSize);
     return {
+      id: getLeaderboardDistributionBucketId(bucketStart, bucketStart + bucketSize),
       start: bucketStart,
       endExclusive: bucketStart + bucketSize,
-      center: bucketStart + (bucketSize / 2)
+      center: bucketStart + (bucketSize / 2),
+      count: 0,
+      rows: []
     };
   });
 
-  ratings.forEach(rating => {
+  rankedRows.forEach(row => {
+    const rating = Number(row.rating);
     const bucketIndex = Math.min(
       bucketCount - 1,
       Math.max(0, Math.floor((rating - start) / bucketSize))
     );
-    counts[bucketIndex] += 1;
+    bins[bucketIndex].count += 1;
+    bins[bucketIndex].rows.push(row);
+  });
+
+  bins.forEach(bucket => {
+    bucket.rows.sort(compareEloLeaderboardRows);
   });
 
   return {
-    labels: bucketRanges.map(range => formatRating(range.center)),
-    counts,
+    labels: bins.map(bucket => formatRating(bucket.center)),
+    counts: bins.map(bucket => bucket.count),
     bucketSize,
-    bucketRanges,
-    totalPlayers: ratings.length
+    bucketRanges: bins.map(({ start: bucketStart, endExclusive, center, count, rows, id }) => ({
+      id,
+      start: bucketStart,
+      endExclusive,
+      center,
+      count,
+      rows
+    })),
+    bins,
+    totalPlayers: rankedRows.length
   };
 }
 
@@ -3387,6 +3424,105 @@ function renderLeaderboardDistributionEmptyState(message = '') {
   if (canvas) {
     canvas.hidden = Boolean(message);
   }
+}
+
+function buildLeaderboardDistributionBucketPlayerListHtml(bucket = null) {
+  const rows = Array.isArray(bucket?.rows) ? bucket.rows : [];
+  if (rows.length === 0) {
+    return '<div class="player-rank-drilldown-empty">No eligible players were found in this Elo bucket.</div>';
+  }
+
+  const showDeckScopeColumn = selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  const selectedDeckLabel = showDeckScopeColumn ? getDeckDisplayName(selectedDeck) : '';
+  const deckScopeHeader = showDeckScopeColumn ? '<th>Deck Scope</th>' : '';
+  const deckScopeCells = showDeckScopeColumn ? `<td>${escapeHtml(selectedDeckLabel)}</td>` : '';
+
+  return `
+    <div class="player-rank-drilldown-top8-scroll">
+      <table class="player-rank-drilldown-top8-table">
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Player</th>
+            <th>Elo</th>
+            <th>Events</th>
+            <th>Matches</th>
+            <th>Win Rate</th>
+            ${deckScopeHeader}
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td>#${escapeHtml(formatLeaderboardRank(row.displayRank))}</td>
+              <td>
+                <div class="player-rank-drilldown-cell-stack">
+                  <span>${escapeHtml(row.displayName || row.playerKey || 'Unknown Player')}</span>
+                </div>
+              </td>
+              <td>${escapeHtml(formatRating(row.rating))}</td>
+              <td>${escapeHtml(String(row.eventCount || 0))}</td>
+              <td>${escapeHtml(String(row.matches || 0))}</td>
+              <td>${escapeHtml(formatWinRate(row.winRate))}</td>
+              ${deckScopeCells}
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderLeaderboardDistributionBucketDrilldown(bucket = null) {
+  const elements = getLeaderboardDrilldownElements();
+  const rows = Array.isArray(bucket?.rows) ? bucket.rows : [];
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content || !bucket) {
+    return false;
+  }
+
+  destroyLeaderboardPlayerEloChart();
+  updateLeaderboardPlayerReportDownloadButton();
+  updateLeaderboardPlayerHistoryDownloadButton();
+
+  const rangeLabel = formatLeaderboardDistributionBucketLabel(bucket.start, bucket.endExclusive);
+  const deckScopeLabel = selectedDeck !== LEADERBOARD_PLAYER_TOTAL_SCOPE
+    ? ` | Deck Scope: ${getDeckDisplayName(selectedDeck)}`
+    : '';
+  elements.title.textContent = `Elo Bucket ${rangeLabel}`;
+  elements.subtitle.textContent = `${rows.length} eligible player${rows.length === 1 ? '' : 's'} in the ${rangeLabel} Elo range${deckScopeLabel}`;
+  elements.content.innerHTML = buildLeaderboardDistributionBucketPlayerListHtml(bucket);
+  return true;
+}
+
+function getLeaderboardDistributionBucketById(bucketId = activeLeaderboardDistributionBucketId) {
+  const normalizedBucketId = String(bucketId || '').trim();
+  if (!normalizedBucketId) {
+    return null;
+  }
+
+  return currentLeaderboardDistributionBins.find(bucket => bucket.id === normalizedBucketId) || null;
+}
+
+async function openLeaderboardDistributionBucketDrilldown(bucketId = '') {
+  const elements = getLeaderboardDrilldownElements();
+  const bucket = getLeaderboardDistributionBucketById(bucketId);
+  if (!elements.overlay || !bucket) {
+    return;
+  }
+
+  activeLeaderboardDrilldownCategory = '';
+  activeLeaderboardPlayerDrilldown = null;
+  activeLeaderboardDistributionBucketId = bucket.id;
+  activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+
+  if (!renderLeaderboardDistributionBucketDrilldown(bucket)) {
+    activeLeaderboardDistributionBucketId = '';
+    return;
+  }
+
+  elements.overlay.hidden = false;
+  document.body.classList.add('modal-open');
+  updateLeaderboardDrilldownFullscreenButtonState();
 }
 
 function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
@@ -3407,6 +3543,7 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
   section.hidden = false;
 
   const distribution = buildLeaderboardEloDistributionBins(currentLeaderboardRows);
+  currentLeaderboardDistributionBins = distribution.bins;
   if (!distribution.counts.length) {
     destroyLeaderboardDistributionChart();
     if (helper) {
@@ -3452,7 +3589,19 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
   }
 
   destroyLeaderboardDistributionChart();
-  leaderboardDistributionChart = createLeaderboardDistributionChart(canvas, distribution);
+  leaderboardDistributionChart = createLeaderboardDistributionChart(canvas, {
+    ...distribution,
+    onBucketClick(clickedIndex, bucketRange) {
+      const clickedBucketId = String(bucketRange?.id || currentLeaderboardDistributionBins?.[clickedIndex]?.id || '').trim();
+      if (!clickedBucketId) {
+        return;
+      }
+
+      openLeaderboardDistributionBucketDrilldown(clickedBucketId).catch(error => {
+        console.error('Failed to open Elo distribution bucket drilldown.', error);
+      });
+    }
+  });
 }
 
 function shouldShowLeaderboardYearBoundaryMarkers(dataset = currentLeaderboardDataset) {
@@ -6105,6 +6254,7 @@ async function closeLeaderboardDrilldown() {
   overlay.hidden = true;
   activeLeaderboardDrilldownCategory = '';
   activeLeaderboardPlayerDrilldown = null;
+  activeLeaderboardDistributionBucketId = '';
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
   updateLeaderboardPlayerReportDownloadButton();
   updateLeaderboardPlayerHistoryDownloadButton();
