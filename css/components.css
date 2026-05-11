@@ -2856,6 +2856,39 @@ button.leaderboard-deck-result-card {
   display: none;
 }
 
+.data-table-container:fullscreen.leaderboard-compact-fullscreen {
+  gap: 8px;
+}
+
+.data-table-container:fullscreen.leaderboard-compact-fullscreen .leaderboard-title-row,
+.data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTableHelper,
+.data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTableSearchStatus {
+  display: none !important;
+}
+
+.data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTableToolbar {
+  margin-bottom: 6px;
+}
+
+.data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTitleBadgeRow {
+  display: block !important;
+  margin-top: -2px;
+}
+
+.data-table-container:fullscreen.leaderboard-compact-fullscreen #leaderboardTitleBadgeRow .leaderboard-info-badge-row {
+  margin-top: 0;
+  margin-bottom: 8px;
+}
+
+.data-table-container:fullscreen.leaderboard-compact-fullscreen .leaderboard-fullscreen-badge-strip {
+  display: none !important;
+}
+
+body.leaderboard-compact-fullscreen #leaderboardStats,
+body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
+  display: none !important;
+}
+
 @media (max-width: 1200px) {
   .data-table-container:fullscreen #leaderboardEloThresholdControlsSection.leaderboard-elo-threshold-fullscreen .leaderboard-threshold-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

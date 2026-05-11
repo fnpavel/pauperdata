@@ -7051,7 +7051,11 @@ function syncLeaderboardFullscreenLayout() {
     return;
   }
 
-  const fullscreenActive = document.fullscreenElement === container && !thresholdSection.classList.contains('hidden');
+  const isLeaderboardFullscreen = document.fullscreenElement === container;
+  container.classList.toggle('leaderboard-compact-fullscreen', isLeaderboardFullscreen);
+  document.body.classList.toggle('leaderboard-compact-fullscreen', isLeaderboardFullscreen);
+
+  const fullscreenActive = isLeaderboardFullscreen && !thresholdSection.classList.contains('hidden');
   if (fullscreenActive) {
     if (thresholdSection.parentElement !== container) {
       container.insertBefore(thresholdSection, toolbar);
