@@ -1061,66 +1061,68 @@
               </table>
             </div>
           </div>
-          <div class="chart-container leaderboard-timeline-section" id="leaderboardTimelineSection" hidden>
-            <div class="leaderboard-chart-panel-header">
-              <div>
-                <h2 class="chart-title" id="leaderboardTimelineTitle">Elo Timeline Across Events</h2>
-                <div class="leaderboard-table-helper" id="leaderboardTimelineHelper">
-                  Tracking the selected players across the current Elo window. Top 8 are shown by default.
+          <div class="leaderboards-analytics-grid" id="leaderboardAnalyticsGrid">
+            <div class="chart-container leaderboard-timeline-section" id="leaderboardTimelineSection" hidden>
+              <div class="leaderboard-chart-panel-header">
+                <div>
+                  <h2 class="chart-title" id="leaderboardTimelineTitle">Elo Timeline Across Events</h2>
+                  <div class="leaderboard-table-helper" id="leaderboardTimelineHelper">
+                    Tracking the selected players across the current Elo window. Top 8 are shown by default.
+                  </div>
+                </div>
+                <div class="leaderboard-chart-toolbar-actions leaderboard-chart-mode-actions" id="leaderboardTimelineModeButtons" aria-label="Select leaderboard timeline chart view">
+                  <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="elo">
+                    Elo View
+                  </button>
+                  <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="rank">
+                    Rank View
+                  </button>
                 </div>
               </div>
-              <div class="leaderboard-chart-toolbar-actions leaderboard-chart-mode-actions" id="leaderboardTimelineModeButtons" aria-label="Select leaderboard timeline chart view">
-                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="elo">
-                  Elo View
-                </button>
-                <button type="button" class="bubble-button leaderboard-timeline-mode-button" data-leaderboard-timeline-mode="rank">
-                  Rank View
-                </button>
-              </div>
-            </div>
-            <div class="leaderboard-chart-toolbar">
-              <div class="player-search-select leaderboard-table-search">
-                <input
-                  type="search"
-                  class="player-search-input"
-                  id="leaderboardTimelinePlayerSearchInput"
-                  placeholder="Search and add a player to the Elo timeline"
-                  aria-label="Search and add a player to the Elo timeline"
-                  autocomplete="off"
-                />
-                <div
-                  class="player-search-dropdown leaderboard-timeline-search-dropdown"
-                  id="leaderboardTimelineSearchDropdown"
-                  hidden
-                ></div>
-              </div>
-              <div class="leaderboard-chart-toolbar-actions">
-                <button type="button" class="bubble-button leaderboard-timeline-visibility-button" id="leaderboardTimelineShowAllLinesButton">
-                  Show All Lines
-                </button>
-                <button type="button" class="bubble-button leaderboard-timeline-visibility-button" id="leaderboardTimelineHideAllLinesButton">
-                  Hide All Lines
-                </button>
-              </div>
-              <div class="leaderboard-table-search-status" id="leaderboardTimelineSearchStatus" aria-live="polite"></div>
-            </div>
-            <div class="leaderboard-timeline-chip-panel" id="leaderboardTimelineChipPanel"></div>
-            <div class="leaderboard-table-helper" id="leaderboardTimelineLoadingState" hidden>Loading chart...</div>
-            <div class="leaderboard-table-helper" id="leaderboardTimelineDebugFallback" hidden></div>
-            <canvas id="leaderboardTimelineChart"></canvas>
-          </div>
-          <div class="chart-container leaderboard-distribution-section" id="leaderboardDistributionSection" hidden>
-            <div class="leaderboard-chart-panel-header">
-              <div>
-                <h2 class="chart-title" id="leaderboardDistributionTitle">Elo Distribution</h2>
-                <div class="leaderboard-table-helper" id="leaderboardDistributionHelper">
-                  Shows the distribution of eligible players by Elo rating.
+              <div class="leaderboard-chart-toolbar">
+                <div class="player-search-select leaderboard-table-search">
+                  <input
+                    type="search"
+                    class="player-search-input"
+                    id="leaderboardTimelinePlayerSearchInput"
+                    placeholder="Search and add a player to the Elo timeline"
+                    aria-label="Search and add a player to the Elo timeline"
+                    autocomplete="off"
+                  />
+                  <div
+                    class="player-search-dropdown leaderboard-timeline-search-dropdown"
+                    id="leaderboardTimelineSearchDropdown"
+                    hidden
+                  ></div>
                 </div>
-                <div class="leaderboard-distribution-legend" id="leaderboardDistributionLegend" aria-label="Elo distribution occupancy legend"></div>
+                <div class="leaderboard-chart-toolbar-actions">
+                  <button type="button" class="bubble-button leaderboard-timeline-visibility-button" id="leaderboardTimelineShowAllLinesButton">
+                    Show All Lines
+                  </button>
+                  <button type="button" class="bubble-button leaderboard-timeline-visibility-button" id="leaderboardTimelineHideAllLinesButton">
+                    Hide All Lines
+                  </button>
+                </div>
+                <div class="leaderboard-table-search-status" id="leaderboardTimelineSearchStatus" aria-live="polite"></div>
               </div>
+              <div class="leaderboard-timeline-chip-panel" id="leaderboardTimelineChipPanel"></div>
+              <div class="leaderboard-table-helper" id="leaderboardTimelineLoadingState" hidden>Loading chart...</div>
+              <div class="leaderboard-table-helper" id="leaderboardTimelineDebugFallback" hidden></div>
+              <canvas id="leaderboardTimelineChart"></canvas>
             </div>
-            <div class="leaderboard-table-helper leaderboard-distribution-empty-state" id="leaderboardDistributionEmptyState" hidden></div>
-            <canvas id="leaderboardDistributionChart" aria-label="Histogram showing the distribution of eligible players by Elo rating"></canvas>
+            <div class="chart-container leaderboard-distribution-section" id="leaderboardDistributionSection" hidden>
+              <div class="leaderboard-chart-panel-header">
+                <div>
+                  <h2 class="chart-title" id="leaderboardDistributionTitle">Elo Distribution</h2>
+                  <div class="leaderboard-table-helper" id="leaderboardDistributionHelper">
+                    Shows the distribution of eligible players by Elo rating.
+                  </div>
+                  <div class="leaderboard-distribution-legend" id="leaderboardDistributionLegend" aria-label="Elo distribution occupancy legend"></div>
+                </div>
+              </div>
+              <div class="leaderboard-table-helper leaderboard-distribution-empty-state" id="leaderboardDistributionEmptyState" hidden></div>
+              <canvas id="leaderboardDistributionChart" aria-label="Histogram showing the distribution of eligible players by Elo rating"></canvas>
+            </div>
           </div>
         </div>
       </div>

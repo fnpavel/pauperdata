@@ -604,7 +604,7 @@ export function createLeaderboardPlayerEloChart(canvas, {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      aspectRatio: 2.2,
+      aspectRatio: 3.0,
       interaction: {
         mode: 'nearest',
         intersect: false
@@ -886,7 +886,7 @@ export function createLeaderboardDistributionChart(canvas, {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      aspectRatio: 2.1,
+      aspectRatio: 1.7,
       interaction: {
         mode: 'index',
         intersect: false

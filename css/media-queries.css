@@ -6,6 +6,16 @@
     grid-template-columns: 280px 1fr;
   }
 
+  .leaderboards-analytics-grid {
+    grid-template-columns: 1fr;
+    margin-top: 14px;
+  }
+
+  .leaderboard-timeline-section,
+  .leaderboard-distribution-section {
+    min-height: auto;
+  }
+
   .leaderboard-dashboard {
     grid-template-columns: 280px 1fr;
   }

@@ -2548,6 +2548,34 @@ button.leaderboard-deck-result-card {
   text-align: center;
 }
 
+.leaderboards-analytics-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(320px, 2fr);
+  gap: 18px;
+  align-items: stretch;
+  margin-top: 18px;
+}
+
+.leaderboards-analytics-grid > .chart-container {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+.leaderboard-timeline-section,
+.leaderboard-distribution-section {
+  display: flex;
+  flex-direction: column;
+  min-height: 430px;
+}
+
+.leaderboard-timeline-section {
+  padding: 16px 18px 14px;
+}
+
+.leaderboard-distribution-section {
+  padding: 18px 16px 16px;
+}
+
 .leaderboard-distribution-legend {
   display: flex;
   flex-wrap: wrap;
@@ -2580,9 +2608,16 @@ button.leaderboard-deck-result-card {
   flex: 0 0 auto;
 }
 
+#leaderboardTimelineChart,
 #leaderboardDistributionChart {
-  min-height: 320px;
-  max-height: 360px !important;
+  flex: 1 1 auto;
+  width: 100% !important;
+  min-height: 0;
+}
+
+#leaderboardDistributionChart {
+  min-height: 380px;
+  max-height: 420px !important;
 }
 
 #leaderboardDistributionChart[hidden] {
