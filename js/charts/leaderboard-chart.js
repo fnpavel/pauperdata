@@ -493,6 +493,62 @@ const leaderboardDistributionSlotPlugin = {
   }
 };
 
+const leaderboardDistributionCountLabelPlugin = {
+  id: 'leaderboardDistributionCountLabelPlugin',
+  afterDatasetsDraw(chart) {
+    const dataset = chart.data?.datasets?.[0];
+    const meta = typeof chart.getDatasetMeta === 'function'
+      ? chart.getDatasetMeta(0)
+      : null;
+    const chartArea = chart.chartArea;
+    if (!dataset || !meta || !chartArea) {
+      return;
+    }
+
+    const ctx = chart.ctx;
+    const theme = getChartThemeColors();
+    const data = Array.isArray(dataset.data) ? dataset.data : [];
+
+    ctx.save();
+    ctx.font = '600 11px Bitter, system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+
+    data.forEach((rawValue, index) => {
+      const element = meta.data?.[index];
+      const count = Math.max(0, Number(rawValue) || 0);
+      if (!element) {
+        return;
+      }
+
+      const props = typeof element.getProps === 'function'
+        ? element.getProps(['x', 'y', 'base', 'width'], true)
+        : element;
+      const x = Number(props?.x);
+      const y = Number(props?.y);
+      const base = Number(props?.base);
+      if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(base)) {
+        return;
+      }
+
+      const occupancy = getLeaderboardDistributionOccupancyBucket(count);
+      const labelY = count === 0
+        ? Math.max(chartArea.top + 14, base - 6)
+        : Math.max(chartArea.top + 14, y - 6);
+
+      ctx.fillStyle = occupancy.border;
+      ctx.shadowColor = occupancy.border;
+      ctx.shadowBlur = count === 0 ? 6 : 8;
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.fillText(String(count), x, labelY);
+      ctx.shadowBlur = 0;
+    });
+
+    ctx.restore();
+  }
+};
+
 // Creates the detail Elo chart used in leaderboard player drilldowns.
 export function createLeaderboardPlayerEloChart(canvas, {
   row,
@@ -794,7 +850,7 @@ export function createLeaderboardDistributionChart(canvas, {
 
   return new globalThis.Chart(canvas, {
     type: 'bar',
-    plugins: [leaderboardDistributionSlotPlugin],
+    plugins: [leaderboardDistributionSlotPlugin, leaderboardDistributionCountLabelPlugin],
     data: {
       labels,
       datasets: [{
@@ -841,6 +897,7 @@ export function createLeaderboardDistributionChart(canvas, {
       },
       plugins: {
         leaderboardDistributionSlotPlugin: {},
+        leaderboardDistributionCountLabelPlugin: {},
         legend: {
           display: false
         },
