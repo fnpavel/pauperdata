@@ -22,6 +22,7 @@ import {
   buildEventLevelEloPoints,
   buildLeaderboardYearBands,
   buildLeaderboardTimeline,
+  createLeaderboardDistributionChart,
   createLeaderboardPlayerEloChart,
   createLeaderboardTimelineChart,
   destroyLeaderboardChart,
@@ -45,6 +46,7 @@ const DEFAULT_LEADERBOARD_WINDOW_MODE = 'seasonal';
 const DEFAULT_LEADERBOARD_RESET_MODE = 'continuous';
 const DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE = 'elo';
 const DEFAULT_LEADERBOARD_TIMELINE_RANK_COHORT_GRANULARITY = 'month';
+const LEADERBOARD_ELO_DISTRIBUTION_BUCKET_SIZE = 10;
 const MAX_VISIBLE_LEADERBOARD_TIMELINE_RANK = 8;
 const LEADERBOARD_PLAYER_TOTAL_SCOPE = '__all_decks__';
 const LEADERBOARD_REPORT_TOTAL_ELO_COLOR = '#d4a657';
@@ -197,6 +199,7 @@ let leaderboardDatasetRequestId = 0;
 let shouldRestoreLeaderboardFullscreen = false;
 let leaderboardPlayerEloChart = null;
 let leaderboardTimelineChart = null;
+let leaderboardDistributionChart = null;
 let activeLeaderboardTimelineSelections = new Set();
 let activeLeaderboardTimelineSearchTerm = '';
 let activeLeaderboardTimelineChartMode = DEFAULT_LEADERBOARD_TIMELINE_CHART_MODE;
@@ -497,6 +500,22 @@ function getLeaderboardTimelineShowAllLinesButton() {
 
 function getLeaderboardTimelineHideAllLinesButton() {
   return document.getElementById('leaderboardTimelineHideAllLinesButton');
+}
+
+function getLeaderboardDistributionSection() {
+  return document.getElementById('leaderboardDistributionSection');
+}
+
+function getLeaderboardDistributionChartCanvas() {
+  return document.getElementById('leaderboardDistributionChart');
+}
+
+function getLeaderboardDistributionHelper() {
+  return document.getElementById('leaderboardDistributionHelper');
+}
+
+function getLeaderboardDistributionEmptyState() {
+  return document.getElementById('leaderboardDistributionEmptyState');
 }
 
 function getLeaderboardPlayerChartShowAllLinesButton() {
@@ -2459,6 +2478,7 @@ function comparePerformanceLeaderboardRows(a = {}, b = {}) {
 
 function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   destroyLeaderboardTimelineChart();
+  destroyLeaderboardDistributionChart();
   updateElementText('leaderboardTableTitle', 'Elo Leaderboard');
   renderLeaderboardTitleBadgeRow();
   updateElementText('leaderboardTableHelper', message);
@@ -2473,12 +2493,17 @@ function renderLeaderboardLoadingState(message = 'Loading Elo leaderboard...') {
   if (timelineSection) {
     timelineSection.hidden = false;
   }
+  const distributionSection = getLeaderboardDistributionSection();
+  if (distributionSection) {
+    distributionSection.hidden = true;
+  }
   renderLeaderboardTimelineModeButtons();
   renderLeaderboardTimelineLoadingState('Loading chart...');
 }
 
 function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard data.') {
   destroyLeaderboardTimelineChart();
+  destroyLeaderboardDistributionChart();
   renderLeaderboardTitleBadgeRow();
   updateElementText('leaderboardTableHelper', message);
   updateElementHTML('leaderboardTableClickHint', buildLeaderboardTableClickHintHtml());
@@ -2488,7 +2513,12 @@ function renderLeaderboardErrorState(message = 'Unable to load Elo leaderboard d
   if (timelineSection) {
     timelineSection.hidden = true;
   }
+  const distributionSection = getLeaderboardDistributionSection();
+  if (distributionSection) {
+    distributionSection.hidden = true;
+  }
   renderLeaderboardTimelineLoadingState('');
+  renderLeaderboardDistributionEmptyState('');
 }
 
 function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
@@ -2518,6 +2548,7 @@ function renderLeaderboardFromCurrentState({ thresholdOnly = false } = {}) {
   populateLeaderboardStats(currentLeaderboardDataset);
   updateLeaderboardDrilldownCardStates();
   renderLeaderboardTable(currentLeaderboardDataset);
+  renderLeaderboardDistributionChart({ forceRecreate: !thresholdOnly });
   renderLeaderboardTimelineChart({ forceRecreate: !thresholdOnly });
 
   if (searchInput) {
@@ -3284,6 +3315,144 @@ function destroyLeaderboardPlayerEloChart() {
 
 function destroyLeaderboardTimelineChart() {
   leaderboardTimelineChart = destroyLeaderboardChart(leaderboardTimelineChart);
+}
+
+function destroyLeaderboardDistributionChart() {
+  leaderboardDistributionChart = destroyLeaderboardChart(leaderboardDistributionChart);
+}
+
+function getLeaderboardDistributionBucketSize() {
+  return LEADERBOARD_ELO_DISTRIBUTION_BUCKET_SIZE;
+}
+
+function formatLeaderboardDistributionBucketLabel(bucketStart = 0, bucketEndExclusive = 0) {
+  const inclusiveEnd = bucketEndExclusive - 1;
+  return `${formatRating(bucketStart)}-${formatRating(inclusiveEnd)}`;
+}
+
+function buildLeaderboardEloDistributionBins(rows = currentLeaderboardRows) {
+  const ratings = (Array.isArray(rows) ? rows : [])
+    .map(row => Number(row?.rating))
+    .filter(Number.isFinite);
+  if (ratings.length === 0) {
+    return {
+      labels: [],
+      counts: [],
+      bucketSize: getLeaderboardDistributionBucketSize(),
+      bucketRanges: [],
+      totalPlayers: 0
+    };
+  }
+
+  const bucketSize = getLeaderboardDistributionBucketSize();
+  const minRating = Math.min(...ratings);
+  const maxRating = Math.max(...ratings);
+  const start = Math.floor(minRating / bucketSize) * bucketSize;
+  const endExclusive = Math.max(start + bucketSize, (Math.floor(maxRating / bucketSize) + 1) * bucketSize);
+  const bucketCount = Math.max(1, Math.ceil((endExclusive - start) / bucketSize));
+  const counts = new Array(bucketCount).fill(0);
+  const bucketRanges = counts.map((_, index) => {
+    const bucketStart = start + (index * bucketSize);
+    return {
+      start: bucketStart,
+      endExclusive: bucketStart + bucketSize,
+      center: bucketStart + (bucketSize / 2)
+    };
+  });
+
+  ratings.forEach(rating => {
+    const bucketIndex = Math.min(
+      bucketCount - 1,
+      Math.max(0, Math.floor((rating - start) / bucketSize))
+    );
+    counts[bucketIndex] += 1;
+  });
+
+  return {
+    labels: bucketRanges.map(range => formatRating(range.center)),
+    counts,
+    bucketSize,
+    bucketRanges,
+    totalPlayers: ratings.length
+  };
+}
+
+function renderLeaderboardDistributionEmptyState(message = '') {
+  const emptyState = getLeaderboardDistributionEmptyState();
+  const canvas = getLeaderboardDistributionChartCanvas();
+  if (emptyState) {
+    emptyState.hidden = !message;
+    emptyState.textContent = message;
+  }
+  if (canvas) {
+    canvas.hidden = Boolean(message);
+  }
+}
+
+function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
+  const section = getLeaderboardDistributionSection();
+  const canvas = getLeaderboardDistributionChartCanvas();
+  const helper = getLeaderboardDistributionHelper();
+  if (!section || !canvas) {
+    return;
+  }
+
+  if (currentLeaderboardDataset?.mode !== 'elo') {
+    section.hidden = true;
+    destroyLeaderboardDistributionChart();
+    renderLeaderboardDistributionEmptyState('');
+    return;
+  }
+
+  section.hidden = false;
+
+  const distribution = buildLeaderboardEloDistributionBins(currentLeaderboardRows);
+  if (!distribution.counts.length) {
+    destroyLeaderboardDistributionChart();
+    if (helper) {
+      helper.textContent = `Shows the distribution of eligible players by Elo rating using ${getLeaderboardDistributionBucketSize()}-point buckets.`;
+    }
+    renderLeaderboardDistributionEmptyState(
+      hasActiveLeaderboardEloThresholds() && currentLeaderboardBaseRows.length > 0
+        ? 'No eligible players met the current Elo minimums, so there is no distribution to show.'
+        : 'No eligible Elo players are available for the selected filters.'
+    );
+    return;
+  }
+
+  if (helper) {
+    helper.textContent = `Shows the distribution of ${distribution.totalPlayers} eligible player${distribution.totalPlayers === 1 ? '' : 's'} by Elo rating using ${distribution.bucketSize}-point buckets.`;
+  }
+  renderLeaderboardDistributionEmptyState('');
+
+  if (
+    !forceRecreate
+    && leaderboardDistributionChart
+    && Array.isArray(leaderboardDistributionChart.data?.labels)
+    && leaderboardDistributionChart.data.labels.length === distribution.labels.length
+    && leaderboardDistributionChart.data.labels.every((label, index) => label === distribution.labels[index])
+  ) {
+    leaderboardDistributionChart.data.labels = distribution.labels;
+    leaderboardDistributionChart.data.datasets[0].data = distribution.counts;
+    leaderboardDistributionChart.data.datasets[0].bucketRanges = distribution.bucketRanges;
+    if (leaderboardDistributionChart.options?.plugins?.tooltip?.callbacks) {
+      leaderboardDistributionChart.options.plugins.tooltip.callbacks.title = items => {
+        const bucketRange = items[0]?.dataset?.bucketRanges?.[items[0]?.dataIndex];
+        return bucketRange
+          ? `${formatLeaderboardDistributionBucketLabel(bucketRange.start, bucketRange.endExclusive)} Elo`
+          : (items[0]?.label || '');
+      };
+      leaderboardDistributionChart.options.plugins.tooltip.callbacks.label = context => {
+        const count = Number(context.parsed.y || 0);
+        return `${count} player${count === 1 ? '' : 's'} in this ${distribution.bucketSize}-point bucket`;
+      };
+    }
+    leaderboardDistributionChart.update('none');
+    return;
+  }
+
+  destroyLeaderboardDistributionChart();
+  leaderboardDistributionChart = createLeaderboardDistributionChart(canvas, distribution);
 }
 
 function shouldShowLeaderboardYearBoundaryMarkers(dataset = currentLeaderboardDataset) {

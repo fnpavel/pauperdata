@@ -1109,6 +1109,18 @@
             <div class="leaderboard-table-helper" id="leaderboardTimelineDebugFallback" hidden></div>
             <canvas id="leaderboardTimelineChart"></canvas>
           </div>
+          <div class="chart-container leaderboard-distribution-section" id="leaderboardDistributionSection" hidden>
+            <div class="leaderboard-chart-panel-header">
+              <div>
+                <h2 class="chart-title" id="leaderboardDistributionTitle">Elo Distribution</h2>
+                <div class="leaderboard-table-helper" id="leaderboardDistributionHelper">
+                  Shows the distribution of eligible players by Elo rating.
+                </div>
+              </div>
+            </div>
+            <div class="leaderboard-table-helper leaderboard-distribution-empty-state" id="leaderboardDistributionEmptyState" hidden></div>
+            <canvas id="leaderboardDistributionChart" aria-label="Histogram showing the distribution of eligible players by Elo rating"></canvas>
+          </div>
         </div>
       </div>
 

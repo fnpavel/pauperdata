@@ -672,3 +672,104 @@ export function createLeaderboardTimelineChart(canvas, {
     }
   });
 }
+
+// Creates the Elo distribution histogram used by the leaderboard overview.
+export function createLeaderboardDistributionChart(canvas, {
+  labels = [],
+  counts = [],
+  bucketSize = 10,
+  bucketRanges = []
+} = {}) {
+  if (!canvas || !globalThis.Chart || !labels.length || !counts.length) {
+    return null;
+  }
+
+  const theme = getChartThemeColors();
+  const resolvedBucketSize = Number.isFinite(Number(bucketSize)) && Number(bucketSize) > 0
+    ? Number(bucketSize)
+    : 25;
+
+  return new globalThis.Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        label: `${resolvedBucketSize}-point Elo buckets`,
+        data: counts,
+        bucketRanges,
+        backgroundColor: 'rgba(212, 166, 87, 0.24)',
+        borderColor: '#d4a657',
+        pointBackgroundColor: '#d4a657',
+        pointBorderColor: '#d4a657',
+        pointHoverBackgroundColor: '#f5d28a',
+        pointHoverBorderColor: '#f5d28a',
+        borderWidth: 3,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+        pointHitRadius: 10,
+        fill: true,
+        tension: 0.35
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      aspectRatio: 2.1,
+      plugins: {
+        legend: {
+          display: false
+        },
+        datalabels: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            title(items) {
+              const bucketRange = items[0]?.dataset?.bucketRanges?.[items[0]?.dataIndex];
+              return bucketRange
+                ? `${bucketRange.start}-${bucketRange.endExclusive - 1} Elo`
+                : (items[0]?.label || '');
+            },
+            label(context) {
+              const count = Number(context.parsed.y || 0);
+              return `${count} player${count === 1 ? '' : 's'} in this ${resolvedBucketSize}-point bucket`;
+            }
+          }
+        }
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: `Elo rating (${resolvedBucketSize}-point buckets)`,
+            color: theme.text
+          },
+          ticks: {
+            autoSkip: true,
+            maxRotation: 0,
+            minRotation: 0,
+            color: theme.muted
+          },
+          grid: {
+            color: theme.grid
+          }
+        },
+        y: {
+          beginAtZero: true,
+          title: {
+            display: true,
+            text: 'Players',
+            color: theme.text
+          },
+          ticks: {
+            precision: 0,
+            color: theme.muted
+          },
+          grid: {
+            color: theme.grid
+          }
+        }
+      }
+    }
+  });
+}

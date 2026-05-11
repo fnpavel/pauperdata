@@ -2522,6 +2522,21 @@ button.leaderboard-deck-result-card {
   line-height: 1.45;
 }
 
+.leaderboard-distribution-empty-state {
+  margin-bottom: 0;
+  padding: 28px 0 10px;
+  text-align: center;
+}
+
+#leaderboardDistributionChart {
+  min-height: 320px;
+  max-height: 360px !important;
+}
+
+#leaderboardDistributionChart[hidden] {
+  display: none !important;
+}
+
 #leaderboardTitleBadgeRow .leaderboard-info-badge-row {
   margin-top: -4px;
   margin-bottom: 12px;
