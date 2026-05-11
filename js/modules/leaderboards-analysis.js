@@ -26,7 +26,9 @@ import {
   createLeaderboardPlayerEloChart,
   createLeaderboardTimelineChart,
   destroyLeaderboardChart,
+  getLeaderboardDistributionOccupancyBucket,
   getLeaderboardTimelineColor,
+  LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE,
   shouldShowLeaderboardYearBoundaries
 } from '../charts/leaderboard-chart.js';
 import {
@@ -518,6 +520,10 @@ function getLeaderboardDistributionHelper() {
 
 function getLeaderboardDistributionEmptyState() {
   return document.getElementById('leaderboardDistributionEmptyState');
+}
+
+function getLeaderboardDistributionLegend() {
+  return document.getElementById('leaderboardDistributionLegend');
 }
 
 function getLeaderboardPlayerChartShowAllLinesButton() {
@@ -3440,6 +3446,25 @@ function renderLeaderboardDistributionEmptyState(message = '') {
   }
 }
 
+function renderLeaderboardDistributionLegend() {
+  const legend = getLeaderboardDistributionLegend();
+  if (!legend) {
+    return;
+  }
+
+  legend.hidden = false;
+  legend.innerHTML = LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE.map(bucket => `
+    <span class="leaderboard-distribution-legend-item">
+      <span
+        class="leaderboard-distribution-legend-swatch"
+        style="background:${escapeHtml(bucket.fill)};border-color:${escapeHtml(bucket.border)};"
+        aria-hidden="true"
+      ></span>
+      <span>${escapeHtml(`${bucket.label}: ${bucket.description}`)}</span>
+    </span>
+  `).join('');
+}
+
 function buildLeaderboardDistributionBucketPlayerListHtml(bucket = null) {
   const rows = Array.isArray(bucket?.rows) ? bucket.rows : [];
   if (rows.length === 0) {
@@ -3549,6 +3574,7 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
   const section = getLeaderboardDistributionSection();
   const canvas = getLeaderboardDistributionChartCanvas();
   const helper = getLeaderboardDistributionHelper();
+  const legend = getLeaderboardDistributionLegend();
   if (!section || !canvas) {
     return;
   }
@@ -3557,10 +3583,15 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
     section.hidden = true;
     destroyLeaderboardDistributionChart();
     renderLeaderboardDistributionEmptyState('');
+    if (legend) {
+      legend.hidden = true;
+      legend.innerHTML = '';
+    }
     return;
   }
 
   section.hidden = false;
+  renderLeaderboardDistributionLegend();
 
   const distribution = buildLeaderboardEloDistributionBins(currentLeaderboardRows);
   currentLeaderboardDistributionBins = distribution.bins;
@@ -3574,6 +3605,9 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
         ? 'No eligible players met the current Elo minimums, so there is no distribution to show.'
         : 'No eligible Elo players are available for the selected filters.'
     );
+    if (legend) {
+      legend.hidden = true;
+    }
     return;
   }
 
@@ -3581,6 +3615,9 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
     helper.textContent = `Shows the distribution of ${distribution.totalPlayers} eligible player${distribution.totalPlayers === 1 ? '' : 's'} by Elo rating using ${distribution.bucketSize}-point buckets.`;
   }
   renderLeaderboardDistributionEmptyState('');
+  if (legend) {
+    legend.hidden = false;
+  }
 
   if (
     !forceRecreate
@@ -3601,7 +3638,11 @@ function renderLeaderboardDistributionChart({ forceRecreate = true } = {}) {
       };
       leaderboardDistributionChart.options.plugins.tooltip.callbacks.label = context => {
         const count = Number(context.parsed.y || 0);
-        return `${count} player${count === 1 ? '' : 's'} in this ${distribution.bucketSize}-point bucket`;
+        const occupancy = getLeaderboardDistributionOccupancyBucket(count);
+        return [
+          `${count} player${count === 1 ? '' : 's'} in this ${distribution.bucketSize}-point bucket`,
+          `Occupancy: ${occupancy.label}`
+        ];
       };
     }
     leaderboardDistributionChart.update('none');

@@ -391,6 +391,108 @@ export function destroyLeaderboardChart(chartInstance) {
   return null;
 }
 
+export const LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE = Object.freeze([
+  {
+    id: 'empty',
+    label: 'Empty',
+    description: '0 players',
+    min: 0,
+    max: 0,
+    fill: 'rgba(74, 90, 110, 0.24)',
+    border: 'rgba(116, 136, 162, 0.58)'
+  },
+  {
+    id: 'sparse',
+    label: 'Sparse',
+    description: '1-2 players',
+    min: 1,
+    max: 2,
+    fill: 'rgba(92, 155, 255, 0.72)',
+    border: 'rgba(150, 196, 255, 0.94)'
+  },
+  {
+    id: 'light',
+    label: 'Light',
+    description: '3-4 players',
+    min: 3,
+    max: 4,
+    fill: 'rgba(72, 210, 201, 0.78)',
+    border: 'rgba(128, 240, 224, 0.94)'
+  },
+  {
+    id: 'moderate',
+    label: 'Moderate',
+    description: '5-9 players',
+    min: 5,
+    max: 9,
+    fill: 'rgba(109, 214, 122, 0.82)',
+    border: 'rgba(172, 245, 170, 0.94)'
+  },
+  {
+    id: 'strong',
+    label: 'Strong',
+    description: '10-19 players',
+    min: 10,
+    max: 19,
+    fill: 'rgba(232, 188, 81, 0.84)',
+    border: 'rgba(248, 221, 129, 0.96)'
+  },
+  {
+    id: 'dense',
+    label: 'Dense',
+    description: '20+ players',
+    min: 20,
+    max: Number.POSITIVE_INFINITY,
+    fill: 'rgba(236, 115, 74, 0.88)',
+    border: 'rgba(255, 160, 125, 0.98)'
+  }
+]);
+
+export function getLeaderboardDistributionOccupancyBucket(count = 0) {
+  const resolvedCount = Math.max(0, Number(count) || 0);
+  return LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE.find(bucket => {
+    return resolvedCount >= bucket.min && resolvedCount <= bucket.max;
+  }) || LEADERBOARD_DISTRIBUTION_OCCUPANCY_SCALE[0];
+}
+
+const leaderboardDistributionSlotPlugin = {
+  id: 'leaderboardDistributionSlotPlugin',
+  beforeDatasetsDraw(chart) {
+    const xScale = chart.scales?.x;
+    const yScale = chart.scales?.y;
+    const chartArea = chart.chartArea;
+    const labels = Array.isArray(chart.data?.labels) ? chart.data.labels : [];
+    if (!xScale || !yScale || !chartArea || labels.length === 0) {
+      return;
+    }
+
+    const zeroBucket = getLeaderboardDistributionOccupancyBucket(0);
+    const ctx = chart.ctx;
+    const baselineY = yScale.getPixelForValue(0);
+    const fullHeight = Math.max(10, chartArea.bottom - chartArea.top);
+
+    ctx.save();
+    labels.forEach((_, index) => {
+      const centerX = xScale.getPixelForValue(index);
+      const previousX = index > 0 ? xScale.getPixelForValue(index - 1) : chartArea.left;
+      const nextX = index < labels.length - 1 ? xScale.getPixelForValue(index + 1) : chartArea.right;
+      const slotWidth = Math.max(8, Math.min(32, ((nextX - previousX) / 2) * 0.74));
+      const left = centerX - (slotWidth / 2);
+
+      ctx.fillStyle = zeroBucket.fill;
+      ctx.strokeStyle = zeroBucket.border;
+      ctx.lineWidth = 1;
+      ctx.fillRect(left, chartArea.top + 4, slotWidth, Math.max(4, fullHeight - 8));
+      ctx.strokeRect(left, chartArea.top + 4, slotWidth, Math.max(4, fullHeight - 8));
+      ctx.beginPath();
+      ctx.moveTo(left, baselineY);
+      ctx.lineTo(left + slotWidth, baselineY);
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+};
+
 // Creates the detail Elo chart used in leaderboard player drilldowns.
 export function createLeaderboardPlayerEloChart(canvas, {
   row,
@@ -691,36 +793,44 @@ export function createLeaderboardDistributionChart(canvas, {
     : 25;
 
   return new globalThis.Chart(canvas, {
-    type: 'line',
+    type: 'bar',
+    plugins: [leaderboardDistributionSlotPlugin],
     data: {
       labels,
       datasets: [{
         label: `${resolvedBucketSize}-point Elo buckets`,
         data: counts,
         bucketRanges,
-        backgroundColor: 'rgba(212, 166, 87, 0.24)',
-        borderColor: '#d4a657',
-        pointBackgroundColor: '#d4a657',
-        pointBorderColor: '#d4a657',
-        pointHoverBackgroundColor: '#f5d28a',
-        pointHoverBorderColor: '#f5d28a',
-        borderWidth: 3,
-        pointRadius: 0,
-        pointHoverRadius: 4,
-        pointHitRadius: 10,
-        fill: true,
-        tension: 0.35
+        backgroundColor(context) {
+          const count = Number(context.raw || 0);
+          return getLeaderboardDistributionOccupancyBucket(count).fill;
+        },
+        borderColor(context) {
+          const count = Number(context.raw || 0);
+          return getLeaderboardDistributionOccupancyBucket(count).border;
+        },
+        borderWidth(context) {
+          return Number(context.raw || 0) === 0 ? 1.2 : 1.4;
+        },
+        borderRadius: 4,
+        categoryPercentage: 0.82,
+        barPercentage: 0.92,
+        minBarLength: 0
       }]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
       aspectRatio: 2.1,
+      interaction: {
+        mode: 'index',
+        intersect: false
+      },
       onClick(event, elements, chart) {
         const clickedElements = Array.isArray(elements) && elements.length > 0
           ? elements
           : (typeof chart?.getElementsAtEventForMode === 'function'
-              ? chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true)
+              ? chart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, true)
               : []);
         const clickedIndex = clickedElements?.[0]?.index;
         if (!Number.isInteger(clickedIndex) || typeof onBucketClick !== 'function') {
@@ -730,6 +840,7 @@ export function createLeaderboardDistributionChart(canvas, {
         onBucketClick(clickedIndex, chart?.data?.datasets?.[0]?.bucketRanges?.[clickedIndex] || null);
       },
       plugins: {
+        leaderboardDistributionSlotPlugin: {},
         legend: {
           display: false
         },
@@ -746,7 +857,11 @@ export function createLeaderboardDistributionChart(canvas, {
             },
             label(context) {
               const count = Number(context.parsed.y || 0);
-              return `${count} player${count === 1 ? '' : 's'} in this ${resolvedBucketSize}-point bucket`;
+              const occupancy = getLeaderboardDistributionOccupancyBucket(count);
+              return [
+                `${count} player${count === 1 ? '' : 's'} in this ${resolvedBucketSize}-point bucket`,
+                `Occupancy: ${occupancy.label}`
+              ];
             }
           }
         }

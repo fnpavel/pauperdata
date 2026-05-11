@@ -2548,6 +2548,38 @@ button.leaderboard-deck-result-card {
   text-align: center;
 }
 
+.leaderboard-distribution-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  margin: -4px 0 12px;
+}
+
+.leaderboard-distribution-legend[hidden] {
+  display: none !important;
+}
+
+.leaderboard-distribution-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  font-size: 0.74rem;
+  line-height: 1.2;
+}
+
+.leaderboard-distribution-legend-swatch {
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  flex: 0 0 auto;
+}
+
 #leaderboardDistributionChart {
   min-height: 320px;
   max-height: 360px !important;
