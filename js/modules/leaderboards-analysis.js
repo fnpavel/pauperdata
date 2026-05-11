@@ -3345,6 +3345,20 @@ function getLeaderboardDistributionBucketId(bucketStart = 0, bucketEndExclusive 
   return `${bucketStart}-${bucketEndExclusive}`;
 }
 
+function buildLeaderboardPlayerDrilldownDataAttributes(row = {}) {
+  const playerKey = String(row?.playerKey || '').trim();
+  const seasonKey = String(row?.seasonKey || '').trim();
+  if (!playerKey || !seasonKey) {
+    return '';
+  }
+
+  return [
+    'data-leaderboard-open-player-drilldown="true"',
+    `data-leaderboard-player-key="${escapeHtml(playerKey)}"`,
+    `data-leaderboard-season-key="${escapeHtml(seasonKey)}"`
+  ].join(' ');
+}
+
 function buildLeaderboardEloDistributionBins(rows = currentLeaderboardRows) {
   const resolvedRows = (Array.isArray(rows) ? rows : []).filter(row => Number.isFinite(Number(row?.rating)));
   const rankedRows = [...resolvedRows]
@@ -3453,11 +3467,17 @@ function buildLeaderboardDistributionBucketPlayerListHtml(bucket = null) {
         </thead>
         <tbody>
           ${rows.map(row => `
-            <tr>
+            <tr
+              class="leaderboard-distribution-bucket-row"
+              tabindex="0"
+              role="button"
+              ${buildLeaderboardPlayerDrilldownDataAttributes(row)}
+              aria-label="${escapeHtml(`Open leaderboard details for ${row.displayName || row.playerKey || 'player'} in ${getLeaderboardEntryLabel(row)}`)}"
+            >
               <td>#${escapeHtml(formatLeaderboardRank(row.displayRank))}</td>
               <td>
                 <div class="player-rank-drilldown-cell-stack">
-                  <span>${escapeHtml(row.displayName || row.playerKey || 'Unknown Player')}</span>
+                  <span class="leaderboard-distribution-bucket-player-name">${escapeHtml(row.displayName || row.playerKey || 'Unknown Player')}</span>
                 </div>
               </td>
               <td>${escapeHtml(formatRating(row.rating))}</td>
@@ -6250,6 +6270,18 @@ async function closeLeaderboardDrilldown() {
     await document.exitFullscreen();
   }
 
+  if (activeLeaderboardPlayerDrilldown?.playerKey && activeLeaderboardDistributionBucketId) {
+    const activeBucket = getLeaderboardDistributionBucketById(activeLeaderboardDistributionBucketId);
+    if (activeBucket) {
+      destroyLeaderboardPlayerEloChart();
+      activeLeaderboardPlayerDrilldown = null;
+      activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+      renderLeaderboardDistributionBucketDrilldown(activeBucket);
+      updateLeaderboardDrilldownFullscreenButtonState();
+      return;
+    }
+  }
+
   destroyLeaderboardPlayerEloChart();
   overlay.hidden = true;
   activeLeaderboardDrilldownCategory = '';
@@ -6326,6 +6358,17 @@ function setupLeaderboardDrilldownModal() {
       return;
     }
 
+    const openPlayerDrilldownTrigger = event.target.closest('[data-leaderboard-open-player-drilldown="true"]');
+    if (openPlayerDrilldownTrigger) {
+      openLeaderboardPlayerDrilldown(
+        openPlayerDrilldownTrigger.dataset.leaderboardPlayerKey,
+        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey
+      ).catch(error => {
+        console.error('Failed to open leaderboard player drilldown from the Elo distribution bucket modal.', error);
+      });
+      return;
+    }
+
     const openEventAnalysisTrigger = event.target.closest('[data-leaderboard-open-event-analysis="true"]');
     if (openEventAnalysisTrigger) {
       openLeaderboardEventAnalysisShortcut({
@@ -6397,6 +6440,18 @@ function setupLeaderboardDrilldownModal() {
   });
 
   content?.addEventListener('keydown', event => {
+    const openPlayerDrilldownTrigger = event.target.closest('[data-leaderboard-open-player-drilldown="true"]');
+    if (openPlayerDrilldownTrigger && (event.key === 'Enter' || event.key === ' ')) {
+      event.preventDefault();
+      openLeaderboardPlayerDrilldown(
+        openPlayerDrilldownTrigger.dataset.leaderboardPlayerKey,
+        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey
+      ).catch(error => {
+        console.error('Failed to open leaderboard player drilldown from the Elo distribution bucket modal.', error);
+      });
+      return;
+    }
+
     if (event.key !== 'Enter' && event.key !== ' ') {
       return;
     }

@@ -1981,6 +1981,26 @@ button.leaderboard-deck-result-card {
   border-bottom: none;
 }
 
+.player-rank-drilldown-top8-table .leaderboard-distribution-bucket-row {
+  cursor: pointer;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.player-rank-drilldown-top8-table .leaderboard-distribution-bucket-row:hover {
+  background: rgba(217, 164, 65, 0.08);
+}
+
+.player-rank-drilldown-top8-table .leaderboard-distribution-bucket-row:focus-visible {
+  outline: 2px solid rgba(212, 166, 87, 0.7);
+  outline-offset: -2px;
+  background: rgba(217, 164, 65, 0.1);
+}
+
+.leaderboard-distribution-bucket-player-name {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .player-rank-drilldown-top8-row.player-deck-highlight {
   background: rgba(22, 122, 114, 0.12);
 }
