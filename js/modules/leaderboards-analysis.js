@@ -217,6 +217,7 @@ let leaderboardIntegrityTraceSequence = 0;
 let activeLeaderboardAnalyticsModalType = '';
 let activeLeaderboardAnalyticsModalPlaceholder = null;
 let leaderboardDrilldownOverlayPlaceholder = null;
+let activeLeaderboardTimelineDrilldown = null;
 
 const LEADERBOARD_THRESHOLD_RENDER_DEBOUNCE_MS = 80;
 const LEADERBOARD_DATASET_CACHE_LIMIT = 24;
@@ -700,6 +701,123 @@ async function prepareLeaderboardOverlayPresentation() {
   }
 
   shouldRestoreLeaderboardFullscreen = false;
+}
+
+function buildLeaderboardTimelineDrilldownBridgeHtml(context = {}) {
+  const candidates = Array.isArray(context?.candidates) ? context.candidates : [];
+
+  return `
+    <div class="event-stat-drilldown-toolbar">
+      <span class="event-stat-drilldown-toolbar-note">Multiple players share this timeline point. Select one to open the full leaderboard detail view.</span>
+    </div>
+    <div class="event-stat-drilldown-list">
+      ${candidates.map(candidate => {
+        const row = candidate?.row || getLeaderboardRowBySelectionKey(candidate?.selectionKey);
+        if (!row) {
+          return '';
+        }
+
+        const playerLabel = row.displayName || row.playerKey || 'Unknown Player';
+        const seasonLabel = getLeaderboardEntryLabel(row);
+        const metadataParts = [
+          Number.isFinite(Number(candidate?.value))
+            ? (context?.chartMode === 'rank'
+                ? `Rank ${formatLeaderboardRank(candidate.value)}`
+                : `${formatRating(candidate.value)} Elo`)
+            : '',
+          seasonLabel,
+          context?.eventLabel || context?.monthLabel || '',
+          context?.sourceLabel || ''
+        ].filter(Boolean);
+
+        return `
+          <button
+            type="button"
+            class="event-stat-drilldown-list-item"
+            ${buildLeaderboardPlayerDrilldownDataAttributes(row)}
+            aria-label="${escapeHtml(`Open leaderboard details for ${playerLabel} in ${seasonLabel}`)}"
+          >
+            <span class="event-stat-drilldown-list-item-date">${escapeHtml(context?.dateLabel || 'Timeline selection')}</span>
+            <span class="event-stat-drilldown-list-item-main">${escapeHtml(playerLabel)}</span>
+            <span class="event-stat-drilldown-list-item-meta">${escapeHtml(metadataParts.join(' | ') || seasonLabel)}</span>
+          </button>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderLeaderboardTimelineDrilldownBridge(context = activeLeaderboardTimelineDrilldown) {
+  const elements = getLeaderboardDrilldownElements();
+  const candidates = Array.isArray(context?.candidates)
+    ? context.candidates.filter(candidate => getLeaderboardRowBySelectionKey(candidate?.selectionKey))
+    : [];
+  if (!elements.overlay || !elements.title || !elements.subtitle || !elements.content || candidates.length === 0) {
+    return false;
+  }
+
+  destroyLeaderboardPlayerEloChart();
+  updateLeaderboardPlayerReportDownloadButton();
+  updateLeaderboardPlayerHistoryDownloadButton();
+
+  const chartModeLabel = getLeaderboardTimelineModeLabel(context?.chartMode);
+  const pointDescriptor = context?.eventLabel || context?.monthLabel || context?.sourceLabel || 'selected timeline point';
+  elements.title.textContent = `${chartModeLabel} Timeline Drilldown`;
+  elements.subtitle.textContent = `${candidates.length} players share ${pointDescriptor}`;
+  elements.content.innerHTML = buildLeaderboardTimelineDrilldownBridgeHtml({
+    ...context,
+    candidates
+  });
+  return true;
+}
+
+async function openLeaderboardTimelineDrilldownBridge(context = {}) {
+  const elements = getLeaderboardDrilldownElements();
+  const candidates = Array.isArray(context?.candidates)
+    ? context.candidates
+      .map(candidate => {
+        const selectionKey = String(candidate?.selectionKey || '').trim();
+        return {
+          ...candidate,
+          selectionKey,
+          row: getLeaderboardRowBySelectionKey(selectionKey)
+        };
+      })
+      .filter(candidate => candidate.selectionKey && candidate.row)
+    : [];
+  if (!elements.overlay || candidates.length === 0) {
+    return;
+  }
+
+  try {
+    await ensureLeaderboardDetailDataLoaded();
+  } catch (error) {
+    console.error('Failed to load detailed leaderboard Elo history.', error);
+  }
+
+  if (activeLeaderboardAnalyticsModalType) {
+    closeLeaderboardAnalyticsModal();
+  }
+
+  activeLeaderboardDrilldownCategory = '';
+  activeLeaderboardPlayerDrilldown = null;
+  activeLeaderboardDistributionBucketId = '';
+  activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+  activeLeaderboardTimelineDrilldown = {
+    ...context,
+    candidates,
+    chartMode: context?.chartMode || getLeaderboardTimelineChartMode()
+  };
+
+  if (!renderLeaderboardTimelineDrilldownBridge(activeLeaderboardTimelineDrilldown)) {
+    activeLeaderboardTimelineDrilldown = null;
+    return;
+  }
+
+  await prepareLeaderboardOverlayPresentation();
+  elements.overlay.hidden = false;
+  syncLeaderboardModalBodyState();
+  updateLeaderboardDrilldownFullscreenButtonState();
 }
 
 function getLeaderboardAnalyticsModalElements() {
@@ -3493,9 +3611,63 @@ function getLeaderboardRowSelectionKey(row = {}) {
   return `${String(row.seasonKey || '').trim()}:::${String(row.playerKey || '').trim()}`;
 }
 
+function getLeaderboardRowBySelectionKey(selectionKey = '') {
+  const [seasonKey = '', playerKey = ''] = String(selectionKey || '').split(':::');
+  if (!seasonKey || !playerKey) {
+    return null;
+  }
+
+  return getLeaderboardRowByKeys(playerKey, seasonKey);
+}
+
 function getLeaderboardRowsBySelectionKeys(selectionKeys = activeLeaderboardTimelineSelections) {
   const selectedKeySet = selectionKeys instanceof Set ? selectionKeys : new Set(selectionKeys);
   return getSortedLeaderboardRowsWithRank().filter(row => selectedKeySet.has(getLeaderboardRowSelectionKey(row)));
+}
+
+function resolveLeaderboardTimelinePointCandidates(chart, datasetIndex = -1, pointIndex = -1) {
+  const datasets = Array.isArray(chart?.data?.datasets) ? chart.data.datasets : [];
+  const clickedDataset = datasets[datasetIndex] || null;
+  const clickedValue = Number(clickedDataset?.data?.[pointIndex]);
+  if (!clickedDataset || !Number.isInteger(pointIndex)) {
+    return [];
+  }
+
+  const matchingCandidates = datasets
+    .map((dataset, index) => ({
+      dataset,
+      datasetIndex: index,
+      value: Number(dataset?.data?.[pointIndex]),
+      selectionKey: String(dataset?.selectionKey || '').trim()
+    }))
+    .filter(candidate => candidate.selectionKey)
+    .filter(candidate => {
+      if (typeof chart?.isDatasetVisible === 'function' && !chart.isDatasetVisible(candidate.datasetIndex)) {
+        return false;
+      }
+
+      if (!Number.isFinite(clickedValue) || !Number.isFinite(candidate.value)) {
+        return candidate.datasetIndex === datasetIndex;
+      }
+
+      return candidate.value === clickedValue;
+    })
+    .map(candidate => ({
+      selectionKey: candidate.selectionKey,
+      value: candidate.value
+    }));
+
+  if (matchingCandidates.length > 0) {
+    return matchingCandidates;
+  }
+
+  const fallbackSelectionKey = String(clickedDataset?.selectionKey || '').trim();
+  return fallbackSelectionKey
+    ? [{
+        selectionKey: fallbackSelectionKey,
+        value: clickedValue
+      }]
+    : [];
 }
 
 function getLeaderboardPlayerHistoryAscending(row) {
@@ -3762,6 +3934,7 @@ async function openLeaderboardDistributionBucketDrilldown(bucketId = '') {
 
   activeLeaderboardDrilldownCategory = '';
   activeLeaderboardPlayerDrilldown = null;
+  activeLeaderboardTimelineDrilldown = null;
   activeLeaderboardDistributionBucketId = bucket.id;
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
 
@@ -5721,6 +5894,42 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   const rankAxisBounds = chartMode === 'rank'
     ? getLeaderboardRankTimelineAxisBounds(selectedRows.length, datasets)
     : null;
+  const timelinePointClickHandler = ({ chart, datasetIndex, pointIndex, pointMeta, timelineEntry }) => {
+    const candidates = resolveLeaderboardTimelinePointCandidates(chart, datasetIndex, pointIndex);
+    if (candidates.length === 0) {
+      return;
+    }
+
+    const context = {
+      candidates,
+      chartMode,
+      dateLabel: timelineEntry?.date
+        ? formatDate(timelineEntry.date)
+        : (pointMeta?.eventLabel || timelineEntry?.label || 'Timeline selection'),
+      eventLabel: pointMeta?.eventLabel || timelineEntry?.label || timelineEntry?.event || '',
+      monthLabel: pointMeta?.monthLabel || '',
+      sourceLabel: pointMeta?.carriedForwardSourceLabel || pointMeta?.sourceEventLabel || ''
+    };
+
+    if (activeLeaderboardAnalyticsModalType) {
+      closeLeaderboardAnalyticsModal();
+    }
+
+    if (candidates.length === 1) {
+      const [candidate] = candidates;
+      openLeaderboardPlayerDrilldown(
+        candidate.selectionKey.split(':::')[1] || '',
+        candidate.selectionKey.split(':::')[0] || ''
+      ).catch(error => {
+        console.error('Failed to open leaderboard timeline player drilldown.', error);
+      });
+      return;
+    }
+
+    openLeaderboardTimelineDrilldownBridge(context).catch(error => {
+      console.error('Failed to open leaderboard timeline drilldown.', error);
+    });
+  };
   if (
     !forceRecreate
     && leaderboardTimelineChart
@@ -5739,6 +5948,7 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
 
     leaderboardTimelineChart.data.labels = labels;
     leaderboardTimelineChart.data.datasets = datasets;
+    leaderboardTimelineChart.options.onClick = timelinePointClickHandler;
 
     if (leaderboardTimelineChart.options?.plugins?.leaderboardYearBoundaryPlugin) {
       const yearBands = showYearBoundaries ? buildLeaderboardYearBands(timeline) : [];
@@ -5903,6 +6113,7 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
       rankLabelOverlayOptions: chartMode === 'rank'
         ? buildLeaderboardRankTimelineOverlayOptions()
         : null,
+      onPointClick: timelinePointClickHandler,
       onLegendToggle() {
         snapshotLeaderboardTimelineVisibility();
         updateLeaderboardTimelineVisibilityButtons();
@@ -5916,8 +6127,9 @@ function renderLeaderboardTimelineChart({ forceRecreate = true } = {}) {
   updateLeaderboardTimelineVisibilityButtons();
 }
 
-async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
+async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '', options = {}) {
   const elements = getLeaderboardDrilldownElements();
+  const preserveTimelineBridge = options?.preserveTimelineBridge === true;
   if (!elements.overlay) {
     return;
   }
@@ -5942,6 +6154,9 @@ async function openLeaderboardPlayerDrilldown(playerKey = '', seasonKey = '') {
   }
 
   activeLeaderboardDrilldownCategory = '';
+  if (!preserveTimelineBridge) {
+    activeLeaderboardTimelineDrilldown = null;
+  }
   activeLeaderboardPlayerDrilldown = {
     playerKey: String(playerKey || '').trim(),
     seasonKey: String(seasonKey || '').trim()
@@ -6506,6 +6721,7 @@ async function openLeaderboardDrilldown(categoryKey) {
 
   activeLeaderboardDrilldownCategory = categoryKey;
   activeLeaderboardPlayerDrilldown = null;
+  activeLeaderboardTimelineDrilldown = null;
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
   renderLeaderboardDrilldown(categoryKey);
   updateLeaderboardPlayerReportDownloadButton();
@@ -6566,12 +6782,23 @@ async function closeLeaderboardDrilldown() {
     }
   }
 
+  if (activeLeaderboardPlayerDrilldown?.playerKey && activeLeaderboardTimelineDrilldown) {
+    destroyLeaderboardPlayerEloChart();
+    activeLeaderboardPlayerDrilldown = null;
+    activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
+    renderLeaderboardTimelineDrilldownBridge(activeLeaderboardTimelineDrilldown);
+    mountLeaderboardDrilldownOverlayInActiveContext();
+    updateLeaderboardDrilldownFullscreenButtonState();
+    return;
+  }
+
   destroyLeaderboardPlayerEloChart();
   overlay.hidden = true;
   restoreLeaderboardDrilldownOverlayMount();
   activeLeaderboardDrilldownCategory = '';
   activeLeaderboardPlayerDrilldown = null;
   activeLeaderboardDistributionBucketId = '';
+  activeLeaderboardTimelineDrilldown = null;
   activeLeaderboardPlayerDeckScope = LEADERBOARD_PLAYER_TOTAL_SCOPE;
   updateLeaderboardPlayerReportDownloadButton();
   updateLeaderboardPlayerHistoryDownloadButton();
@@ -6647,7 +6874,8 @@ function setupLeaderboardDrilldownModal() {
     if (openPlayerDrilldownTrigger) {
       openLeaderboardPlayerDrilldown(
         openPlayerDrilldownTrigger.dataset.leaderboardPlayerKey,
-        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey
+        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey,
+        { preserveTimelineBridge: Boolean(activeLeaderboardTimelineDrilldown) }
       ).catch(error => {
         console.error('Failed to open leaderboard player drilldown from the Elo distribution bucket modal.', error);
       });
@@ -6730,7 +6958,8 @@ function setupLeaderboardDrilldownModal() {
       event.preventDefault();
       openLeaderboardPlayerDrilldown(
         openPlayerDrilldownTrigger.dataset.leaderboardPlayerKey,
-        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey
+        openPlayerDrilldownTrigger.dataset.leaderboardSeasonKey,
+        { preserveTimelineBridge: Boolean(activeLeaderboardTimelineDrilldown) }
       ).catch(error => {
         console.error('Failed to open leaderboard player drilldown from the Elo distribution bucket modal.', error);
       });

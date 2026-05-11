@@ -698,6 +698,7 @@ export function createLeaderboardTimelineChart(canvas, {
   timelineEntries = [],
   formatRating,
   showYearBoundaries = false,
+  onPointClick = null,
   onLegendToggle = null,
   yAxis = {},
   tooltipCallbacks = null,
@@ -750,6 +751,30 @@ export function createLeaderboardTimelineChart(canvas, {
       interaction: {
         mode: 'nearest',
         intersect: false
+      },
+      onClick(event, elements, chart) {
+        if (typeof onPointClick !== 'function') {
+          return;
+        }
+
+        const clickedElements = Array.isArray(elements) && elements.length > 0
+          ? elements
+          : (typeof chart?.getElementsAtEventForMode === 'function'
+              ? chart.getElementsAtEventForMode(event, 'nearest', { intersect: false }, true)
+              : []);
+        const clickedElement = clickedElements?.[0] || null;
+        if (!Number.isInteger(clickedElement?.datasetIndex) || !Number.isInteger(clickedElement?.index)) {
+          return;
+        }
+
+        onPointClick({
+          chart,
+          datasetIndex: clickedElement.datasetIndex,
+          pointIndex: clickedElement.index,
+          dataset: chart?.data?.datasets?.[clickedElement.datasetIndex] || null,
+          pointMeta: chart?.data?.datasets?.[clickedElement.datasetIndex]?.pointMeta?.[clickedElement.index] || null,
+          timelineEntry: timelineEntries?.[clickedElement.index] || null
+        });
       },
       plugins: {
         leaderboardYearBoundaryPlugin: {
