@@ -532,9 +532,10 @@ const leaderboardDistributionCountLabelPlugin = {
       }
 
       const occupancy = getLeaderboardDistributionOccupancyBucket(count);
+      const minimumLabelY = chartArea.top + 20;
       const labelY = count === 0
-        ? Math.max(chartArea.top + 14, base - 6)
-        : Math.max(chartArea.top + 14, y - 6);
+        ? Math.max(minimumLabelY, base - 6)
+        : Math.max(minimumLabelY, y - 8);
 
       ctx.fillStyle = occupancy.border;
       ctx.shadowColor = occupancy.border;
@@ -847,6 +848,14 @@ export function createLeaderboardDistributionChart(canvas, {
   const resolvedBucketSize = Number.isFinite(Number(bucketSize)) && Number(bucketSize) > 0
     ? Number(bucketSize)
     : 25;
+  const maxCount = counts.reduce((highest, value) => Math.max(highest, Math.max(0, Number(value) || 0)), 0);
+  const resolvedTickStepSize = Math.max(
+    1,
+    maxCount <= 5
+      ? 1
+      : Math.ceil(maxCount / 5)
+  );
+  const resolvedSuggestedMax = maxCount + resolvedTickStepSize;
 
   return new globalThis.Chart(canvas, {
     type: 'bar',
@@ -942,6 +951,7 @@ export function createLeaderboardDistributionChart(canvas, {
         },
         y: {
           beginAtZero: true,
+          suggestedMax: resolvedSuggestedMax,
           title: {
             display: true,
             text: 'Players',
@@ -949,6 +959,7 @@ export function createLeaderboardDistributionChart(canvas, {
           },
           ticks: {
             precision: 0,
+            stepSize: resolvedTickStepSize,
             color: theme.muted
           },
           grid: {
