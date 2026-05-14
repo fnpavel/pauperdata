@@ -2492,6 +2492,59 @@ button.leaderboard-deck-result-card {
   margin-bottom: 0;
 }
 
+.matchup-date-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-width: min(280px, 100%);
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.matchup-date-trigger:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.matchup-date-trigger-icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.matchup-date-trigger-copy {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.matchup-date-trigger-label {
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.matchup-date-trigger-value {
+  color: var(--text-primary);
+  font-size: 0.86rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matchup-date-range-overlay {
+  z-index: 1400;
+}
+
+.matchup-date-range-modal {
+  width: min(940px, 100%);
+}
+
+.matchup-date-range-calendar {
+  margin-bottom: 0;
+}
+
 .matchup-matrix-toolbar {
   align-items: center;
   gap: 8px;

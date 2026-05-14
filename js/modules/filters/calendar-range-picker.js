@@ -103,6 +103,7 @@ function buildMonthYearOptions(availableMonths) {
 }
 
 function renderCalendarPanel({
+  panelKey,
   title,
   viewMonth,
   availableMonths,
@@ -231,6 +232,13 @@ function renderCalendarPanel({
       .join(' ');
     dayButton.textContent = String(day);
     dayButton.disabled = !isSelectable;
+    dayButton.dataset.date = dateString;
+    dayButton.dataset.panelKey = panelKey;
+    dayButton.setAttribute(
+      'aria-label',
+      `${title}: ${MONTH_NAMES[monthIndex]} ${day}, ${yearString}${isSelected ? ', selected' : ''}`
+    );
+    dayButton.setAttribute('aria-pressed', isSelected ? 'true' : 'false');
 
     if (isSelectable) {
       dayButton.addEventListener('click', () => onSelectDate(dateString));
@@ -303,6 +311,7 @@ export function renderDateRangeCalendar({
 
   wrapper.appendChild(
     renderCalendarPanel({
+      panelKey: 'start',
       title: startLabel,
       viewMonth: calendarState.startViewMonth,
       availableMonths: startMonths,
@@ -329,6 +338,7 @@ export function renderDateRangeCalendar({
 
   wrapper.appendChild(
     renderCalendarPanel({
+      panelKey: 'end',
       title: endLabel,
       viewMonth: calendarState.endViewMonth,
       availableMonths: endMonths,

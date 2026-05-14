@@ -185,6 +185,11 @@
   .range-calendar-wrapper {
     grid-template-columns: 1fr;
   }
+
+  .matchup-date-trigger {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 /* Phones: reduce spacing and typography so dense controls remain tappable. */
@@ -433,6 +438,23 @@
 
   .range-calendar-panel {
     padding: 10px;
+  }
+
+  .matchup-date-range-overlay {
+    padding: 14px;
+  }
+
+  .matchup-date-range-modal {
+    padding: 16px;
+  }
+
+  .matchup-date-trigger {
+    gap: 8px;
+    padding: 8px 10px;
+  }
+
+  .matchup-date-trigger-value {
+    white-space: normal;
   }
 
   .range-calendar-day,

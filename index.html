@@ -686,8 +686,22 @@
           <div class="chart-container">
             <div class="matchup-chart-header">
               <h2 class="chart-title" id="matchupPrimaryTitle">Deck vs Deck Matchup Matrix</h2>
+              <button
+                type="button"
+                class="bubble-button matchup-date-trigger"
+                id="matchupDateRangeTrigger"
+                aria-haspopup="dialog"
+                aria-expanded="false"
+                aria-controls="matchupDateRangeOverlay"
+                aria-label="Open matchup date range calendar"
+              >
+                <span class="matchup-date-trigger-icon" aria-hidden="true">&#128197;</span>
+                <span class="matchup-date-trigger-copy">
+                  <span class="matchup-date-trigger-label">Date Range</span>
+                  <span class="matchup-date-trigger-value" id="matchupDateRangeTriggerValue">Select an event type</span>
+                </span>
+              </button>
             </div>
-            <div id="matchupDateRangeCalendar" class="range-calendar-container"></div>
             <select id="matchupStartDateSelect" hidden aria-hidden="true"></select>
             <select id="matchupEndDateSelect" hidden aria-hidden="true"></select>
             <div id="matchupMatrixSummary" class="leaderboard-chart-details matchup-matrix-summary">
@@ -775,6 +789,32 @@
             </button>
           </div>
           <div id="matchupStatDrilldownContent" class="player-rank-drilldown-content"></div>
+        </div>
+      </div>
+      <div id="matchupDateRangeOverlay" class="player-rank-drilldown-overlay matchup-date-range-overlay" hidden aria-hidden="true">
+        <div
+          class="player-rank-drilldown-modal matchup-date-range-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="matchupDateRangeModalTitle"
+          aria-describedby="matchupDateRangeModalSubtitle"
+          tabindex="-1"
+        >
+          <div class="player-rank-drilldown-header">
+            <div class="player-rank-drilldown-heading">
+              <h3 id="matchupDateRangeModalTitle">Matchup Date Range</h3>
+              <p id="matchupDateRangeModalSubtitle">Choose the start and end dates for the current matchup view.</p>
+            </div>
+            <button
+              type="button"
+              class="bubble-button player-rank-drilldown-close"
+              id="matchupDateRangeClose"
+              aria-label="Close matchup date range calendar"
+            >
+              Close
+            </button>
+          </div>
+          <div id="matchupDateRangeCalendar" class="range-calendar-container matchup-date-range-calendar"></div>
         </div>
       </div>
     </div>

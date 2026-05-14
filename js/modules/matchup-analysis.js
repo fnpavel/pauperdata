@@ -66,6 +66,7 @@ let activeMatchupDeckFocusLabel = '';
 let hasAppliedDefaultMatchupPlayerFocus = false;
 let matchupAnalyticsRequestId = 0;
 let matchupCatalogUiPromise = null;
+let lastMatchupDateModalTrigger = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -405,6 +406,16 @@ function getMatchupStartDateSelect() {
 
 function getMatchupEndDateSelect() {
   return document.getElementById('matchupEndDateSelect');
+}
+
+function getMatchupDateRangeModalElements() {
+  return {
+    trigger: document.getElementById('matchupDateRangeTrigger'),
+    triggerValue: document.getElementById('matchupDateRangeTriggerValue'),
+    overlay: document.getElementById('matchupDateRangeOverlay'),
+    modal: document.querySelector('#matchupDateRangeOverlay .matchup-date-range-modal'),
+    closeButton: document.getElementById('matchupDateRangeClose')
+  };
 }
 
 function getMatchupPlayerFocusElements() {
@@ -2009,6 +2020,39 @@ function updateMatchupSelectionSummary(snapshot = buildMatchupSelectionSnapshot(
   triggerUpdateAnimation('matchupSelectionListBox');
 }
 
+function getMatchupDateRangeTriggerLabel(startDate = '', endDate = '') {
+  if (startDate && endDate) {
+    return startDate === endDate ? formatDate(startDate) : formatDateRange(startDate, endDate);
+  }
+
+  if (startDate) {
+    return formatDate(startDate);
+  }
+
+  if (endDate) {
+    return formatDate(endDate);
+  }
+
+  return 'Select a date range';
+}
+
+function updateMatchupDateRangeTrigger(options = {}) {
+  const { disabled = false, emptyLabel = 'Select an event type' } = options;
+  const { trigger, triggerValue, overlay } = getMatchupDateRangeModalElements();
+  const startDate = getMatchupStartDateSelect()?.value || '';
+  const endDate = getMatchupEndDateSelect()?.value || '';
+
+  if (!trigger || !triggerValue) {
+    return;
+  }
+
+  trigger.disabled = disabled;
+  trigger.setAttribute('aria-expanded', overlay && !overlay.hidden ? 'true' : 'false');
+  triggerValue.textContent = disabled
+    ? emptyLabel
+    : getMatchupDateRangeTriggerLabel(startDate, endDate);
+}
+
 function setMatchupDateSelection(type, value, options = {}) {
   const { clearPreset = false } = options;
   const startDateSelect = getMatchupStartDateSelect();
@@ -2029,6 +2073,8 @@ function setMatchupDateSelection(type, value, options = {}) {
   }
 
   updateMatchupDateOptions();
+  updateMatchupDateRangeTrigger();
+  restoreMatchupDateModalFocus(type, value);
 
   if (isMatchupTopMode()) {
     updateMatchupAnalytics();
@@ -2064,6 +2110,7 @@ function updateMatchupDateOptions(options = {}) {
       onSelectStartDate: dateString => setMatchupDateSelection('start', dateString, { clearPreset: true }),
       onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
     });
+    updateMatchupDateRangeTrigger({ disabled: true, emptyLabel: 'Select an event type' });
     updateMatchupSelectionSummary();
     return;
   }
@@ -2140,6 +2187,7 @@ function updateMatchupDateOptions(options = {}) {
     onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
   });
 
+  updateMatchupDateRangeTrigger();
   updateMatchupSelectionSummary();
 }
 
@@ -4491,6 +4539,122 @@ function setupMatchupDrilldownModal() {
   });
 }
 
+function getFocusableElements(root) {
+  if (!root) {
+    return [];
+  }
+
+  return [...root.querySelectorAll(
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+  )].filter(element => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true');
+}
+
+function restoreMatchupDateModalFocus(panelKey = '', dateString = '') {
+  const { overlay, modal, closeButton } = getMatchupDateRangeModalElements();
+  if (!overlay || overlay.hidden || !modal) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    const escapedDateString = window.CSS?.escape ? window.CSS.escape(dateString) : dateString;
+    const escapedPanelKey = window.CSS?.escape ? window.CSS.escape(panelKey) : panelKey;
+    const selectedButton = dateString
+      ? modal.querySelector(
+          `.range-calendar-day.active[data-date="${escapedDateString}"][data-panel-key="${escapedPanelKey}"]`
+        ) || modal.querySelector(`.range-calendar-day.active[data-date="${escapedDateString}"]`)
+      : null;
+
+    (selectedButton || closeButton || getFocusableElements(modal)[0] || modal).focus();
+  });
+}
+
+function openMatchupDateRangeModal() {
+  const { trigger, overlay, modal, closeButton } = getMatchupDateRangeModalElements();
+  if (!trigger || !overlay || !modal || trigger.disabled) {
+    return;
+  }
+
+  lastMatchupDateModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : trigger;
+  updateMatchupDateOptions({ syncCalendarView: true });
+  overlay.hidden = false;
+  overlay.setAttribute('aria-hidden', 'false');
+  trigger.setAttribute('aria-expanded', 'true');
+  document.body.classList.add('modal-open');
+
+  window.requestAnimationFrame(() => {
+    (closeButton || getFocusableElements(modal)[0] || modal).focus();
+  });
+}
+
+function closeMatchupDateRangeModal() {
+  const { trigger, overlay } = getMatchupDateRangeModalElements();
+  if (!overlay) {
+    return;
+  }
+
+  overlay.hidden = true;
+  overlay.setAttribute('aria-hidden', 'true');
+  trigger?.setAttribute('aria-expanded', 'false');
+  document.body.classList.remove('modal-open');
+
+  const focusTarget =
+    lastMatchupDateModalTrigger instanceof HTMLElement && document.contains(lastMatchupDateModalTrigger)
+      ? lastMatchupDateModalTrigger
+      : trigger;
+  focusTarget?.focus();
+}
+
+function setupMatchupDateRangeModal() {
+  const { trigger, overlay, modal, closeButton } = getMatchupDateRangeModalElements();
+  if (!trigger || !overlay || !modal || overlay.dataset.initialized === 'true') {
+    return;
+  }
+
+  overlay.dataset.initialized = 'true';
+
+  trigger.addEventListener('click', openMatchupDateRangeModal);
+  closeButton?.addEventListener('click', closeMatchupDateRangeModal);
+
+  overlay.addEventListener('click', event => {
+    if (event.target === overlay) {
+      closeMatchupDateRangeModal();
+    }
+  });
+
+  overlay.addEventListener('keydown', event => {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      closeMatchupDateRangeModal();
+      return;
+    }
+
+    if (event.key !== 'Tab') {
+      return;
+    }
+
+    const focusableElements = getFocusableElements(modal);
+    if (focusableElements.length === 0) {
+      event.preventDefault();
+      modal.focus();
+      return;
+    }
+
+    const firstElement = focusableElements[0];
+    const lastElement = focusableElements[focusableElements.length - 1];
+
+    if (event.shiftKey && document.activeElement === firstElement) {
+      event.preventDefault();
+      lastElement.focus();
+      return;
+    }
+
+    if (!event.shiftKey && document.activeElement === lastElement) {
+      event.preventDefault();
+      firstElement.focus();
+    }
+  });
+}
+
 function setupMatchupDrilldownCards() {
   Object.entries(getMatchupDrilldownConfig()).forEach(([categoryKey, config]) => {
     const card = document.getElementById(config.cardId);
@@ -4589,6 +4753,7 @@ export function initMatchupAnalysis() {
   renderMatchupLoadingState();
   updateMatchupViewCopy();
   setupMatchupFilterListeners();
+  setupMatchupDateRangeModal();
   setupMatchupCsvExportListeners();
   setupMatchupFullscreenListeners();
   setupMatchupDrilldownModal();
