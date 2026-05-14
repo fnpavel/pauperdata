@@ -67,6 +67,8 @@ let hasAppliedDefaultMatchupPlayerFocus = false;
 let matchupAnalyticsRequestId = 0;
 let matchupCatalogUiPromise = null;
 let lastMatchupDateModalTrigger = null;
+let activeMatchupPresetSelectionIds = [];
+let activeMatchupRangeInputSource = 'filter';
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -330,7 +332,6 @@ async function ensureMatchupCatalogUiReady() {
         updateMatchupViewCopy();
         activeQuickViewYear = getDefaultQuickViewYear(quickViewRows);
         setMatchupEventType(DEFAULT_EVENT_TYPE);
-        renderQuickViewButtons();
         setMatchupPresetButtonState(getLatestSetQuickViewPresetId(quickViewRows));
         ensureDefaultMatchupPreset();
         updateMatchupDateOptions();
@@ -1400,16 +1401,174 @@ function getMatchupQuickViewRows() {
   }));
 }
 
-function getActiveMatchupPreset() {
-  const activePresetValue = getMatchupQuickViewRoot()?.dataset.activePreset || '';
-  if (activePresetValue) {
-    return activePresetValue;
+function getCurrentMatchupDateRange() {
+  return {
+    startDate: getMatchupStartDateSelect()?.value || '',
+    endDate: getMatchupEndDateSelect()?.value || ''
+  };
+}
+
+function setMatchupRangeInputSource(source = 'filter') {
+  activeMatchupRangeInputSource = source === 'calendar' ? 'calendar' : 'filter';
+}
+
+function getMatchupRangeInputSource() {
+  return activeMatchupRangeInputSource;
+}
+
+function getEventTypeScopedMatchupEvents(selectedEventTypes = getSelectedMatchupEventTypes()) {
+  return filterMatchupRecords(getQualityFilteredMatchupEvents(), {
+    eventTypes: selectedEventTypes
+  });
+}
+
+function getMatchupPresetRange(presetIds = [], selectedEventTypes = getSelectedMatchupEventTypes()) {
+  return getQuickViewPresetSuggestedRange({
+    selectedEventTypes,
+    presetId: presetIds,
+    rows: getMatchupQuickViewRows()
+  });
+}
+
+function isExactMatchupDateRangeMatch(startDate = '', endDate = '', range = {}) {
+  return Boolean(startDate && endDate && startDate === range.startDate && endDate === range.endDate);
+}
+
+function getExactMatchupSetWindowPresetIds(startDate = '', endDate = '', selectedEventTypes = getSelectedMatchupEventTypes()) {
+  if (!startDate || !endDate || selectedEventTypes.length === 0) {
+    return [];
   }
 
-  return Array.from(document.querySelectorAll('.matchup-preset-button.active'))
-    .map(button => button.dataset.matchupPreset)
-    .filter(Boolean)
-    .join(',');
+  const quickViewRows = getMatchupQuickViewRows();
+  const setPresetDefinitions = getSetQuickViewPresetDefinitions(quickViewRows, { includeFuture: true });
+  const presetsByYear = new Map();
+  let bestMatchIds = [];
+
+  setPresetDefinitions.forEach(preset => {
+    if (!presetsByYear.has(preset.releaseYear)) {
+      presetsByYear.set(preset.releaseYear, []);
+    }
+    presetsByYear.get(preset.releaseYear).push(preset);
+  });
+
+  presetsByYear.forEach(yearPresets => {
+    const sortedPresets = [...yearPresets].sort((a, b) => a.releaseDate.localeCompare(b.releaseDate));
+    for (let startIndex = 0; startIndex < sortedPresets.length; startIndex += 1) {
+      for (let endIndex = startIndex; endIndex < sortedPresets.length; endIndex += 1) {
+        const candidateIds = sortedPresets.slice(startIndex, endIndex + 1).map(preset => preset.id);
+        const candidateRange = getMatchupPresetRange(candidateIds, selectedEventTypes);
+
+        if (
+          isExactMatchupDateRangeMatch(startDate, endDate, candidateRange)
+          && candidateIds.length > bestMatchIds.length
+        ) {
+          bestMatchIds = candidateIds;
+        }
+      }
+    }
+  });
+
+  return bestMatchIds;
+}
+
+function getDerivedMatchupFilterUiState() {
+  const quickViewRows = getMatchupQuickViewRows();
+  const selectedEventTypes = getSelectedMatchupEventTypes();
+  const { startDate, endDate } = getCurrentMatchupDateRange();
+  const emptyState = {
+    presetIds: [],
+    year: activeQuickViewYear || '',
+    highlightedYears: new Set(),
+    highlightedSetWindowIds: new Set(),
+    customRangeActive: false
+  };
+
+  if (!startDate || !endDate || selectedEventTypes.length === 0) {
+    return emptyState;
+  }
+
+  const allPeriodRange = getMatchupPresetRange(['all-period'], selectedEventTypes);
+  if (isExactMatchupDateRangeMatch(startDate, endDate, allPeriodRange)) {
+    return {
+      presetIds: ['all-period'],
+      year: activeQuickViewYear || '',
+      highlightedYears: new Set(),
+      highlightedSetWindowIds: new Set(),
+      customRangeActive: false
+    };
+  }
+
+  const exactCalendarYearPreset = getStaticQuickViewPresetDefinitions()
+    .filter(preset => preset.kind === 'calendar-year')
+    .find(preset => isExactMatchupDateRangeMatch(startDate, endDate, getMatchupPresetRange([preset.id], selectedEventTypes)));
+  if (exactCalendarYearPreset?.releaseYear) {
+    return {
+      presetIds: [exactCalendarYearPreset.id],
+      year: exactCalendarYearPreset.releaseYear,
+      highlightedYears: new Set([exactCalendarYearPreset.releaseYear]),
+      highlightedSetWindowIds: new Set(),
+      customRangeActive: false
+    };
+  }
+
+  const exactSetWindowIds = getExactMatchupSetWindowPresetIds(startDate, endDate, selectedEventTypes);
+  if (exactSetWindowIds.length > 0) {
+    const matchedPresets = getQuickViewPresetDefinitionsByIds(exactSetWindowIds, quickViewRows, { includeFuture: true });
+    const matchedYear = matchedPresets[0]?.releaseYear || '';
+    return {
+      presetIds: exactSetWindowIds,
+      year: matchedYear || activeQuickViewYear || '',
+      highlightedYears: matchedYear ? new Set([matchedYear]) : new Set(),
+      highlightedSetWindowIds: new Set(exactSetWindowIds),
+      customRangeActive: false
+    };
+  }
+
+  return {
+    ...emptyState,
+    customRangeActive: true
+  };
+}
+
+function getExplicitMatchupFilterUiState() {
+  const quickViewRows = getMatchupQuickViewRows();
+  const activePresetIds = normalizeQuickViewPresetIds(activeMatchupPresetSelectionIds);
+  const activePresets = activePresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, quickViewRows, { includeFuture: true }))
+    .filter(Boolean);
+  const highlightedYears = new Set();
+  const highlightedSetWindowIds = new Set();
+  let resolvedYear = activeQuickViewYear || '';
+
+  activePresets.forEach(preset => {
+    if (preset.releaseYear) {
+      resolvedYear = resolvedYear || preset.releaseYear;
+      highlightedYears.add(preset.releaseYear);
+    }
+    if (preset.kind === 'set-window') {
+      highlightedSetWindowIds.add(preset.id);
+    }
+  });
+
+  if (activePresetIds.length === 0 && resolvedYear) {
+    highlightedYears.add(resolvedYear);
+  }
+
+  return {
+    presetIds: activePresetIds,
+    year: resolvedYear,
+    highlightedYears,
+    highlightedSetWindowIds,
+    customRangeActive: false
+  };
+}
+
+function getActiveMatchupPreset() {
+  if (getMatchupRangeInputSource() === 'filter') {
+    return normalizeQuickViewPresetIds(activeMatchupPresetSelectionIds).join(',');
+  }
+
+  return getDerivedMatchupFilterUiState().presetIds.join(',');
 }
 
 function getActiveMatchupPresetIds() {
@@ -1427,7 +1586,24 @@ function getResolvedQuickViewYear(activePresetIds = []) {
     .map(presetId => getQuickViewPresetDefinitionById(presetId, quickViewRows, { includeFuture: true }))
     .find(Boolean);
   const presetYear = activePreset?.releaseYear || '';
+  const { startDate, endDate } = getCurrentMatchupDateRange();
+  const rangeEndYear = String(endDate || '').slice(0, 4);
+  const rangeStartYear = String(startDate || '').slice(0, 4);
   const currentYear = activeQuickViewYear || getDefaultQuickViewYear(quickViewRows);
+
+  if (getMatchupRangeInputSource() === 'calendar') {
+    if (presetYear && yearOptions.includes(presetYear)) {
+      return presetYear;
+    }
+
+    if (rangeEndYear && yearOptions.includes(rangeEndYear)) {
+      return rangeEndYear;
+    }
+
+    if (rangeStartYear && yearOptions.includes(rangeStartYear)) {
+      return rangeStartYear;
+    }
+  }
 
   if (currentYear && yearOptions.includes(currentYear)) {
     return currentYear;
@@ -1468,6 +1644,16 @@ function createQuickViewYearButton(year, isActive) {
   return button;
 }
 
+function createMatchupCustomRangeIndicator(isActive) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `bubble-button matchup-custom-range-indicator${isActive ? ' active' : ''}`;
+  button.textContent = 'Custom Range';
+  button.disabled = true;
+  button.setAttribute('aria-label', 'Custom range active');
+  return button;
+}
+
 function renderQuickViewButtons() {
   const container = getMatchupQuickViewRoot();
   if (!container) {
@@ -1476,45 +1662,19 @@ function renderQuickViewButtons() {
 
   container.innerHTML = '';
   const quickViewRows = getMatchupQuickViewRows();
-  const activePresetIds = getActiveMatchupPresetIds();
-  const activePresets = activePresetIds
-    .map(presetId => getQuickViewPresetDefinitionById(presetId, quickViewRows, { includeFuture: true }))
-    .filter(Boolean);
+  const uiState = getMatchupRangeInputSource() === 'calendar'
+    ? getDerivedMatchupFilterUiState()
+    : getExplicitMatchupFilterUiState();
+  const activePresetIds = uiState.presetIds;
   const staticPresets = getStaticQuickViewPresetDefinitions();
   const setPresetDefinitions = getSetQuickViewPresetDefinitions(quickViewRows);
   const yearOptions = getQuickViewPresetYearOptions(quickViewRows);
   const resolvedYear = getResolvedQuickViewYear(activePresetIds);
   const yearPresets = setPresetDefinitions.filter(preset => preset.releaseYear === resolvedYear);
-  const hasAllPeriodPreset = activePresets.some(preset => preset.kind === 'static');
-  const activeCalendarYearPresets = activePresets.filter(preset => preset.kind === 'calendar-year');
-  const activeSetWindowPresets = activePresets.filter(preset => preset.kind === 'set-window');
-  const highlightedYears = new Set();
-  const highlightedSetWindowIds = new Set();
-
-  if (!hasAllPeriodPreset) {
-    if (activeCalendarYearPresets.length > 0) {
-      activeCalendarYearPresets.forEach(preset => {
-        if (preset.releaseYear) {
-          highlightedYears.add(preset.releaseYear);
-          setPresetDefinitions.forEach(setPreset => {
-            if (setPreset.releaseYear === preset.releaseYear) {
-              highlightedSetWindowIds.add(setPreset.id);
-            }
-          });
-        }
-      });
-    } else {
-      activeSetWindowPresets.forEach(preset => {
-        if (preset.releaseYear) {
-          highlightedYears.add(preset.releaseYear);
-        }
-        highlightedSetWindowIds.add(preset.id);
-      });
-    }
-  }
+  const highlightedYears = uiState.highlightedYears;
+  const highlightedSetWindowIds = uiState.highlightedSetWindowIds;
 
   activeQuickViewYear = resolvedYear;
-  container.dataset.activePreset = activePresetIds.join(',');
 
   if (staticPresets.length > 0) {
     const staticRow = document.createElement('div');
@@ -1525,6 +1685,8 @@ function renderQuickViewButtons() {
       button.classList.toggle('active', activePresetIds.includes(preset.id));
       staticRow.appendChild(button);
     });
+
+    staticRow.appendChild(createMatchupCustomRangeIndicator(uiState.customRangeActive));
 
     container.appendChild(staticRow);
   }
@@ -1593,14 +1755,10 @@ function renderQuickViewButtons() {
 }
 
 function setMatchupPresetButtonState(activePresetId = '') {
-  const root = getMatchupQuickViewRoot();
   const quickViewRows = getMatchupQuickViewRows();
   const activePresetIds = normalizeQuickViewPresetIds(activePresetId);
-  const serializedPresetIds = activePresetIds.join(',');
-
-  if (root) {
-    root.dataset.activePreset = serializedPresetIds;
-  }
+  activeMatchupPresetSelectionIds = activePresetIds;
+  setMatchupRangeInputSource('filter');
 
   const preset = activePresetIds
     .map(presetId => getQuickViewPresetDefinitionById(presetId, quickViewRows, { includeFuture: true }))
@@ -1613,7 +1771,9 @@ function setMatchupPresetButtonState(activePresetId = '') {
 }
 
 function clearMatchupPresetButtonState() {
-  setMatchupPresetButtonState('');
+  activeMatchupPresetSelectionIds = [];
+  setMatchupRangeInputSource('calendar');
+  renderQuickViewButtons();
 }
 
 function ensureDefaultMatchupPreset() {
@@ -1644,13 +1804,6 @@ function resolvePresetEventTypeSelection(currentTypes = [], presetEventTypes = [
   return normalizedPresetTypes[0] || defaultType;
 }
 
-function getPresetScopedMatchupEvents(selectedEventTypes = getSelectedMatchupEventTypes()) {
-  return filterMatchupRecords(getQualityFilteredMatchupEvents(), {
-    eventTypes: selectedEventTypes,
-    quickViewPresetId: getActiveMatchupPreset()
-  });
-}
-
 function applyActiveMatchupPresetDateRange() {
   const activePreset = getActiveMatchupPreset();
   const startDateSelect = getMatchupStartDateSelect();
@@ -1660,11 +1813,8 @@ function applyActiveMatchupPresetDateRange() {
     return false;
   }
 
-  const range = getQuickViewPresetSuggestedRange({
-    selectedEventTypes: getSelectedMatchupEventTypes(),
-    presetId: activePreset,
-    rows: getMatchupQuickViewRows()
-  });
+  setMatchupRangeInputSource('filter');
+  const range = getMatchupPresetRange(activePreset, getSelectedMatchupEventTypes());
 
   if (!range.startDate || !range.endDate) {
     startDateSelect.value = '';
@@ -1679,7 +1829,8 @@ function applyActiveMatchupPresetDateRange() {
   return true;
 }
 
-function applyMatchupPreset(presetId) {
+function applyMatchupPreset(presetId, options = {}) {
+  const { replaceSelection = false } = options;
   const quickViewRows = getMatchupQuickViewRows();
   const preset = getQuickViewPresetDefinitionById(presetId, quickViewRows, { includeFuture: true });
   const presetEventTypes = getQuickViewPresetEventTypes(presetId, quickViewRows);
@@ -1696,7 +1847,7 @@ function applyMatchupPreset(presetId) {
   const fallbackPresetId = getStaticQuickViewPresetDefinitions()[0]?.id || '';
   let nextPresetIds = [];
 
-  if (preset.kind !== 'set-window') {
+  if (preset.kind !== 'set-window' || replaceSelection) {
     nextPresetIds = [preset.id];
   } else {
     const activeSetWindowIds = getActiveMatchupPresetIds().filter(activePresetId => {
@@ -1757,10 +1908,12 @@ function setQuickViewYearSelection(year) {
   const latestPresetId = getLatestMatchupPresetIdForYear(normalizedYear);
 
   if (latestPresetId) {
-    applyMatchupPreset(latestPresetId);
+    applyMatchupPreset(latestPresetId, { replaceSelection: true });
     return;
   }
 
+  activeMatchupPresetSelectionIds = [];
+  setMatchupRangeInputSource('filter');
   renderQuickViewButtons();
 }
 
@@ -1836,7 +1989,7 @@ function getBaseMatchupEvents() {
   const startDate = getMatchupStartDateSelect()?.value || '';
   const endDate = getMatchupEndDateSelect()?.value || '';
   const selectedEventTypes = getSelectedMatchupEventTypes();
-  const scopedEvents = getPresetScopedMatchupEvents(selectedEventTypes);
+  const scopedEvents = getEventTypeScopedMatchupEvents(selectedEventTypes);
 
   if (!startDate || !endDate || selectedEventTypes.length === 0) {
     return [];
@@ -1891,12 +2044,11 @@ function getMatchupGroupContextKey(events = getBaseMatchupEvents()) {
   const startDate = getMatchupStartDateSelect()?.value || '';
   const endDate = getMatchupEndDateSelect()?.value || '';
   const selectedEventTypes = getSelectedMatchupEventTypes().slice().sort().join(',');
-  const activePreset = getActiveMatchupPreset();
   const eventKeys = getMatchupSelectedEventEntries(events)
     .map(entry => `${entry.date || ''}::${entry.name || ''}`)
     .join('|');
 
-  return [startDate, endDate, selectedEventTypes, activePreset, eventKeys].join('@@');
+  return [startDate, endDate, selectedEventTypes, eventKeys].join('@@');
 }
 
 function syncMatchupGroupFilterState(groupSummaries, contextKey = '') {
@@ -1954,8 +2106,7 @@ function buildMatchupSelectionSnapshot() {
   const baseMatches = filterMatchupRecords(getMatchupMatches(), {
     eventTypes: selectedEventTypes,
     startDate,
-    endDate,
-    quickViewPresetId: getActiveMatchupPreset()
+    endDate
   });
 
   const filteredMatches = filteredEventIds.size > 0
@@ -2096,6 +2247,8 @@ function setMatchupDateSelection(type, value, options = {}) {
 
   if (clearPreset) {
     clearMatchupPresetButtonState();
+  } else {
+    setMatchupRangeInputSource('calendar');
   }
 
   if (type === 'start') {
@@ -2106,6 +2259,7 @@ function setMatchupDateSelection(type, value, options = {}) {
 
   updateMatchupDateOptions();
   updateMatchupDateRangeTrigger();
+  renderQuickViewButtons();
   restoreMatchupDateModalFocus(type, value);
 
   if (isMatchupTopMode()) {
@@ -2114,8 +2268,7 @@ function setMatchupDateSelection(type, value, options = {}) {
 }
 
 function updateMatchupDateOptions(options = {}) {
-  // Date selectors are constrained to dates that exist after event-type and
-  // quick-view preset scoping, preventing impossible empty windows.
+  // Date selectors are constrained only by event type and actual matchup dates.
   const startDateSelect = getMatchupStartDateSelect();
   const endDateSelect = getMatchupEndDateSelect();
   const { syncCalendarView = false } = options;
@@ -2125,9 +2278,8 @@ function updateMatchupDateOptions(options = {}) {
   }
 
   const selectedEventTypes = getSelectedMatchupEventTypes();
-  const scopedEvents = getPresetScopedMatchupEvents(selectedEventTypes);
+  const scopedEvents = getEventTypeScopedMatchupEvents(selectedEventTypes);
   const dates = [...new Set(scopedEvents.map(event => event.date))].sort((a, b) => new Date(a) - new Date(b));
-  const activePreset = getActiveMatchupPreset();
 
   if (dates.length === 0) {
     startDateSelect.innerHTML = '<option value="">Select Offline or Online Event first</option>';
@@ -2142,6 +2294,7 @@ function updateMatchupDateOptions(options = {}) {
       onSelectStartDate: dateString => setMatchupDateSelection('start', dateString, { clearPreset: true }),
       onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
     });
+    renderQuickViewButtons();
     updateMatchupDateRangeTrigger({ disabled: true, emptyLabel: 'Select an event type' });
     updateMatchupSelectionSummary();
     return;
@@ -2149,24 +2302,7 @@ function updateMatchupDateOptions(options = {}) {
 
   let currentStartDate = dates.includes(startDateSelect.value) ? startDateSelect.value : '';
   let currentEndDate = dates.includes(endDateSelect.value) ? endDateSelect.value : '';
-  const presetRange = activePreset
-    ? getQuickViewPresetSuggestedRange({
-        selectedEventTypes,
-        presetId: activePreset,
-        rows: getMatchupQuickViewRows()
-      })
-    : null;
-
-  if (
-    activePreset &&
-    presetRange?.startDate &&
-    presetRange?.endDate &&
-    dates.includes(presetRange.startDate) &&
-    dates.includes(presetRange.endDate)
-  ) {
-    currentStartDate = presetRange.startDate;
-    currentEndDate = presetRange.endDate;
-  } else if (!currentStartDate && !currentEndDate) {
+  if (!currentStartDate && !currentEndDate) {
     const defaultRange = getDefaultMatchupRange(dates);
     currentStartDate = defaultRange.startDate;
     currentEndDate = defaultRange.endDate;
@@ -2219,6 +2355,7 @@ function updateMatchupDateOptions(options = {}) {
     onSelectEndDate: dateString => setMatchupDateSelection('end', dateString, { clearPreset: true })
   });
 
+  renderQuickViewButtons();
   updateMatchupDateRangeTrigger();
   updateMatchupSelectionSummary();
 }
@@ -2231,7 +2368,7 @@ function getActivePresetDisplayLabel() {
   );
 
   if (presets.length === 0) {
-    return 'Manual Range';
+    return 'Custom Range';
   }
 
   if (presets.some(preset => preset.kind === 'static')) {
@@ -4725,10 +4862,11 @@ function setupMatchupFilterListeners() {
   eventTypeButtons.forEach(button => {
     button.addEventListener('click', () => {
       setMatchupEventType(button.dataset.type.toLowerCase());
-      resetMatchupDateRange();
-      updateMatchupDateOptions();
-      if (getActiveMatchupPreset()) {
+      resetMatchupGroupFilterState();
+      if (getMatchupRangeInputSource() === 'filter' && getActiveMatchupPreset()) {
         applyActiveMatchupPresetDateRange();
+      } else {
+        updateMatchupDateOptions({ syncCalendarView: true });
       }
 
       if (isMatchupTopMode()) {
@@ -4814,7 +4952,7 @@ export async function updateMatchupAnalytics() {
     await ensureMatchupCatalogUiReady();
 
     renderQuickViewButtons();
-    if (getActiveMatchupPreset()) {
+    if (getMatchupRangeInputSource() === 'filter' && getActiveMatchupPreset()) {
       applyActiveMatchupPresetDateRange();
     } else {
       updateMatchupDateOptions();
