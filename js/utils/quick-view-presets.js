@@ -7,6 +7,7 @@ import {
   getAnalysisRowsForEventTypes
 } from './analysis-data.js';
 import { setReleaseWindows } from '../config/set-release-windows.js';
+import { formatDate } from './format.js';
 
 const EMPTY_ROWS = [];
 const quickViewRowsCache = new WeakMap();
@@ -195,6 +196,59 @@ export function shiftDateByDays(dateString, dayDelta) {
 
   date.setUTCDate(date.getUTCDate() + dayDelta);
   return date.toISOString().slice(0, 10);
+}
+
+function formatCompactTooltipDate(dateStr) {
+  if (!dateStr) {
+    return '';
+  }
+
+  const [year, month, day] = String(dateStr).split('-').map(Number);
+  if (!year || !month || !day) {
+    return '';
+  }
+
+  const date = new Date(Date.UTC(year, month - 1, day));
+  return date.toLocaleDateString('en-US', {
+    timeZone: 'UTC',
+    month: 'short',
+    day: '2-digit'
+  });
+}
+
+export function getQuickViewPresetTooltipDateRange(preset) {
+  if (preset?.kind === 'set-window') {
+    const startDate = preset.releaseDate || '';
+    const endDate = preset.endDate || (preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : '');
+    const startLabel = formatCompactTooltipDate(startDate);
+    const endLabel = formatCompactTooltipDate(endDate);
+    return startLabel && endLabel ? `${startLabel} – ${endLabel}` : '';
+  }
+
+  if (preset?.kind === 'calendar-year') {
+    const startLabel = formatCompactTooltipDate(preset.startDate || '');
+    const endLabel = formatCompactTooltipDate(preset.endDate || '');
+    return startLabel && endLabel ? `${startLabel} – ${endLabel}` : '';
+  }
+
+  return '';
+}
+
+export function getQuickViewPresetAriaLabel(preset) {
+  if (preset?.kind === 'set-window') {
+    const startLabel = preset.releaseDate ? formatDate(preset.releaseDate) : '';
+    const endDate = preset.endDate || (preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : '');
+    const endLabel = endDate ? formatDate(endDate) : '';
+    return startLabel && endLabel ? `${preset.label}. ${startLabel} to ${endLabel}` : preset.label || '';
+  }
+
+  if (preset?.kind === 'calendar-year') {
+    const startLabel = preset.startDate ? formatDate(preset.startDate) : '';
+    const endLabel = preset.endDate ? formatDate(preset.endDate) : '';
+    return startLabel && endLabel ? `${preset.label}. ${startLabel} to ${endLabel}` : preset.label || '';
+  }
+
+  return String(preset?.label || '');
 }
 
 // Returns non-data-dependent presets such as All Period and calendar years.

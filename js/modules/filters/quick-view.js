@@ -1,13 +1,14 @@
 // Manages quick-view preset buttons and preset-driven date/type selection for multi-event and player views.
 import {
   getDefaultQuickViewYear,
+  getQuickViewPresetAriaLabel,
   getLatestSetQuickViewPresetId,
   getQuickViewPresetDefinitionById,
+  getQuickViewPresetTooltipDateRange,
   getQuickViewPresetYearOptions,
   normalizeQuickViewPresetIds,
   getSetQuickViewPresetDefinitions,
   getStaticQuickViewPresetDefinitions,
-  shiftDateByDays
 } from '../../utils/quick-view-presets.js';
 import {
   getPlayerAnalysisActivePreset,
@@ -33,7 +34,6 @@ import {
   getPlayerAnalysisSelectedTypes,
   setSectionEventType
 } from './shared.js';
-
 // Returns the multi-event quick-view chip container.
 export function getMultiEventQuickViewRoot() {
   return document.getElementById('multiEventQuickViewButtons');
@@ -69,21 +69,26 @@ function getQuickViewDatasetKey(scope) {
 }
 
 function createQuickViewButton(preset, buttonClass, datasetKey) {
-  // Button titles expose the exact date window for maintainers/users without
-  // crowding the compact chip labels.
   const button = document.createElement('button');
   button.type = 'button';
   button.className = `bubble-button ${buttonClass}`;
   button.dataset[datasetKey] = preset.id;
   button.textContent = preset.buttonLabel || preset.label;
+  button.setAttribute('aria-label', preset.label);
+  button.removeAttribute('data-tooltip');
+  button.removeAttribute('title');
 
-  if (preset.kind === 'set-window') {
-    const displayEndDate = preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : 'Present';
-    button.title = `${preset.label}: ${preset.releaseDate} to ${displayEndDate}`;
-  } else if (preset.kind === 'calendar-year') {
-    button.title = `${preset.label}: ${preset.startDate} to ${preset.endDate}`;
-  } else {
-    button.title = preset.label;
+  return button;
+}
+
+function createSetWindowButton(preset, buttonClass, datasetKey) {
+  const button = createQuickViewButton(preset, buttonClass, datasetKey);
+  const tooltipDateRange = getQuickViewPresetTooltipDateRange(preset);
+
+  button.classList.add('analysis-filter-tooltip');
+  if (tooltipDateRange) {
+    button.dataset.tooltip = tooltipDateRange;
+    button.setAttribute('aria-label', getQuickViewPresetAriaLabel(preset));
   }
 
   return button;
@@ -258,7 +263,7 @@ export function renderQuickViewButtons(scope) {
   setRow.className = 'bubble-menu quick-view-set-list';
 
   yearPresets.forEach(preset => {
-    const button = createQuickViewButton(preset, buttonClass, datasetKey);
+    const button = createSetWindowButton(preset, buttonClass, datasetKey);
     button.classList.toggle('active', highlightedSetWindowIds.has(preset.id));
     setRow.appendChild(button);
   });

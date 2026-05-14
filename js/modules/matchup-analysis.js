@@ -3,9 +3,11 @@
 // player matchup drilldowns.
 import {
   getDefaultQuickViewYear,
+  getQuickViewPresetAriaLabel,
   getLatestSetQuickViewPresetId,
   getQuickViewPresetDefinitionById,
   getQuickViewPresetDefinitionsByIds,
+  getQuickViewPresetTooltipDateRange,
   getQuickViewPresetEventTypes,
   getQuickViewPresetSuggestedRange,
   getQuickViewPresetYearOptions,
@@ -1622,14 +1624,21 @@ function createQuickViewButton(preset) {
   button.className = 'bubble-button matchup-preset-button';
   button.dataset.matchupPreset = preset.id;
   button.textContent = preset.buttonLabel || preset.label;
+  button.setAttribute('aria-label', preset.label);
+  button.removeAttribute('data-tooltip');
+  button.removeAttribute('title');
 
-  if (preset.kind === 'set-window') {
-    const displayEndDate = preset.nextReleaseDate ? shiftDateByDays(preset.nextReleaseDate, -1) : 'Present';
-    button.title = `${preset.label}: ${preset.releaseDate} to ${displayEndDate}`;
-  } else if (preset.kind === 'calendar-year') {
-    button.title = `${preset.label}: ${preset.startDate} to ${preset.endDate}`;
-  } else {
-    button.title = preset.label;
+  return button;
+}
+
+function createSetWindowButton(preset) {
+  const button = createQuickViewButton(preset);
+  const tooltipDateRange = getQuickViewPresetTooltipDateRange(preset);
+
+  button.classList.add('analysis-filter-tooltip');
+  if (tooltipDateRange) {
+    button.dataset.tooltip = tooltipDateRange;
+    button.setAttribute('aria-label', getQuickViewPresetAriaLabel(preset));
   }
 
   return button;
@@ -1738,7 +1747,7 @@ function renderQuickViewButtons() {
   setRow.className = 'bubble-menu quick-view-set-list';
 
   yearPresets.forEach(preset => {
-    const button = createQuickViewButton(preset);
+    const button = createSetWindowButton(preset);
     button.classList.toggle('active', highlightedSetWindowIds.has(preset.id));
     setRow.appendChild(button);
   });

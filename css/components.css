@@ -194,6 +194,7 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: visible;
 }
 
 .quick-view-divider {
@@ -237,10 +238,12 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
 }
 
 .quick-view-set-list {
-  max-height: 170px;
+  position: relative;
+  max-height: 216px;
   overflow-y: auto;
   align-content: flex-start;
   padding-right: 4px;
+  padding-bottom: 42px;
 }
 
 .quick-view-set-list::-webkit-scrollbar {
@@ -4137,16 +4140,16 @@ body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([
   left: 50%;
   bottom: calc(100% + 10px);
   transform: translateX(-50%);
-  min-width: 220px;
-  max-width: 260px;
-  padding: 8px 10px;
+  min-width: 140px;
+  max-width: 190px;
+  padding: 6px 9px;
   border-radius: 8px;
   background: var(--tooltip-bg);
   color: var(--tooltip-text);
   border: 1px solid var(--tooltip-border);
   box-shadow: 0 10px 24px var(--shadow-color);
-  font-size: 0.78rem;
-  line-height: 1.35;
+  font-size: 0.72rem;
+  line-height: 1.25;
   text-align: center;
   white-space: normal;
   z-index: 30;
@@ -4181,6 +4184,27 @@ body[data-analysis-quality-bubble="on"]:not([data-top-mode="leaderboard"]):not([
 .analysis-filter-tooltip:focus-visible::before {
   opacity: 1;
   visibility: visible;
+}
+
+.quick-view-set-list .analysis-filter-tooltip {
+  z-index: 1;
+}
+
+.quick-view-set-list .analysis-filter-tooltip:hover,
+.quick-view-set-list .analysis-filter-tooltip:focus-visible {
+  z-index: 35;
+}
+
+.quick-view-set-list .analysis-filter-tooltip::after {
+  top: calc(100% + 10px);
+  bottom: auto;
+}
+
+.quick-view-set-list .analysis-filter-tooltip::before {
+  top: calc(100% + 2px);
+  bottom: auto;
+  border-top-color: transparent;
+  border-bottom-color: var(--tooltip-bg);
 }
 
 .bubble-menu .player-search-select {
