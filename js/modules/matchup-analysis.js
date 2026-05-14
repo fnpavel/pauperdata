@@ -1727,8 +1727,40 @@ function applyMatchupPreset(presetId) {
   }
 }
 
+function getLatestMatchupPresetIdForYear(year) {
+  const normalizedYear = String(year || '').trim();
+  if (!normalizedYear) {
+    return '';
+  }
+
+  const quickViewRows = getMatchupQuickViewRows();
+  const latestSetPreset = getSetQuickViewPresetDefinitions(quickViewRows, { includeFuture: true })
+    .find(preset => preset.releaseYear === normalizedYear);
+
+  if (latestSetPreset?.id) {
+    return latestSetPreset.id;
+  }
+
+  const fullYearPreset = getStaticQuickViewPresetDefinitions()
+    .find(preset => preset.kind === 'calendar-year' && preset.releaseYear === normalizedYear);
+
+  return fullYearPreset?.id || '';
+}
+
 function setQuickViewYearSelection(year) {
-  activeQuickViewYear = year;
+  const normalizedYear = String(year || '').trim();
+  if (!normalizedYear) {
+    return;
+  }
+
+  activeQuickViewYear = normalizedYear;
+  const latestPresetId = getLatestMatchupPresetIdForYear(normalizedYear);
+
+  if (latestPresetId) {
+    applyMatchupPreset(latestPresetId);
+    return;
+  }
+
   renderQuickViewButtons();
 }
 
