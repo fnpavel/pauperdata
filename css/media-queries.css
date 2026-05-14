@@ -82,6 +82,24 @@
     grid-template-columns: 1fr;
   }
 
+  .site-footer-content {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .site-footer-section-left {
+    align-items: center;
+    text-align: center;
+  }
+
+  .site-footer-section-right {
+    justify-content: center;
+  }
+
+  .site-footer-nav {
+    justify-content: center;
+  }
+
   .leaderboard-analytics-focus-modal {
     width: 100%;
     max-height: 100%;
@@ -194,6 +212,28 @@
   .header-utility-stack {
     width: 100%;
     max-width: 220px;
+  }
+
+  .site-footer-content {
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+
+  .site-footer-section-left {
+    align-items: center;
+    gap: 10px;
+  }
+
+  .site-footer-nav {
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .footer-meta-link {
+    align-items: center;
+    text-align: center;
   }
 
   .top-mode-button {

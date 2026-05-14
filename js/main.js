@@ -18,6 +18,7 @@ import {
   updateAllCharts
 } from './modules/filters/filter-index.js';
 import { setupAboutListeners } from './modules/about.js';
+import { setupFooter } from './modules/footer.js';
 import { setupThemeToggle } from './utils/theme.js';
 
 // These globals keep the existing HTML event hooks working without forcing the
@@ -135,6 +136,7 @@ async function initializeDashboard() {
   setupThemeToggle(() => {
     updateAllCharts();
   });
+  setupFooter();
   
   // The top-mode switch decides which view owns the first render.
   const defaultTopMode = document.querySelector('.top-mode-button.active')?.dataset.topMode || 'event';

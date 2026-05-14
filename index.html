@@ -118,7 +118,8 @@
     </div>
   </header>
 
-  <div class="container">
+  <main class="page-main">
+    <div class="container">
     <!-- Event Analysis Section: single-event and multi-event modes share this area. -->
     <div id="eventAnalysisSection">
       <div class="stats-container" id="singleEventStats">
@@ -1290,7 +1291,34 @@
         <p class="about-actions"><a href="#" id="backToApp">Back to Dashboard</a></p>
       </div>
     </div>
-  </div>
+    </div>
+  </main>
+
+  <footer class="site-footer" aria-label="Site footer">
+    <div class="container site-footer-content">
+      <div class="site-footer-section site-footer-section-left">
+        <p class="site-footer-brand">Pauper MTG Analytics</p>
+        <p class="site-footer-credit">Made By PyotrPavel</p>
+      </div>
+
+      <div class="site-footer-section site-footer-section-center" aria-live="polite">
+        <p class="site-footer-note">MTGO Data Gathered by Kirblinxy</p>
+        <p class="site-footer-note">Matchup data takes a few seconds to load</p>
+      </div>
+
+      <div class="site-footer-section site-footer-section-right">
+        <nav class="site-footer-nav" aria-label="Footer navigation">
+          <button type="button" class="footer-meta-link footer-meta-link-single" id="footerCurrentViewButton">
+            <span class="footer-meta-link-value" id="footerCurrentViewValue">Event Analysis</span>
+          </button>
+          <span class="site-footer-nav-separator" aria-hidden="true">&bull;</span>
+          <button type="button" class="footer-meta-link footer-meta-link-single" id="footerAboutButton">
+            <span class="footer-meta-link-value">About</span>
+          </button>
+        </nav>
+      </div>
+    </div>
+  </footer>
 
   <!-- Scripts: legacy module tags remain here for browser execution, while
        js/main.js performs the real initialization after DOMContentLoaded. -->

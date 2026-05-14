@@ -48,25 +48,31 @@ function getThemeLabel(theme) {
   return theme === 'light' ? 'Light Mode' : 'Dark Mode';
 }
 
-// Mirrors the active theme into the header toggle's text, ARIA state, and next
+function getThemeToggleButtons() {
+  return Array.from(document.querySelectorAll('[data-theme-toggle], #themeToggleButton'));
+}
+
+// Mirrors the active theme into each theme toggle's text, ARIA state, and next
 // action label.
 export function syncThemeToggleButton() {
-  const button = document.getElementById('themeToggleButton');
-  if (!button) {
-    return;
-  }
-
-  const label = button.querySelector('.theme-toggle-label');
   const activeTheme = getActiveTheme();
   const nextTheme = activeTheme === 'light' ? 'dark' : 'light';
 
-  button.dataset.theme = activeTheme;
-  button.setAttribute('aria-pressed', activeTheme === 'light' ? 'true' : 'false');
-  button.setAttribute('aria-label', `Switch to ${getThemeLabel(nextTheme)}`);
+  getThemeToggleButtons().forEach(button => {
+    const label = button.querySelector('.theme-toggle-label');
+    const icon = button.querySelector('.footer-theme-icon');
+    button.dataset.theme = activeTheme;
+    button.setAttribute('aria-pressed', activeTheme === 'light' ? 'true' : 'false');
+    button.setAttribute('aria-label', `Switch to ${getThemeLabel(nextTheme)}`);
 
-  if (label) {
-    label.textContent = getThemeLabel(activeTheme);
-  }
+    if (label) {
+      label.textContent = getThemeLabel(activeTheme);
+    }
+
+    if (icon) {
+      icon.textContent = activeTheme === 'light' ? '\u2600' : '\u263e';
+    }
+  });
 }
 
 // Applies a theme to the document and optionally persists it for future visits.
@@ -97,17 +103,18 @@ export function toggleTheme() {
 export function setupThemeToggle(onThemeChange) {
   syncThemeToggleButton();
 
-  const button = document.getElementById('themeToggleButton');
-  if (!button || button.dataset.listenerAdded === 'true') {
-    return;
-  }
-
-  button.dataset.listenerAdded = 'true';
-  button.addEventListener('click', () => {
-    const nextTheme = toggleTheme();
-    if (typeof onThemeChange === 'function') {
-      onThemeChange(nextTheme);
+  getThemeToggleButtons().forEach(button => {
+    if (button.dataset.listenerAdded === 'true') {
+      return;
     }
+
+    button.dataset.listenerAdded = 'true';
+    button.addEventListener('click', () => {
+      const nextTheme = toggleTheme();
+      if (typeof onThemeChange === 'function') {
+        onThemeChange(nextTheme);
+      }
+    });
   });
 }
 
