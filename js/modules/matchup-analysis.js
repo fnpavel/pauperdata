@@ -1885,11 +1885,28 @@ function getLatestMatchupPresetIdForYear(year) {
   }
 
   const quickViewRows = getMatchupQuickViewRows();
-  const latestSetPreset = getSetQuickViewPresetDefinitions(quickViewRows, { includeFuture: true })
-    .find(preset => preset.releaseYear === normalizedYear);
+  const validYearSetPresets = getSetQuickViewPresetDefinitions(quickViewRows, { includeFuture: true })
+    .filter(preset => preset.releaseYear === normalizedYear)
+    .map(preset => ({
+      preset,
+      range: getQuickViewPresetSuggestedRange({
+        selectedEventTypes: getSelectedMatchupEventTypes(),
+        presetId: preset.id,
+        rows: quickViewRows
+      })
+    }))
+    .filter(({ range }) => Boolean(range.startDate && range.endDate))
+    .sort((left, right) => {
+      const endComparison = String(right.range.endDate || '').localeCompare(String(left.range.endDate || ''));
+      if (endComparison !== 0) {
+        return endComparison;
+      }
 
-  if (latestSetPreset?.id) {
-    return latestSetPreset.id;
+      return String(right.range.startDate || '').localeCompare(String(left.range.startDate || ''));
+    });
+
+  if (validYearSetPresets[0]?.preset?.id) {
+    return validYearSetPresets[0].preset.id;
   }
 
   const fullYearPreset = getStaticQuickViewPresetDefinitions()
