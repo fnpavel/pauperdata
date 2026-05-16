@@ -3522,6 +3522,85 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   color: var(--light);
 }
 
+.top-deck-bucket {
+  display: grid;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.top-deck-bucket:last-child {
+  margin-bottom: 0;
+}
+
+.top-deck-bucket-toggle {
+  appearance: none;
+  border: 0;
+  background: none;
+  padding: 3px 0;
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  color: var(--accent);
+  font: inherit;
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  text-align: left;
+  cursor: pointer;
+}
+
+.top-deck-bucket-toggle:hover,
+.top-deck-bucket-toggle:focus-visible {
+  color: var(--light);
+}
+
+.top-deck-bucket-chevron {
+  flex: 0 0 auto;
+  width: 0.78rem;
+  font-size: 0.66rem;
+}
+
+.top-deck-bucket-label {
+  min-width: 0;
+  letter-spacing: 0.01em;
+}
+
+.top-deck-bucket-panel {
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.12s ease;
+}
+
+.top-deck-bucket-panel[hidden] {
+  display: none;
+}
+
+.top-deck-bucket:not(.expanded) .top-deck-bucket-panel {
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.top-deck-bucket-panel-inner {
+  padding: 0;
+}
+
+.top-deck-bucket-copy {
+  padding: 0;
+  color: var(--light);
+}
+
+.top-deck-bucket.expanded .top-deck-bucket-copy {
+  padding-left: calc(0.78rem + 6px);
+}
+
+.top-deck-bucket-line + .top-deck-bucket-line {
+  margin-top: 2px;
+}
+
 .event-analysis-inline-deck-button {
   appearance: none;
   background: none;

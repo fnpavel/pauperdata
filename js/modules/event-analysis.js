@@ -243,6 +243,147 @@ function formatTopDeckRangeCardLabel(rangeKey = '') {
   return String(rangeKey || '').replace(/\s+/g, '');
 }
 
+function formatDeckBucketChevron(isExpanded = false) {
+  return isExpanded ? '&#9660;' : '&#9654;';
+}
+
+function buildTopDeckBucketSectionHtml({ range = '', content = '', expanded = false, bucketKey = '' } = {}) {
+  return `
+    <div class="top-deck-bucket${expanded ? ' expanded' : ''}" data-top-deck-bucket="${escapeHtml(bucketKey || range)}">
+      <button
+        type="button"
+        class="top-deck-bucket-toggle"
+        data-top-deck-bucket-toggle="${escapeHtml(bucketKey || range)}"
+        aria-expanded="${expanded ? 'true' : 'false'}"
+      >
+        <span class="top-deck-bucket-chevron" aria-hidden="true">${formatDeckBucketChevron(expanded)}</span>
+        <span class="top-deck-bucket-label">${escapeHtml(formatTopDeckRangeCardLabel(range))}</span>
+      </button>
+      <div class="top-deck-bucket-panel" aria-hidden="${expanded ? 'false' : 'true'}">
+        <div class="top-deck-bucket-panel-inner">
+          <div class="top-deck-bucket-copy">${content}</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function buildTopDeckBucketLineHtml(count, deckName) {
+  return `<div class="top-deck-bucket-line">${Number(count) || 0}x ${buildInlineDeckCardDeckLinks([deckName])}</div>`;
+}
+
+function buildTopDeckBucketUniqueHtml() {
+  return '<div class="top-deck-bucket-line">All decks were unique.</div>';
+}
+
+function buildSingleEventTopDeckBucketContent(deckCounts = {}) {
+  const entries = Object.entries(deckCounts)
+    .filter(([deck, count]) => deck !== 'UNKNOWN' && deck !== 'No Show' && (Number(count) || 0) > 0)
+    .sort((a, b) => {
+      const countDifference = Number(b[1]) - Number(a[1]);
+      if (countDifference !== 0) {
+        return countDifference;
+      }
+      return a[0].localeCompare(b[0]);
+    });
+
+  if (entries.length === 0) {
+    return '';
+  }
+
+  const maxCount = Math.max(...entries.map(([, count]) => Number(count) || 0), 0);
+  const allUnique = maxCount === 1;
+  if (allUnique) {
+    return buildTopDeckBucketUniqueHtml();
+  }
+
+  return entries
+    .filter(([, count]) => Number(count) === maxCount)
+    .map(([deck, count]) => buildTopDeckBucketLineHtml(count, deck))
+    .join('');
+}
+
+function buildMultiEventTopDeckBucketContent(deckCounts = {}) {
+  const entries = Object.entries(deckCounts)
+    .filter(([deck, count]) => deck !== 'UNKNOWN' && deck !== 'No Show' && (Number(count) || 0) > 0)
+    .sort((a, b) => {
+      const countDifference = Number(b[1]) - Number(a[1]);
+      if (countDifference !== 0) {
+        return countDifference;
+      }
+      return a[0].localeCompare(b[0]);
+    });
+
+  if (entries.length === 0) {
+    return '';
+  }
+
+  const maxCount = Math.max(...entries.map(([, count]) => Number(count) || 0), 0);
+  const allUnique = maxCount === 1;
+  if (allUnique) {
+    return buildTopDeckBucketUniqueHtml();
+  }
+
+  return entries
+    .filter(([, count]) => Number(count) === maxCount)
+    .map(([deck, count]) => `<div class="top-deck-bucket-line">${Number(count) || 0}x ${buildInlineDeckCardDeckLinks([deck], 'data-multi-event-deck-link')}</div>`)
+    .join('');
+}
+
+function syncTopDeckBucketPanelState(bucket) {
+  if (!bucket) {
+    return;
+  }
+
+  const toggle = bucket.querySelector('[data-top-deck-bucket-toggle]');
+  const panel = bucket.querySelector('.top-deck-bucket-panel');
+  const chevron = toggle?.querySelector('.top-deck-bucket-chevron');
+  const isExpanded = toggle?.getAttribute('aria-expanded') === 'true';
+
+  bucket.classList.toggle('expanded', isExpanded);
+
+  if (chevron) {
+    chevron.innerHTML = formatDeckBucketChevron(isExpanded);
+  }
+
+  if (panel) {
+    panel.setAttribute('aria-hidden', isExpanded ? 'false' : 'true');
+    panel.hidden = !isExpanded;
+    panel.style.maxHeight = '';
+  }
+}
+
+function bindTopDeckBucketToggle(containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) {
+    return;
+  }
+
+  container.querySelectorAll('[data-top-deck-bucket]').forEach(syncTopDeckBucketPanelState);
+
+  if (container.dataset.topDeckBucketBound === 'true') {
+    return;
+  }
+
+  container.dataset.topDeckBucketBound = 'true';
+  container.addEventListener('click', event => {
+    const toggle = event.target.closest('[data-top-deck-bucket-toggle]');
+    if (!toggle) {
+      return;
+    }
+
+    event.preventDefault();
+    event.stopPropagation();
+
+    const bucket = toggle.closest('[data-top-deck-bucket]');
+    const nextExpanded = toggle.getAttribute('aria-expanded') !== 'true';
+
+    toggle.setAttribute('aria-expanded', nextExpanded ? 'true' : 'false');
+
+    syncTopDeckBucketPanelState(bucket);
+  });
+}
+
 function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
   if (multiEvent) {
     return '<div class="event-info-top8-empty">Select a single event to view Top 8 standings.</div>';
@@ -1708,6 +1849,7 @@ function setupSingleEventDrilldownCards() {
     });
   });
   bindDeckLinkContainer('singleTopDecksDetails', 'data-single-event-deck-link', openSingleEventDeckDrilldown);
+  bindTopDeckBucketToggle('singleTopDecksDetails');
 }
 
 function setupMultiEventDrilldownCards() {
@@ -1737,6 +1879,7 @@ function setupMultiEventDrilldownCards() {
   });
 
   bindDeckLinkContainer('multiTopDecksDetails', 'data-multi-event-deck-link', openMultiEventDeckEvolutionModal);
+  bindTopDeckBucketToggle('multiTopDecksDetails');
 }
 
 // Wires Event Analysis modals, stat-card click targets, and CSV export buttons.
@@ -2148,16 +2291,16 @@ export function populateSingleEventStats(filteredData) {
       const deckCounts = stats.deckCountsByRange[range];
       const maxCopies = Math.max(...Object.values(deckCounts), 0);
       if (maxCopies === 0) return "";
-      const mostPlayedDecks = Object.entries(deckCounts)
-        .filter(([, count]) => count === maxCopies)
-        .map(([deck]) => deck)
-        .sort((a, b) => a.localeCompare(b));
-      const compactRangeLabel = formatTopDeckRangeCardLabel(range);
-      const deckLinks = buildInlineDeckCardDeckLinks(mostPlayedDecks, 'data-single-event-deck-link');
-      return `<div><span class="label">${compactRangeLabel}:</span> <span class="value">${formatCopyLabel(maxCopies)} of ${deckLinks}</span></div>`;
+      return buildTopDeckBucketSectionHtml({
+        range,
+        bucketKey: range,
+        expanded: range === 'Top 8',
+        content: buildSingleEventTopDeckBucketContent(deckCounts)
+      });
     })
     .filter(Boolean)
     .join("") || "No Data");
+  bindTopDeckBucketToggle('singleTopDecksDetails');
 
   updateSingleEventDrilldownCardStates(filteredData);
 
@@ -2239,26 +2382,16 @@ export function populateMultiEventStats(filteredData) {
       const deckCounts = stats.deckCountsByRange[range];
       const maxCopies = Math.max(...Object.values(deckCounts), 0);
       if (maxCopies === 0) return "";
-      const mostPlayedDecks = Object.entries(deckCounts).filter(([_, count]) => count === maxCopies).map(([deck]) => deck);
-      const rangeCount = {
-        "Top 8": filteredData.filter(row => row.Rank >= 1 && row.Rank <= 8).length,
-        "Top 16": filteredData.filter(row => row.Rank >= 9 && row.Rank <= 16).length,
-        "Top 32": filteredData.filter(row => row.Rank >= 17 && row.Rank <= 32).length,
-        "Below Top 32": filteredData.filter(row => row.Rank > 32).length
-      }[range];
-      const uniqueDecksCount = Object.keys(deckCounts).length;
-      const maxEntries = range === "Top 8" ? 8 : range === "Top 16" ? 8 : range === "Top 32" ? 16 : rangeCount;
-      const deckStatsText = rangeCount === maxEntries && uniqueDecksCount === rangeCount && maxCopies === 1 
-        ? "All Unique Decks" 
-        : mostPlayedDecks.map(deck => {
-            const stats = calculateDeckStats(filteredData, deck, filteredData.length);
-            const deckLink = buildInlineDeckCardDeckLinks([deck], 'data-multi-event-deck-link');
-            return `${maxCopies} Copies of ${deckLink} (${formatPercentage(stats.winRate)} WR / ${formatPercentage(stats.metaShare)} Meta)`;
-          }).join(", ");
-      return `<div><span class="label">${range}:</span> <span class="value">${deckStatsText}</span></div>`;
+      return buildTopDeckBucketSectionHtml({
+        range,
+        bucketKey: range,
+        expanded: range === 'Top 8',
+        content: buildMultiEventTopDeckBucketContent(deckCounts)
+      });
     })
     .filter(Boolean)
     .join("") || "--");
+  bindTopDeckBucketToggle('multiTopDecksDetails');
 
   updateMultiEventDrilldownCardStates(filteredData);
 
