@@ -160,6 +160,109 @@ function buildDeckRowLabel(deckName) {
   return `${deckName}`;
 }
 
+function compareAlphabeticalDeckNames(a = '', b = '') {
+  return String(a || '').localeCompare(String(b || ''));
+}
+
+function compareRankLists(a = [], b = []) {
+  const maxLength = Math.max(a.length, b.length);
+  for (let index = 0; index < maxLength; index += 1) {
+    const aRank = Number.isFinite(a[index]) ? a[index] : Number.MAX_SAFE_INTEGER;
+    const bRank = Number.isFinite(b[index]) ? b[index] : Number.MAX_SAFE_INTEGER;
+    if (aRank !== bRank) {
+      return aRank - bRank;
+    }
+  }
+  return 0;
+}
+
+function buildSingleEventDeckOrderMetadata(chartData = []) {
+  return chartData.reduce((acc, row) => {
+    const deckName = String(row?.Deck || '').trim();
+    if (!deckName || deckName.toUpperCase() === 'UNKNOWN') {
+      return acc;
+    }
+
+    if (!acc[deckName]) {
+      acc[deckName] = {
+        top8Ranks: [],
+        counts: {
+          rank9_16: 0,
+          rank17_32: 0,
+          rank33_worse: 0
+        }
+      };
+    }
+
+    const rank = Number(row?.Rank);
+    if (rank >= 1 && rank <= 8) {
+      acc[deckName].top8Ranks.push(rank);
+    } else if (rank >= 9 && rank <= 16) {
+      acc[deckName].counts.rank9_16 += 1;
+    } else if (rank >= 17 && rank <= 32) {
+      acc[deckName].counts.rank17_32 += 1;
+    } else {
+      acc[deckName].counts.rank33_worse += 1;
+    }
+
+    return acc;
+  }, {});
+}
+
+function compareSingleEventDeckRows(a, b, orderMetadata = {}) {
+  const aMeta = orderMetadata[a?.deck] || { top8Ranks: [], counts: {} };
+  const bMeta = orderMetadata[b?.deck] || { top8Ranks: [], counts: {} };
+  const aTop8Ranks = Array.isArray(aMeta.top8Ranks) ? [...aMeta.top8Ranks].sort((x, y) => x - y) : [];
+  const bTop8Ranks = Array.isArray(bMeta.top8Ranks) ? [...bMeta.top8Ranks].sort((x, y) => x - y) : [];
+  const aHasTop8 = aTop8Ranks.length > 0;
+  const bHasTop8 = bTop8Ranks.length > 0;
+
+  if (aHasTop8 || bHasTop8) {
+    if (aHasTop8 && !bHasTop8) {
+      return -1;
+    }
+    if (!aHasTop8 && bHasTop8) {
+      return 1;
+    }
+
+    const rankComparison = compareRankLists(aTop8Ranks, bTop8Ranks);
+    if (rankComparison !== 0) {
+      return rankComparison;
+    }
+
+    return compareAlphabeticalDeckNames(a?.deck, b?.deck);
+  }
+
+  const bucketPriority = ['rank9_16', 'rank17_32', 'rank33_worse'];
+  const getHighestNonZeroBucket = meta => (
+    bucketPriority.find(bucketKey => Number(meta?.counts?.[bucketKey] || 0) > 0) || null
+  );
+
+  const aHighestBucket = getHighestNonZeroBucket(aMeta);
+  const bHighestBucket = getHighestNonZeroBucket(bMeta);
+  const aBucketIndex = aHighestBucket ? bucketPriority.indexOf(aHighestBucket) : Number.MAX_SAFE_INTEGER;
+  const bBucketIndex = bHighestBucket ? bucketPriority.indexOf(bHighestBucket) : Number.MAX_SAFE_INTEGER;
+  if (aBucketIndex !== bBucketIndex) {
+    return aBucketIndex - bBucketIndex;
+  }
+
+  const activeBucketKey = aHighestBucket || bHighestBucket;
+  if (activeBucketKey) {
+    const aBucketCount = Number(aMeta?.counts?.[activeBucketKey] || 0);
+    const bBucketCount = Number(bMeta?.counts?.[activeBucketKey] || 0);
+    if (aBucketCount !== bBucketCount) {
+      return bBucketCount - aBucketCount;
+    }
+  }
+
+  return compareAlphabeticalDeckNames(a?.deck, b?.deck);
+}
+
+function sortSingleEventDeckConversionRows(rows = [], chartData = []) {
+  const orderMetadata = buildSingleEventDeckOrderMetadata(chartData);
+  return [...rows].sort((a, b) => compareSingleEventDeckRows(a, b, orderMetadata));
+}
+
 function resolveCellRadius(context) {
   const chart = context.chart;
   const chartArea = chart?.chartArea;
@@ -600,7 +703,10 @@ export function updateEventFunnelChart() {
 
   renderEventFunnelSummaryBadge(chartData);
 
-  const sortedDecksData = calculateDeckConversionStats(chartData);
+  const sortedDecksData = sortSingleEventDeckConversionRows(
+    calculateDeckConversionStats(chartData),
+    chartData
+  );
   const maxBucketCount = Math.max(
     0,
     ...sortedDecksData.flatMap(item => groupingMode.buckets.map(bucket => (
