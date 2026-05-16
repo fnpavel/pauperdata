@@ -410,7 +410,17 @@ function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
     const wins = Number(row?.Wins) || 0;
     const losses = Number(row?.Losses) || 0;
     const player = escapeHtml(String(row?.Player || '--').trim() || '--');
-    return `<div class="event-info-top8-row">${rank} - ${deck} - ${wins}/${losses} - ${player}</div>`;
+    const podiumClass = rank >= 1 && rank <= 3 ? ` event-info-rank-badge-podium-${rank}` : '';
+    return `
+      <div class="event-info-top8-row">
+        <div class="event-info-top8-rank">
+          <span class="event-info-rank-badge${podiumClass}">${rank}</span>
+        </div>
+        <div class="event-info-top8-deck" title="${deck}">${deck}</div>
+        <div class="event-info-top8-record">${wins}/${losses}</div>
+        <div class="event-info-top8-player" title="${player}">${player}</div>
+      </div>
+    `;
   }).join('');
 }
 

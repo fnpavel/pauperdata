@@ -309,6 +309,83 @@
     padding: 10px 10px 18px;
   }
 
+  #singleEventInfoCard .event-info-card-header {
+    gap: 6px;
+    padding-right: 16px;
+  }
+
+  #singleEventInfoCard .event-info-name {
+    font-size: 1.08rem;
+  }
+
+  #singleEventInfoCard .event-info-meta {
+    gap: 5px;
+  }
+
+  #singleEventInfoCard .event-info-meta-pill {
+    max-width: 100%;
+    min-height: 24px;
+    padding: 4px 8px;
+    font-size: 0.68rem;
+  }
+
+  .event-info-top8 {
+    margin-top: 10px;
+    padding-top: 9px;
+    gap: 6px;
+  }
+
+  .event-info-top8-row {
+    grid-template-columns: 30px auto minmax(0, 1fr);
+    grid-template-areas:
+      "rank deck deck"
+      "rank record player";
+    align-items: start;
+    gap: 3px 7px;
+    padding: 6px 0;
+  }
+
+  .event-info-top8-rank {
+    grid-area: rank;
+    align-self: center;
+  }
+
+  .event-info-top8-deck {
+    grid-area: deck;
+  }
+
+  .event-info-top8-record,
+  .event-info-top8-player {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .event-info-top8-record {
+    grid-area: record;
+    justify-self: start;
+  }
+
+  .event-info-top8-player {
+    grid-area: player;
+    justify-self: end;
+    max-width: 100%;
+  }
+
+  .event-info-rank-badge {
+    width: 21px;
+    height: 21px;
+    font-size: 0.67rem;
+  }
+
+  .event-info-top8-deck,
+  .event-info-top8-record,
+  .event-info-top8-player,
+  .event-info-top8-empty {
+    font-size: 0.7rem;
+    line-height: 1.26;
+  }
+
   #singleEventStats.stats-container .stat-card,
   #multiEventStats.stats-container .stat-card,
   #matchupStats.stats-container .stat-card,

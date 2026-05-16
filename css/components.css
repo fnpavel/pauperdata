@@ -3667,12 +3667,86 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   color: var(--text-secondary);
 }
 
-.event-info-top8 {
-  margin-top: 8px;
-  padding-top: 7px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+#singleEventInfoCard {
+  padding: 14px 14px 18px;
+}
+
+#singleEventInfoCard .stat-icon {
+  right: 12px;
+  top: 12px;
+  bottom: auto;
+  opacity: 0.08;
+}
+
+#singleEventInfoCard .event-info-card-header {
   display: grid;
-  gap: 4px;
+  gap: 7px;
+  min-width: 0;
+  padding-right: 20px;
+}
+
+#singleEventInfoCard .event-info-eyebrow {
+  margin-bottom: 0;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+#singleEventInfoCard .event-info-name {
+  font-size: 1.36rem;
+  line-height: 1.08;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+#singleEventInfoCard .event-info-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+#singleEventInfoCard .event-info-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  margin-top: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.71rem;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+#singleEventInfoCard .event-info-meta-pill-date::before,
+#singleEventInfoCard .event-info-meta-pill-players::before {
+  flex: 0 0 auto;
+  margin-right: 6px;
+  opacity: 0.75;
+}
+
+#singleEventInfoCard .event-info-meta-pill-date::before {
+  content: '\1F4C5';
+}
+
+#singleEventInfoCard .event-info-meta-pill-players::before {
+  content: '\1F465';
+}
+
+.event-info-top8 {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  display: grid;
+  gap: 7px;
+  min-width: 0;
 }
 
 .event-info-top8[hidden] {
@@ -3680,38 +3754,156 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 }
 
 .event-info-top8-title {
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
 }
 
 .event-info-top8-list {
   display: grid;
-  gap: 2px;
+  gap: 0;
   min-width: 0;
 }
 
-.event-info-top8-row,
+.event-info-top8-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1.7fr) auto minmax(0, 1.1fr);
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  min-width: 0;
+}
+
+.event-info-top8-row + .event-info-top8-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.event-info-top8-rank {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.event-info-rank-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
+  height: 23px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-secondary);
+  font-size: 0.71rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.event-info-rank-badge-podium-1 {
+  background: linear-gradient(135deg, rgba(255, 201, 52, 0.88), rgba(166, 114, 0, 0.78));
+  border-color: rgba(255, 216, 92, 0.9);
+  color: #fff7d4;
+  box-shadow: inset 0 1px 0 rgba(255, 245, 201, 0.4);
+}
+
+.event-info-rank-badge-podium-2 {
+  background: linear-gradient(135deg, rgba(221, 228, 236, 0.88), rgba(114, 126, 142, 0.8));
+  border-color: rgba(232, 238, 244, 0.92);
+  color: #f8fbff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45);
+}
+
+.event-info-rank-badge-podium-3 {
+  background: linear-gradient(135deg, rgba(207, 127, 67, 0.88), rgba(110, 56, 24, 0.8));
+  border-color: rgba(222, 150, 95, 0.86);
+  color: #ffe6d1;
+  box-shadow: inset 0 1px 0 rgba(255, 222, 197, 0.34);
+}
+
+.event-info-top8-deck,
+.event-info-top8-record,
+.event-info-top8-player,
 .event-info-top8-empty {
+  min-width: 0;
   font-size: 0.73rem;
-  line-height: 1.3;
-  color: rgba(233, 236, 240, 0.78);
-  word-break: break-word;
+  line-height: 1.32;
+}
+
+.event-info-top8-deck {
+  color: var(--text-primary);
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.event-info-top8-record {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.event-info-top8-player {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .event-info-top8-empty {
+  padding: 2px 0 0;
   color: var(--text-muted);
+}
+
+html[data-theme="light"] #singleEventInfoCard .event-info-meta-pill {
+  border-color: rgba(47, 61, 77, 0.12);
+  background: rgba(47, 61, 77, 0.04);
 }
 
 html[data-theme="light"] .event-info-top8 {
   border-top-color: rgba(47, 61, 77, 0.1);
 }
 
-html[data-theme="light"] .event-info-top8-row,
+html[data-theme="light"] .event-info-top8-row + .event-info-top8-row {
+  border-top-color: rgba(47, 61, 77, 0.06);
+}
+
+html[data-theme="light"] .event-info-rank-badge {
+  border-color: rgba(47, 61, 77, 0.12);
+  background: rgba(47, 61, 77, 0.05);
+  color: rgba(47, 61, 77, 0.76);
+}
+
+html[data-theme="light"] .event-info-rank-badge-podium-1 {
+  background: linear-gradient(135deg, rgba(255, 214, 87, 0.98), rgba(202, 136, 17, 0.92));
+  border-color: rgba(185, 121, 16, 0.5);
+  color: #6d4600;
+}
+
+html[data-theme="light"] .event-info-rank-badge-podium-2 {
+  background: linear-gradient(135deg, rgba(238, 242, 247, 0.98), rgba(178, 189, 201, 0.96));
+  border-color: rgba(134, 147, 163, 0.42);
+  color: #425161;
+}
+
+html[data-theme="light"] .event-info-rank-badge-podium-3 {
+  background: linear-gradient(135deg, rgba(225, 155, 103, 0.98), rgba(181, 103, 54, 0.94));
+  border-color: rgba(147, 78, 36, 0.36);
+  color: #6e3f21;
+}
+
+html[data-theme="light"] .event-info-top8-deck,
+html[data-theme="light"] .event-info-top8-record,
 html[data-theme="light"] .event-info-top8-empty {
   color: rgba(47, 61, 77, 0.8);
+}
+
+html[data-theme="light"] .event-info-top8-player {
+  color: rgba(47, 61, 77, 0.66);
 }
 
 .deck-stats-sidebar {
