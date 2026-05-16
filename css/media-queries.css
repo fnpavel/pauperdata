@@ -6,6 +6,11 @@
     grid-template-columns: 280px 1fr;
   }
 
+  #eventAnalysisSection #singleEventStats.stats-container,
+  #eventAnalysisSection #multiEventStats.stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .leaderboards-analytics-grid {
     grid-template-columns: 1fr;
     margin-top: 14px;
@@ -82,6 +87,10 @@
     grid-template-columns: 1fr;
   }
 
+  .event-dashboard-sidebar {
+    gap: 14px;
+  }
+
   .site-footer-content {
     grid-template-columns: 1fr;
     gap: 14px;
@@ -140,6 +149,11 @@
     padding: 0;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  #eventAnalysisSection #singleEventStats.stats-container,
+  #eventAnalysisSection #multiEventStats.stats-container {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   #playerStats.stats-container .player-stats-row-primary {
@@ -289,6 +303,10 @@
   #leaderboardStats.stats-container {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  #eventAnalysisSection #singleEventInfoCard {
+    padding: 10px 10px 18px;
   }
 
   #singleEventStats.stats-container .stat-card,

@@ -243,6 +243,43 @@ function formatTopDeckRangeCardLabel(rangeKey = '') {
   return String(rangeKey || '').replace(/\s+/g, '');
 }
 
+function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
+  if (multiEvent) {
+    return '<div class="event-info-top8-empty">Select a single event to view Top 8 standings.</div>';
+  }
+
+  const top8Rows = [...rows]
+    .filter(row => {
+      const rank = Number(row?.Rank);
+      return rank >= 1 && rank <= 8;
+    })
+    .sort((a, b) => Number(a?.Rank) - Number(b?.Rank))
+    .slice(0, 8);
+
+  if (top8Rows.length === 0) {
+    return '<div class="event-info-top8-empty">No Top 8 standings are available for the selected event.</div>';
+  }
+
+  return top8Rows.map(row => {
+    const rank = Number(row?.Rank) || '--';
+    const deck = escapeHtml(String(row?.Deck || '--').trim() || '--');
+    const wins = Number(row?.Wins) || 0;
+    const losses = Number(row?.Losses) || 0;
+    const player = escapeHtml(String(row?.Player || '--').trim() || '--');
+    return `<div class="event-info-top8-row">${rank} - ${deck} - ${wins}/${losses} - ${player}</div>`;
+  }).join('');
+}
+
+function renderEventInfoTop8(rows = [], options = {}) {
+  const section = document.getElementById('eventInfoTop8Section');
+  if (!section) {
+    return;
+  }
+
+  section.hidden = false;
+  updateElementHTML('eventInfoTop8Standings', buildEventInfoTop8Html(rows, options));
+}
+
 function buildInlineDeckCardDeckLinks(deckNames = [], dataAttributeName = 'data-single-event-deck-link') {
   return deckNames.map(deckName => `
     <button
@@ -2092,6 +2129,7 @@ export function populateSingleEventStats(filteredData) {
   updateElementText("eventInfoName", formatEventName(stats.eventName));
   updateElementText("eventInfoDate", formatDate(stats.eventDate));
   updateElementText("eventInfoPlayers", stats.totalPlayers);
+  renderEventInfoTop8(filteredData);
   toggleStatCardVisibility("singleTopPlayerCard", true);
   updateElementText("singleTopPlayer", stats.topPlayer);
   updateElementText("singleTopPlayerDetails", stats.topPlayerDetails);
@@ -2181,6 +2219,7 @@ export function populateMultiEventStats(filteredData) {
   const eventSummaries = getMultiEventSummaries(filteredData);
   const mostPlayersSummary = getMultiEventExtremeSummary('mostPlayersEvent', eventSummaries);
   const leastPlayersSummary = getMultiEventExtremeSummary('leastPlayersEvent', eventSummaries);
+  renderEventInfoTop8([], { multiEvent: true });
   updateElementText("totalEvents", stats.totalEvents);
   const card = document.getElementById("multiTotalEventsCard");
   if (card) {

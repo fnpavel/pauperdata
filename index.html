@@ -122,73 +122,21 @@
     <div class="container">
     <!-- Event Analysis Section: single-event and multi-event modes share this area. -->
     <div id="eventAnalysisSection">
-      <div class="stats-container" id="singleEventStats">
-        <div class="stat-card" id="singleEventInfoCard">
-          <div class="stat-title">Event Information</div>
-          <div class="stat-value" id="eventInfoName">--</div>
-          <div class="stat-change" id="eventInfoDate">--</div>
-          <div class="stat-change" id="eventInfoPlayers">0 Players</div>
-          <div class="stat-icon">📅</div>
-        </div>
-        <div class="stat-card" id="singleTopPlayerCard">
-          <div class="stat-title">Winner</div>
-          <div class="stat-value" id="singleTopPlayer">--</div>
-          <div class="stat-change" id="singleTopPlayerDetails">-- / 0% Win Rate</div>
-          <div class="stat-icon">🏆</div>
-        </div>
-        <div class="stat-card" id="singleRunnerUpCard">
-          <div class="stat-title">Runner-up</div>
-          <div class="stat-value" id="singleRunnerUp">--</div>
-          <div class="stat-change" id="singleRunnerUpDetails">-- / 0% Win Rate</div>
-          <div class="stat-icon">🥈</div>
-        </div>
-        <div class="stat-card combined" id="singleTopDecksCard">
-          <div class="stat-title">Decks with the most Copies</div>
-          <div class="stat-details" id="singleTopDecksDetails"></div>
-          <div class="stat-icon">🃏</div>
-        </div>
-        <div class="stat-card" id="singleMostCopiesCard">
-          <div class="stat-title">Most Popular Deck</div>
-          <div class="stat-value" id="singleMostCopiesDeck">--</div>
-          <div class="stat-change" id="singleMostCopiesDetails">0 Copies</div>
-          <div class="stat-icon">👑</div>
-        </div>
-      </div>
-
-      <div class="stats-container" id="multiEventStats" style="display: none;">
-        <div class="stat-card" id="multiTotalEventsCard">
-          <div class="stat-title">Total Events</div>
-          <div class="stat-value" id="totalEvents">0</div>
-          <div class="stat-change">Select a date range</div>
-          <div class="stat-icon">📅</div>
-        </div>
-        <div class="stat-card" id="multiMostPlayersCard">
-          <div class="stat-title">Event with Most Players</div>
-          <div class="stat-value" id="mostPlayersEvent">--</div>
-          <div class="stat-change" id="mostPlayersCount">0 Players</div>
-          <div class="stat-icon">👥</div>
-        </div>
-        <div class="stat-card" id="multiLeastPlayersCard">
-          <div class="stat-title">Event with Least Players</div>
-          <div class="stat-value" id="leastPlayersEvent">--</div>
-          <div class="stat-change" id="leastPlayersCount">0 Players</div>
-          <div class="stat-icon">👥</div>
-        </div>
-        <div class="stat-card combined" id="multiTopDecksCard">
-          <div class="stat-title">Decks with the most Copies</div>
-          <div class="stat-details" id="multiTopDecksDetails"></div>
-          <div class="stat-icon">🃏</div>
-        </div>
-        <div class="stat-card" id="multiMostCopiesCard">
-          <div class="stat-title">Most Popular Deck</div>
-          <div class="stat-value" id="multiMostCopiesDeck">--</div>
-          <div class="stat-change" id="multiMostCopiesDetails">0 Copies</div>
-          <div class="stat-icon">👑</div>
-        </div>
-      </div>
-
       <div class="dashboard event-dashboard" id="eventDashboard">
-        <div class="filters">
+        <div class="event-dashboard-sidebar">
+          <div class="stat-card" id="singleEventInfoCard">
+            <div class="stat-title">Event Information</div>
+            <div class="stat-value" id="eventInfoName">--</div>
+            <div class="stat-change" id="eventInfoDate">--</div>
+            <div class="stat-change" id="eventInfoPlayers">0 Players</div>
+            <div class="event-info-top8" id="eventInfoTop8Section" hidden>
+              <div class="event-info-top8-title">Top 8 Standings</div>
+              <div class="event-info-top8-list" id="eventInfoTop8Standings"></div>
+            </div>
+            <div class="stat-icon">📅</div>
+          </div>
+
+          <div class="filters">
           <h3>Filter Options</h3>
           <div class="filter-section">
             <h4>Analysis Mode</h4>
@@ -229,9 +177,68 @@
               <!-- Populated dynamically -->
             </select>
           </div>
+          </div>
         </div>
 
         <div class="charts-and-tables">
+          <div class="stats-container" id="singleEventStats">
+            <div class="stat-card" id="singleTopPlayerCard">
+              <div class="stat-title">Winner</div>
+              <div class="stat-value" id="singleTopPlayer">--</div>
+              <div class="stat-change" id="singleTopPlayerDetails">-- / 0% Win Rate</div>
+              <div class="stat-icon">🏆</div>
+            </div>
+            <div class="stat-card" id="singleRunnerUpCard">
+              <div class="stat-title">Runner-up</div>
+              <div class="stat-value" id="singleRunnerUp">--</div>
+              <div class="stat-change" id="singleRunnerUpDetails">-- / 0% Win Rate</div>
+              <div class="stat-icon">🥈</div>
+            </div>
+            <div class="stat-card combined" id="singleTopDecksCard">
+              <div class="stat-title">Decks with the most Copies</div>
+              <div class="stat-details" id="singleTopDecksDetails"></div>
+              <div class="stat-icon">🃏</div>
+            </div>
+            <div class="stat-card" id="singleMostCopiesCard">
+              <div class="stat-title">Most Popular Deck</div>
+              <div class="stat-value" id="singleMostCopiesDeck">--</div>
+              <div class="stat-change" id="singleMostCopiesDetails">0 Copies</div>
+              <div class="stat-icon">👑</div>
+            </div>
+          </div>
+
+          <div class="stats-container" id="multiEventStats" style="display: none;">
+            <div class="stat-card" id="multiTotalEventsCard">
+              <div class="stat-title">Total Events</div>
+              <div class="stat-value" id="totalEvents">0</div>
+              <div class="stat-change">Select a date range</div>
+              <div class="stat-icon">📅</div>
+            </div>
+            <div class="stat-card" id="multiMostPlayersCard">
+              <div class="stat-title">Event with Most Players</div>
+              <div class="stat-value" id="mostPlayersEvent">--</div>
+              <div class="stat-change" id="mostPlayersCount">0 Players</div>
+              <div class="stat-icon">👥</div>
+            </div>
+            <div class="stat-card" id="multiLeastPlayersCard">
+              <div class="stat-title">Event with Least Players</div>
+              <div class="stat-value" id="leastPlayersEvent">--</div>
+              <div class="stat-change" id="leastPlayersCount">0 Players</div>
+              <div class="stat-icon">👥</div>
+            </div>
+            <div class="stat-card combined" id="multiTopDecksCard">
+              <div class="stat-title">Decks with the most Copies</div>
+              <div class="stat-details" id="multiTopDecksDetails"></div>
+              <div class="stat-icon">🃏</div>
+            </div>
+            <div class="stat-card" id="multiMostCopiesCard">
+              <div class="stat-title">Most Popular Deck</div>
+              <div class="stat-value" id="multiMostCopiesDeck">--</div>
+              <div class="stat-change" id="multiMostCopiesDetails">0 Copies</div>
+              <div class="stat-icon">👑</div>
+            </div>
+          </div>
+
           <div id="singleEventCharts">
             <div class="chart-container">
               <h2 class="chart-title">Event Analytics: Meta and Win Rate</h2>
