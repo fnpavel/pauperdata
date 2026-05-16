@@ -3768,16 +3768,38 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 }
 
 .event-info-top8-row {
+  appearance: none;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
   display: grid;
   grid-template-columns: 34px minmax(0, 1.7fr) auto minmax(0, 1.1fr);
   align-items: center;
   gap: 8px;
   padding: 6px 0;
   min-width: 0;
+  border-radius: 8px;
+  transition: background-color 140ms ease, box-shadow 140ms ease;
 }
 
 .event-info-top8-row + .event-info-top8-row {
   border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.event-info-top8-row:hover {
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.event-info-top8-row:focus-visible {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.18);
+}
+
+.event-info-top8-row:active {
+  background: rgba(255, 255, 255, 0.075);
 }
 
 .event-info-top8-rank {
@@ -3870,6 +3892,19 @@ html[data-theme="light"] .event-info-top8 {
 
 html[data-theme="light"] .event-info-top8-row + .event-info-top8-row {
   border-top-color: rgba(47, 61, 77, 0.06);
+}
+
+html[data-theme="light"] .event-info-top8-row:hover {
+  background: rgba(47, 61, 77, 0.045);
+}
+
+html[data-theme="light"] .event-info-top8-row:focus-visible {
+  background: rgba(47, 61, 77, 0.06);
+  box-shadow: 0 0 0 1px rgba(47, 61, 77, 0.16);
+}
+
+html[data-theme="light"] .event-info-top8-row:active {
+  background: rgba(47, 61, 77, 0.08);
 }
 
 html[data-theme="light"] .event-info-rank-badge {

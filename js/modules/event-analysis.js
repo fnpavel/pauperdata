@@ -406,20 +406,29 @@ function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
 
   return top8Rows.map(row => {
     const rank = Number(row?.Rank) || '--';
-    const deck = escapeHtml(String(row?.Deck || '--').trim() || '--');
+    const rawDeck = String(row?.Deck || '--').trim() || '--';
+    const deck = escapeHtml(rawDeck);
     const wins = Number(row?.Wins) || 0;
     const losses = Number(row?.Losses) || 0;
-    const player = escapeHtml(String(row?.Player || '--').trim() || '--');
+    const rawPlayer = String(row?.Player || '--').trim() || '--';
+    const player = escapeHtml(rawPlayer);
     const podiumClass = rank >= 1 && rank <= 3 ? ` event-info-rank-badge-podium-${rank}` : '';
+    const playerKey = getPlayerIdentityKey(rawPlayer);
+    const ariaLabel = escapeHtml(`Open ${rawPlayer} on ${rawDeck} for ${getSelectedSingleEventLabel(rows)}. Record ${wins}/${losses}.`);
     return `
-      <div class="event-info-top8-row">
+      <button
+        type="button"
+        class="event-info-top8-row"
+        data-event-info-player="${escapeHtml(playerKey)}"
+        aria-label="${ariaLabel}"
+      >
         <div class="event-info-top8-rank">
           <span class="event-info-rank-badge${podiumClass}">${rank}</span>
         </div>
         <div class="event-info-top8-deck" title="${deck}">${deck}</div>
         <div class="event-info-top8-record">${wins}/${losses}</div>
         <div class="event-info-top8-player" title="${player}">${player}</div>
-      </div>
+      </button>
     `;
   }).join('');
 }
@@ -432,6 +441,30 @@ function renderEventInfoTop8(rows = [], options = {}) {
 
   section.hidden = false;
   updateElementHTML('eventInfoTop8Standings', buildEventInfoTop8Html(rows, options));
+}
+
+function setupEventInfoTop8Interactions() {
+  const standings = document.getElementById('eventInfoTop8Standings');
+  if (!standings || standings.dataset.eventInfoBound === 'true') {
+    return;
+  }
+
+  standings.dataset.eventInfoBound = 'true';
+
+  standings.addEventListener('click', event => {
+    const rowButton = event.target.closest('[data-event-info-player]');
+    if (!rowButton) {
+      return;
+    }
+
+    const playerKey = String(rowButton.dataset.eventInfoPlayer || '').trim();
+    const playerRow = getSingleEventPlayerRowByKey(playerKey);
+    if (!playerRow) {
+      return;
+    }
+
+    openSingleEventPlayerDrilldown(playerRow.Player || '');
+  });
 }
 
 function getMultiEventDateRangeModalElements() {
@@ -1992,6 +2025,7 @@ function setupMultiEventDrilldownCards() {
 export function initEventAnalysis() {
   setupSingleEventTableFullscreenAction();
   setupSingleEventDrilldownModal();
+  setupEventInfoTop8Interactions();
   setupMultiEventDateRangeModal();
   setupSingleEventDrilldownCards();
   setupMultiEventDrilldownCards();
