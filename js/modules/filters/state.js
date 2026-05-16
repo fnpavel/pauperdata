@@ -4,6 +4,7 @@ export const filterState = {
   multiEventGroupSelectionInitialized: false,
   activeMultiEventGroupKeys: new Set(),
   activeMultiEventQuickViewYear: '',
+  activeMultiEventRangeInputSource: 'filter',
   activePlayerQuickViewYear: '',
   playerEventGroupSelectionInitialized: false,
   activePlayerEventGroupKeys: new Set(),

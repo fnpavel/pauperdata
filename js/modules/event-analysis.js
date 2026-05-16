@@ -14,9 +14,11 @@ import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, up
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
 import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
+import { getFocusableElements, setupModalOverlay } from '../utils/modal-dialog.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
 import { downloadEventAnalysisCsv } from './export-table-csv.js';
+import { filterRuntime } from './filters/runtime.js';
 import { setSingleEventType, updateEventFilter } from './filters/single-event.js';
 
 function getSelectedEventAnalysisTypes() {
@@ -186,6 +188,7 @@ let currentMultiEventTableState = {
   rows: [],
   displayMode: 'percent'
 };
+let multiEventDateRangeModalController = null;
 
 // Rank buckets are shared across cards and drilldowns. Centralizing them keeps
 // UI labels and filtering rules aligned when the bucket definitions change.
@@ -419,6 +422,99 @@ function renderEventInfoTop8(rows = [], options = {}) {
 
   section.hidden = false;
   updateElementHTML('eventInfoTop8Standings', buildEventInfoTop8Html(rows, options));
+}
+
+function getMultiEventDateRangeModalElements() {
+  return {
+    trigger: document.getElementById('multiEventDateRangeTrigger'),
+    triggerValue: document.getElementById('multiEventDateRangeTriggerValue'),
+    control: document.getElementById('multiEventDateRangeControl'),
+    overlay: document.getElementById('multiEventDateRangeOverlay'),
+    modal: document.querySelector('#multiEventDateRangeOverlay .matchup-date-range-modal'),
+    closeButton: document.getElementById('multiEventDateRangeClose')
+  };
+}
+
+function getMultiEventDateRangeTriggerLabel(startDate = '', endDate = '') {
+  if (startDate && endDate) {
+    return formatDateRange(startDate, endDate);
+  }
+
+  if (startDate) {
+    return formatDate(startDate);
+  }
+
+  if (endDate) {
+    return formatDate(endDate);
+  }
+
+  return 'Choose a date range';
+}
+
+export function syncMultiEventDateRangeModalUi({
+  startDate = '',
+  endDate = '',
+  selectedEventTypes = [],
+  activeAnalysisMode = ''
+} = {}) {
+  const { trigger, triggerValue, control, overlay } = getMultiEventDateRangeModalElements();
+  const isMultiMode = activeAnalysisMode === 'multi';
+  const hasEventTypes = Array.isArray(selectedEventTypes) && selectedEventTypes.length > 0;
+
+  if (control) {
+    control.style.display = isMultiMode ? 'flex' : 'none';
+  }
+
+  if (!trigger || !triggerValue) {
+    return;
+  }
+
+  trigger.disabled = !hasEventTypes;
+  trigger.setAttribute('aria-expanded', overlay && !overlay.hidden ? 'true' : 'false');
+  triggerValue.textContent = hasEventTypes
+    ? getMultiEventDateRangeTriggerLabel(startDate, endDate)
+    : 'Select an event type';
+}
+
+export function restoreMultiEventDateModalFocus(panelKey = '', dateString = '') {
+  const { overlay, modal, closeButton } = getMultiEventDateRangeModalElements();
+  if (!overlay || overlay.hidden || !modal) {
+    return;
+  }
+
+  window.requestAnimationFrame(() => {
+    const escapedDateString = window.CSS?.escape ? window.CSS.escape(dateString) : dateString;
+    const escapedPanelKey = window.CSS?.escape ? window.CSS.escape(panelKey) : panelKey;
+    const selectedButton = dateString
+      ? modal.querySelector(
+          `.range-calendar-day.active[data-date="${escapedDateString}"][data-panel-key="${escapedPanelKey}"]`
+        ) || modal.querySelector(`.range-calendar-day.active[data-date="${escapedDateString}"]`)
+      : null;
+
+    (selectedButton || closeButton || getFocusableElements(modal)[0] || modal).focus();
+  });
+}
+
+export function closeMultiEventDateRangeModal() {
+  multiEventDateRangeModalController?.close();
+}
+
+function setupMultiEventDateRangeModal() {
+  const { trigger, overlay, modal, closeButton } = getMultiEventDateRangeModalElements();
+  if (!trigger || !overlay || !modal) {
+    return;
+  }
+
+  multiEventDateRangeModalController = setupModalOverlay({
+    trigger,
+    overlay,
+    modal,
+    closeButton,
+    onBeforeOpen: () => {
+      filterRuntime.updateDateOptions({ syncCalendarView: true });
+    },
+    getInitialFocus: () => closeButton || getFocusableElements(modal)[0] || modal
+  });
 }
 
 function buildInlineDeckCardDeckLinks(deckNames = [], dataAttributeName = 'data-single-event-deck-link') {
@@ -1886,6 +1982,7 @@ function setupMultiEventDrilldownCards() {
 export function initEventAnalysis() {
   setupSingleEventTableFullscreenAction();
   setupSingleEventDrilldownModal();
+  setupMultiEventDateRangeModal();
   setupSingleEventDrilldownCards();
   setupMultiEventDrilldownCards();
   setupMultiEventScatterModeToggle();

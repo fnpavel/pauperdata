@@ -1,5 +1,11 @@
 // Coordinates the filter system: setup, listeners, chart refreshes, and date dropdown behavior.
-import { updateEventAnalytics, updateMultiEventAnalytics } from '../event-analysis.js';
+import {
+  closeMultiEventDateRangeModal,
+  restoreMultiEventDateModalFocus,
+  syncMultiEventDateRangeModalUi,
+  updateEventAnalytics,
+  updateMultiEventAnalytics
+} from '../event-analysis.js';
 import { updatePlayerAnalytics } from '../player-analysis.js';
 import { updateMatchupAnalytics } from '../matchup-analysis.js';
 import { updateLeaderboardAnalytics } from '../leaderboards-analysis.js';
@@ -59,6 +65,7 @@ import {
   getScopedPlayerAnalysisRows,
   applyActiveMultiEventPresetDateRange,
   applyMultiEventPreset,
+  setMultiEventQuickViewRangeInputSource,
   setPlayerPresetButtonState,
   clearPlayerPresetButtonState,
   ensureDefaultPlayerPreset,
@@ -448,13 +455,14 @@ configureFilterRuntime({
 function setMultiEventDateSelection(type, value, options = {}) {
   const startDateSelect = document.getElementById('startDateSelect');
   const endDateSelect = document.getElementById('endDateSelect');
-  const { clearPreset = false } = options;
+  const { clearPreset = false, restoreCalendarFocus = null } = options;
 
   if (!startDateSelect || !endDateSelect) {
     return;
   }
 
   if (clearPreset) {
+    setMultiEventQuickViewRangeInputSource('calendar');
     clearMultiEventPresetButtonState();
   }
 
@@ -466,6 +474,10 @@ function setMultiEventDateSelection(type, value, options = {}) {
 
   updateDateOptions();
   updateAllCharts();
+
+  if (restoreCalendarFocus?.panelKey && restoreCalendarFocus?.dateString) {
+    restoreMultiEventDateModalFocus(restoreCalendarFocus.panelKey, restoreCalendarFocus.dateString);
+  }
 }
 
 function setPlayerDateSelection(type, value, options = {}) {
@@ -842,6 +854,7 @@ export function setupAnalysisModeListeners() {
       }
 
       if (mode === 'single') {
+        closeMultiEventDateRangeModal();
         applyLatestSingleEventSelection();
       } else {
         ensureDefaultMultiEventPreset();
@@ -1010,6 +1023,7 @@ export function updateDateOptions(options = {}) {
   }
 
   const selectedEventTypes = getEventAnalysisSelectedTypes();
+  const activeAnalysisMode = getAnalysisMode();
   const activePreset = getActiveMultiEventPreset();
   const dates = selectedEventTypes.length > 0 ? getAnalysisDateValuesForEventTypes(selectedEventTypes) : [];
 
@@ -1023,8 +1037,20 @@ export function updateDateOptions(options = {}) {
       startDate: '',
       endDate: '',
       syncViewToSelection: syncCalendarView,
-      onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
-      onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
+      onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, {
+        clearPreset: true,
+        restoreCalendarFocus: { panelKey: 'start', dateString }
+      }),
+      onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, {
+        clearPreset: true,
+        restoreCalendarFocus: { panelKey: 'end', dateString }
+      })
+    });
+    syncMultiEventDateRangeModalUi({
+      startDate: '',
+      endDate: '',
+      selectedEventTypes,
+      activeAnalysisMode
     });
     return;
   }
@@ -1103,11 +1129,23 @@ export function updateDateOptions(options = {}) {
     startDate: currentStartDate,
     endDate: currentEndDate,
     syncViewToSelection: syncCalendarView,
-    onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, { clearPreset: true }),
-    onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, { clearPreset: true })
+    onSelectStartDate: dateString => setMultiEventDateSelection('start', dateString, {
+      clearPreset: true,
+      restoreCalendarFocus: { panelKey: 'start', dateString }
+    }),
+    onSelectEndDate: dateString => setMultiEventDateSelection('end', dateString, {
+      clearPreset: true,
+      restoreCalendarFocus: { panelKey: 'end', dateString }
+    })
   });
 
   updateMultiEventSelectionSummary();
+  syncMultiEventDateRangeModalUi({
+    startDate: currentStartDate,
+    endDate: currentEndDate,
+    selectedEventTypes,
+    activeAnalysisMode
+  });
 }
 
 // Rebuilds Player Analysis player/date controls after event type or preset

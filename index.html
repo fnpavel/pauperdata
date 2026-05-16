@@ -283,8 +283,24 @@
 
           <div id="multiEventCharts" style="display: none;">
             <div class="chart-container">
-              <h2 class="chart-title">Multi-Event Analytics</h2>
-              <div id="multiEventDateRangeCalendar" class="range-calendar-container"></div>
+              <div id="multiEventDateRangeControl" class="matchup-chart-header multi-event-date-range-control" style="display: none;">
+                <h2 class="chart-title">Multi-Event Analytics</h2>
+                <button
+                  type="button"
+                  class="bubble-button matchup-date-trigger"
+                  id="multiEventDateRangeTrigger"
+                  aria-haspopup="dialog"
+                  aria-expanded="false"
+                  aria-controls="multiEventDateRangeOverlay"
+                  aria-label="Open multi-event date range calendar"
+                >
+                  <span class="matchup-date-trigger-icon" aria-hidden="true">&#128197;</span>
+                  <span class="matchup-date-trigger-copy">
+                    <span class="matchup-date-trigger-label">Date Range</span>
+                    <span class="matchup-date-trigger-value" id="multiEventDateRangeTriggerValue">Select an event type</span>
+                  </span>
+                </button>
+              </div>
               <select id="startDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
               <select id="endDateSelect" hidden aria-hidden="true" onchange="updateMultiEventAnalytics()"></select>
               <div class="bubble-menu multi-event-scatter-toggle-footer" id="multiEventScatterModeButtons" aria-label="Select multi-event scatter chart">
@@ -315,6 +331,33 @@
               </div>
             </div>
           </div>
+        </div>
+      </div>
+
+      <div id="multiEventDateRangeOverlay" class="player-rank-drilldown-overlay matchup-date-range-overlay" hidden aria-hidden="true">
+        <div
+          class="player-rank-drilldown-modal matchup-date-range-modal"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="multiEventDateRangeModalTitle"
+          aria-describedby="multiEventDateRangeModalSubtitle"
+          tabindex="-1"
+        >
+          <div class="player-rank-drilldown-header">
+            <div class="player-rank-drilldown-heading">
+              <h3 id="multiEventDateRangeModalTitle">Multi-Event Date Range</h3>
+              <p id="multiEventDateRangeModalSubtitle">Choose the start and end dates for Multi Event Analytics.</p>
+            </div>
+            <button
+              type="button"
+              class="bubble-button player-rank-drilldown-close"
+              id="multiEventDateRangeClose"
+              aria-label="Close multi-event date range calendar"
+            >
+              Close
+            </button>
+          </div>
+          <div id="multiEventDateRangeCalendar" class="range-calendar-container matchup-date-range-calendar"></div>
         </div>
       </div>
     </div>

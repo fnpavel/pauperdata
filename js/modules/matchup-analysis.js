@@ -32,6 +32,7 @@ import {
   getUnknownHeavyBelowTop32ExcludedEventNames,
   isUnknownHeavyBelowTop32FilterEnabled
 } from '../utils/analysis-data.js';
+import { getFocusableElements, setupModalOverlay } from '../utils/modal-dialog.js';
 import { renderDateRangeCalendar } from './filters/calendar-range-picker.js';
 import { triggerUpdateAnimation, updateElementText } from '../utils/dom.js';
 import { formatDate, formatDateRange, formatEventName } from '../utils/format.js';
@@ -68,9 +69,9 @@ let activeMatchupDeckFocusLabel = '';
 let hasAppliedDefaultMatchupPlayerFocus = false;
 let matchupAnalyticsRequestId = 0;
 let matchupCatalogUiPromise = null;
-let lastMatchupDateModalTrigger = null;
 let activeMatchupPresetSelectionIds = [];
 let activeMatchupRangeInputSource = 'filter';
+let matchupDateRangeModalController = null;
 
 function escapeHtml(value) {
   return String(value ?? '')
@@ -4734,16 +4735,6 @@ function setupMatchupDrilldownModal() {
   });
 }
 
-function getFocusableElements(root) {
-  if (!root) {
-    return [];
-  }
-
-  return [...root.querySelectorAll(
-    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
-  )].filter(element => !element.hasAttribute('hidden') && element.getAttribute('aria-hidden') !== 'true');
-}
-
 function restoreMatchupDateModalFocus(panelKey = '', dateString = '') {
   const { overlay, modal, closeButton } = getMatchupDateRangeModalElements();
   if (!overlay || overlay.hidden || !modal) {
@@ -4764,89 +4755,28 @@ function restoreMatchupDateModalFocus(panelKey = '', dateString = '') {
 }
 
 function openMatchupDateRangeModal() {
-  const { trigger, overlay, modal, closeButton } = getMatchupDateRangeModalElements();
-  if (!trigger || !overlay || !modal || trigger.disabled) {
-    return;
-  }
-
-  lastMatchupDateModalTrigger = document.activeElement instanceof HTMLElement ? document.activeElement : trigger;
-  updateMatchupDateOptions({ syncCalendarView: true });
-  overlay.hidden = false;
-  overlay.setAttribute('aria-hidden', 'false');
-  trigger.setAttribute('aria-expanded', 'true');
-  document.body.classList.add('modal-open');
-
-  window.requestAnimationFrame(() => {
-    (closeButton || getFocusableElements(modal)[0] || modal).focus();
-  });
+  matchupDateRangeModalController?.open();
 }
 
 function closeMatchupDateRangeModal() {
-  const { trigger, overlay } = getMatchupDateRangeModalElements();
-  if (!overlay) {
-    return;
-  }
-
-  overlay.hidden = true;
-  overlay.setAttribute('aria-hidden', 'true');
-  trigger?.setAttribute('aria-expanded', 'false');
-  document.body.classList.remove('modal-open');
-
-  const focusTarget =
-    lastMatchupDateModalTrigger instanceof HTMLElement && document.contains(lastMatchupDateModalTrigger)
-      ? lastMatchupDateModalTrigger
-      : trigger;
-  focusTarget?.focus();
+  matchupDateRangeModalController?.close();
 }
 
 function setupMatchupDateRangeModal() {
   const { trigger, overlay, modal, closeButton } = getMatchupDateRangeModalElements();
-  if (!trigger || !overlay || !modal || overlay.dataset.initialized === 'true') {
+  if (!trigger || !overlay || !modal) {
     return;
   }
 
-  overlay.dataset.initialized = 'true';
-
-  trigger.addEventListener('click', openMatchupDateRangeModal);
-  closeButton?.addEventListener('click', closeMatchupDateRangeModal);
-
-  overlay.addEventListener('click', event => {
-    if (event.target === overlay) {
-      closeMatchupDateRangeModal();
-    }
-  });
-
-  overlay.addEventListener('keydown', event => {
-    if (event.key === 'Escape') {
-      event.preventDefault();
-      closeMatchupDateRangeModal();
-      return;
-    }
-
-    if (event.key !== 'Tab') {
-      return;
-    }
-
-    const focusableElements = getFocusableElements(modal);
-    if (focusableElements.length === 0) {
-      event.preventDefault();
-      modal.focus();
-      return;
-    }
-
-    const firstElement = focusableElements[0];
-    const lastElement = focusableElements[focusableElements.length - 1];
-
-    if (event.shiftKey && document.activeElement === firstElement) {
-      event.preventDefault();
-      lastElement.focus();
-      return;
-    }
-
-    if (!event.shiftKey && document.activeElement === lastElement) {
-      event.preventDefault();
-      firstElement.focus();
-    }
+  matchupDateRangeModalController = setupModalOverlay({
+    trigger,
+    overlay,
+    modal,
+    closeButton,
+    onBeforeOpen: () => {
+      updateMatchupDateOptions({ syncCalendarView: true });
+    },
+    getInitialFocus: () => closeButton || getFocusableElements(modal)[0] || modal
   });
 }
 

@@ -2,6 +2,7 @@
 import {
   getDefaultQuickViewYear,
   getQuickViewPresetAriaLabel,
+  getQuickViewPresetDefinitionsByIds,
   getLatestSetQuickViewPresetId,
   getQuickViewPresetDefinitionById,
   getQuickViewPresetTooltipDateRange,
@@ -44,6 +45,21 @@ export function getPlayerQuickViewRoot() {
   return document.getElementById('playerQuickViewButtons');
 }
 
+function getMultiEventCurrentDateRange() {
+  return {
+    startDate: document.getElementById('startDateSelect')?.value || '',
+    endDate: document.getElementById('endDateSelect')?.value || ''
+  };
+}
+
+function setMultiEventRangeInputSource(source = 'filter') {
+  filterState.activeMultiEventRangeInputSource = source === 'calendar' ? 'calendar' : 'filter';
+}
+
+function getMultiEventRangeInputSource() {
+  return filterState.activeMultiEventRangeInputSource === 'calendar' ? 'calendar' : 'filter';
+}
+
 function getQuickViewRoot(scope) {
   return scope === 'multi' ? getMultiEventQuickViewRoot() : getPlayerQuickViewRoot();
 }
@@ -66,6 +82,16 @@ function getQuickViewButtonClass(scope) {
 
 function getQuickViewDatasetKey(scope) {
   return scope === 'multi' ? 'multiEventPreset' : 'playerPreset';
+}
+
+function createCustomRangeIndicator(scope, isActive) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = `bubble-button ${scope === 'multi' ? 'multi-event-custom-range-indicator' : 'player-custom-range-indicator'}${isActive ? ' active' : ''}`;
+  button.textContent = 'Custom Range';
+  button.disabled = true;
+  button.setAttribute('aria-label', 'Custom range active');
+  return button;
 }
 
 function createQuickViewButton(preset, buttonClass, datasetKey) {
@@ -112,6 +138,110 @@ function getActiveQuickViewPresetIds(scope, activePresetValue = '') {
   return normalizeQuickViewPresetIds(activePresetValue);
 }
 
+function isExactMultiEventDateRangeMatch(startDate = '', endDate = '', range = {}) {
+  return Boolean(startDate && endDate && range?.startDate && range?.endDate)
+    && startDate === range.startDate
+    && endDate === range.endDate;
+}
+
+function getDerivedMultiEventFilterUiState() {
+  const analysisRows = getAnalysisRows();
+  const selectedEventTypes = getEventAnalysisSelectedTypes();
+  const { startDate, endDate } = getMultiEventCurrentDateRange();
+  const emptyState = {
+    presetIds: [],
+    highlightedYears: new Set(),
+    highlightedSetWindowIds: new Set(),
+    customRangeActive: false
+  };
+
+  if (!startDate || !endDate || selectedEventTypes.length === 0) {
+    return emptyState;
+  }
+
+  const allPeriodRange = getMultiEventPresetSuggestedRange({
+    selectedEventTypes,
+    presetId: 'all-period'
+  });
+  if (isExactMultiEventDateRangeMatch(startDate, endDate, allPeriodRange)) {
+    return {
+      ...emptyState,
+      presetIds: ['all-period']
+    };
+  }
+
+  const exactCalendarYearPreset = getStaticQuickViewPresetDefinitions()
+    .filter(preset => preset.kind === 'calendar-year')
+    .find(preset => {
+      const presetRange = getMultiEventPresetSuggestedRange({
+        selectedEventTypes,
+        presetId: preset.id
+      });
+      return isExactMultiEventDateRangeMatch(startDate, endDate, presetRange);
+    });
+
+  if (exactCalendarYearPreset?.releaseYear) {
+    return {
+      presetIds: [exactCalendarYearPreset.id],
+      highlightedYears: new Set([exactCalendarYearPreset.releaseYear]),
+      highlightedSetWindowIds: new Set(),
+      customRangeActive: false
+    };
+  }
+
+  const exactSetWindowIds = getSetQuickViewPresetDefinitions(analysisRows)
+    .filter(preset => {
+      const presetRange = getMultiEventPresetSuggestedRange({
+        selectedEventTypes,
+        presetId: preset.id
+      });
+      return isExactMultiEventDateRangeMatch(startDate, endDate, presetRange);
+    })
+    .map(preset => preset.id);
+
+  if (exactSetWindowIds.length > 0) {
+    const matchedPresets = getQuickViewPresetDefinitionsByIds(exactSetWindowIds, analysisRows, { includeFuture: true });
+    const matchedYear = matchedPresets[0]?.releaseYear || '';
+
+    return {
+      presetIds: exactSetWindowIds,
+      highlightedYears: matchedYear ? new Set([matchedYear]) : new Set(),
+      highlightedSetWindowIds: new Set(exactSetWindowIds),
+      customRangeActive: false
+    };
+  }
+
+  return {
+    ...emptyState,
+    customRangeActive: true
+  };
+}
+
+function getExplicitMultiEventFilterUiState(activePresetIds = []) {
+  const analysisRows = getAnalysisRows();
+  const activePresets = activePresetIds
+    .map(presetId => getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true }))
+    .filter(Boolean);
+  const highlightedYears = new Set();
+  const highlightedSetWindowIds = new Set();
+
+  activePresets.forEach(preset => {
+    if (preset.releaseYear) {
+      highlightedYears.add(preset.releaseYear);
+    }
+    if (preset.kind === 'set-window') {
+      highlightedSetWindowIds.add(preset.id);
+    }
+  });
+
+  return {
+    presetIds: activePresetIds,
+    highlightedYears,
+    highlightedSetWindowIds,
+    customRangeActive: false
+  };
+}
+
 function getResolvedQuickViewYear(scope, activePresetIds = []) {
   // Prefer the user's current year tab, then the active preset's year, then the
   // newest available year. This keeps set-window chips stable after rerenders.
@@ -150,8 +280,19 @@ export function renderQuickViewButtons(scope) {
 
   container.innerHTML = '';
   const analysisRows = getAnalysisRows();
-  const activePresetValue = container.dataset.activePreset || '';
-  const activePresetIds = getActiveQuickViewPresetIds(scope, activePresetValue);
+  const explicitPresetValue = container.dataset.activePreset || '';
+  const explicitPresetIds = getActiveQuickViewPresetIds(scope, explicitPresetValue);
+  const uiState = scope === 'multi' && getMultiEventRangeInputSource() === 'calendar'
+    ? getDerivedMultiEventFilterUiState()
+    : scope === 'multi'
+      ? getExplicitMultiEventFilterUiState(explicitPresetIds)
+      : {
+          presetIds: explicitPresetIds,
+          highlightedYears: null,
+          highlightedSetWindowIds: null,
+          customRangeActive: false
+        };
+  const activePresetIds = uiState.presetIds;
   const activePresets = activePresetIds
     .map(presetId => getQuickViewPresetDefinitionById(presetId, analysisRows, { includeFuture: true }))
     .filter(Boolean);
@@ -165,31 +306,35 @@ export function renderQuickViewButtons(scope) {
   const hasAllPeriodPreset = activePresets.some(preset => preset.kind === 'static');
   const activeCalendarYearPresets = activePresets.filter(preset => preset.kind === 'calendar-year');
   const activeSetWindowPresets = activePresets.filter(preset => preset.kind === 'set-window');
-  const highlightedYears = new Set();
-  const highlightedSetWindowIds = new Set();
+  const highlightedYears = uiState.highlightedYears ? new Set(uiState.highlightedYears) : new Set();
+  const highlightedSetWindowIds = uiState.highlightedSetWindowIds ? new Set(uiState.highlightedSetWindowIds) : new Set();
 
   // Calendar-year presets highlight every set chip in that year. A specific set
   // preset highlights only its own chip and parent year.
-  if (!hasAllPeriodPreset) {
-    if (activeCalendarYearPresets.length > 0) {
-      activeCalendarYearPresets.forEach(preset => {
-        if (preset.releaseYear) {
-          highlightedYears.add(preset.releaseYear);
-          setPresetDefinitions.forEach(setPreset => {
-            if (setPreset.releaseYear === preset.releaseYear) {
-              highlightedSetWindowIds.add(setPreset.id);
-            }
-          });
-        }
-      });
-    } else {
-      activeSetWindowPresets.forEach(preset => {
-        if (preset.releaseYear) {
-          highlightedYears.add(preset.releaseYear);
-        }
-        highlightedSetWindowIds.add(preset.id);
-      });
+  if (scope !== 'multi' || getMultiEventRangeInputSource() !== 'calendar') {
+    if (!hasAllPeriodPreset) {
+      if (activeCalendarYearPresets.length > 0) {
+        activeCalendarYearPresets.forEach(preset => {
+          if (preset.releaseYear) {
+            highlightedYears.add(preset.releaseYear);
+            setPresetDefinitions.forEach(setPreset => {
+              if (setPreset.releaseYear === preset.releaseYear) {
+                highlightedSetWindowIds.add(setPreset.id);
+              }
+            });
+          }
+        });
+      } else {
+        activeSetWindowPresets.forEach(preset => {
+          if (preset.releaseYear) {
+            highlightedYears.add(preset.releaseYear);
+          }
+          highlightedSetWindowIds.add(preset.id);
+        });
+      }
     }
+  } else if (activePresetIds.length === 0 && resolvedYear) {
+    highlightedYears.add(resolvedYear);
   }
 
   setActiveQuickViewYear(scope, resolvedYear);
@@ -203,6 +348,10 @@ export function renderQuickViewButtons(scope) {
       button.classList.toggle('active', activePresetIds.includes(preset.id));
       staticRow.appendChild(button);
     });
+
+    if (scope === 'multi') {
+      staticRow.appendChild(createCustomRangeIndicator(scope, Boolean(uiState.customRangeActive)));
+    }
 
     container.appendChild(staticRow);
   }
@@ -281,6 +430,10 @@ export function renderQuickViewButtons(scope) {
 
 // Reads the active multi-event preset id from the quick-view container.
 export function getActiveMultiEventPreset() {
+  if (getMultiEventRangeInputSource() === 'calendar') {
+    return getDerivedMultiEventFilterUiState().presetIds.join(',');
+  }
+
   return getMultiEventQuickViewRoot()?.dataset.activePreset
     || Array.from(document.querySelectorAll('.multi-event-preset-button.active'))
       .map(button => button.dataset.multiEventPreset)
@@ -304,6 +457,8 @@ export function setMultiEventPresetButtonState(activePresetId = '') {
     root.dataset.activePreset = serializedPresetIds;
   }
 
+  setMultiEventRangeInputSource('filter');
+
   const preset = activePresetIds
     .map(presetId => getQuickViewPresetDefinitionById(presetId, getAnalysisRows(), { includeFuture: true }))
     .find(candidate => candidate?.releaseYear);
@@ -316,7 +471,16 @@ export function setMultiEventPresetButtonState(activePresetId = '') {
 
 // Clears the active multi-event preset state after a manual date/type change.
 export function clearMultiEventPresetButtonState() {
-  setMultiEventPresetButtonState('');
+  const root = getMultiEventQuickViewRoot();
+  if (root) {
+    root.dataset.activePreset = '';
+  }
+
+  renderQuickViewButtons('multi');
+}
+
+export function setMultiEventQuickViewRangeInputSource(source = 'filter') {
+  setMultiEventRangeInputSource(source);
 }
 
 // Returns the default set-window quick-view preset for current analysis rows.

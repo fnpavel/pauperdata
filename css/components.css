@@ -2543,6 +2543,14 @@ button.leaderboard-deck-result-card {
   margin-bottom: 0;
 }
 
+.multi-event-date-range-control {
+  margin-bottom: 14px;
+}
+
+.multi-event-date-range-control .chart-title {
+  flex: 1 1 260px;
+}
+
 .matchup-date-trigger {
   display: inline-flex;
   align-items: center;
@@ -2582,6 +2590,11 @@ button.leaderboard-deck-result-card {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.multi-event-custom-range-indicator.active:disabled,
+.matchup-custom-range-indicator.active:disabled {
+  opacity: 1;
 }
 
 .matchup-date-range-overlay {
