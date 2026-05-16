@@ -195,6 +195,28 @@ function getMultiEventFunnelXAxisTitle(groupingMode = getActiveFunnelGroupingMod
   return groupingMode.key === 'detailed' ? `${metricLabel} and Finish Buckets` : `${metricLabel} and ${groupingMode.label}`;
 }
 
+function compareMultiEventFunnelRowNames(a = '', b = '') {
+  return String(a || '').localeCompare(String(b || ''));
+}
+
+function compareMultiEventFunnelRows(a, b) {
+  const bucketPriority = ['rank1_8', 'rank9_16', 'rank17_32', 'rank33_worse'];
+
+  for (const bucketKey of bucketPriority) {
+    const aCount = Number(a?.counts?.[bucketKey] || 0);
+    const bCount = Number(b?.counts?.[bucketKey] || 0);
+    if (aCount !== bCount) {
+      return bCount - aCount;
+    }
+  }
+
+  return compareMultiEventFunnelRowNames(a?.deck, b?.deck);
+}
+
+function sortMultiEventFunnelRows(rows = []) {
+  return [...rows].sort(compareMultiEventFunnelRows);
+}
+
 function calculatePlayerConversionStats(data = []) {
   const playerStats = data.reduce((acc, row) => {
     const playerName = String(row?.Player || '').trim();
@@ -246,13 +268,13 @@ function calculatePlayerConversionStats(data = []) {
         rank1_8: percentages.rank1_8
       };
     })
-    .sort((a, b) => b.rank1_8 - a.rank1_8 || a.deck.localeCompare(b.deck));
+    .sort(compareMultiEventFunnelRows);
 }
 
 function getMultiEventFunnelRows(data = []) {
   return ENABLE_PLAYER_TOP_CONVERSION && activeMultiEventFunnelEntityMode === 'player'
     ? calculatePlayerConversionStats(data)
-    : calculateDeckConversionStats(data);
+    : sortMultiEventFunnelRows(calculateDeckConversionStats(data));
 }
 
 function getMultiEventFunnelSearchEntityLabel() {
