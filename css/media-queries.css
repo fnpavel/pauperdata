@@ -372,6 +372,24 @@
     max-width: 100%;
   }
 
+  .event-info-top8-row-static {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    grid-template-areas: none;
+    align-items: center;
+    gap: 3px 7px;
+  }
+
+  .event-info-top8-row-static .event-info-top8-rank,
+  .event-info-top8-row-static .event-info-top8-deck,
+  .event-info-top8-row-static .event-info-top8-count {
+    grid-area: auto;
+  }
+
+  .event-info-top8-count {
+    justify-self: end;
+    max-width: 100%;
+  }
+
   .event-info-rank-badge {
     width: 21px;
     height: 21px;
@@ -380,6 +398,7 @@
 
   .event-info-top8-deck,
   .event-info-top8-record,
+  .event-info-top8-count,
   .event-info-top8-player,
   .event-info-top8-empty {
     font-size: 0.7rem;

@@ -13,7 +13,7 @@ import { openMultiEventDeckEvolutionModal, updateDeckEvolutionChart } from '../c
 import { toggleStatCardVisibility, triggerUpdateAnimation, updateElementText, updateElementHTML } from '../utils/dom.js';
 import { calculateSingleEventStats, calculateMultiEventStats, calculateDeckStats } from '../utils/data-cards.js';
 import { calculateSingleEventRawTable, calculateSingleEventAggregateTable, calculateMultiEventAggregateTable, calculateMultiEventDeckTable } from '../utils/data-tables.js';
-import { formatDate, formatPercentage, formatDateRange, formatEventName } from '../utils/format.js';
+import { formatDate, formatPercentage, formatDateRange, formatEventName, countUniqueEvents } from '../utils/format.js';
 import { getFocusableElements, setupModalOverlay } from '../utils/modal-dialog.js';
 import { getPlayerIdentityKey } from '../utils/player-names.js';
 import { buildRankingsDataset, getRankingsAvailableDates } from '../utils/rankings-data.js';
@@ -389,7 +389,26 @@ function bindTopDeckBucketToggle(containerId) {
 
 function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
   if (multiEvent) {
-    return '<div class="event-info-top8-empty">Select a single event to view Top 8 standings.</div>';
+    const topDeckRows = buildMultiEventTop8DeckSummary(rows);
+    if (topDeckRows.length === 0) {
+      return '<div class="event-info-top8-empty">No Top 8 deck finishes are available for the selected events.</div>';
+    }
+
+    return topDeckRows.map((row, index) => {
+      const rank = index + 1;
+      const podiumClass = rank >= 1 && rank <= 3 ? ` event-info-rank-badge-podium-${rank}` : '';
+      const deck = escapeHtml(row.deck);
+      const top8Label = row.count;
+      return `
+        <div class="event-info-top8-row event-info-top8-row-static">
+          <div class="event-info-top8-rank">
+            <span class="event-info-rank-badge${podiumClass}">${rank}</span>
+          </div>
+          <div class="event-info-top8-deck" title="${deck}">${deck}</div>
+          <div class="event-info-top8-count">${top8Label}</div>
+        </div>
+      `;
+    }).join('');
   }
 
   const top8Rows = [...rows]
@@ -433,13 +452,77 @@ function buildEventInfoTop8Html(rows = [], { multiEvent = false } = {}) {
   }).join('');
 }
 
+function formatExactEventInfoDateRange(startDate = '', endDate = '') {
+  if (startDate && endDate) {
+    return `${formatDate(startDate)} \u2013 ${formatDate(endDate)}`;
+  }
+
+  if (startDate) {
+    return formatDate(startDate);
+  }
+
+  if (endDate) {
+    return formatDate(endDate);
+  }
+
+  return '--';
+}
+
+function buildMultiEventTop8DeckSummary(rows = []) {
+  const UNKNOWN_DECK_NAMES = new Set(['UNKNOWN', 'UNKNOWN DECK', 'UNKNOW', 'NO SHOW']);
+  const deckCounts = new Map();
+
+  rows.forEach((row, rowIndex) => {
+    const rank = Number(row?.Rank);
+    if (rank < 1 || rank > 8) {
+      return;
+    }
+
+    const rawDeck = String(row?.Deck || '').trim();
+    const normalizedDeck = rawDeck.toUpperCase();
+    if (!normalizedDeck || UNKNOWN_DECK_NAMES.has(normalizedDeck)) {
+      return;
+    }
+
+    if (!deckCounts.has(normalizedDeck)) {
+      deckCounts.set(normalizedDeck, {
+        deck: rawDeck,
+        count: 0,
+        firstRowIndex: rowIndex
+      });
+    }
+
+    deckCounts.get(normalizedDeck).count += 1;
+  });
+
+  return Array.from(deckCounts.values())
+    .sort((entryA, entryB) => {
+      const countComparison = Number(entryB.count || 0) - Number(entryA.count || 0);
+      if (countComparison !== 0) {
+        return countComparison;
+      }
+
+      const deckComparison = String(entryA.deck || '').localeCompare(String(entryB.deck || ''));
+      if (deckComparison !== 0) {
+        return deckComparison;
+      }
+
+      return Number(entryA.firstRowIndex || 0) - Number(entryB.firstRowIndex || 0);
+    })
+    .slice(0, 8);
+}
+
 function renderEventInfoTop8(rows = [], options = {}) {
   const section = document.getElementById('eventInfoTop8Section');
+  const title = document.getElementById('eventInfoTop8Title');
   if (!section) {
     return;
   }
 
   section.hidden = false;
+  if (title) {
+    title.textContent = options?.multiEvent ? 'Top 8 Appearances by Deck' : 'Top 8 Standings';
+  }
   updateElementHTML('eventInfoTop8Standings', buildEventInfoTop8Html(rows, options));
 }
 
@@ -2503,7 +2586,13 @@ export function populateMultiEventStats(filteredData) {
   const eventSummaries = getMultiEventSummaries(filteredData);
   const mostPlayersSummary = getMultiEventExtremeSummary('mostPlayersEvent', eventSummaries);
   const leastPlayersSummary = getMultiEventExtremeSummary('leastPlayersEvent', eventSummaries);
-  renderEventInfoTop8([], { multiEvent: true });
+  const startDate = document.getElementById('startDateSelect')?.value || '';
+  const endDate = document.getElementById('endDateSelect')?.value || '';
+  const selectedEventCount = countUniqueEvents(filteredData);
+  updateElementText("eventInfoName", selectedEventCount > 0 ? "Multiple Events" : "--");
+  updateElementText("eventInfoDate", formatExactEventInfoDateRange(startDate, endDate));
+  updateElementText("eventInfoPlayers", `${selectedEventCount} Event${selectedEventCount === 1 ? '' : 's'}`);
+  renderEventInfoTop8(filteredData, { multiEvent: true });
   updateElementText("totalEvents", stats.totalEvents);
   const card = document.getElementById("multiTotalEventsCard");
   if (card) {

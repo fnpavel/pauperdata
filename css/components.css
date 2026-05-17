@@ -3802,6 +3802,21 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   background: rgba(255, 255, 255, 0.075);
 }
 
+.event-info-top8-row-static {
+  border: 0;
+  background: transparent;
+  cursor: default;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+}
+
+.event-info-top8-row-static:hover,
+.event-info-top8-row-static:focus-visible,
+.event-info-top8-row-static:active {
+  background: transparent;
+  box-shadow: none;
+  outline: none;
+}
+
 .event-info-top8-rank {
   display: flex;
   align-items: center;
@@ -3846,6 +3861,7 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 
 .event-info-top8-deck,
 .event-info-top8-record,
+.event-info-top8-count,
 .event-info-top8-player,
 .event-info-top8-empty {
   min-width: 0;
@@ -3862,6 +3878,14 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 }
 
 .event-info-top8-record {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  justify-self: start;
+  white-space: nowrap;
+}
+
+.event-info-top8-count {
   color: var(--text-primary);
   font-variant-numeric: tabular-nums;
   font-weight: 700;
