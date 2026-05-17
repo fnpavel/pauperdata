@@ -34,6 +34,10 @@
     grid-template-columns: 248px 1fr;
   }
 
+  .player-dashboard-sidebar {
+    gap: 14px;
+  }
+
   .deck-stats-sidebar {
     grid-column: 1 / -1;
     display: grid;
@@ -65,7 +69,7 @@
   }
 
   #playerStats.stats-container .player-stats-row-primary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   #playerStats.stats-container .player-placement-distribution-grid {
@@ -159,6 +163,15 @@
   #playerStats.stats-container .player-stats-row-primary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 8px;
+  }
+
+  .player-chart-filter-header-compact .player-chart-filter-note,
+  .player-chart-filter-header-compact .player-chart-filter-empty {
+    text-align: left;
+  }
+
+  .player-focus-top8-list .player-focus-top8-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
   }
 
   #playerStats.stats-container .player-placement-distribution-grid {
@@ -419,6 +432,54 @@
   #playerStats.stats-container .player-placement-distribution-card {
     padding: 10px;
     gap: 10px;
+  }
+
+  #playerStats.stats-container .player-stats-row-primary {
+    grid-template-columns: 1fr;
+  }
+
+  #playerFocusedPlayerCard.player-focus-card {
+    padding: 12px 12px 14px;
+  }
+
+  .player-focus-card-name {
+    font-size: 1.04rem;
+  }
+
+  .player-focus-card-meta-pill {
+    font-size: 0.68rem;
+  }
+
+  .player-focus-top8-header {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .player-focus-top8-total {
+    text-align: left;
+  }
+
+  .player-focus-top8-list .player-focus-top8-row {
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    grid-template-areas:
+      "rank deck"
+      "rank count";
+    align-items: start;
+    gap: 3px 7px;
+  }
+
+  .player-focus-top8-list .player-focus-top8-rank {
+    grid-area: rank;
+  }
+
+  .player-focus-top8-list .player-focus-top8-deck {
+    grid-area: deck;
+    white-space: normal;
+  }
+
+  .player-focus-top8-list .player-focus-top8-count {
+    grid-area: count;
+    justify-self: start;
   }
 
   #playerStats.stats-container .player-placement-distribution-grid {

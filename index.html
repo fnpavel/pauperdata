@@ -404,159 +404,164 @@
 
     <!-- Player Analysis Section: player filters drive cards, tables, and player-specific charts. -->
     <div id="playerAnalysisSection" style="display: none;">
-      <div class="stats-container" id="playerStats">
-        <div class="player-stats-row player-stats-row-primary">
-          <div class="stat-card" id="playerFocusedPlayerCard">
+      <div class="dashboard player-dashboard" id="playerDashboard">
+        <div class="player-dashboard-sidebar">
+          <div class="stat-card player-focus-card" id="playerFocusedPlayerCard">
             <div class="stat-title">Focused Player</div>
             <div class="stat-value">--</div>
             <div class="stat-change">Select a player to inspect</div>
             <div class="stat-icon">👤</div>
           </div>
-          <div class="stat-card" id="playerEventsCard">
-            <div class="stat-title">Total Events</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">📅</div>
-          </div>
-          <div class="stat-card" id="playerOverallWinRateCard">
-            <div class="stat-title">Overall Win Rate</div>
-            <div class="stat-value">--</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">📊</div>
-          </div>
-          <div class="stat-card" id="playerUniqueDecksCard">
-            <div class="stat-title">Unique Decks Used</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-icon">🃏</div>
-          </div>
-          <div class="stat-card" id="playerMostPlayedCard">
-            <div class="stat-title">Most Played Deck</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">⬆️</div>
-          </div>
-          <div class="stat-card" id="playerLeastPlayedCard">
-            <div class="stat-title">Least Played Deck</div>
-            <div class="stat-value">Loading...</div>
-            <div class="stat-change"></div>
-            <div class="stat-icon">⬇️</div>
-          </div>
-        </div>
-        <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
-        <div class="stat-card player-placement-distribution-card" id="playerPlacementDistributionCard">
-          <div class="player-placement-distribution-header">
-            <div class="player-placement-distribution-title-wrap">
-              <div class="player-placement-distribution-title" id="playerPlacementDistributionTitle">Placement Distribution</div>
-              <div class="player-placement-distribution-subtitle" id="playerPlacementDistributionSubtitle">Relative finish spread across the active placement buckets.</div>
-            </div>
-          </div>
-          <div class="player-placement-distribution-grid" role="list" aria-label="Placement distribution buckets">
-            <div class="player-placement-bucket" id="playerTop1Card" role="listitem">
-              <div class="player-placement-bucket-header">
-                <span class="player-placement-bucket-label">Top 1</span>
-                <span class="player-placement-bucket-value" id="playerTop1">0</span>
-              </div>
-              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
-              <div class="player-placement-bucket-meta">
-                <span class="player-placement-bucket-caption">1st-place finishes</span>
-                <span class="player-placement-bucket-percent" id="playerTop1%"></span>
-              </div>
-            </div>
-            <div class="player-placement-bucket" id="playerTop1_8Card" role="listitem">
-              <div class="player-placement-bucket-header">
-                <span class="player-placement-bucket-label">Top 2-8</span>
-                <span class="player-placement-bucket-value" id="playerTop1_8">0</span>
-              </div>
-              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
-              <div class="player-placement-bucket-meta">
-                <span class="player-placement-bucket-caption">Finalist band</span>
-                <span class="player-placement-bucket-percent" id="playerTop1_8%"></span>
-              </div>
-            </div>
-            <div class="player-placement-bucket" id="playerTop9_16Card" role="listitem">
-              <div class="player-placement-bucket-header">
-                <span class="player-placement-bucket-label">Top 9-16</span>
-                <span class="player-placement-bucket-value" id="playerTop9_16">0</span>
-              </div>
-              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
-              <div class="player-placement-bucket-meta">
-                <span class="player-placement-bucket-caption">Upper playoff band</span>
-                <span class="player-placement-bucket-percent" id="playerTop9_16%"></span>
-              </div>
-            </div>
-            <div class="player-placement-bucket" id="playerTop17_32Card" role="listitem">
-              <div class="player-placement-bucket-header">
-                <span class="player-placement-bucket-label">Top 17-32</span>
-                <span class="player-placement-bucket-value" id="playerTop17_32">0</span>
-              </div>
-              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
-              <div class="player-placement-bucket-meta">
-                <span class="player-placement-bucket-caption">Cut-adjacent finishes</span>
-                <span class="player-placement-bucket-percent" id="playerTop17_32%"></span>
-              </div>
-            </div>
-            <div class="player-placement-bucket" id="playerTop33PlusCard" role="listitem">
-              <div class="player-placement-bucket-header">
-                <span class="player-placement-bucket-label">Top 33+</span>
-                <span class="player-placement-bucket-value" id="playerTop33Plus">0</span>
-              </div>
-              <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
-              <div class="player-placement-bucket-meta">
-                <span class="player-placement-bucket-caption">Beyond Top 32</span>
-                <span class="player-placement-bucket-percent" id="playerTop33Plus%"></span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      <div class="dashboard player-dashboard" id="playerDashboard">
-        <div class="filters">
-          <h3>Filter Options</h3>
-          <div class="filter-section">
-            <h4>Event Type</h4>
-            <div class="bubble-menu">
-              <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
-              <button class="bubble-button event-type-filter" data-type="online">Online</button>
-            </div>
-          </div>
-          <div class="filter-section">
-            <h4>Player</h4>
-            <div class="bubble-menu">
-              <select id="playerFilterMenu" class="player-filter-select">
-                <!-- Populated dynamically -->
-              </select>
-            </div>
-          </div>
-          <div class="filter-section">
-            <h4>Quick Views</h4>
-            <div id="playerQuickViewButtons" class="quick-view-control"></div>
-          </div>
-          <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
-            <div id="playerSelectionSummary" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Current Events Selected</div>
-              <div class="multi-event-selection-scroll">
-                <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+          <div class="filters">
+            <h3>Filter Options</h3>
+            <div class="filter-section">
+              <h4>Event Type</h4>
+              <div class="bubble-menu">
+                <button class="bubble-button event-type-filter" data-type="offline">Offline</button>
+                <button class="bubble-button event-type-filter" data-type="online">Online</button>
               </div>
             </div>
-            <div id="playerEventHistoryBox" class="event-calendar-summary">
-              <div class="event-calendar-summary-label">Event History</div>
-              <div class="multi-event-selection-scroll">
-                <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
+            <div class="filter-section">
+              <h4>Player</h4>
+              <div class="bubble-menu">
+                <select id="playerFilterMenu" class="player-filter-select">
+                  <!-- Populated dynamically -->
+                </select>
+              </div>
+            </div>
+            <div class="filter-section">
+              <h4>Quick Views</h4>
+              <div id="playerQuickViewButtons" class="quick-view-control"></div>
+            </div>
+            <div id="playerSelectionPanels" class="event-calendar-summary-stack" style="display: none;">
+              <div id="playerSelectionSummary" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Current Events Selected</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="playerSelectionSummaryContent" class="event-calendar-summary-content">No events selected</div>
+                </div>
+              </div>
+              <div id="playerEventHistoryBox" class="event-calendar-summary">
+                <div class="event-calendar-summary-label">Event History</div>
+                <div class="multi-event-selection-scroll">
+                  <div id="playerEventsDetails" class="player-event-history-list"><div>No events selected</div></div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div class="charts-and-tables">
+          <div class="stats-container" id="playerStats">
+            <div class="player-stats-row player-stats-row-primary">
+              <div class="stat-card player-kpi-card" id="playerEventsCard">
+                <div class="stat-title">Total Events</div>
+                <div class="stat-value">Loading...</div>
+                <div class="stat-change"></div>
+                <div class="stat-icon">📅</div>
+              </div>
+              <div class="stat-card player-kpi-card" id="playerOverallWinRateCard">
+                <div class="stat-title">Win Rate</div>
+                <div class="stat-value">--</div>
+                <div class="stat-change"></div>
+                <div class="stat-icon">📊</div>
+              </div>
+              <div class="stat-card player-kpi-card" id="playerUniqueDecksCard">
+                <div class="stat-title">Unique Decks Used</div>
+                <div class="stat-value">Loading...</div>
+                <div class="stat-icon">🃏</div>
+              </div>
+              <div class="stat-card player-kpi-card" id="playerMostPlayedCard">
+                <div class="stat-title">Most Played Deck</div>
+                <div class="stat-value">Loading...</div>
+                <div class="stat-change"></div>
+                <div class="stat-icon">⬆️</div>
+              </div>
+              <div class="stat-card player-kpi-card" id="playerLeastPlayedCard">
+                <div class="stat-title">Least Played Deck</div>
+                <div class="stat-value">Loading...</div>
+                <div class="stat-change"></div>
+                <div class="stat-icon">⬇️</div>
+              </div>
+            </div>
+            <div class="stat-card player-placement-distribution-card" id="playerPlacementDistributionCard">
+              <div class="player-placement-distribution-header">
+                <div class="player-placement-distribution-title-wrap">
+                  <div class="player-placement-distribution-title" id="playerPlacementDistributionTitle">Placement Distribution</div>
+                  <div class="player-placement-distribution-subtitle" id="playerPlacementDistributionSubtitle">Relative finish spread across the active placement buckets.</div>
+                </div>
+              </div>
+              <div class="player-placement-distribution-grid" role="list" aria-label="Placement distribution buckets">
+                <div class="player-placement-bucket" id="playerTop1Card" role="listitem">
+                  <div class="player-placement-bucket-header">
+                    <span class="player-placement-bucket-label">Top 1</span>
+                    <span class="player-placement-bucket-value" id="playerTop1">0</span>
+                  </div>
+                  <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+                  <div class="player-placement-bucket-meta">
+                    <span class="player-placement-bucket-caption">1st-place finishes</span>
+                    <span class="player-placement-bucket-percent" id="playerTop1%"></span>
+                  </div>
+                </div>
+                <div class="player-placement-bucket" id="playerTop1_8Card" role="listitem">
+                  <div class="player-placement-bucket-header">
+                    <span class="player-placement-bucket-label">Top 2-8</span>
+                    <span class="player-placement-bucket-value" id="playerTop1_8">0</span>
+                  </div>
+                  <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+                  <div class="player-placement-bucket-meta">
+                    <span class="player-placement-bucket-caption">Finalist band</span>
+                    <span class="player-placement-bucket-percent" id="playerTop1_8%"></span>
+                  </div>
+                </div>
+                <div class="player-placement-bucket" id="playerTop9_16Card" role="listitem">
+                  <div class="player-placement-bucket-header">
+                    <span class="player-placement-bucket-label">Top 9-16</span>
+                    <span class="player-placement-bucket-value" id="playerTop9_16">0</span>
+                  </div>
+                  <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+                  <div class="player-placement-bucket-meta">
+                    <span class="player-placement-bucket-caption">Upper playoff band</span>
+                    <span class="player-placement-bucket-percent" id="playerTop9_16%"></span>
+                  </div>
+                </div>
+                <div class="player-placement-bucket" id="playerTop17_32Card" role="listitem">
+                  <div class="player-placement-bucket-header">
+                    <span class="player-placement-bucket-label">Top 17-32</span>
+                    <span class="player-placement-bucket-value" id="playerTop17_32">0</span>
+                  </div>
+                  <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+                  <div class="player-placement-bucket-meta">
+                    <span class="player-placement-bucket-caption">Cut-adjacent finishes</span>
+                    <span class="player-placement-bucket-percent" id="playerTop17_32%"></span>
+                  </div>
+                </div>
+                <div class="player-placement-bucket" id="playerTop33PlusCard" role="listitem">
+                  <div class="player-placement-bucket-header">
+                    <span class="player-placement-bucket-label">Top 33+</span>
+                    <span class="player-placement-bucket-value" id="playerTop33Plus">0</span>
+                  </div>
+                  <div class="player-placement-bucket-bar-shell" aria-hidden="true"></div>
+                  <div class="player-placement-bucket-meta">
+                    <span class="player-placement-bucket-caption">Beyond Top 32</span>
+                    <span class="player-placement-bucket-percent" id="playerTop33Plus%"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div id="playerCharts">
             <div class="chart-container player-primary-chart">
-              <div class="player-chart-header">
-                <h2 class="chart-title">Player Analytics</h2>
-                <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
-                  <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
-                  <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+              <div class="player-chart-toolbar">
+                <div class="player-chart-header">
+                  <h2 class="chart-title">Player Analytics</h2>
+                  <div class="bubble-menu player-chart-view-toggle" id="playerPrimaryChartToggle" aria-label="Player chart view toggle">
+                    <button type="button" class="bubble-button active" data-player-chart-view="win-rate" aria-pressed="true">Player Win Rate</button>
+                    <button type="button" class="bubble-button" data-player-chart-view="scatter" aria-pressed="false">Scatter Deck</button>
+                  </div>
                 </div>
+                <div id="playerEloDeckFilter" class="player-chart-filter-panel"></div>
               </div>
               <div id="playerDateRangeCalendar" class="range-calendar-container"></div>
               <select id="playerStartDateSelect" hidden aria-hidden="true" onchange="updatePlayerAnalytics()"></select>

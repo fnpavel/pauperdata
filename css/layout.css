@@ -112,6 +112,13 @@ header::before {
   align-items: start;
 }
 
+.player-dashboard-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
 .charts-and-tables {
   flex: 1;
   min-width: 0;

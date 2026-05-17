@@ -28,6 +28,12 @@
   padding: 26px 24px;
 }
 
+.player-chart-toolbar {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
 .player-secondary-chart {
   padding: 16px 18px;
 }
@@ -37,7 +43,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 0;
 }
 
 .player-chart-header .chart-title {

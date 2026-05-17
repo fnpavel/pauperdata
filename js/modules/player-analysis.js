@@ -181,6 +181,7 @@ let currentPlayerRawTableState = {
   rows: []
 };
 const UNKNOWN_ELO_DECK_NAMES = new Set(['UNKNOWN', 'UNKNOWN DECK', 'UNKNOW']);
+const PLAYER_FOCUS_TOP8_DECK_LIMIT = 3;
 
 // Elo widgets derive several related views from the same normalized structure.
 // An explicit empty object keeps the rendering code simple while async data is
@@ -446,6 +447,113 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function getPlayerActiveDateRangeLabel(rows = []) {
+  const startSelectValue = String(document.getElementById('playerStartDateSelect')?.value || '').trim();
+  const endSelectValue = String(document.getElementById('playerEndDateSelect')?.value || '').trim();
+  if (startSelectValue && endSelectValue) {
+    return startSelectValue === endSelectValue
+      ? formatDate(startSelectValue)
+      : `${formatDate(startSelectValue)} \u2013 ${formatDate(endSelectValue)}`;
+  }
+
+  const datedRows = (Array.isArray(rows) ? rows : [])
+    .map(row => String(row?.Date || '').trim())
+    .filter(Boolean)
+    .sort();
+  if (datedRows.length === 0) {
+    return 'Choose a date range';
+  }
+
+  return datedRows[0] === datedRows[datedRows.length - 1]
+    ? formatDate(datedRows[0])
+    : `${formatDate(datedRows[0])} \u2013 ${formatDate(datedRows[datedRows.length - 1])}`;
+}
+
+function getPlayerTop8DeckStandings(rows = [], limit = PLAYER_FOCUS_TOP8_DECK_LIMIT) {
+  const deckCounts = new Map();
+  let totalAppearances = 0;
+
+  (Array.isArray(rows) ? rows : []).forEach(row => {
+    const rank = Number(row?.Rank);
+    const deckName = String(row?.Deck || '').trim();
+    if (!Number.isFinite(rank) || rank < 1 || rank > 8 || !deckName || deckName === 'No Show') {
+      return;
+    }
+
+    totalAppearances += 1;
+    deckCounts.set(deckName, (deckCounts.get(deckName) || 0) + 1);
+  });
+
+  const standings = Array.from(deckCounts.entries())
+    .map(([deck, appearances]) => ({ deck, appearances }))
+    .sort((a, b) => {
+      const appearanceDelta = b.appearances - a.appearances;
+      if (appearanceDelta !== 0) {
+        return appearanceDelta;
+      }
+
+      return a.deck.localeCompare(b.deck);
+    });
+
+  return {
+    totalAppearances,
+    standings: standings.slice(0, Math.max(1, Number(limit) || PLAYER_FOCUS_TOP8_DECK_LIMIT))
+  };
+}
+
+function renderPlayerFocusedPlayerCard(rows = []) {
+  const card = document.getElementById('playerFocusedPlayerCard');
+  if (!card) {
+    return;
+  }
+
+  const selectedPlayerLabel = getSelectedPlayerLabel(document.getElementById('playerFilterMenu')) || 'No Player Selected';
+  const uniqueEvents = countUniqueEvents(rows);
+  const rangeLabel = getPlayerActiveDateRangeLabel(rows);
+  const { totalAppearances, standings } = getPlayerTop8DeckStandings(rows);
+  const hasPlayerRows = Array.isArray(rows) && rows.length > 0;
+  const eventSummaryLabel = hasPlayerRows
+    ? `${uniqueEvents} Event${uniqueEvents === 1 ? '' : 's'}`
+    : '0 Events';
+
+  card.innerHTML = `
+    <div class="player-focus-card-header">
+      <div class="player-focus-card-eyebrow">Focused Player</div>
+      <div class="player-focus-card-name">${escapeHtml(selectedPlayerLabel)}</div>
+      <div class="player-focus-card-meta">
+        <span class="player-focus-card-meta-pill player-focus-card-meta-pill-date">${escapeHtml(rangeLabel)}</span>
+        <span class="player-focus-card-meta-pill player-focus-card-meta-pill-events">${escapeHtml(eventSummaryLabel)}</span>
+      </div>
+    </div>
+    <div class="player-focus-top8">
+      <div class="player-focus-top8-header">
+        <span class="player-focus-top8-title">Top 8 Appearances by Deck</span>
+        <span class="player-focus-top8-total">${totalAppearances > 0 ? escapeHtml(`${totalAppearances} total`) : ''}</span>
+      </div>
+      ${standings.length > 0 ? `
+        <div class="player-focus-top8-list" role="list">
+          ${standings.map((entry, index) => `
+            <button
+              type="button"
+              class="event-info-top8-row player-focus-top8-row"
+              data-player-focus-deck="${escapeHtml(entry.deck)}"
+              aria-label="${escapeHtml(`Open ${entry.deck} deck details. ${entry.appearances} Top 8 appearance${entry.appearances === 1 ? '' : 's'}.`)}"
+            >
+              <div class="event-info-top8-rank player-focus-top8-rank">
+                <span class="event-info-rank-badge${index + 1 >= 1 && index + 1 <= 3 ? ` event-info-rank-badge-podium-${index + 1}` : ''}">${index + 1}</span>
+              </div>
+              <div class="event-info-top8-deck player-focus-top8-deck" title="${escapeHtml(entry.deck)}">${escapeHtml(entry.deck)}</div>
+              <div class="event-info-top8-count player-focus-top8-count">${escapeHtml(`${entry.appearances} appearance${entry.appearances === 1 ? '' : 's'}`)}</div>
+            </button>
+          `).join('')}
+        </div>
+      ` : `
+        <div class="player-focus-top8-empty">No Top 8 finishes in the current Player Analysis filters.</div>
+      `}
+    </div>
+  `;
+}
+
 function isSelectablePlayerEloDeck(deckName) {
   const normalizedDeck = String(deckName || '').trim();
   return normalizedDeck !== '' && !UNKNOWN_ELO_DECK_NAMES.has(normalizedDeck.toUpperCase());
@@ -490,27 +598,22 @@ function renderPlayerEloDeckFilter(eloInsights = currentPlayerEloInsights) {
 
   if (availableDecks.length === 0) {
     root.innerHTML = `
-      <div class="player-chart-filter-header">
-        <div class="player-chart-filter-copy">
-          <span class="player-chart-filter-label">Elo Deck Filter</span>
-          <span class="player-chart-filter-note">Applies to the Elo cards and Elo drilldowns.</span>
-        </div>
+      <div class="player-chart-filter-header player-chart-filter-header-compact">
+        <span class="player-chart-filter-label">Elo Deck</span>
+        <span class="player-chart-filter-empty">Deck-specific Elo appears here once rated deck data exists.</span>
       </div>
-      <div class="player-chart-filter-empty">Deck-specific Elo appears here once the selected player has rated matches with deck names.</div>
     `;
     return '';
   }
 
   root.innerHTML = `
-    <div class="player-chart-filter-header">
-      <div class="player-chart-filter-copy">
-        <span class="player-chart-filter-label">Elo Deck Filter</span>
-        <span class="player-chart-filter-note">${escapeHtml(
-          validSelectedDeck
-            ? `Applies to the Elo cards and Elo drilldowns. Showing only ${validSelectedDeck}.`
-            : `Applies to the Elo cards and Elo drilldowns. Showing all ${availableDecks.length} tracked decks.`
-        )}</span>
-      </div>
+    <div class="player-chart-filter-header player-chart-filter-header-compact">
+      <span class="player-chart-filter-label">Elo Deck</span>
+      <span class="player-chart-filter-note">${escapeHtml(
+        validSelectedDeck
+          ? `${validSelectedDeck} only`
+          : `All ${availableDecks.length} tracked decks`
+      )}</span>
     </div>
     <div class="bubble-menu player-chart-filter-chips">
       <button
@@ -2873,6 +2976,28 @@ function openPlayerDeckStatsDrilldown(deckName = '') {
   openPlayerDrilldown('deckStatsCard');
 }
 
+function setupPlayerFocusedTop8Interactions() {
+  const focusedPlayerCard = document.getElementById('playerFocusedPlayerCard');
+  if (!focusedPlayerCard || focusedPlayerCard.dataset.focusTop8Bound === 'true') {
+    return;
+  }
+
+  focusedPlayerCard.dataset.focusTop8Bound = 'true';
+  focusedPlayerCard.addEventListener('click', event => {
+    const deckButton = event.target.closest('[data-player-focus-deck]');
+    if (!deckButton) {
+      return;
+    }
+
+    const deckName = String(deckButton.dataset.playerFocusDeck || '').trim();
+    if (!deckName) {
+      return;
+    }
+
+    openPlayerDeckStatsDrilldown(deckName);
+  });
+}
+
 function openPlayerEventInAnalysis(eventName = '', eventType = '') {
   const normalizedEventName = String(eventName || '').trim();
   const normalizedEventType = String(eventType || '').trim().toLowerCase();
@@ -3396,6 +3521,7 @@ export function initPlayerAnalysis() {
   setupPlayerRankDrilldownModal();
   setupPlayerRankDrilldownCards();
   setupPlayerEventHistoryInteractions();
+  setupPlayerFocusedTop8Interactions();
   setupPlayerSummaryDrilldownCards();
   setupPlayerSidebarDrilldownCards();
   setupPlayerDeckStatsCardInteractions();
@@ -3748,8 +3874,7 @@ export function populatePlayerStats(data, eloInsights = currentPlayerEloInsights
   };
 
   // Simple Cards
-  updateQueryElement("playerFocusedPlayerCard", ".stat-value", selectedPlayerLabel);
-  updateQueryElement("playerFocusedPlayerCard", ".stat-change", "Current player selection");
+  renderPlayerFocusedPlayerCard(data);
   updateQueryElement("playerEventsCard", ".stat-title", stats.eventsTitle);
   updateQueryElement("playerEventsCard", ".stat-value", stats.totalEvents);
   updateQueryElement("playerEventsCard", ".stat-change", stats.eventsDetails);

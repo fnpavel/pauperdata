@@ -2185,21 +2185,22 @@ button.leaderboard-deck-result-card {
 .player-chart-filter-panel {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: -6px 0 18px;
-  padding: 12px 14px;
-  border-radius: 16px;
-  border: 1px solid var(--border-subtle);
-  background: linear-gradient(160deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
-  box-shadow: 0 10px 22px var(--shadow-color);
+  gap: 8px;
+  min-width: 0;
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(160deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .player-chart-filter-header {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px 12px;
 }
 
 .player-chart-filter-copy {
@@ -2209,7 +2210,8 @@ button.leaderboard-deck-result-card {
 }
 
 .player-chart-filter-label {
-  font-size: 0.72rem;
+  font-size: 0.68rem;
+  font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-muted);
@@ -2218,12 +2220,20 @@ button.leaderboard-deck-result-card {
 .player-chart-filter-note,
 .player-chart-filter-empty {
   color: var(--text-secondary);
-  font-size: 0.8rem;
-  line-height: 1.45;
+  font-size: 0.78rem;
+  line-height: 1.35;
+}
+
+.player-chart-filter-header-compact .player-chart-filter-note,
+.player-chart-filter-header-compact .player-chart-filter-empty {
+  text-align: right;
 }
 
 .player-chart-filter-chips {
-  gap: 8px;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
 }
 
 .player-win-rate-deck-chip {
@@ -2237,6 +2247,12 @@ button.leaderboard-deck-result-card {
 
 .player-elo-deck-chip-reset {
   border-style: dashed;
+}
+
+.player-chart-filter-chips .bubble-button {
+  flex: 0 0 auto;
+  padding: 5px 10px;
+  font-size: 0.78rem;
 }
 
 .player-chart-panel {
@@ -3142,7 +3158,7 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 }
 
 #playerStats.stats-container .player-stats-row-primary {
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 #playerStats.stats-container .stat-card {
@@ -3151,6 +3167,12 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   display: grid;
   align-content: start;
   gap: 2px;
+}
+
+#playerStats.stats-container .player-kpi-card {
+  min-height: 76px;
+  padding: 8px 10px 18px;
+  border-radius: 10px;
 }
 
 #playerStats.stats-container .stat-title {
@@ -3190,6 +3212,25 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   right: 7px;
   bottom: 5px;
   font-size: 0.95rem;
+}
+
+#playerStats.stats-container .player-kpi-card .stat-title {
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+}
+
+#playerStats.stats-container .player-kpi-card .stat-value {
+  font-size: 1.12rem;
+}
+
+#playerStats.stats-container .player-kpi-card .stat-change {
+  font-size: 0.76rem;
+  color: var(--text-secondary);
+}
+
+#playerStats.stats-container .player-kpi-card .stat-icon {
+  font-size: 0.86rem;
+  opacity: 0.7;
 }
 
 .player-placement-distribution-card {
@@ -3418,6 +3459,209 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 #playerStats.stats-container .player-placement-bucket.drilldown-tooltip:focus-within .player-stat-card-hover-note {
   opacity: 1;
   transform: translateY(0);
+}
+
+#playerFocusedPlayerCard.player-focus-card {
+  min-height: auto;
+  padding: 14px 14px 16px;
+  display: grid;
+  gap: 12px;
+  border-radius: 12px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 38%),
+    linear-gradient(145deg, rgba(20, 32, 40, 0.94), rgba(16, 26, 33, 0.96));
+  border: 1px solid rgba(91, 189, 180, 0.16);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.18);
+}
+
+#playerFocusedPlayerCard.player-focus-card::before {
+  background: linear-gradient(180deg, rgba(91, 189, 180, 0.62), rgba(91, 189, 180, 0.2));
+}
+
+#playerFocusedPlayerCard.player-focus-card:hover {
+  transform: translateY(-2px);
+}
+
+#playerFocusedPlayerCard.player-focus-card .stat-icon {
+  display: none;
+}
+
+.player-focus-card-header {
+  display: grid;
+  gap: 8px;
+  min-width: 0;
+}
+
+.player-focus-card-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.player-focus-card-name {
+  font-size: 1.18rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--text-primary);
+  word-break: break-word;
+}
+
+.player-focus-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.player-focus-card-meta-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  max-width: 100%;
+  margin-top: 0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-secondary);
+  font-size: 0.71rem;
+  font-weight: 700;
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.player-focus-card-meta-pill-date::before,
+.player-focus-card-meta-pill-events::before {
+  flex: 0 0 auto;
+  margin-right: 6px;
+  opacity: 0.75;
+}
+
+.player-focus-card-meta-pill-date::before {
+  content: '\1F4C5';
+}
+
+.player-focus-card-meta-pill-events::before {
+  content: '\1F465';
+}
+
+.player-focus-top8 {
+  display: grid;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-focus-top8-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+}
+
+.player-focus-top8-title {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.player-focus-top8-total {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+}
+
+.player-focus-top8-list {
+  display: grid;
+  gap: 6px;
+}
+
+.player-focus-top8-list .player-focus-top8-row {
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  padding: 5px 0;
+}
+
+.player-focus-top8-list .player-focus-top8-row + .player-focus-top8-row {
+  border-top: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.player-focus-top8-list .player-focus-top8-rank {
+  align-self: center;
+}
+
+.player-focus-top8-list .player-focus-top8-deck,
+.player-focus-top8-list .player-focus-top8-count,
+.player-focus-top8-empty {
+  font-size: 0.72rem;
+  line-height: 1.28;
+}
+
+.player-focus-top8-list .player-focus-top8-count {
+  justify-self: end;
+  max-width: 100%;
+}
+
+.player-focus-top8-list .player-focus-top8-row .event-info-rank-badge {
+  width: 21px;
+  height: 21px;
+  font-size: 0.67rem;
+}
+
+.player-focus-top8-empty {
+  padding: 2px 0 0;
+  color: var(--text-muted);
+}
+
+html[data-theme="light"] #playerFocusedPlayerCard.player-focus-card {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.45), transparent 42%),
+    linear-gradient(145deg, rgba(248, 252, 251, 0.98), rgba(236, 246, 243, 0.98));
+  border-color: rgba(59, 156, 147, 0.18);
+  box-shadow: 0 12px 24px rgba(42, 115, 108, 0.1);
+}
+
+html[data-theme="light"] #playerFocusedPlayerCard.player-focus-card::before {
+  background: linear-gradient(180deg, rgba(91, 189, 180, 0.72), rgba(91, 189, 180, 0.24));
+}
+
+html[data-theme="light"] .player-focus-card-meta-pill {
+  border-color: rgba(47, 61, 77, 0.12);
+  background: rgba(47, 61, 77, 0.04);
+  color: rgba(47, 61, 77, 0.74);
+}
+
+html[data-theme="light"] .player-focus-top8 {
+  border-top-color: rgba(47, 61, 77, 0.1);
+}
+
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-row + .player-focus-top8-row {
+  border-top-color: rgba(47, 61, 77, 0.06);
+}
+
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-row:hover {
+  background: rgba(47, 61, 77, 0.045);
+}
+
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-row:focus-visible {
+  background: rgba(47, 61, 77, 0.06);
+  box-shadow: 0 0 0 1px rgba(47, 61, 77, 0.16);
+}
+
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-row:active {
+  background: rgba(47, 61, 77, 0.08);
+}
+
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-deck,
+html[data-theme="light"] .player-focus-top8-list .player-focus-top8-count,
+html[data-theme="light"] .player-focus-top8-empty,
+html[data-theme="light"] .player-focus-top8-title,
+html[data-theme="light"] .player-focus-card-name {
+  color: rgba(47, 61, 77, 0.82);
+}
+
+html[data-theme="light"] .player-focus-top8-total,
+html[data-theme="light"] .player-focus-card-eyebrow {
+  color: rgba(47, 61, 77, 0.56);
 }
 
 .stat-card {
