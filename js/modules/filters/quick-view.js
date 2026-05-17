@@ -516,7 +516,57 @@ export function ensureDefaultMultiEventPreset() {
 
 // Updates the selected quick-view year tab for a scope.
 export function setQuickViewYearSelection(scope, year) {
-  setActiveQuickViewYear(scope, year);
+  const normalizedYear = String(year || '').trim();
+  if (!normalizedYear) {
+    return;
+  }
+
+  setActiveQuickViewYear(scope, normalizedYear);
+
+  if (scope === 'player') {
+    const playerKey = document.getElementById('playerFilterMenu')?.value || '';
+    const latestPresetId = getSetQuickViewPresetDefinitions(getAnalysisRows(), { includeFuture: true })
+      .filter(preset => preset.releaseYear === normalizedYear)
+      .map(preset => ({
+        preset,
+        range: getPlayerPresetSuggestedRange({
+          selectedEventTypes: getPlayerAnalysisSelectedTypes(),
+          presetId: preset.id,
+          playerKey
+        })
+      }))
+      .filter(({ range }) => Boolean(range.startDate && range.endDate))
+      .sort((left, right) => {
+        const endComparison = String(right.range.endDate || '').localeCompare(String(left.range.endDate || ''));
+        if (endComparison !== 0) {
+          return endComparison;
+        }
+
+        return String(right.range.startDate || '').localeCompare(String(left.range.startDate || ''));
+      })[0]?.preset?.id;
+
+    if (latestPresetId) {
+      applyPlayerAnalysisPreset(latestPresetId);
+      return;
+    }
+
+    const fullYearPresetId = getStaticQuickViewPresetDefinitions()
+      .find(preset => preset.kind === 'calendar-year' && preset.releaseYear === normalizedYear)?.id || '';
+
+    if (fullYearPresetId) {
+      applyPlayerAnalysisPreset(fullYearPresetId);
+      return;
+    }
+
+    setPlayerPresetButtonState('');
+    filterRuntime.resetPlayerDateRange();
+    filterRuntime.updatePlayerDateOptions({ syncCalendarView: true });
+    if (getTopMode() === 'player') {
+      filterRuntime.updateAllCharts();
+    }
+    return;
+  }
+
   renderQuickViewButtons(scope);
 }
 

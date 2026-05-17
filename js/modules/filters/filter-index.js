@@ -1164,6 +1164,9 @@ export function updatePlayerDateOptions(options = {}) {
   const selectedPlayer = playerFilterMenu.value;
   const activePreset = getPlayerAnalysisActivePreset();
   const eventTypeRows = getRowsScopedToSelectedEventTypes(getAnalysisRows(), selectedEventTypes);
+  const presetScopedRows = activePreset
+    ? getScopedPlayerAnalysisRows(selectedEventTypes)
+    : eventTypeRows;
 
   // Player menus and player date ranges both depend on event-type scope, so we
   // recompute them together to avoid impossible combinations in the UI.
@@ -1219,7 +1222,7 @@ export function updatePlayerDateOptions(options = {}) {
 
   populatePlayerFilterMenu(playerFilterMenu, playerOptions, currentPlayer);
 
-  const dates = getSortedUniquePlayerDateValues(eventTypeRows, currentPlayer);
+  const dates = getSortedUniquePlayerDateValues(presetScopedRows, currentPlayer);
 
   console.log('Available dates for Player Analysis:', dates, 'Selected Player:', currentPlayer, 'Active preset:', activePreset);
 
