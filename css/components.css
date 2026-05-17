@@ -3348,25 +3348,12 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
 
 .player-placement-bucket-bar-shell {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(var(--bucket-segment-total, 1), minmax(0, 1fr));
-  gap: 2px;
   height: 18px;
   padding: 2px;
   border-radius: 999px;
+  overflow: hidden;
   background: linear-gradient(90deg, rgba(255, 255, 255, 0.06), rgba(255, 255, 255, 0.015));
   box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.player-placement-bucket-bar-segment {
-  min-width: 0;
-  height: 100%;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
-  transform: scaleY(0.86);
-  transform-origin: center;
-  transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease, opacity 0.3s ease;
 }
 
 .player-placement-bucket-caption {
@@ -3380,49 +3367,59 @@ body.leaderboard-compact-fullscreen #leaderboardAnalyticsGrid {
   color: rgba(236, 240, 241, 0.64);
 }
 
-#playerTop1Card .player-placement-bucket-bar-segment.is-filled {
+#playerTop1Card .player-placement-bucket-bar-shell::before,
+#playerTop1_8Card .player-placement-bucket-bar-shell::before,
+#playerTop9_16Card .player-placement-bucket-bar-shell::before,
+#playerTop17_32Card .player-placement-bucket-bar-shell::before,
+#playerTop33PlusCard .player-placement-bucket-bar-shell::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  width: calc((100% - 4px) * var(--bucket-fill-ratio, 0));
+  border-radius: 999px;
+  transition: width 0.3s ease, background 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+}
+
+#playerTop1Card .player-placement-bucket-bar-shell::before {
   background: linear-gradient(180deg, rgba(34, 211, 238, 0.94), rgba(8, 145, 178, 0.9));
   box-shadow:
     0 0 0 1px rgba(224, 247, 250, 0.1),
     0 0 10px rgba(34, 211, 238, 0.14),
     0 4px 12px rgba(14, 116, 144, 0.18);
-  transform: scaleY(1);
 }
 
-#playerTop1_8Card .player-placement-bucket-bar-segment.is-filled {
+#playerTop1_8Card .player-placement-bucket-bar-shell::before {
   background: linear-gradient(180deg, rgba(34, 197, 94, 0.94), rgba(22, 163, 74, 0.9));
   box-shadow:
     0 0 0 1px rgba(220, 252, 231, 0.1),
     0 0 10px rgba(34, 197, 94, 0.12),
     0 4px 12px rgba(21, 128, 61, 0.18);
-  transform: scaleY(1);
 }
 
-#playerTop9_16Card .player-placement-bucket-bar-segment.is-filled {
+#playerTop9_16Card .player-placement-bucket-bar-shell::before {
   background: linear-gradient(180deg, rgba(59, 130, 246, 0.94), rgba(37, 99, 235, 0.9));
   box-shadow:
     0 0 0 1px rgba(219, 234, 254, 0.1),
     0 0 10px rgba(59, 130, 246, 0.12),
     0 4px 12px rgba(29, 78, 216, 0.18);
-  transform: scaleY(1);
 }
 
-#playerTop17_32Card .player-placement-bucket-bar-segment.is-filled {
+#playerTop17_32Card .player-placement-bucket-bar-shell::before {
   background: linear-gradient(180deg, rgba(245, 158, 11, 0.94), rgba(217, 119, 6, 0.9));
   box-shadow:
     0 0 0 1px rgba(254, 243, 199, 0.1),
     0 0 10px rgba(245, 158, 11, 0.12),
     0 4px 12px rgba(180, 83, 9, 0.18);
-  transform: scaleY(1);
 }
 
-#playerTop33PlusCard .player-placement-bucket-bar-segment.is-filled {
+#playerTop33PlusCard .player-placement-bucket-bar-shell::before {
   background: linear-gradient(180deg, rgba(220, 38, 38, 0.94), rgba(185, 28, 28, 0.9));
   box-shadow:
     0 0 0 1px rgba(254, 226, 226, 0.1),
     0 0 10px rgba(220, 38, 38, 0.12),
     0 4px 12px rgba(153, 27, 27, 0.18);
-  transform: scaleY(1);
 }
 
 #playerStats.stats-container .player-placement-bucket .player-stat-card-hover-note {

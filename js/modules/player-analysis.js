@@ -1854,15 +1854,22 @@ function formatPlacementShareText(count, totalFinishes) {
   return `${((count / totalFinishes) * 100).toFixed(1)}%`;
 }
 
-function buildPlacementBucketSegmentsMarkup(filledCount, totalSegments) {
-  const segmentCount = Math.max(totalSegments, 0);
-  if (segmentCount === 0) {
-    return '';
+function parsePlacementBucketPercent(value) {
+  const numericValue = Number.parseFloat(String(value || '').replace('%', '').trim());
+  return Number.isFinite(numericValue) ? numericValue : Number.NaN;
+}
+
+function rebuildPlacementBucketBarShell(barShellElement, fillRatio) {
+  if (!barShellElement) {
+    return null;
   }
 
-  return Array.from({ length: segmentCount }, (_, index) => `
-    <span class="player-placement-bucket-bar-segment${index < filledCount ? ' is-filled' : ''}"></span>
-  `).join('');
+  const nextBarShell = document.createElement('div');
+  nextBarShell.className = 'player-placement-bucket-bar-shell';
+  nextBarShell.setAttribute('aria-hidden', 'true');
+  nextBarShell.style.setProperty('--bucket-fill-ratio', String(Math.max(0, Math.min(fillRatio, 1))));
+  barShellElement.replaceWith(nextBarShell);
+  return nextBarShell;
 }
 
 function renderPlayerPlacementDistribution(stats = {}, selectedDeckLabel = '') {
@@ -1893,16 +1900,28 @@ function renderPlayerPlacementDistribution(stats = {}, selectedDeckLabel = '') {
     const valueElement = document.getElementById(bucket.valueId);
     const percentElement = document.getElementById(bucket.percentId);
     const barShellElement = card?.querySelector('.player-placement-bucket-bar-shell');
-    const shareText = formatPlacementShareText(bucket.count, totalFinishes);
+    const percentKey = `${bucket.key}Percent`;
+    const bucketPercentValue = parsePlacementBucketPercent(rankStats[percentKey]);
+    const shareText = Number.isFinite(bucketPercentValue)
+      ? `${bucketPercentValue.toFixed(1)}%`
+      : formatPlacementShareText(bucket.count, totalFinishes);
+    const shareLabel = Number.isFinite(bucketPercentValue)
+      ? `${Math.round(bucketPercentValue)}% share`
+      : totalFinishes > 0
+        ? `${Math.round((bucket.count / totalFinishes) * 100)}% share`
+        : '0% share';
+    const fillRatio = Number.isFinite(bucketPercentValue)
+      ? bucketPercentValue / 100
+      : totalFinishes > 0
+        ? bucket.count / totalFinishes
+        : 0;
 
     if (valueElement) {
       valueElement.textContent = String(bucket.count);
     }
 
     if (percentElement) {
-      percentElement.textContent = totalFinishes > 0
-        ? `${Math.round((bucket.count / totalFinishes) * 100)}% share`
-        : '0% share';
+      percentElement.textContent = shareLabel;
     }
 
     if (!card) {
@@ -1911,7 +1930,6 @@ function renderPlayerPlacementDistribution(stats = {}, selectedDeckLabel = '') {
 
     card.dataset.finishCount = String(bucket.count);
     card.dataset.finishShare = shareText;
-    card.style.setProperty('--bucket-segment-total', String(Math.max(totalFinishes, 1)));
     card.classList.toggle('is-leading', highestCount > 0 && bucket.count === highestCount);
     card.setAttribute(
       'aria-label',
@@ -1919,7 +1937,7 @@ function renderPlayerPlacementDistribution(stats = {}, selectedDeckLabel = '') {
     );
 
     if (barShellElement) {
-      barShellElement.innerHTML = buildPlacementBucketSegmentsMarkup(bucket.count, totalFinishes);
+      rebuildPlacementBucketBarShell(barShellElement, fillRatio);
     }
   });
 
