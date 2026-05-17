@@ -6,9 +6,9 @@
     "endYear": 2026,
     "mode": "reset"
   },
-  "generatedAt": "2026-05-16T09:25:53+00:00",
-  "matchCount": 42051,
-  "selectedMatchCount": 42283,
+  "generatedAt": "2026-05-16T23:15:48+00:00",
+  "matchCount": 42178,
+  "selectedMatchCount": 42410,
   "rows": [
     {
       "seasonKey": "2025",
@@ -181,23 +181,6 @@
       "eventCount": 37
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "luminati",
-      "displayName": "Luminati",
-      "basePlayerKey": "luminati",
-      "basePlayerName": "Luminati",
-      "deck": "",
-      "rating": 1626.364,
-      "matches": 508,
-      "wins": 305,
-      "losses": 203,
-      "winRate": 0.600394,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 126.364,
-      "eventCount": 78
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "adrowo",
@@ -213,6 +196,23 @@
       "lastActiveDate": "2025-11-15",
       "eloGain": 125.668,
       "eventCount": 13
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_against_",
+      "displayName": "_against_",
+      "basePlayerKey": "_against_",
+      "basePlayerName": "_against_",
+      "deck": "",
+      "rating": 1625.256,
+      "matches": 198,
+      "wins": 124,
+      "losses": 74,
+      "winRate": 0.626263,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 125.256,
+      "eventCount": 31
     },
     {
       "seasonKey": "2025",
@@ -298,6 +298,40 @@
       "lastActiveDate": "2025-12-28",
       "eloGain": 118.258,
       "eventCount": 15
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "niederschatten",
+      "displayName": "Niederschatten",
+      "basePlayerKey": "niederschatten",
+      "basePlayerName": "Niederschatten",
+      "deck": "",
+      "rating": 1617.941,
+      "matches": 163,
+      "wins": 98,
+      "losses": 65,
+      "winRate": 0.601227,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 117.941,
+      "eventCount": 30
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "luminati",
+      "displayName": "Luminati",
+      "basePlayerKey": "luminati",
+      "basePlayerName": "Luminati",
+      "deck": "",
+      "rating": 1617.92,
+      "matches": 514,
+      "wins": 308,
+      "losses": 206,
+      "winRate": 0.599222,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 117.92,
+      "eventCount": 79
     },
     {
       "seasonKey": "2025",
@@ -453,23 +487,6 @@
       "eventCount": 91
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "niederschatten",
-      "displayName": "Niederschatten",
-      "basePlayerKey": "niederschatten",
-      "basePlayerName": "Niederschatten",
-      "deck": "",
-      "rating": 1610.317,
-      "matches": 157,
-      "wins": 94,
-      "losses": 63,
-      "winRate": 0.598726,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 110.317,
-      "eventCount": 29
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "flower270",
@@ -502,6 +519,23 @@
       "lastActiveDate": "2025-12-28",
       "eloGain": 109.603,
       "eventCount": 98
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "luffydochapeudepalha",
+      "displayName": "LuffyDoChapeuDePalha",
+      "basePlayerKey": "luffydochapeudepalha",
+      "basePlayerName": "LuffyDoChapeuDePalha",
+      "deck": "",
+      "rating": 1608.711,
+      "matches": 525,
+      "wins": 322,
+      "losses": 203,
+      "winRate": 0.613333,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 108.711,
+      "eventCount": 78
     },
     {
       "seasonKey": "2025",
@@ -980,23 +1014,6 @@
       "eventCount": 18
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "luffydochapeudepalha",
-      "displayName": "LuffyDoChapeuDePalha",
-      "basePlayerKey": "luffydochapeudepalha",
-      "basePlayerName": "LuffyDoChapeuDePalha",
-      "deck": "",
-      "rating": 1595.135,
-      "matches": 518,
-      "wins": 317,
-      "losses": 201,
-      "winRate": 0.611969,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 95.135,
-      "eventCount": 77
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "hughc",
@@ -1046,6 +1063,40 @@
       "lastActiveDate": "2025-05-31",
       "eloGain": 89.439,
       "eventCount": 3
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mahers",
+      "displayName": "Mahers",
+      "basePlayerKey": "mahers",
+      "basePlayerName": "Mahers",
+      "deck": "",
+      "rating": 1588.542,
+      "matches": 205,
+      "wins": 105,
+      "losses": 100,
+      "winRate": 0.512195,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 88.542,
+      "eventCount": 32
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "brvnx",
+      "displayName": "Brvnx",
+      "basePlayerKey": "brvnx",
+      "basePlayerName": "Brvnx",
+      "deck": "",
+      "rating": 1588.209,
+      "matches": 86,
+      "wins": 47,
+      "losses": 39,
+      "winRate": 0.546512,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 88.209,
+      "eventCount": 14
     },
     {
       "seasonKey": "2025",
@@ -1148,6 +1199,40 @@
       "lastActiveDate": "2025-06-07",
       "eloGain": 86.856,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "discovern",
+      "displayName": "discoverN",
+      "basePlayerKey": "discovern",
+      "basePlayerName": "discoverN",
+      "deck": "",
+      "rating": 1583.668,
+      "matches": 171,
+      "wins": 106,
+      "losses": 65,
+      "winRate": 0.619883,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 83.668,
+      "eventCount": 27
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_blaze66",
+      "displayName": "_blaze66",
+      "basePlayerKey": "_blaze66",
+      "basePlayerName": "_blaze66",
+      "deck": "",
+      "rating": 1583.552,
+      "matches": 350,
+      "wins": 176,
+      "losses": 174,
+      "winRate": 0.502857,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 83.552,
+      "eventCount": 57
     },
     {
       "seasonKey": "2025",
@@ -1303,6 +1388,23 @@
       "eventCount": 10
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "flower270",
+      "displayName": "flower270",
+      "basePlayerKey": "flower270",
+      "basePlayerName": "flower270",
+      "deck": "",
+      "rating": 1580.411,
+      "matches": 48,
+      "wins": 31,
+      "losses": 17,
+      "winRate": 0.645833,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 80.411,
+      "eventCount": 7
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "vingadormtg",
@@ -1388,6 +1490,23 @@
       "eventCount": 6
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "cam_13",
+      "displayName": "CAM_13",
+      "basePlayerKey": "cam_13",
+      "basePlayerName": "CAM_13",
+      "deck": "",
+      "rating": 1579.47,
+      "matches": 67,
+      "wins": 41,
+      "losses": 26,
+      "winRate": 0.61194,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 79.47,
+      "eventCount": 10
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "boytriton",
@@ -1437,23 +1556,6 @@
       "lastActiveDate": "2026-03-27",
       "eloGain": 77.796,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "_against_",
-      "displayName": "_against_",
-      "basePlayerKey": "_against_",
-      "basePlayerName": "_against_",
-      "deck": "",
-      "rating": 1577.791,
-      "matches": 189,
-      "wins": 116,
-      "losses": 73,
-      "winRate": 0.613757,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 77.791,
-      "eventCount": 30
     },
     {
       "seasonKey": "2025",
@@ -1592,6 +1694,23 @@
       "eventCount": 16
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "alessandropiraccini",
+      "displayName": "AlessandroPiraccini",
+      "basePlayerKey": "alessandropiraccini",
+      "basePlayerName": "AlessandroPiraccini",
+      "deck": "",
+      "rating": 1575.504,
+      "matches": 221,
+      "wins": 121,
+      "losses": 100,
+      "winRate": 0.547511,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 75.504,
+      "eventCount": 45
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "macksmith",
@@ -1626,23 +1745,6 @@
       "eventCount": 38
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "__noob__",
-      "displayName": "__Noob__",
-      "basePlayerKey": "__noob__",
-      "basePlayerName": "__Noob__",
-      "deck": "",
-      "rating": 1575.275,
-      "matches": 381,
-      "wins": 236,
-      "losses": 145,
-      "winRate": 0.619423,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 75.275,
-      "eventCount": 62
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "hjc",
@@ -1658,23 +1760,6 @@
       "lastActiveDate": "2025-12-25",
       "eloGain": 75.228,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "discovern",
-      "displayName": "discoverN",
-      "basePlayerKey": "discovern",
-      "basePlayerName": "discoverN",
-      "deck": "",
-      "rating": 1575.027,
-      "matches": 165,
-      "wins": 102,
-      "losses": 63,
-      "winRate": 0.618182,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 75.027,
-      "eventCount": 26
     },
     {
       "seasonKey": "2026",
@@ -1709,40 +1794,6 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": 74.375,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "_blaze66",
-      "displayName": "_blaze66",
-      "basePlayerKey": "_blaze66",
-      "basePlayerName": "_blaze66",
-      "deck": "",
-      "rating": 1573.369,
-      "matches": 344,
-      "wins": 172,
-      "losses": 172,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 73.369,
-      "eventCount": 56
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "newbarola",
-      "displayName": "newbarola",
-      "basePlayerKey": "newbarola",
-      "basePlayerName": "newbarola",
-      "deck": "",
-      "rating": 1573.077,
-      "matches": 196,
-      "wins": 111,
-      "losses": 85,
-      "winRate": 0.566327,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 73.077,
-      "eventCount": 36
     },
     {
       "seasonKey": "2026",
@@ -1815,19 +1866,19 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "cam_13",
-      "displayName": "CAM_13",
-      "basePlayerKey": "cam_13",
-      "basePlayerName": "CAM_13",
+      "playerKey": "tsubasa_cat",
+      "displayName": "Tsubasa_Cat",
+      "basePlayerKey": "tsubasa_cat",
+      "basePlayerName": "Tsubasa_Cat",
       "deck": "",
-      "rating": 1571.311,
-      "matches": 61,
-      "wins": 37,
+      "rating": 1571.592,
+      "matches": 67,
+      "wins": 43,
       "losses": 24,
-      "winRate": 0.606557,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 71.311,
-      "eventCount": 9
+      "winRate": 0.641791,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 71.592,
+      "eventCount": 12
     },
     {
       "seasonKey": "2025",
@@ -1879,23 +1930,6 @@
       "lastActiveDate": "2025-12-25",
       "eloGain": 69.971,
       "eventCount": 7
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "alessandropiraccini",
-      "displayName": "AlessandroPiraccini",
-      "basePlayerKey": "alessandropiraccini",
-      "basePlayerName": "AlessandroPiraccini",
-      "deck": "",
-      "rating": 1569.652,
-      "matches": 214,
-      "wins": 117,
-      "losses": 97,
-      "winRate": 0.546729,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 69.652,
-      "eventCount": 44
     },
     {
       "seasonKey": "2026",
@@ -1998,40 +2032,6 @@
       "lastActiveDate": "2025-11-15",
       "eloGain": 67.994,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "ixidor29",
-      "displayName": "Ixidor29",
-      "basePlayerKey": "ixidor29",
-      "basePlayerName": "Ixidor29",
-      "deck": "",
-      "rating": 1567.869,
-      "matches": 345,
-      "wins": 170,
-      "losses": 175,
-      "winRate": 0.492754,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 67.869,
-      "eventCount": 58
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "flower270",
-      "displayName": "flower270",
-      "basePlayerKey": "flower270",
-      "basePlayerName": "flower270",
-      "deck": "",
-      "rating": 1567.849,
-      "matches": 42,
-      "wins": 27,
-      "losses": 15,
-      "winRate": 0.642857,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 67.849,
-      "eventCount": 6
     },
     {
       "seasonKey": "2025",
@@ -2461,23 +2461,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "saculsueahtam",
-      "displayName": "SaculSueahtam",
-      "basePlayerKey": "saculsueahtam",
-      "basePlayerName": "SaculSueahtam",
-      "deck": "",
-      "rating": 1561.413,
-      "matches": 237,
-      "wins": 123,
-      "losses": 114,
-      "winRate": 0.518987,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 61.413,
-      "eventCount": 46
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "adryannthehero04",
       "displayName": "AdryannTheHero04",
       "basePlayerKey": "adryannthehero04",
@@ -2508,6 +2491,23 @@
       "lastActiveDate": "2026-05-14",
       "eloGain": 60.858,
       "eventCount": 10
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "saculsueahtam",
+      "displayName": "SaculSueahtam",
+      "basePlayerKey": "saculsueahtam",
+      "basePlayerName": "SaculSueahtam",
+      "deck": "",
+      "rating": 1560.729,
+      "matches": 243,
+      "wins": 126,
+      "losses": 117,
+      "winRate": 0.518519,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 60.729,
+      "eventCount": 47
     },
     {
       "seasonKey": "2026",
@@ -2576,23 +2576,6 @@
       "lastActiveDate": "2026-04-05",
       "eloGain": 58.953,
       "eventCount": 11
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "brvnx",
-      "displayName": "Brvnx",
-      "basePlayerKey": "brvnx",
-      "basePlayerName": "Brvnx",
-      "deck": "",
-      "rating": 1558.389,
-      "matches": 78,
-      "wins": 41,
-      "losses": 37,
-      "winRate": 0.525641,
-      "lastActiveDate": "2026-05-02",
-      "eloGain": 58.389,
-      "eventCount": 13
     },
     {
       "seasonKey": "2026",
@@ -2712,6 +2695,23 @@
       "lastActiveDate": "2025-10-05",
       "eloGain": 57.677,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "__noob__",
+      "displayName": "__Noob__",
+      "basePlayerKey": "__noob__",
+      "basePlayerName": "__Noob__",
+      "deck": "",
+      "rating": 1557.353,
+      "matches": 383,
+      "wins": 236,
+      "losses": 147,
+      "winRate": 0.616188,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 57.353,
+      "eventCount": 63
     },
     {
       "seasonKey": "2026",
@@ -2918,6 +2918,23 @@
       "eventCount": 5
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "yolad",
+      "displayName": "yolad",
+      "basePlayerKey": "yolad",
+      "basePlayerName": "yolad",
+      "deck": "",
+      "rating": 1555.807,
+      "matches": 30,
+      "wins": 18,
+      "losses": 12,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 55.807,
+      "eventCount": 4
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "wingedhussar",
@@ -2933,23 +2950,6 @@
       "lastActiveDate": "2025-08-10",
       "eloGain": 55.626,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "tsubasa_cat",
-      "displayName": "Tsubasa_Cat",
-      "basePlayerKey": "tsubasa_cat",
-      "basePlayerName": "Tsubasa_Cat",
-      "deck": "",
-      "rating": 1555.575,
-      "matches": 61,
-      "wins": 39,
-      "losses": 22,
-      "winRate": 0.639344,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 55.575,
-      "eventCount": 11
     },
     {
       "seasonKey": "2025",
@@ -3192,23 +3192,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "denisevich",
-      "displayName": "Denisevich",
-      "basePlayerKey": "denisevich",
-      "basePlayerName": "Denisevich",
-      "deck": "",
-      "rating": 1552.039,
-      "matches": 225,
-      "wins": 125,
-      "losses": 100,
-      "winRate": 0.555556,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 52.039,
-      "eventCount": 39
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "mdvwin",
       "displayName": "MdvWin",
       "basePlayerKey": "mdvwin",
@@ -3275,6 +3258,23 @@
       "eventCount": 5
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ixidor29",
+      "displayName": "Ixidor29",
+      "basePlayerKey": "ixidor29",
+      "basePlayerName": "Ixidor29",
+      "deck": "",
+      "rating": 1550.784,
+      "matches": 351,
+      "wins": 172,
+      "losses": 179,
+      "winRate": 0.490028,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 50.784,
+      "eventCount": 59
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "db_sodeq",
@@ -3290,23 +3290,6 @@
       "lastActiveDate": "2025-12-07",
       "eloGain": 50.375,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mahers",
-      "displayName": "Mahers",
-      "basePlayerKey": "mahers",
-      "basePlayerName": "Mahers",
-      "deck": "",
-      "rating": 1550.021,
-      "matches": 196,
-      "wins": 98,
-      "losses": 98,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 50.021,
-      "eventCount": 31
     },
     {
       "seasonKey": "2025",
@@ -3853,6 +3836,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "newbarola",
+      "displayName": "newbarola",
+      "basePlayerKey": "newbarola",
+      "basePlayerName": "newbarola",
+      "deck": "",
+      "rating": 1545.962,
+      "matches": 201,
+      "wins": 112,
+      "losses": 89,
+      "winRate": 0.557214,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 45.962,
+      "eventCount": 37
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "_falcon_",
@@ -3885,23 +3885,6 @@
       "lastActiveDate": "2025-11-23",
       "eloGain": 45.453,
       "eventCount": 13
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "yolad",
-      "displayName": "yolad",
-      "basePlayerKey": "yolad",
-      "basePlayerName": "yolad",
-      "deck": "",
-      "rating": 1545.452,
-      "matches": 23,
-      "wins": 14,
-      "losses": 9,
-      "winRate": 0.608696,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 45.452,
-      "eventCount": 3
     },
     {
       "seasonKey": "2025",
@@ -4072,23 +4055,6 @@
       "lastActiveDate": "2025-05-16",
       "eloGain": 43.309,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "s8shock",
-      "displayName": "s8shock",
-      "basePlayerKey": "s8shock",
-      "basePlayerName": "s8shock",
-      "deck": "",
-      "rating": 1543.128,
-      "matches": 14,
-      "wins": 9,
-      "losses": 5,
-      "winRate": 0.642857,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 43.128,
-      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -4312,23 +4278,6 @@
       "eventCount": 6
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "lostonkato",
-      "displayName": "lostonkato",
-      "basePlayerKey": "lostonkato",
-      "basePlayerName": "lostonkato",
-      "deck": "",
-      "rating": 1542.084,
-      "matches": 13,
-      "wins": 9,
-      "losses": 4,
-      "winRate": 0.692308,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 42.084,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "renaar",
@@ -4501,23 +4450,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "_batutinha_",
-      "displayName": "_Batutinha_",
-      "basePlayerKey": "_batutinha_",
-      "basePlayerName": "_Batutinha_",
-      "deck": "",
-      "rating": 1541.431,
-      "matches": 70,
-      "wins": 35,
-      "losses": 35,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 41.431,
-      "eventCount": 13
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "bahsis",
       "displayName": "Bahsis",
       "basePlayerKey": "bahsis",
@@ -4616,6 +4548,23 @@
       "lastActiveDate": "2025-08-31",
       "eloGain": 40.759,
       "eventCount": 6
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "m4ni0u",
+      "displayName": "M4NI0U",
+      "basePlayerKey": "m4ni0u",
+      "basePlayerName": "M4NI0U",
+      "deck": "",
+      "rating": 1540.714,
+      "matches": 8,
+      "wins": 6,
+      "losses": 2,
+      "winRate": 0.75,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 40.714,
+      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -4769,6 +4718,23 @@
       "lastActiveDate": "2025-11-30",
       "eloGain": 39.883,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "s8shock",
+      "displayName": "s8shock",
+      "basePlayerKey": "s8shock",
+      "basePlayerName": "s8shock",
+      "deck": "",
+      "rating": 1539.801,
+      "matches": 20,
+      "wins": 12,
+      "losses": 8,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 39.801,
+      "eventCount": 3
     },
     {
       "seasonKey": "2025",
@@ -4941,23 +4907,6 @@
       "eventCount": 8
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "entropete",
-      "displayName": "EntroPete",
-      "basePlayerKey": "entropete",
-      "basePlayerName": "EntroPete",
-      "deck": "",
-      "rating": 1538.944,
-      "matches": 56,
-      "wins": 29,
-      "losses": 27,
-      "winRate": 0.517857,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 38.944,
-      "eventCount": 9
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "othavirium",
@@ -5111,6 +5060,23 @@
       "eventCount": 17
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "lostonkato",
+      "displayName": "lostonkato",
+      "basePlayerKey": "lostonkato",
+      "basePlayerName": "lostonkato",
+      "deck": "",
+      "rating": 1537.909,
+      "matches": 19,
+      "wins": 12,
+      "losses": 7,
+      "winRate": 0.631579,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 37.909,
+      "eventCount": 3
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "hamuda",
@@ -5261,23 +5227,6 @@
       "winRate": 0.631579,
       "lastActiveDate": "2025-07-12",
       "eloGain": 37.083,
-      "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "anpanmoemoe",
-      "displayName": "AnpanMoeMoe",
-      "basePlayerKey": "anpanmoemoe",
-      "basePlayerName": "AnpanMoeMoe",
-      "deck": "",
-      "rating": 1537.067,
-      "matches": 21,
-      "wins": 13,
-      "losses": 8,
-      "winRate": 0.619048,
-      "lastActiveDate": "2026-03-12",
-      "eloGain": 37.067,
       "eventCount": 3
     },
     {
@@ -5876,6 +5825,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pr0boszcz",
+      "displayName": "PR0boszcz",
+      "basePlayerKey": "pr0boszcz",
+      "basePlayerName": "PR0boszcz",
+      "deck": "",
+      "rating": 1534.673,
+      "matches": 105,
+      "wins": 62,
+      "losses": 43,
+      "winRate": 0.590476,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 34.673,
+      "eventCount": 19
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "frigley",
@@ -5944,23 +5910,6 @@
       "eventCount": 4
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pr0boszcz",
-      "displayName": "PR0boszcz",
-      "basePlayerKey": "pr0boszcz",
-      "basePlayerName": "PR0boszcz",
-      "deck": "",
-      "rating": 1534.176,
-      "matches": 99,
-      "wins": 59,
-      "losses": 40,
-      "winRate": 0.59596,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 34.176,
-      "eventCount": 18
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "bong0411",
@@ -5995,6 +5944,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "medvedev",
+      "displayName": "medvedev",
+      "basePlayerKey": "medvedev",
+      "basePlayerName": "medvedev",
+      "deck": "",
+      "rating": 1533.892,
+      "matches": 37,
+      "wins": 20,
+      "losses": 17,
+      "winRate": 0.540541,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 33.892,
+      "eventCount": 7
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "420dragon",
@@ -6010,6 +5976,23 @@
       "lastActiveDate": "2025-04-20",
       "eloGain": 33.857,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "denisevich",
+      "displayName": "Denisevich",
+      "basePlayerKey": "denisevich",
+      "basePlayerName": "Denisevich",
+      "deck": "",
+      "rating": 1533.849,
+      "matches": 229,
+      "wins": 126,
+      "losses": 103,
+      "winRate": 0.550218,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 33.849,
+      "eventCount": 40
     },
     {
       "seasonKey": "2026",
@@ -6131,6 +6114,23 @@
       "eventCount": 3
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "anpanmoemoe",
+      "displayName": "AnpanMoeMoe",
+      "basePlayerKey": "anpanmoemoe",
+      "basePlayerName": "AnpanMoeMoe",
+      "deck": "",
+      "rating": 1533.339,
+      "matches": 27,
+      "wins": 16,
+      "losses": 11,
+      "winRate": 0.592593,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 33.339,
+      "eventCount": 4
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "luddrox",
@@ -6180,23 +6180,6 @@
       "lastActiveDate": "2026-05-10",
       "eloGain": 32.997,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "medvedev",
-      "displayName": "medvedev",
-      "basePlayerKey": "medvedev",
-      "basePlayerName": "medvedev",
-      "deck": "",
-      "rating": 1532.985,
-      "matches": 31,
-      "wins": 17,
-      "losses": 14,
-      "winRate": 0.548387,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 32.985,
-      "eventCount": 6
     },
     {
       "seasonKey": "2025",
@@ -6573,23 +6556,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "jadencamelot",
-      "displayName": "jadencamelot",
-      "basePlayerKey": "jadencamelot",
-      "basePlayerName": "jadencamelot",
-      "deck": "",
-      "rating": 1531.569,
-      "matches": 33,
-      "wins": 18,
-      "losses": 15,
-      "winRate": 0.545455,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 31.569,
-      "eventCount": 5
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "xto2",
@@ -6775,6 +6741,23 @@
       "lastActiveDate": "2026-01-23",
       "eloGain": 30.634,
       "eventCount": 3
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "jadencamelot",
+      "displayName": "jadencamelot",
+      "basePlayerKey": "jadencamelot",
+      "basePlayerName": "jadencamelot",
+      "deck": "",
+      "rating": 1530.407,
+      "matches": 39,
+      "wins": 21,
+      "losses": 18,
+      "winRate": 0.538462,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 30.407,
+      "eventCount": 6
     },
     {
       "seasonKey": "2026",
@@ -8222,6 +8205,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pinoio_cosmico",
+      "displayName": "PinoIo_Cosmico",
+      "basePlayerKey": "pinoio_cosmico",
+      "basePlayerName": "PinoIo_Cosmico",
+      "deck": "",
+      "rating": 1524.941,
+      "matches": 79,
+      "wins": 40,
+      "losses": 39,
+      "winRate": 0.506329,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 24.941,
+      "eventCount": 14
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "valimoth",
@@ -8543,23 +8543,6 @@
       "lastActiveDate": "2026-04-09",
       "eloGain": 23.704,
       "eventCount": 5
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pilot83",
-      "displayName": "Pilot83",
-      "basePlayerKey": "pilot83",
-      "basePlayerName": "Pilot83",
-      "deck": "",
-      "rating": 1523.702,
-      "matches": 52,
-      "wins": 25,
-      "losses": 27,
-      "winRate": 0.480769,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 23.702,
-      "eventCount": 10
     },
     {
       "seasonKey": "2026",
@@ -8972,23 +8955,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "carrodapolicia",
-      "displayName": "CarrodaPolicia",
-      "basePlayerKey": "carrodapolicia",
-      "basePlayerName": "CarrodaPolicia",
-      "deck": "",
-      "rating": 1521.673,
-      "matches": 19,
-      "wins": 10,
-      "losses": 9,
-      "winRate": 0.526316,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 21.673,
-      "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "bunbuneru",
       "displayName": "Bunbuneru",
       "basePlayerKey": "bunbuneru",
@@ -9172,6 +9138,23 @@
       "lastActiveDate": "2026-03-22",
       "eloGain": 21.028,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_batutinha_",
+      "displayName": "_Batutinha_",
+      "basePlayerKey": "_batutinha_",
+      "basePlayerName": "_Batutinha_",
+      "deck": "",
+      "rating": 1521.015,
+      "matches": 73,
+      "wins": 35,
+      "losses": 38,
+      "winRate": 0.479452,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 21.015,
+      "eventCount": 14
     },
     {
       "seasonKey": "2025",
@@ -9822,23 +9805,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "serajh",
-      "displayName": "serajh",
-      "basePlayerKey": "serajh",
-      "basePlayerName": "serajh",
-      "deck": "",
-      "rating": 1519.497,
-      "matches": 6,
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.666667,
-      "lastActiveDate": "2026-02-07",
-      "eloGain": 19.497,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "comrade1312",
       "displayName": "Comrade1312",
       "basePlayerKey": "comrade1312",
@@ -10277,6 +10243,23 @@
       "lastActiveDate": "2025-12-07",
       "eloGain": 18.575,
       "eventCount": 14
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "voypel",
+      "displayName": "Voypel",
+      "basePlayerKey": "voypel",
+      "basePlayerName": "Voypel",
+      "deck": "",
+      "rating": 1518.571,
+      "matches": 6,
+      "wins": 4,
+      "losses": 2,
+      "winRate": 0.666667,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 18.571,
+      "eventCount": 1
     },
     {
       "seasonKey": "2026",
@@ -11333,6 +11316,23 @@
       "eventCount": 4
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "entropete",
+      "displayName": "EntroPete",
+      "basePlayerKey": "entropete",
+      "basePlayerName": "EntroPete",
+      "deck": "",
+      "rating": 1515.945,
+      "matches": 59,
+      "wins": 29,
+      "losses": 30,
+      "winRate": 0.491525,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 15.945,
+      "eventCount": 10
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "8salazzar8",
@@ -12385,23 +12385,6 @@
       "lastActiveDate": "2026-05-15",
       "eloGain": 11.906,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "true-name-nemesis",
-      "displayName": "True-Name-Nemesis",
-      "basePlayerKey": "true-name-nemesis",
-      "basePlayerName": "True-Name-Nemesis",
-      "deck": "",
-      "rating": 1511.867,
-      "matches": 121,
-      "wins": 66,
-      "losses": 55,
-      "winRate": 0.545455,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 11.867,
-      "eventCount": 22
     },
     {
       "seasonKey": "2025",
@@ -13832,23 +13815,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "vikizin",
-      "displayName": "vikizin",
-      "basePlayerKey": "vikizin",
-      "basePlayerName": "vikizin",
-      "deck": "",
-      "rating": 1508.517,
-      "matches": 34,
-      "wins": 16,
-      "losses": 18,
-      "winRate": 0.470588,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 8.517,
-      "eventCount": 8
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "darthkid",
@@ -14034,6 +14000,23 @@
       "lastActiveDate": "2025-11-21",
       "eloGain": 8.126,
       "eventCount": 33
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pilot83",
+      "displayName": "Pilot83",
+      "basePlayerKey": "pilot83",
+      "basePlayerName": "Pilot83",
+      "deck": "",
+      "rating": 1508.09,
+      "matches": 58,
+      "wins": 27,
+      "losses": 31,
+      "winRate": 0.465517,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 8.09,
+      "eventCount": 11
     },
     {
       "seasonKey": "2025",
@@ -14459,23 +14442,6 @@
       "lastActiveDate": "2026-05-14",
       "eloGain": 7.258,
       "eventCount": 10
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pinoio_cosmico",
-      "displayName": "PinoIo_Cosmico",
-      "basePlayerKey": "pinoio_cosmico",
-      "basePlayerName": "PinoIo_Cosmico",
-      "deck": "",
-      "rating": 1507.232,
-      "matches": 73,
-      "wins": 36,
-      "losses": 37,
-      "winRate": 0.493151,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 7.232,
-      "eventCount": 13
     },
     {
       "seasonKey": "2025",
@@ -15445,6 +15411,23 @@
       "lastActiveDate": "2026-04-11",
       "eloGain": 5.406,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "true-name-nemesis",
+      "displayName": "True-Name-Nemesis",
+      "basePlayerKey": "true-name-nemesis",
+      "basePlayerName": "True-Name-Nemesis",
+      "deck": "",
+      "rating": 1505.367,
+      "matches": 122,
+      "wins": 66,
+      "losses": 56,
+      "winRate": 0.540984,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 5.367,
+      "eventCount": 23
     },
     {
       "seasonKey": "2026",
@@ -16652,6 +16635,23 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": 3.114,
       "eventCount": 3
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "serajh",
+      "displayName": "serajh",
+      "basePlayerKey": "serajh",
+      "basePlayerName": "serajh",
+      "deck": "",
+      "rating": 1503.104,
+      "matches": 10,
+      "wins": 5,
+      "losses": 5,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": 3.104,
+      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -19104,23 +19104,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "terminus0",
-      "displayName": "Terminus0",
-      "basePlayerKey": "terminus0",
-      "basePlayerName": "Terminus0",
-      "deck": "",
-      "rating": 1499.464,
-      "matches": 110,
-      "wins": 48,
-      "losses": 62,
-      "winRate": 0.436364,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": -0.536,
-      "eventCount": 23
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "luru",
       "displayName": "LuRu",
       "basePlayerKey": "luru",
@@ -19151,6 +19134,23 @@
       "lastActiveDate": "2025-12-28",
       "eloGain": -0.605,
       "eventCount": 46
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "angus91",
+      "displayName": "Angus91",
+      "basePlayerKey": "angus91",
+      "basePlayerName": "Angus91",
+      "deck": "",
+      "rating": 1499.341,
+      "matches": 29,
+      "wins": 14,
+      "losses": 15,
+      "winRate": 0.482759,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -0.659,
+      "eventCount": 5
     },
     {
       "seasonKey": "2026",
@@ -20209,6 +20209,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "carrodapolicia",
+      "displayName": "CarrodaPolicia",
+      "basePlayerKey": "carrodapolicia",
+      "basePlayerName": "CarrodaPolicia",
+      "deck": "",
+      "rating": 1496.273,
+      "matches": 24,
+      "wins": 11,
+      "losses": 13,
+      "winRate": 0.458333,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -3.727,
+      "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "elvis10",
       "displayName": "elvis10",
       "basePlayerKey": "elvis10",
@@ -20581,23 +20598,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "angus91",
-      "displayName": "Angus91",
-      "basePlayerKey": "angus91",
-      "basePlayerName": "Angus91",
-      "deck": "",
-      "rating": 1495.561,
-      "matches": 23,
-      "wins": 11,
-      "losses": 12,
-      "winRate": 0.478261,
-      "lastActiveDate": "2026-04-05",
-      "eloGain": -4.439,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "gasto02",
@@ -20834,6 +20834,23 @@
       "lastActiveDate": "2025-08-03",
       "eloGain": -4.754,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "vikizin",
+      "displayName": "vikizin",
+      "basePlayerKey": "vikizin",
+      "basePlayerName": "vikizin",
+      "deck": "",
+      "rating": 1495.226,
+      "matches": 40,
+      "wins": 18,
+      "losses": 22,
+      "winRate": 0.45,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -4.774,
+      "eventCount": 9
     },
     {
       "seasonKey": "2026",
@@ -23403,6 +23420,23 @@
       "eventCount": 4
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "terminus0",
+      "displayName": "Terminus0",
+      "basePlayerKey": "terminus0",
+      "basePlayerName": "Terminus0",
+      "deck": "",
+      "rating": 1492.26,
+      "matches": 111,
+      "wins": 48,
+      "losses": 63,
+      "winRate": 0.432432,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -7.74,
+      "eventCount": 24
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "solonggaybowsah",
@@ -23981,23 +24015,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "hetare_ane",
-      "displayName": "hetare_ane",
-      "basePlayerKey": "hetare_ane",
-      "basePlayerName": "hetare_ane",
-      "deck": "",
-      "rating": 1491.903,
-      "matches": 102,
-      "wins": 45,
-      "losses": 57,
-      "winRate": 0.441176,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": -8.097,
-      "eventCount": 17
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "_zodiak",
@@ -24183,6 +24200,23 @@
       "lastActiveDate": "2025-08-03",
       "eloGain": -8.23,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "proteina",
+      "displayName": "Proteina",
+      "basePlayerKey": "proteina",
+      "basePlayerName": "Proteina",
+      "deck": "",
+      "rating": 1491.752,
+      "matches": 14,
+      "wins": 6,
+      "losses": 8,
+      "winRate": 0.428571,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -8.248,
+      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -26851,23 +26885,6 @@
       "winRate": 0.333333,
       "lastActiveDate": "2026-03-15",
       "eloGain": -12.448,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "proteina",
-      "displayName": "Proteina",
-      "basePlayerKey": "proteina",
-      "basePlayerName": "Proteina",
-      "deck": "",
-      "rating": 1487.547,
-      "matches": 8,
-      "wins": 3,
-      "losses": 5,
-      "winRate": 0.375,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": -12.453,
       "eventCount": 1
     },
     {
@@ -29674,6 +29691,23 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": -15.267,
       "eventCount": 3
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "aniubbis",
+      "displayName": "Aniubbis",
+      "basePlayerKey": "aniubbis",
+      "basePlayerName": "Aniubbis",
+      "deck": "",
+      "rating": 1484.725,
+      "matches": 24,
+      "wins": 10,
+      "losses": 14,
+      "winRate": 0.416667,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -15.275,
+      "eventCount": 4
     },
     {
       "seasonKey": "2026",
@@ -32600,23 +32634,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "aniubbis",
-      "displayName": "Aniubbis",
-      "basePlayerKey": "aniubbis",
-      "basePlayerName": "Aniubbis",
-      "deck": "",
-      "rating": 1481.328,
-      "matches": 18,
-      "wins": 7,
-      "losses": 11,
-      "winRate": 0.388889,
-      "lastActiveDate": "2026-04-19",
-      "eloGain": -18.672,
-      "eventCount": 3
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "dingzhen",
@@ -33195,6 +33212,23 @@
       "eventCount": 4
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "hetare_ane",
+      "displayName": "hetare_ane",
+      "basePlayerKey": "hetare_ane",
+      "basePlayerName": "hetare_ane",
+      "deck": "",
+      "rating": 1479.765,
+      "matches": 108,
+      "wins": 47,
+      "losses": 61,
+      "winRate": 0.435185,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -20.235,
+      "eventCount": 18
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "ashe_oathkeeper",
@@ -33209,6 +33243,23 @@
       "winRate": 0.285714,
       "lastActiveDate": "2025-06-07",
       "eloGain": -20.237,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "tiralex",
+      "displayName": "Tiralex",
+      "basePlayerKey": "tiralex",
+      "basePlayerName": "Tiralex",
+      "deck": "",
+      "rating": 1479.747,
+      "matches": 10,
+      "wins": 3,
+      "losses": 7,
+      "winRate": 0.3,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -20.253,
       "eventCount": 2
     },
     {
@@ -34552,6 +34603,23 @@
       "winRate": 0,
       "lastActiveDate": "2025-03-07",
       "eloGain": -22.255,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "squall93",
+      "displayName": "Squall93",
+      "basePlayerKey": "squall93",
+      "basePlayerName": "Squall93",
+      "deck": "",
+      "rating": 1477.737,
+      "matches": 5,
+      "wins": 1,
+      "losses": 4,
+      "winRate": 0.2,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -22.263,
       "eventCount": 1
     },
     {
@@ -37462,23 +37530,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "tiralex",
-      "displayName": "Tiralex",
-      "basePlayerKey": "tiralex",
-      "basePlayerName": "Tiralex",
-      "deck": "",
-      "rating": 1471.899,
-      "matches": 4,
-      "wins": 0,
-      "losses": 4,
-      "winRate": 0,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": -28.101,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "chanel-santini",
@@ -40165,23 +40216,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "klien7",
-      "displayName": "klien7",
-      "basePlayerKey": "klien7",
-      "basePlayerName": "klien7",
-      "deck": "",
-      "rating": 1462.883,
-      "matches": 23,
-      "wins": 8,
-      "losses": 15,
-      "winRate": 0.347826,
-      "lastActiveDate": "2026-05-14",
-      "eloGain": -37.117,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "prim3time",
@@ -40571,6 +40605,23 @@
       "lastActiveDate": "2026-02-13",
       "eloGain": -39.104,
       "eventCount": 5
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "keez",
+      "displayName": "Keez",
+      "basePlayerKey": "keez",
+      "basePlayerName": "Keez",
+      "deck": "",
+      "rating": 1460.888,
+      "matches": 149,
+      "wins": 61,
+      "losses": 88,
+      "winRate": 0.409396,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -39.112,
+      "eventCount": 27
     },
     {
       "seasonKey": "2026",
@@ -41933,23 +41984,6 @@
       "eventCount": 4
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "amarobr",
-      "displayName": "amarobr",
-      "basePlayerKey": "amarobr",
-      "basePlayerName": "amarobr",
-      "deck": "",
-      "rating": 1451.954,
-      "matches": 28,
-      "wins": 10,
-      "losses": 18,
-      "winRate": 0.357143,
-      "lastActiveDate": "2026-03-28",
-      "eloGain": -48.046,
-      "eventCount": 5
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "capitano_cl",
@@ -42186,23 +42220,6 @@
       "lastActiveDate": "2025-03-16",
       "eloGain": -50.692,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "keez",
-      "displayName": "Keez",
-      "basePlayerKey": "keez",
-      "basePlayerName": "Keez",
-      "deck": "",
-      "rating": 1449.217,
-      "matches": 143,
-      "wins": 58,
-      "losses": 85,
-      "winRate": 0.405594,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": -50.783,
-      "eventCount": 26
     },
     {
       "seasonKey": "2025",
@@ -43004,6 +43021,40 @@
       "eventCount": 3
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "klien7",
+      "displayName": "klien7",
+      "basePlayerKey": "klien7",
+      "basePlayerName": "klien7",
+      "deck": "",
+      "rating": 1434.982,
+      "matches": 27,
+      "wins": 8,
+      "losses": 19,
+      "winRate": 0.296296,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -65.018,
+      "eventCount": 5
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "amarobr",
+      "displayName": "amarobr",
+      "basePlayerKey": "amarobr",
+      "basePlayerName": "amarobr",
+      "deck": "",
+      "rating": 1434.791,
+      "matches": 33,
+      "wins": 11,
+      "losses": 22,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -65.209,
+      "eventCount": 6
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "aniubbis",
@@ -43361,23 +43412,6 @@
       "eventCount": 8
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "syns",
-      "displayName": "Syns",
-      "basePlayerKey": "syns",
-      "basePlayerName": "Syns",
-      "deck": "",
-      "rating": 1419.907,
-      "matches": 304,
-      "wins": 130,
-      "losses": 174,
-      "winRate": 0.427632,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": -80.093,
-      "eventCount": 57
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "eijunchn",
@@ -43393,6 +43427,23 @@
       "lastActiveDate": "2025-11-15",
       "eloGain": -81.077,
       "eventCount": 18
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "syns",
+      "displayName": "Syns",
+      "basePlayerKey": "syns",
+      "basePlayerName": "Syns",
+      "deck": "",
+      "rating": 1417.369,
+      "matches": 310,
+      "wins": 132,
+      "losses": 178,
+      "winRate": 0.425806,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -82.631,
+      "eventCount": 58
     },
     {
       "seasonKey": "2025",
@@ -43669,23 +43720,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "db_kirblinxy",
-      "displayName": "DB_Kirblinxy",
-      "basePlayerKey": "db_kirblinxy",
-      "basePlayerName": "DB_Kirblinxy",
-      "deck": "",
-      "rating": 1382.596,
-      "matches": 20,
-      "wins": 0,
-      "losses": 20,
-      "winRate": 0,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": -117.404,
-      "eventCount": 19
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "elfoman_br",
       "displayName": "Elfoman_br",
       "basePlayerKey": "elfoman_br",
@@ -43716,6 +43750,23 @@
       "lastActiveDate": "2025-12-28",
       "eloGain": -118.746,
       "eventCount": 60
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "db_kirblinxy",
+      "displayName": "DB_Kirblinxy",
+      "basePlayerKey": "db_kirblinxy",
+      "basePlayerName": "DB_Kirblinxy",
+      "deck": "",
+      "rating": 1376.172,
+      "matches": 21,
+      "wins": 0,
+      "losses": 21,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-16",
+      "eloGain": -123.828,
+      "eventCount": 20
     },
     {
       "seasonKey": "2026",
