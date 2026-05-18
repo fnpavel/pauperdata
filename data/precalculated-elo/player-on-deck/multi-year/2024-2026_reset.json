@@ -6,9 +6,9 @@
     "endYear": 2026,
     "mode": "reset"
   },
-  "generatedAt": "2026-05-16T23:15:48+00:00",
-  "matchCount": 64310,
-  "selectedMatchCount": 64610,
+  "generatedAt": "2026-05-18T01:28:19+00:00",
+  "matchCount": 64651,
+  "selectedMatchCount": 64964,
   "rows": [
     {
       "seasonKey": "2025",
@@ -69,14 +69,14 @@
       "basePlayerKey": "barff",
       "basePlayerName": "barff",
       "deck": "Dimir Fae",
-      "rating": 1682.675,
-      "matches": 133,
-      "wins": 95,
-      "losses": 38,
-      "winRate": 0.714286,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 182.675,
-      "eventCount": 19
+      "rating": 1698.915,
+      "matches": 139,
+      "wins": 100,
+      "losses": 39,
+      "winRate": 0.719424,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 198.915,
+      "eventCount": 20
     },
     {
       "seasonKey": "2025",
@@ -179,6 +179,23 @@
       "lastActiveDate": "2025-12-26",
       "eloGain": 170.489,
       "eventCount": 8
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mistertwin:::Mono Red Madness",
+      "displayName": "MisterTwin (Mono Red Madness)",
+      "basePlayerKey": "mistertwin",
+      "basePlayerName": "MisterTwin",
+      "deck": "Mono Red Madness",
+      "rating": 1669.319,
+      "matches": 197,
+      "wins": 130,
+      "losses": 67,
+      "winRate": 0.659898,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 169.319,
+      "eventCount": 29
     },
     {
       "seasonKey": "2025",
@@ -455,6 +472,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "luffydochapeudepalha:::Grixis Affinity",
+      "displayName": "LuffyDoChapeuDePalha (Grixis Affinity)",
+      "basePlayerKey": "luffydochapeudepalha",
+      "basePlayerName": "LuffyDoChapeuDePalha",
+      "deck": "Grixis Affinity",
+      "rating": 1642.507,
+      "matches": 484,
+      "wins": 310,
+      "losses": 174,
+      "winRate": 0.640496,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 142.507,
+      "eventCount": 71
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "_against_:::Dimir Terror",
       "displayName": "_against_ (Dimir Terror)",
       "basePlayerKey": "_against_",
@@ -674,40 +708,6 @@
       "eventCount": 10
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "luffydochapeudepalha:::Grixis Affinity",
-      "displayName": "LuffyDoChapeuDePalha (Grixis Affinity)",
-      "basePlayerKey": "luffydochapeudepalha",
-      "basePlayerName": "LuffyDoChapeuDePalha",
-      "deck": "Grixis Affinity",
-      "rating": 1633.221,
-      "matches": 477,
-      "wins": 305,
-      "losses": 172,
-      "winRate": 0.639413,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 133.221,
-      "eventCount": 70
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "luminati:::Mono Blue Terror",
-      "displayName": "Luminati (Mono Blue Terror)",
-      "basePlayerKey": "luminati",
-      "basePlayerName": "Luminati",
-      "deck": "Mono Blue Terror",
-      "rating": 1633.221,
-      "matches": 441,
-      "wins": 281,
-      "losses": 160,
-      "winRate": 0.637188,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 133.221,
-      "eventCount": 66
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "__noob__:::Turbofog",
@@ -910,40 +910,6 @@
       "lastActiveDate": "2024-12-21",
       "eloGain": 125.843,
       "eventCount": 12
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "boom_bust:::Red Deck Wins",
-      "displayName": "boom_bust (Red Deck Wins)",
-      "basePlayerKey": "boom_bust",
-      "basePlayerName": "boom_bust",
-      "deck": "Red Deck Wins",
-      "rating": 1625.598,
-      "matches": 161,
-      "wins": 103,
-      "losses": 58,
-      "winRate": 0.639752,
-      "lastActiveDate": "2026-05-08",
-      "eloGain": 125.598,
-      "eventCount": 24
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mistertwin:::Mono Red Madness",
-      "displayName": "MisterTwin (Mono Red Madness)",
-      "basePlayerKey": "mistertwin",
-      "basePlayerName": "MisterTwin",
-      "deck": "Mono Red Madness",
-      "rating": 1624.967,
-      "matches": 189,
-      "wins": 122,
-      "losses": 67,
-      "winRate": 0.645503,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 124.967,
-      "eventCount": 28
     },
     {
       "seasonKey": "2025",
@@ -1371,6 +1337,23 @@
       "eventCount": 8
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "luminati:::Mono Blue Terror",
+      "displayName": "Luminati (Mono Blue Terror)",
+      "basePlayerKey": "luminati",
+      "basePlayerName": "Luminati",
+      "deck": "Mono Blue Terror",
+      "rating": 1610.313,
+      "matches": 448,
+      "wins": 284,
+      "losses": 164,
+      "winRate": 0.633929,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 110.313,
+      "eventCount": 67
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "renaar:::Mono White Heroic",
@@ -1454,6 +1437,23 @@
       "lastActiveDate": "2025-12-26",
       "eloGain": 108.797,
       "eventCount": 24
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "enz091:::Elves",
+      "displayName": "Enz091 (Elves)",
+      "basePlayerKey": "enz091",
+      "basePlayerName": "Enz091",
+      "deck": "Elves",
+      "rating": 1608.495,
+      "matches": 44,
+      "wins": 30,
+      "losses": 14,
+      "winRate": 0.681818,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 108.495,
+      "eventCount": 7
     },
     {
       "seasonKey": "2024",
@@ -1660,6 +1660,23 @@
       "eventCount": 9
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "boom_bust:::Red Deck Wins",
+      "displayName": "boom_bust (Red Deck Wins)",
+      "basePlayerKey": "boom_bust",
+      "basePlayerName": "boom_bust",
+      "deck": "Red Deck Wins",
+      "rating": 1604.849,
+      "matches": 168,
+      "wins": 106,
+      "losses": 62,
+      "winRate": 0.630952,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 104.849,
+      "eventCount": 25
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "niederschatten:::White Weenie",
@@ -1692,23 +1709,6 @@
       "lastActiveDate": "2025-08-29",
       "eloGain": 104.65,
       "eventCount": 24
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "nicknorman:::Golgari Gardens",
-      "displayName": "NickNorman (Golgari Gardens)",
-      "basePlayerKey": "nicknorman",
-      "basePlayerName": "NickNorman",
-      "deck": "Golgari Gardens",
-      "rating": 1604.493,
-      "matches": 204,
-      "wins": 128,
-      "losses": 76,
-      "winRate": 0.627451,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 104.493,
-      "eventCount": 31
     },
     {
       "seasonKey": "2026",
@@ -1862,23 +1862,6 @@
       "lastActiveDate": "2024-06-29",
       "eloGain": 102.17,
       "eventCount": 29
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "__noob__:::Golgari Gardens",
-      "displayName": "__Noob__ (Golgari Gardens)",
-      "basePlayerKey": "__noob__",
-      "basePlayerName": "__Noob__",
-      "deck": "Golgari Gardens",
-      "rating": 1601.634,
-      "matches": 320,
-      "wins": 215,
-      "losses": 105,
-      "winRate": 0.671875,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 101.634,
-      "eventCount": 48
     },
     {
       "seasonKey": "2025",
@@ -2049,23 +2032,6 @@
       "lastActiveDate": "2025-07-13",
       "eloGain": 99.692,
       "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "enz091:::Elves",
-      "displayName": "Enz091 (Elves)",
-      "basePlayerKey": "enz091",
-      "basePlayerName": "Enz091",
-      "deck": "Elves",
-      "rating": 1599.607,
-      "matches": 38,
-      "wins": 26,
-      "losses": 12,
-      "winRate": 0.684211,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": 99.607,
-      "eventCount": 6
     },
     {
       "seasonKey": "2025",
@@ -2495,23 +2461,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "mahers:::Red Deck Wins",
-      "displayName": "Mahers (Red Deck Wins)",
-      "basePlayerKey": "mahers",
-      "basePlayerName": "Mahers",
-      "deck": "Red Deck Wins",
-      "rating": 1595.166,
-      "matches": 31,
-      "wins": 21,
-      "losses": 10,
-      "winRate": 0.677419,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 95.166,
-      "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "mehanske:::Dimir Terror",
       "displayName": "mehanske (Dimir Terror)",
       "basePlayerKey": "mehanske",
@@ -2799,6 +2748,23 @@
       "eventCount": 20
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "nicknorman:::Golgari Gardens",
+      "displayName": "NickNorman (Golgari Gardens)",
+      "basePlayerKey": "nicknorman",
+      "basePlayerName": "NickNorman",
+      "deck": "Golgari Gardens",
+      "rating": 1590.762,
+      "matches": 207,
+      "wins": 129,
+      "losses": 78,
+      "winRate": 0.623188,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 90.762,
+      "eventCount": 32
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "tamakihunter:::High Tide Combo",
@@ -2848,23 +2814,6 @@
       "lastActiveDate": "2025-04-26",
       "eloGain": 90.239,
       "eventCount": 7
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "_blaze66:::Jund Wildfire",
-      "displayName": "_blaze66 (Jund Wildfire)",
-      "basePlayerKey": "_blaze66",
-      "basePlayerName": "_blaze66",
-      "deck": "Jund Wildfire",
-      "rating": 1590.201,
-      "matches": 273,
-      "wins": 152,
-      "losses": 121,
-      "winRate": 0.556777,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 90.201,
-      "eventCount": 44
     },
     {
       "seasonKey": "2024",
@@ -3054,6 +3003,23 @@
       "eventCount": 10
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "__noob__:::Golgari Gardens",
+      "displayName": "__Noob__ (Golgari Gardens)",
+      "basePlayerKey": "__noob__",
+      "basePlayerName": "__Noob__",
+      "deck": "Golgari Gardens",
+      "rating": 1587.205,
+      "matches": 323,
+      "wins": 216,
+      "losses": 107,
+      "winRate": 0.668731,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 87.205,
+      "eventCount": 49
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "kinghairy:::Grixis Affinity",
@@ -3137,6 +3103,23 @@
       "lastActiveDate": "2024-07-06",
       "eloGain": 86.248,
       "eventCount": 10
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "vini_torres:::Red Deck Wins",
+      "displayName": "vini_torres (Red Deck Wins)",
+      "basePlayerKey": "vini_torres",
+      "basePlayerName": "vini_torres",
+      "deck": "Red Deck Wins",
+      "rating": 1586.235,
+      "matches": 159,
+      "wins": 93,
+      "losses": 66,
+      "winRate": 0.584906,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 86.235,
+      "eventCount": 25
     },
     {
       "seasonKey": "2026",
@@ -3870,6 +3853,23 @@
       "eventCount": 5
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "viashinoperuano:::Boros Synth",
+      "displayName": "viashinoperuano (Boros Synth)",
+      "basePlayerKey": "viashinoperuano",
+      "basePlayerName": "viashinoperuano",
+      "deck": "Boros Synth",
+      "rating": 1579.251,
+      "matches": 238,
+      "wins": 140,
+      "losses": 98,
+      "winRate": 0.588235,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 79.251,
+      "eventCount": 37
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "outzeroo:::Mono Blue Terror",
@@ -3953,23 +3953,6 @@
       "lastActiveDate": "2026-04-04",
       "eloGain": 78.656,
       "eventCount": 5
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "onireject:::Mono Red Madness",
-      "displayName": "OniReject (Mono Red Madness)",
-      "basePlayerKey": "onireject",
-      "basePlayerName": "OniReject",
-      "deck": "Mono Red Madness",
-      "rating": 1578.463,
-      "matches": 17,
-      "wins": 13,
-      "losses": 4,
-      "winRate": 0.764706,
-      "lastActiveDate": "2026-03-27",
-      "eloGain": 78.463,
-      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -4057,23 +4040,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mehanske:::Rakdos Madness",
-      "displayName": "mehanske (Rakdos Madness)",
-      "basePlayerKey": "mehanske",
-      "basePlayerName": "mehanske",
-      "deck": "Rakdos Madness",
-      "rating": 1577.939,
-      "matches": 58,
-      "wins": 36,
-      "losses": 22,
-      "winRate": 0.62069,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": 77.939,
-      "eventCount": 9
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "totemsilence:::Jund Wildfire",
@@ -4089,6 +4055,23 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": 77.649,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "niederschatten:::Dimir Fae",
+      "displayName": "Niederschatten (Dimir Fae)",
+      "basePlayerKey": "niederschatten",
+      "basePlayerName": "Niederschatten",
+      "deck": "Dimir Fae",
+      "rating": 1577.49,
+      "matches": 37,
+      "wins": 24,
+      "losses": 13,
+      "winRate": 0.648649,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 77.49,
+      "eventCount": 6
     },
     {
       "seasonKey": "2026",
@@ -4499,6 +4482,23 @@
       "eventCount": 3
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "yuxiaoyu:::Golgari Gardens",
+      "displayName": "yuxiaoyu (Golgari Gardens)",
+      "basePlayerKey": "yuxiaoyu",
+      "basePlayerName": "yuxiaoyu",
+      "deck": "Golgari Gardens",
+      "rating": 1574.821,
+      "matches": 61,
+      "wins": 36,
+      "losses": 25,
+      "winRate": 0.590164,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 74.821,
+      "eventCount": 10
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "giuxgobbo:::Goblins",
@@ -4514,6 +4514,23 @@
       "lastActiveDate": "2025-06-07",
       "eloGain": 74.5,
       "eventCount": 3
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "eijunchn:::Jund Wildfire",
+      "displayName": "EiJunCHN (Jund Wildfire)",
+      "basePlayerKey": "eijunchn",
+      "basePlayerName": "EiJunCHN",
+      "deck": "Jund Wildfire",
+      "rating": 1574.418,
+      "matches": 59,
+      "wins": 35,
+      "losses": 24,
+      "winRate": 0.59322,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 74.418,
+      "eventCount": 9
     },
     {
       "seasonKey": "2025",
@@ -4548,23 +4565,6 @@
       "lastActiveDate": "2024-11-01",
       "eloGain": 74.215,
       "eventCount": 8
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "yuxiaoyu:::Golgari Gardens",
-      "displayName": "yuxiaoyu (Golgari Gardens)",
-      "basePlayerKey": "yuxiaoyu",
-      "basePlayerName": "yuxiaoyu",
-      "deck": "Golgari Gardens",
-      "rating": 1573.677,
-      "matches": 54,
-      "wins": 32,
-      "losses": 22,
-      "winRate": 0.592593,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 73.677,
-      "eventCount": 9
     },
     {
       "seasonKey": "2025",
@@ -4688,23 +4688,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "atmagic:::Red Deck Wins",
-      "displayName": "ATmagic (Red Deck Wins)",
-      "basePlayerKey": "atmagic",
-      "basePlayerName": "ATmagic",
-      "deck": "Red Deck Wins",
-      "rating": 1572.743,
-      "matches": 16,
-      "wins": 12,
-      "losses": 4,
-      "winRate": 0.75,
-      "lastActiveDate": "2026-02-28",
-      "eloGain": 72.743,
-      "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "flower270:::Mono Blue Terror",
       "displayName": "flower270 (Mono Blue Terror)",
       "basePlayerKey": "flower270",
@@ -4718,23 +4701,6 @@
       "lastActiveDate": "2026-05-16",
       "eloGain": 72.474,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "vini_torres:::Red Deck Wins",
-      "displayName": "vini_torres (Red Deck Wins)",
-      "basePlayerKey": "vini_torres",
-      "basePlayerName": "vini_torres",
-      "deck": "Red Deck Wins",
-      "rating": 1572.36,
-      "matches": 152,
-      "wins": 88,
-      "losses": 64,
-      "winRate": 0.578947,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 72.36,
-      "eventCount": 24
     },
     {
       "seasonKey": "2024",
@@ -4941,6 +4907,23 @@
       "eventCount": 21
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_blaze66:::Jund Wildfire",
+      "displayName": "_blaze66 (Jund Wildfire)",
+      "basePlayerKey": "_blaze66",
+      "basePlayerName": "_blaze66",
+      "deck": "Jund Wildfire",
+      "rating": 1571.202,
+      "matches": 280,
+      "wins": 155,
+      "losses": 125,
+      "winRate": 0.553571,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 71.202,
+      "eventCount": 45
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "jositoshekel:::Mono Red Madness",
@@ -5041,6 +5024,23 @@
       "lastActiveDate": "2024-05-04",
       "eloGain": 69.885,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mahers:::Red Deck Wins",
+      "displayName": "Mahers (Red Deck Wins)",
+      "basePlayerKey": "mahers",
+      "basePlayerName": "Mahers",
+      "deck": "Red Deck Wins",
+      "rating": 1569.792,
+      "matches": 37,
+      "wins": 23,
+      "losses": 14,
+      "winRate": 0.621622,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 69.792,
+      "eventCount": 5
     },
     {
       "seasonKey": "2024",
@@ -5160,23 +5160,6 @@
       "lastActiveDate": "2025-07-11",
       "eloGain": 69.085,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "saculsueahtam:::Red Deck Wins",
-      "displayName": "SaculSueahtam (Red Deck Wins)",
-      "basePlayerKey": "saculsueahtam",
-      "basePlayerName": "SaculSueahtam",
-      "deck": "Red Deck Wins",
-      "rating": 1569.082,
-      "matches": 202,
-      "wins": 116,
-      "losses": 86,
-      "winRate": 0.574257,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 69.082,
-      "eventCount": 35
     },
     {
       "seasonKey": "2025",
@@ -5349,23 +5332,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "viashinoperuano:::Boros Synth",
-      "displayName": "viashinoperuano (Boros Synth)",
-      "basePlayerKey": "viashinoperuano",
-      "basePlayerName": "viashinoperuano",
-      "deck": "Boros Synth",
-      "rating": 1567.47,
-      "matches": 232,
-      "wins": 136,
-      "losses": 96,
-      "winRate": 0.586207,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 67.47,
-      "eventCount": 36
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "elfu:::Elves",
@@ -5383,23 +5349,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "niederschatten:::Dimir Fae",
-      "displayName": "Niederschatten (Dimir Fae)",
-      "basePlayerKey": "niederschatten",
-      "basePlayerName": "Niederschatten",
-      "deck": "Dimir Fae",
-      "rating": 1567.422,
-      "matches": 31,
-      "wins": 20,
-      "losses": 11,
-      "winRate": 0.645161,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 67.422,
-      "eventCount": 5
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "spockvidaloka:::Golgari Broodscale",
@@ -5415,6 +5364,23 @@
       "lastActiveDate": "2025-01-26",
       "eloGain": 67.386,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "onireject:::Mono Red Madness",
+      "displayName": "OniReject (Mono Red Madness)",
+      "basePlayerKey": "onireject",
+      "basePlayerName": "OniReject",
+      "deck": "Mono Red Madness",
+      "rating": 1566.984,
+      "matches": 20,
+      "wins": 14,
+      "losses": 6,
+      "winRate": 0.7,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 66.984,
+      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -5533,6 +5499,23 @@
       "winRate": 0.638889,
       "lastActiveDate": "2024-12-13",
       "eloGain": 66.163,
+      "eventCount": 5
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "sarlanga:::Mono Blue Terror",
+      "displayName": "Sarlanga (Mono Blue Terror)",
+      "basePlayerKey": "sarlanga",
+      "basePlayerName": "Sarlanga",
+      "deck": "Mono Blue Terror",
+      "rating": 1566.158,
+      "matches": 32,
+      "wins": 21,
+      "losses": 11,
+      "winRate": 0.65625,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 66.158,
       "eventCount": 5
     },
     {
@@ -6097,23 +6080,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "eijunchn:::Jund Wildfire",
-      "displayName": "EiJunCHN (Jund Wildfire)",
-      "basePlayerKey": "eijunchn",
-      "basePlayerName": "EiJunCHN",
-      "deck": "Jund Wildfire",
-      "rating": 1564.232,
-      "matches": 53,
-      "wins": 31,
-      "losses": 22,
-      "winRate": 0.584906,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 64.232,
-      "eventCount": 8
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "sknerusmckwacz:::Few Land Spy",
@@ -6248,6 +6214,23 @@
       "lastActiveDate": "2024-11-16",
       "eloGain": 63.71,
       "eventCount": 26
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "albreto:::Mono Red Madness",
+      "displayName": "Albreto (Mono Red Madness)",
+      "basePlayerKey": "albreto",
+      "basePlayerName": "Albreto",
+      "deck": "Mono Red Madness",
+      "rating": 1563.608,
+      "matches": 20,
+      "wins": 14,
+      "losses": 6,
+      "winRate": 0.7,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 63.608,
+      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -6728,6 +6711,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "mehanske:::Rakdos Madness",
+      "displayName": "mehanske (Rakdos Madness)",
+      "basePlayerKey": "mehanske",
+      "basePlayerName": "mehanske",
+      "deck": "Rakdos Madness",
+      "rating": 1561.442,
+      "matches": 65,
+      "wins": 39,
+      "losses": 26,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 61.442,
+      "eventCount": 10
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "roter_erzengel:::Boros Synth",
       "displayName": "roter_Erzengel (Boros Synth)",
       "basePlayerKey": "roter_erzengel",
@@ -7029,6 +7029,23 @@
       "winRate": 0.888889,
       "lastActiveDate": "2025-04-11",
       "eloGain": 60.267,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "duke12:::White Weenie",
+      "displayName": "duke12 (White Weenie)",
+      "basePlayerKey": "duke12",
+      "basePlayerName": "duke12",
+      "deck": "White Weenie",
+      "rating": 1560.179,
+      "matches": 9,
+      "wins": 8,
+      "losses": 1,
+      "winRate": 0.888889,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 60.179,
       "eventCount": 1
     },
     {
@@ -7455,6 +7472,23 @@
       "lastActiveDate": "2024-06-21",
       "eloGain": 58.395,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "brvnx:::Dimir Fae",
+      "displayName": "Brvnx (Dimir Fae)",
+      "basePlayerKey": "brvnx",
+      "basePlayerName": "Brvnx",
+      "deck": "Dimir Fae",
+      "rating": 1558.358,
+      "matches": 25,
+      "wins": 15,
+      "losses": 10,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 58.358,
+      "eventCount": 4
     },
     {
       "seasonKey": "2024",
@@ -8035,23 +8069,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "sarlanga:::Mono Blue Terror",
-      "displayName": "Sarlanga (Mono Blue Terror)",
-      "basePlayerKey": "sarlanga",
-      "basePlayerName": "Sarlanga",
-      "deck": "Mono Blue Terror",
-      "rating": 1556.069,
-      "matches": 26,
-      "wins": 17,
-      "losses": 9,
-      "winRate": 0.653846,
-      "lastActiveDate": "2026-02-13",
-      "eloGain": 56.069,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "hamuda:::Dimir Affinity",
@@ -8237,6 +8254,23 @@
       "lastActiveDate": "2025-11-29",
       "eloGain": 55.6,
       "eventCount": 14
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "newbarola:::Selesnya Gates",
+      "displayName": "newbarola (Selesnya Gates)",
+      "basePlayerKey": "newbarola",
+      "basePlayerName": "newbarola",
+      "deck": "Selesnya Gates",
+      "rating": 1555.385,
+      "matches": 45,
+      "wins": 26,
+      "losses": 19,
+      "winRate": 0.577778,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 55.385,
+      "eventCount": 7
     },
     {
       "seasonKey": "2024",
@@ -8443,6 +8477,23 @@
       "eventCount": 3
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "atmagic:::Red Deck Wins",
+      "displayName": "ATmagic (Red Deck Wins)",
+      "basePlayerKey": "atmagic",
+      "basePlayerName": "ATmagic",
+      "deck": "Red Deck Wins",
+      "rating": 1554.357,
+      "matches": 23,
+      "wins": 15,
+      "losses": 8,
+      "winRate": 0.652174,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 54.357,
+      "eventCount": 3
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "make_it_right:::Mono Blue Terror",
@@ -8613,6 +8664,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "capoeira02:::Jund Wildfire",
+      "displayName": "Capoeira02 (Jund Wildfire)",
+      "basePlayerKey": "capoeira02",
+      "basePlayerName": "Capoeira02",
+      "deck": "Jund Wildfire",
+      "rating": 1554.041,
+      "matches": 14,
+      "wins": 10,
+      "losses": 4,
+      "winRate": 0.714286,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 54.041,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "fondaparinoux:::Golgari Gardens",
@@ -8764,23 +8832,6 @@
       "lastActiveDate": "2025-12-27",
       "eloGain": 53.661,
       "eventCount": 11
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "brvnx:::Dimir Fae",
-      "displayName": "Brvnx (Dimir Fae)",
-      "basePlayerKey": "brvnx",
-      "basePlayerName": "Brvnx",
-      "deck": "Dimir Fae",
-      "rating": 1553.651,
-      "matches": 20,
-      "wins": 12,
-      "losses": 8,
-      "winRate": 0.6,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 53.651,
-      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -8972,6 +9023,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "dragtar:::White Weenie",
+      "displayName": "dragtar (White Weenie)",
+      "basePlayerKey": "dragtar",
+      "basePlayerName": "dragtar",
+      "deck": "White Weenie",
+      "rating": 1553.343,
+      "matches": 14,
+      "wins": 10,
+      "losses": 4,
+      "winRate": 0.714286,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 53.343,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "heisen01:::Jund Wildfire",
       "displayName": "Heisen01 (Jund Wildfire)",
       "basePlayerKey": "heisen01",
@@ -9053,6 +9121,23 @@
       "lastActiveDate": "2025-10-17",
       "eloGain": 53.007,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "carrodapolicia:::Elves",
+      "displayName": "CarrodaPolicia (Elves)",
+      "basePlayerKey": "carrodapolicia",
+      "basePlayerName": "CarrodaPolicia",
+      "deck": "Elves",
+      "rating": 1552.977,
+      "matches": 14,
+      "wins": 10,
+      "losses": 4,
+      "winRate": 0.714286,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 52.977,
+      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -9223,23 +9308,6 @@
       "lastActiveDate": "2024-12-01",
       "eloGain": 52.081,
       "eventCount": 3
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "ixidor29:::Gruul Land Destruction",
-      "displayName": "Ixidor29 (Gruul Land Destruction)",
-      "basePlayerKey": "ixidor29",
-      "basePlayerName": "Ixidor29",
-      "deck": "Gruul Land Destruction",
-      "rating": 1551.87,
-      "matches": 164,
-      "wins": 85,
-      "losses": 79,
-      "winRate": 0.518293,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 51.87,
-      "eventCount": 26
     },
     {
       "seasonKey": "2026",
@@ -9512,6 +9580,23 @@
       "lastActiveDate": "2024-06-08",
       "eloGain": 51.142,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "hamuda:::Goblin Class Combo",
+      "displayName": "Hamuda (Goblin Class Combo)",
+      "basePlayerKey": "hamuda",
+      "basePlayerName": "Hamuda",
+      "deck": "Goblin Class Combo",
+      "rating": 1551.123,
+      "matches": 43,
+      "wins": 24,
+      "losses": 19,
+      "winRate": 0.55814,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 51.123,
+      "eventCount": 7
     },
     {
       "seasonKey": "2025",
@@ -10126,23 +10211,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "albreto:::Mono Red Madness",
-      "displayName": "Albreto (Mono Red Madness)",
-      "basePlayerKey": "albreto",
-      "basePlayerName": "Albreto",
-      "deck": "Mono Red Madness",
-      "rating": 1549.658,
-      "matches": 14,
-      "wins": 10,
-      "losses": 4,
-      "winRate": 0.714286,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 49.658,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "kirblinxy:::Turbofog",
@@ -10260,23 +10328,6 @@
       "lastActiveDate": "2024-06-08",
       "eloGain": 49.123,
       "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mcwinsauce:::White Weenie",
-      "displayName": "McWinSauce (White Weenie)",
-      "basePlayerKey": "mcwinsauce",
-      "basePlayerName": "McWinSauce",
-      "deck": "White Weenie",
-      "rating": 1549.092,
-      "matches": 9,
-      "wins": 7,
-      "losses": 2,
-      "winRate": 0.777778,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 49.092,
-      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -10702,6 +10753,23 @@
       "lastActiveDate": "2025-07-13",
       "eloGain": 47.593,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "cicciogire:::Dimir Terror",
+      "displayName": "cicciogire (Dimir Terror)",
+      "basePlayerKey": "cicciogire",
+      "basePlayerName": "cicciogire",
+      "deck": "Dimir Terror",
+      "rating": 1547.583,
+      "matches": 40,
+      "wins": 23,
+      "losses": 17,
+      "winRate": 0.575,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 47.583,
+      "eventCount": 8
     },
     {
       "seasonKey": "2025",
@@ -11299,23 +11367,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "cicciogire:::Dimir Terror",
-      "displayName": "cicciogire (Dimir Terror)",
-      "basePlayerKey": "cicciogire",
-      "basePlayerName": "cicciogire",
-      "deck": "Dimir Terror",
-      "rating": 1545.944,
-      "matches": 33,
-      "wins": 19,
-      "losses": 14,
-      "winRate": 0.575758,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 45.944,
-      "eventCount": 7
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "amarobr:::Grixis Affinity",
@@ -11705,6 +11756,23 @@
       "lastActiveDate": "2025-12-04",
       "eloGain": 44.698,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "carvs:::Jund Wildfire",
+      "displayName": "carvs (Jund Wildfire)",
+      "basePlayerKey": "carvs",
+      "basePlayerName": "carvs",
+      "deck": "Jund Wildfire",
+      "rating": 1544.619,
+      "matches": 59,
+      "wins": 32,
+      "losses": 27,
+      "winRate": 0.542373,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 44.619,
+      "eventCount": 9
     },
     {
       "seasonKey": "2024",
@@ -12098,6 +12166,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ixidor29:::Gruul Land Destruction",
+      "displayName": "Ixidor29 (Gruul Land Destruction)",
+      "basePlayerKey": "ixidor29",
+      "basePlayerName": "Ixidor29",
+      "deck": "Gruul Land Destruction",
+      "rating": 1543.135,
+      "matches": 171,
+      "wins": 88,
+      "losses": 83,
+      "winRate": 0.51462,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 43.135,
+      "eventCount": 27
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "marzaboi:::Altar Tron",
@@ -12489,6 +12574,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "navas:::Mono Red Madness",
+      "displayName": "Navas (Mono Red Madness)",
+      "basePlayerKey": "navas",
+      "basePlayerName": "Navas",
+      "deck": "Mono Red Madness",
+      "rating": 1542.339,
+      "matches": 7,
+      "wins": 6,
+      "losses": 1,
+      "winRate": 0.857143,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 42.339,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "ff7:::Dredge",
@@ -12625,6 +12727,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "echanez:::Monster Tron",
+      "displayName": "Echanez (Monster Tron)",
+      "basePlayerKey": "echanez",
+      "basePlayerName": "Echanez",
+      "deck": "Monster Tron",
+      "rating": 1542.073,
+      "matches": 17,
+      "wins": 11,
+      "losses": 6,
+      "winRate": 0.647059,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 42.073,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "buenosloko:::Red Kuldotha",
@@ -12725,23 +12844,6 @@
       "lastActiveDate": "2025-04-04",
       "eloGain": 41.852,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "vojbe:::Mono Red Madness",
-      "displayName": "Vojbe (Mono Red Madness)",
-      "basePlayerKey": "vojbe",
-      "basePlayerName": "Vojbe",
-      "deck": "Mono Red Madness",
-      "rating": 1541.79,
-      "matches": 48,
-      "wins": 25,
-      "losses": 23,
-      "winRate": 0.520833,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 41.79,
-      "eventCount": 7
     },
     {
       "seasonKey": "2024",
@@ -12895,23 +12997,6 @@
       "lastActiveDate": "2025-01-18",
       "eloGain": 41.548,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "newbarola:::Selesnya Gates",
-      "displayName": "newbarola (Selesnya Gates)",
-      "basePlayerKey": "newbarola",
-      "basePlayerName": "newbarola",
-      "deck": "Selesnya Gates",
-      "rating": 1541.524,
-      "matches": 39,
-      "wins": 22,
-      "losses": 17,
-      "winRate": 0.564103,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 41.524,
-      "eventCount": 6
     },
     {
       "seasonKey": "2024",
@@ -13171,19 +13256,19 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "carvs:::Jund Wildfire",
-      "displayName": "carvs (Jund Wildfire)",
-      "basePlayerKey": "carvs",
-      "basePlayerName": "carvs",
-      "deck": "Jund Wildfire",
-      "rating": 1541.247,
-      "matches": 52,
-      "wins": 28,
-      "losses": 24,
-      "winRate": 0.538462,
-      "lastActiveDate": "2026-04-24",
-      "eloGain": 41.247,
-      "eventCount": 8
+      "playerKey": "saculsueahtam:::Red Deck Wins",
+      "displayName": "SaculSueahtam (Red Deck Wins)",
+      "basePlayerKey": "saculsueahtam",
+      "basePlayerName": "SaculSueahtam",
+      "deck": "Red Deck Wins",
+      "rating": 1541.188,
+      "matches": 205,
+      "wins": 116,
+      "losses": 89,
+      "winRate": 0.565854,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 41.188,
+      "eventCount": 36
     },
     {
       "seasonKey": "2025",
@@ -13218,6 +13303,23 @@
       "lastActiveDate": "2024-07-12",
       "eloGain": 41.18,
       "eventCount": 6
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "reojund:::Grixis Affinity",
+      "displayName": "reojund (Grixis Affinity)",
+      "basePlayerKey": "reojund",
+      "basePlayerName": "reojund",
+      "deck": "Grixis Affinity",
+      "rating": 1541.057,
+      "matches": 8,
+      "wins": 6,
+      "losses": 2,
+      "winRate": 0.75,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 41.057,
+      "eventCount": 1
     },
     {
       "seasonKey": "2024",
@@ -13541,6 +13643,23 @@
       "lastActiveDate": "2025-11-09",
       "eloGain": 40.63,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "xfile:::Mono Blue Terror",
+      "displayName": "xfile (Mono Blue Terror)",
+      "basePlayerKey": "xfile",
+      "basePlayerName": "xfile",
+      "deck": "Mono Blue Terror",
+      "rating": 1540.607,
+      "matches": 19,
+      "wins": 12,
+      "losses": 7,
+      "winRate": 0.631579,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 40.607,
+      "eventCount": 3
     },
     {
       "seasonKey": "2025",
@@ -14206,6 +14325,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "medvedev:::Gruul Eldrazi Stompy",
+      "displayName": "medvedev (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "medvedev",
+      "basePlayerName": "medvedev",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1539.405,
+      "matches": 21,
+      "wins": 13,
+      "losses": 8,
+      "winRate": 0.619048,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 39.405,
+      "eventCount": 3
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "kirblinxy:::1 Land Spy",
@@ -14221,23 +14357,6 @@
       "lastActiveDate": "2025-07-12",
       "eloGain": 39.377,
       "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "yszzz:::Gruul Eldrazi Stompy",
-      "displayName": "YSZzz (Gruul Eldrazi Stompy)",
-      "basePlayerKey": "yszzz",
-      "basePlayerName": "YSZzz",
-      "deck": "Gruul Eldrazi Stompy",
-      "rating": 1539.377,
-      "matches": 8,
-      "wins": 6,
-      "losses": 2,
-      "winRate": 0.75,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 39.377,
-      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -14442,23 +14561,6 @@
       "lastActiveDate": "2025-09-06",
       "eloGain": 38.888,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pr0boszcz:::Golgari Pestilence",
-      "displayName": "PR0boszcz (Golgari Pestilence)",
-      "basePlayerKey": "pr0boszcz",
-      "basePlayerName": "PR0boszcz",
-      "deck": "Golgari Pestilence",
-      "rating": 1538.8,
-      "matches": 105,
-      "wins": 62,
-      "losses": 43,
-      "winRate": 0.590476,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 38.8,
-      "eventCount": 19
     },
     {
       "seasonKey": "2025",
@@ -15294,23 +15396,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "beicodegeia:::Dimir Fae",
-      "displayName": "Beicodegeia (Dimir Fae)",
-      "basePlayerKey": "beicodegeia",
-      "basePlayerName": "Beicodegeia",
-      "deck": "Dimir Fae",
-      "rating": 1537.485,
-      "matches": 25,
-      "wins": 14,
-      "losses": 11,
-      "winRate": 0.56,
-      "lastActiveDate": "2026-05-03",
-      "eloGain": 37.485,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "mkc:::Mono Blue Faeries",
@@ -15411,6 +15496,23 @@
       "lastActiveDate": "2024-07-27",
       "eloGain": 37.328,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "shiib:::Elves",
+      "displayName": "Shiib (Elves)",
+      "basePlayerKey": "shiib",
+      "basePlayerName": "Shiib",
+      "deck": "Elves",
+      "rating": 1537.325,
+      "matches": 285,
+      "wins": 164,
+      "losses": 121,
+      "winRate": 0.575439,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 37.325,
+      "eventCount": 46
     },
     {
       "seasonKey": "2025",
@@ -15989,6 +16091,23 @@
       "lastActiveDate": "2025-08-10",
       "eloGain": 36.564,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "chris-mtg-02:::Selesnya Gates",
+      "displayName": "CHRIS-Mtg-02 (Selesnya Gates)",
+      "basePlayerKey": "chris-mtg-02",
+      "basePlayerName": "CHRIS-Mtg-02",
+      "deck": "Selesnya Gates",
+      "rating": 1536.535,
+      "matches": 20,
+      "wins": 12,
+      "losses": 8,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 36.535,
+      "eventCount": 3
     },
     {
       "seasonKey": "2026",
@@ -16720,23 +16839,6 @@
       "lastActiveDate": "2026-01-16",
       "eloGain": 35.555,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "medvedev:::Gruul Eldrazi Stompy",
-      "displayName": "medvedev (Gruul Eldrazi Stompy)",
-      "basePlayerKey": "medvedev",
-      "basePlayerName": "medvedev",
-      "deck": "Gruul Eldrazi Stompy",
-      "rating": 1535.516,
-      "matches": 14,
-      "wins": 9,
-      "losses": 5,
-      "winRate": 0.642857,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 35.516,
-      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -17555,6 +17657,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "diomed_tidid:::White Weenie",
+      "displayName": "Diomed_Tidid (White Weenie)",
+      "basePlayerKey": "diomed_tidid",
+      "basePlayerName": "Diomed_Tidid",
+      "deck": "White Weenie",
+      "rating": 1534.243,
+      "matches": 6,
+      "wins": 5,
+      "losses": 1,
+      "winRate": 0.833333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 34.243,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "nmt_sco94:::Dimir Terror",
@@ -17824,6 +17943,23 @@
       "winRate": 0.75,
       "lastActiveDate": "2026-02-22",
       "eloGain": 33.868,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "kasa:::Rakdos Madness",
+      "displayName": "kasa (Rakdos Madness)",
+      "basePlayerKey": "kasa",
+      "basePlayerName": "kasa",
+      "deck": "Rakdos Madness",
+      "rating": 1533.857,
+      "matches": 8,
+      "wins": 6,
+      "losses": 2,
+      "winRate": 0.75,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 33.857,
       "eventCount": 1
     },
     {
@@ -18422,6 +18558,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "dinosaur-chan:::Dimir Fae",
+      "displayName": "Dinosaur-chan (Dimir Fae)",
+      "basePlayerKey": "dinosaur-chan",
+      "basePlayerName": "Dinosaur-chan",
+      "deck": "Dimir Fae",
+      "rating": 1533.028,
+      "matches": 13,
+      "wins": 8,
+      "losses": 5,
+      "winRate": 0.615385,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 33.028,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "mnaga:::White Weenie",
@@ -18624,23 +18777,6 @@
       "lastActiveDate": "2025-12-18",
       "eloGain": 32.819,
       "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "cabz:::Red Deck Wins",
-      "displayName": "Cabz (Red Deck Wins)",
-      "basePlayerKey": "cabz",
-      "basePlayerName": "Cabz",
-      "deck": "Red Deck Wins",
-      "rating": 1532.77,
-      "matches": 18,
-      "wins": 11,
-      "losses": 7,
-      "winRate": 0.611111,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 32.77,
-      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -18879,23 +19015,6 @@
       "lastActiveDate": "2024-10-06",
       "eloGain": 32.446,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "kuldothared:::Jund Wildfire",
-      "displayName": "kuldothared (Jund Wildfire)",
-      "basePlayerKey": "kuldothared",
-      "basePlayerName": "kuldothared",
-      "deck": "Jund Wildfire",
-      "rating": 1532.442,
-      "matches": 96,
-      "wins": 53,
-      "losses": 43,
-      "winRate": 0.552083,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 32.442,
-      "eventCount": 16
     },
     {
       "seasonKey": "2025",
@@ -19252,23 +19371,6 @@
       "winRate": 0.75,
       "lastActiveDate": "2025-06-08",
       "eloGain": 31.903,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mafs:::White Weenie",
-      "displayName": "MAFS (White Weenie)",
-      "basePlayerKey": "mafs",
-      "basePlayerName": "MAFS",
-      "deck": "White Weenie",
-      "rating": 1531.89,
-      "matches": 7,
-      "wins": 5,
-      "losses": 2,
-      "winRate": 0.714286,
-      "lastActiveDate": "2026-05-14",
-      "eloGain": 31.89,
       "eventCount": 1
     },
     {
@@ -19697,6 +19799,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "vojbe:::Mono Red Madness",
+      "displayName": "Vojbe (Mono Red Madness)",
+      "basePlayerKey": "vojbe",
+      "basePlayerName": "Vojbe",
+      "deck": "Mono Red Madness",
+      "rating": 1531.183,
+      "matches": 55,
+      "wins": 28,
+      "losses": 27,
+      "winRate": 0.509091,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 31.183,
+      "eventCount": 8
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "ecobaronen:::Dimir Fae",
@@ -19813,6 +19932,23 @@
       "winRate": 0.615385,
       "lastActiveDate": "2025-11-01",
       "eloGain": 30.98,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "yszzz:::Gruul Eldrazi Stompy",
+      "displayName": "YSZzz (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "yszzz",
+      "basePlayerName": "YSZzz",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1530.966,
+      "matches": 9,
+      "wins": 6,
+      "losses": 3,
+      "winRate": 0.666667,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 30.966,
       "eventCount": 2
     },
     {
@@ -20396,19 +20532,19 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "chris-mtg-02:::Selesnya Gates",
-      "displayName": "CHRIS-Mtg-02 (Selesnya Gates)",
-      "basePlayerKey": "chris-mtg-02",
-      "basePlayerName": "CHRIS-Mtg-02",
-      "deck": "Selesnya Gates",
-      "rating": 1530.072,
-      "matches": 13,
-      "wins": 8,
-      "losses": 5,
-      "winRate": 0.615385,
-      "lastActiveDate": "2026-03-28",
-      "eloGain": 30.072,
-      "eventCount": 2
+      "playerKey": "orochi-mario:::Dimir Terror",
+      "displayName": "Orochi-Mario (Dimir Terror)",
+      "basePlayerKey": "orochi-mario",
+      "basePlayerName": "Orochi-Mario",
+      "deck": "Dimir Terror",
+      "rating": 1530.046,
+      "matches": 45,
+      "wins": 24,
+      "losses": 21,
+      "winRate": 0.533333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 30.046,
+      "eventCount": 7
     },
     {
       "seasonKey": "2026",
@@ -20785,40 +20921,6 @@
       "eventCount": 2
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "carrodapolicia:::Elves",
-      "displayName": "CarrodaPolicia (Elves)",
-      "basePlayerKey": "carrodapolicia",
-      "basePlayerName": "CarrodaPolicia",
-      "deck": "Elves",
-      "rating": 1529.466,
-      "matches": 7,
-      "wins": 5,
-      "losses": 2,
-      "winRate": 0.714286,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 29.466,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "fofondrik:::Mono Red Madness",
-      "displayName": "Fofondrik (Mono Red Madness)",
-      "basePlayerKey": "fofondrik",
-      "basePlayerName": "Fofondrik",
-      "deck": "Mono Red Madness",
-      "rating": 1529.464,
-      "matches": 15,
-      "wins": 9,
-      "losses": 6,
-      "winRate": 0.6,
-      "lastActiveDate": "2026-04-24",
-      "eloGain": 29.464,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "bruno_bto:::Few Land Spy",
@@ -21105,23 +21207,6 @@
       "winRate": 0.714286,
       "lastActiveDate": "2024-10-13",
       "eloGain": 29.005,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "dragtar:::White Weenie",
-      "displayName": "dragtar (White Weenie)",
-      "basePlayerKey": "dragtar",
-      "basePlayerName": "dragtar",
-      "deck": "White Weenie",
-      "rating": 1528.981,
-      "matches": 7,
-      "wins": 5,
-      "losses": 2,
-      "winRate": 0.714286,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": 28.981,
       "eventCount": 1
     },
     {
@@ -21769,23 +21854,6 @@
       "lastActiveDate": "2026-04-03",
       "eloGain": 28.141,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "hamuda:::Goblin Class Combo",
-      "displayName": "Hamuda (Goblin Class Combo)",
-      "basePlayerKey": "hamuda",
-      "basePlayerName": "Hamuda",
-      "deck": "Goblin Class Combo",
-      "rating": 1528.133,
-      "matches": 36,
-      "wins": 19,
-      "losses": 17,
-      "winRate": 0.527778,
-      "lastActiveDate": "2026-04-24",
-      "eloGain": 28.133,
-      "eventCount": 6
     },
     {
       "seasonKey": "2024",
@@ -22910,6 +22978,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "jositoshekel:::Selesnya Gates",
+      "displayName": "Jositoshekel (Selesnya Gates)",
+      "basePlayerKey": "jositoshekel",
+      "basePlayerName": "Jositoshekel",
+      "deck": "Selesnya Gates",
+      "rating": 1526.803,
+      "matches": 7,
+      "wins": 5,
+      "losses": 2,
+      "winRate": 0.714286,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 26.803,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "gazmon48:::Red Kuldotha",
@@ -23522,6 +23607,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "cabz:::Red Deck Wins",
+      "displayName": "Cabz (Red Deck Wins)",
+      "basePlayerKey": "cabz",
+      "basePlayerName": "Cabz",
+      "deck": "Red Deck Wins",
+      "rating": 1526.192,
+      "matches": 21,
+      "wins": 12,
+      "losses": 9,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 26.192,
+      "eventCount": 4
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "valimoth:::Burn",
@@ -23811,6 +23913,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "entropete:::Mono Black Sacrifice",
+      "displayName": "EntroPete (Mono Black Sacrifice)",
+      "basePlayerKey": "entropete",
+      "basePlayerName": "EntroPete",
+      "deck": "Mono Black Sacrifice",
+      "rating": 1525.95,
+      "matches": 58,
+      "wins": 29,
+      "losses": 29,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 25.95,
+      "eventCount": 10
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "arkanyl:::Gruul Land Destruction",
@@ -23859,6 +23978,23 @@
       "winRate": 0.714286,
       "lastActiveDate": "2024-05-05",
       "eloGain": 25.924,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ermili:::Red Deck Wins",
+      "displayName": "ermili (Red Deck Wins)",
+      "basePlayerKey": "ermili",
+      "basePlayerName": "ermili",
+      "deck": "Red Deck Wins",
+      "rating": 1525.91,
+      "matches": 7,
+      "wins": 5,
+      "losses": 2,
+      "winRate": 0.714286,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 25.91,
       "eventCount": 1
     },
     {
@@ -24438,23 +24574,6 @@
       "lastActiveDate": "2026-04-05",
       "eloGain": 25.366,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "xfile:::Mono Blue Terror",
-      "displayName": "xfile (Mono Blue Terror)",
-      "basePlayerKey": "xfile",
-      "basePlayerName": "xfile",
-      "deck": "Mono Blue Terror",
-      "rating": 1525.352,
-      "matches": 13,
-      "wins": 8,
-      "losses": 5,
-      "winRate": 0.615385,
-      "lastActiveDate": "2026-01-22",
-      "eloGain": 25.352,
-      "eventCount": 2
     },
     {
       "seasonKey": "2026",
@@ -26344,6 +26463,23 @@
       "eventCount": 4
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mcwinsauce:::White Weenie",
+      "displayName": "McWinSauce (White Weenie)",
+      "basePlayerKey": "mcwinsauce",
+      "basePlayerName": "McWinSauce",
+      "deck": "White Weenie",
+      "rating": 1523.745,
+      "matches": 14,
+      "wins": 8,
+      "losses": 6,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 23.745,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "felix01:::Golgari Gardens",
@@ -26669,6 +26805,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "pr0boszcz:::Golgari Pestilence",
+      "displayName": "PR0boszcz (Golgari Pestilence)",
+      "basePlayerKey": "pr0boszcz",
+      "basePlayerName": "PR0boszcz",
+      "deck": "Golgari Pestilence",
+      "rating": 1523.421,
+      "matches": 107,
+      "wins": 62,
+      "losses": 45,
+      "winRate": 0.579439,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 23.421,
+      "eventCount": 20
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "kelmasterp:::Mono Red Madness",
       "displayName": "KelMasterP (Mono Red Madness)",
       "basePlayerKey": "kelmasterp",
@@ -26801,6 +26954,23 @@
       "lastActiveDate": "2024-12-29",
       "eloGain": 23.324,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mafs:::White Weenie",
+      "displayName": "MAFS (White Weenie)",
+      "basePlayerKey": "mafs",
+      "basePlayerName": "MAFS",
+      "deck": "White Weenie",
+      "rating": 1523.305,
+      "matches": 14,
+      "wins": 8,
+      "losses": 6,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 23.305,
+      "eventCount": 2
     },
     {
       "seasonKey": "2024",
@@ -28758,6 +28928,23 @@
       "eventCount": 4
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "seasonofmists:::Turbofog",
+      "displayName": "seasonofmists (Turbofog)",
+      "basePlayerKey": "seasonofmists",
+      "basePlayerName": "seasonofmists",
+      "deck": "Turbofog",
+      "rating": 1521.845,
+      "matches": 6,
+      "wins": 4,
+      "losses": 2,
+      "winRate": 0.666667,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 21.845,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "soon:::Mono Red Tron",
@@ -29011,23 +29198,6 @@
       "lastActiveDate": "2025-08-31",
       "eloGain": 21.545,
       "eventCount": 4
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "dinosaur-chan:::Dimir Fae",
-      "displayName": "Dinosaur-chan (Dimir Fae)",
-      "basePlayerKey": "dinosaur-chan",
-      "basePlayerName": "Dinosaur-chan",
-      "deck": "Dimir Fae",
-      "rating": 1521.538,
-      "matches": 6,
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.666667,
-      "lastActiveDate": "2026-04-30",
-      "eloGain": 21.538,
-      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -30358,6 +30528,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "mikeycoppola365:::White Metalcraft",
+      "displayName": "MikeyCoppola365 (White Metalcraft)",
+      "basePlayerKey": "mikeycoppola365",
+      "basePlayerName": "MikeyCoppola365",
+      "deck": "White Metalcraft",
+      "rating": 1520.408,
+      "matches": 6,
+      "wins": 4,
+      "losses": 2,
+      "winRate": 0.666667,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 20.408,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "nmt_sco94:::Mono Red Madness",
       "displayName": "NMT_Sco94 (Mono Red Madness)",
       "basePlayerKey": "nmt_sco94",
@@ -30696,6 +30883,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mrfuinha:::Few Land Spy",
+      "displayName": "MrFuinha (Few Land Spy)",
+      "basePlayerKey": "mrfuinha",
+      "basePlayerName": "MrFuinha",
+      "deck": "Few Land Spy",
+      "rating": 1520.137,
+      "matches": 14,
+      "wins": 8,
+      "losses": 6,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 20.137,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "darthkid:::Mono Blue Terror",
@@ -30866,23 +31070,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "outzeroo:::Dimir Fae",
-      "displayName": "outZEROo (Dimir Fae)",
-      "basePlayerKey": "outzeroo",
-      "basePlayerName": "outZEROo",
-      "deck": "Dimir Fae",
-      "rating": 1520.041,
-      "matches": 6,
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.666667,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 20.041,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "wabodabo:::Red Kuldotha",
@@ -30951,23 +31138,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "orochi-mario:::Dimir Terror",
-      "displayName": "Orochi-Mario (Dimir Terror)",
-      "basePlayerKey": "orochi-mario",
-      "basePlayerName": "Orochi-Mario",
-      "deck": "Dimir Terror",
-      "rating": 1519.969,
-      "matches": 38,
-      "wins": 20,
-      "losses": 18,
-      "winRate": 0.526316,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 19.969,
-      "eventCount": 6
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "_against_:::White Weenie",
@@ -31033,23 +31203,6 @@
       "winRate": 0.666667,
       "lastActiveDate": "2026-04-24",
       "eloGain": 19.935,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "bahsis:::Walls Combo",
-      "displayName": "Bahsis (Walls Combo)",
-      "basePlayerKey": "bahsis",
-      "basePlayerName": "Bahsis",
-      "deck": "Walls Combo",
-      "rating": 1519.921,
-      "matches": 6,
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.666667,
-      "lastActiveDate": "2026-05-14",
-      "eloGain": 19.921,
       "eventCount": 1
     },
     {
@@ -31869,6 +32022,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_abijhavs_:::Dimir Control",
+      "displayName": "_Abijhavs_ (Dimir Control)",
+      "basePlayerKey": "_abijhavs_",
+      "basePlayerName": "_Abijhavs_",
+      "deck": "Dimir Control",
+      "rating": 1519.319,
+      "matches": 43,
+      "wins": 23,
+      "losses": 20,
+      "winRate": 0.534884,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 19.319,
+      "eventCount": 8
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "tulio_jaudy:::Cawgates",
@@ -32053,23 +32223,6 @@
       "winRate": 0.666667,
       "lastActiveDate": "2025-07-13",
       "eloGain": 19.24,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "capoeira02:::Jund Wildfire",
-      "displayName": "Capoeira02 (Jund Wildfire)",
-      "basePlayerKey": "capoeira02",
-      "basePlayerName": "Capoeira02",
-      "deck": "Jund Wildfire",
-      "rating": 1519.224,
-      "matches": 6,
-      "wins": 4,
-      "losses": 2,
-      "winRate": 0.666667,
-      "lastActiveDate": "2026-05-03",
-      "eloGain": 19.224,
       "eventCount": 1
     },
     {
@@ -32294,6 +32447,23 @@
       "eventCount": 3
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "bolllll:::Jund Wildfire",
+      "displayName": "Bolllll (Jund Wildfire)",
+      "basePlayerKey": "bolllll",
+      "basePlayerName": "Bolllll",
+      "deck": "Jund Wildfire",
+      "rating": 1519.104,
+      "matches": 29,
+      "wins": 15,
+      "losses": 14,
+      "winRate": 0.517241,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 19.104,
+      "eventCount": 5
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "mikhathara1994:::Mono Blue Faeries",
@@ -32411,6 +32581,23 @@
       "lastActiveDate": "2024-07-06",
       "eloGain": 19.056,
       "eventCount": 11
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "leandru:::Naya Slivers",
+      "displayName": "leandru (Naya Slivers)",
+      "basePlayerKey": "leandru",
+      "basePlayerName": "leandru",
+      "deck": "Naya Slivers",
+      "rating": 1519.051,
+      "matches": 6,
+      "wins": 4,
+      "losses": 2,
+      "winRate": 0.666667,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 19.051,
+      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -33229,23 +33416,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "bolllll:::Jund Wildfire",
-      "displayName": "Bolllll (Jund Wildfire)",
-      "basePlayerKey": "bolllll",
-      "basePlayerName": "Bolllll",
-      "deck": "Jund Wildfire",
-      "rating": 1518.711,
-      "matches": 23,
-      "wins": 12,
-      "losses": 11,
-      "winRate": 0.521739,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 18.711,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "hobbyhorstorian:::Red Kuldotha",
@@ -33484,6 +33654,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "beicodegeia:::Dimir Fae",
+      "displayName": "Beicodegeia (Dimir Fae)",
+      "basePlayerKey": "beicodegeia",
+      "basePlayerName": "Beicodegeia",
+      "deck": "Dimir Fae",
+      "rating": 1518.593,
+      "matches": 31,
+      "wins": 16,
+      "losses": 15,
+      "winRate": 0.516129,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 18.593,
+      "eventCount": 5
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "totemsilence:::Rakdos Madness",
@@ -33584,6 +33771,23 @@
       "lastActiveDate": "2024-04-28",
       "eloGain": 18.551,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "serajh:::Dimir Fae",
+      "displayName": "serajh (Dimir Fae)",
+      "basePlayerKey": "serajh",
+      "basePlayerName": "serajh",
+      "deck": "Dimir Fae",
+      "rating": 1518.545,
+      "matches": 11,
+      "wins": 6,
+      "losses": 5,
+      "winRate": 0.545455,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 18.545,
+      "eventCount": 2
     },
     {
       "seasonKey": "2026",
@@ -34739,6 +34943,23 @@
       "winRate": 0.583333,
       "lastActiveDate": "2024-12-29",
       "eloGain": 18.016,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "danielpena397:::Mono Red Madness",
+      "displayName": "Danielpena397 (Mono Red Madness)",
+      "basePlayerKey": "danielpena397",
+      "basePlayerName": "Danielpena397",
+      "deck": "Mono Red Madness",
+      "rating": 1518.014,
+      "matches": 15,
+      "wins": 8,
+      "losses": 7,
+      "winRate": 0.533333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 18.014,
       "eventCount": 2
     },
     {
@@ -36663,6 +36884,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "deleon91:::Rakdos Madness",
+      "displayName": "deleon91 (Rakdos Madness)",
+      "basePlayerKey": "deleon91",
+      "basePlayerName": "deleon91",
+      "deck": "Rakdos Madness",
+      "rating": 1517.192,
+      "matches": 11,
+      "wins": 6,
+      "losses": 5,
+      "winRate": 0.545455,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 17.192,
+      "eventCount": 2
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "fermtg:::Rakdos Madness",
@@ -37562,6 +37800,23 @@
       "lastActiveDate": "2025-11-27",
       "eloGain": 16.868,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ultrajelle:::Gruul Eldrazi Stompy",
+      "displayName": "ultrajelle (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "ultrajelle",
+      "basePlayerName": "ultrajelle",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1516.867,
+      "matches": 18,
+      "wins": 10,
+      "losses": 8,
+      "winRate": 0.555556,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 16.867,
+      "eventCount": 3
     },
     {
       "seasonKey": "2025",
@@ -42547,6 +42802,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "coachinho:::Gruul Eldrazi Stompy",
+      "displayName": "Coachinho (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "coachinho",
+      "basePlayerName": "Coachinho",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1513.942,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 13.942,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "san3:::Mono Blue Terror",
       "displayName": "SaN3 (Mono Blue Terror)",
       "basePlayerKey": "san3",
@@ -42611,6 +42883,23 @@
       "lastActiveDate": "2025-10-11",
       "eloGain": 13.887,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "fofondrik:::Mono Red Madness",
+      "displayName": "Fofondrik (Mono Red Madness)",
+      "basePlayerKey": "fofondrik",
+      "basePlayerName": "Fofondrik",
+      "deck": "Mono Red Madness",
+      "rating": 1513.883,
+      "matches": 17,
+      "wins": 9,
+      "losses": 8,
+      "winRate": 0.529412,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 13.883,
+      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -42815,6 +43104,23 @@
       "lastActiveDate": "2024-04-27",
       "eloGain": 13.578,
       "eventCount": 4
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "kuldothared:::Jund Wildfire",
+      "displayName": "kuldothared (Jund Wildfire)",
+      "basePlayerKey": "kuldothared",
+      "basePlayerName": "kuldothared",
+      "deck": "Jund Wildfire",
+      "rating": 1513.576,
+      "matches": 102,
+      "wins": 55,
+      "losses": 47,
+      "winRate": 0.539216,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 13.576,
+      "eventCount": 17
     },
     {
       "seasonKey": "2026",
@@ -43123,23 +43429,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "shiib:::Elves",
-      "displayName": "Shiib (Elves)",
-      "basePlayerKey": "shiib",
-      "basePlayerName": "Shiib",
-      "deck": "Elves",
-      "rating": 1513.299,
-      "matches": 278,
-      "wins": 159,
-      "losses": 119,
-      "winRate": 0.571942,
-      "lastActiveDate": "2026-05-15",
-      "eloGain": 13.299,
-      "eventCount": 45
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "white_tsar:::Grixis Affinity",
@@ -43223,6 +43512,23 @@
       "lastActiveDate": "2026-04-09",
       "eloGain": 13.25,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "terminus0:::Jund Wildfire",
+      "displayName": "Terminus0 (Jund Wildfire)",
+      "basePlayerKey": "terminus0",
+      "basePlayerName": "Terminus0",
+      "deck": "Jund Wildfire",
+      "rating": 1513.244,
+      "matches": 18,
+      "wins": 9,
+      "losses": 9,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 13.244,
+      "eventCount": 4
     },
     {
       "seasonKey": "2025",
@@ -43376,6 +43682,23 @@
       "lastActiveDate": "2024-06-08",
       "eloGain": 13.095,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "bernastorres:::Boros Tribe",
+      "displayName": "BERNASTORRES (Boros Tribe)",
+      "basePlayerKey": "bernastorres",
+      "basePlayerName": "BERNASTORRES",
+      "deck": "Boros Tribe",
+      "rating": 1513.086,
+      "matches": 5,
+      "wins": 3,
+      "losses": 2,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 13.086,
+      "eventCount": 1
     },
     {
       "seasonKey": "2026",
@@ -43837,6 +44160,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "univerce:::Selesnya Gates",
+      "displayName": "Univerce (Selesnya Gates)",
+      "basePlayerKey": "univerce",
+      "basePlayerName": "Univerce",
+      "deck": "Selesnya Gates",
+      "rating": 1512.571,
+      "matches": 5,
+      "wins": 3,
+      "losses": 2,
+      "winRate": 0.6,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 12.571,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "tiagofuguete:::Azorius Glitters",
@@ -44024,6 +44364,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "rerere:::Mono Blue Terror",
+      "displayName": "rerere (Mono Blue Terror)",
+      "basePlayerKey": "rerere",
+      "basePlayerName": "rerere",
+      "deck": "Mono Blue Terror",
+      "rating": 1512.376,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 12.376,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "colakakao:::Mono Black Sacrifice",
@@ -44039,23 +44396,6 @@
       "lastActiveDate": "2025-08-10",
       "eloGain": 12.373,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "terminus0:::Jund Wildfire",
-      "displayName": "Terminus0 (Jund Wildfire)",
-      "basePlayerKey": "terminus0",
-      "basePlayerName": "Terminus0",
-      "deck": "Jund Wildfire",
-      "rating": 1512.358,
-      "matches": 14,
-      "wins": 7,
-      "losses": 7,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 12.358,
-      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -44551,6 +44891,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "raketa:::Mono Red Madness",
+      "displayName": "Raketa (Mono Red Madness)",
+      "basePlayerKey": "raketa",
+      "basePlayerName": "Raketa",
+      "deck": "Mono Red Madness",
+      "rating": 1511.955,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 11.955,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "terracotta99:::Mono Blue Faeries",
@@ -44993,23 +45350,6 @@
       "eventCount": 3
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mrfuinha:::Few Land Spy",
-      "displayName": "MrFuinha (Few Land Spy)",
-      "basePlayerKey": "mrfuinha",
-      "basePlayerName": "MrFuinha",
-      "deck": "Few Land Spy",
-      "rating": 1511.398,
-      "matches": 7,
-      "wins": 4,
-      "losses": 3,
-      "winRate": 0.571429,
-      "lastActiveDate": "2026-04-05",
-      "eloGain": 11.398,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "paulocabral_br:::Hexproof",
@@ -45180,6 +45520,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mj_23:::Red Deck Wins",
+      "displayName": "MJ_23 (Red Deck Wins)",
+      "basePlayerKey": "mj_23",
+      "basePlayerName": "MJ_23",
+      "deck": "Red Deck Wins",
+      "rating": 1511.268,
+      "matches": 16,
+      "wins": 8,
+      "losses": 8,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 11.268,
+      "eventCount": 3
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "afx:::Boros Glitters",
@@ -45347,6 +45704,23 @@
       "winRate": 0.545455,
       "lastActiveDate": "2024-12-13",
       "eloGain": 11.197,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "bahsis:::Walls Combo",
+      "displayName": "Bahsis (Walls Combo)",
+      "basePlayerKey": "bahsis",
+      "basePlayerName": "Bahsis",
+      "deck": "Walls Combo",
+      "rating": 1511.176,
+      "matches": 13,
+      "wins": 7,
+      "losses": 6,
+      "winRate": 0.538462,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 11.176,
       "eventCount": 2
     },
     {
@@ -45760,6 +46134,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "ojoaosette:::Dimir Fae",
+      "displayName": "OJoaoSette (Dimir Fae)",
+      "basePlayerKey": "ojoaosette",
+      "basePlayerName": "OJoaoSette",
+      "deck": "Dimir Fae",
+      "rating": 1510.722,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 10.722,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "al_bertor:::Mono Blue Terror",
       "displayName": "Al_bertoR (Mono Blue Terror)",
       "basePlayerKey": "al_bertor",
@@ -46079,23 +46470,6 @@
       "lastActiveDate": "2025-08-31",
       "eloGain": 10.534,
       "eventCount": 2
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "_abijhavs_:::Dimir Control",
-      "displayName": "_Abijhavs_ (Dimir Control)",
-      "basePlayerKey": "_abijhavs_",
-      "basePlayerName": "_Abijhavs_",
-      "deck": "Dimir Control",
-      "rating": 1510.53,
-      "matches": 36,
-      "wins": 19,
-      "losses": 17,
-      "winRate": 0.527778,
-      "lastActiveDate": "2026-04-26",
-      "eloGain": 10.53,
-      "eventCount": 7
     },
     {
       "seasonKey": "2025",
@@ -46946,6 +47320,23 @@
       "lastActiveDate": "2026-02-26",
       "eloGain": 9.959,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "xto2:::Rakdos Madness",
+      "displayName": "Xto2 (Rakdos Madness)",
+      "basePlayerKey": "xto2",
+      "basePlayerName": "Xto2",
+      "deck": "Rakdos Madness",
+      "rating": 1509.952,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 9.952,
+      "eventCount": 1
     },
     {
       "seasonKey": "2026",
@@ -48679,6 +49070,23 @@
       "winRate": 0.6,
       "lastActiveDate": "2026-01-11",
       "eloGain": 9.038,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "digelcam:::Mono Blue Terror",
+      "displayName": "DigelCam (Mono Blue Terror)",
+      "basePlayerKey": "digelcam",
+      "basePlayerName": "DigelCam",
+      "deck": "Mono Blue Terror",
+      "rating": 1509.037,
+      "matches": 7,
+      "wins": 4,
+      "losses": 3,
+      "winRate": 0.571429,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 9.037,
       "eventCount": 1
     },
     {
@@ -51334,23 +51742,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "lamela:::Jund Wildfire",
-      "displayName": "Lamela (Jund Wildfire)",
-      "basePlayerKey": "lamela",
-      "basePlayerName": "Lamela",
-      "deck": "Jund Wildfire",
-      "rating": 1507.635,
-      "matches": 20,
-      "wins": 9,
-      "losses": 11,
-      "winRate": 0.45,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": 7.635,
-      "eventCount": 4
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "kokoko098:::Jund Broodscale",
@@ -52339,6 +52730,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "xdaddy:::Mono Red Madness",
+      "displayName": "xDaddy (Mono Red Madness)",
+      "basePlayerKey": "xdaddy",
+      "basePlayerName": "xDaddy",
+      "deck": "Mono Red Madness",
+      "rating": 1507.006,
+      "matches": 12,
+      "wins": 6,
+      "losses": 6,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 7.006,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "echanez:::Mono Red Madness",
       "displayName": "Echanez (Mono Red Madness)",
       "basePlayerKey": "echanez",
@@ -52454,23 +52862,6 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": 6.93,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "ultrajelle:::Gruul Eldrazi Stompy",
-      "displayName": "ultrajelle (Gruul Eldrazi Stompy)",
-      "basePlayerKey": "ultrajelle",
-      "basePlayerName": "ultrajelle",
-      "deck": "Gruul Eldrazi Stompy",
-      "rating": 1506.923,
-      "matches": 11,
-      "wins": 6,
-      "losses": 5,
-      "winRate": 0.545455,
-      "lastActiveDate": "2026-05-03",
-      "eloGain": 6.923,
-      "eventCount": 2
     },
     {
       "seasonKey": "2024",
@@ -53253,6 +53644,23 @@
       "lastActiveDate": "2025-08-02",
       "eloGain": 6.354,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "outzeroo:::Dimir Fae",
+      "displayName": "outZEROo (Dimir Fae)",
+      "basePlayerKey": "outzeroo",
+      "basePlayerName": "outZEROo",
+      "deck": "Dimir Fae",
+      "rating": 1506.348,
+      "matches": 12,
+      "wins": 6,
+      "losses": 6,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 6.348,
+      "eventCount": 2
     },
     {
       "seasonKey": "2024",
@@ -54867,23 +55275,6 @@
       "winRate": 0.571429,
       "lastActiveDate": "2025-11-02",
       "eloGain": 5.329,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "danielpena397:::Mono Red Madness",
-      "displayName": "Danielpena397 (Mono Red Madness)",
-      "basePlayerKey": "danielpena397",
-      "basePlayerName": "Danielpena397",
-      "deck": "Mono Red Madness",
-      "rating": 1505.315,
-      "matches": 8,
-      "wins": 4,
-      "losses": 4,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": 5.315,
       "eventCount": 1
     },
     {
@@ -56636,23 +57027,6 @@
       "lastActiveDate": "2024-05-04",
       "eloGain": 4.349,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "_batutinha_:::Selesnya Gates",
-      "displayName": "_Batutinha_ (Selesnya Gates)",
-      "basePlayerKey": "_batutinha_",
-      "basePlayerName": "_Batutinha_",
-      "deck": "Selesnya Gates",
-      "rating": 1504.347,
-      "matches": 21,
-      "wins": 10,
-      "losses": 11,
-      "winRate": 0.47619,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": 4.347,
-      "eventCount": 4
     },
     {
       "seasonKey": "2025",
@@ -63421,23 +63795,6 @@
       "eventCount": 4
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "ankylosaur:::Golgari Gardens",
-      "displayName": "Ankylosaur (Golgari Gardens)",
-      "basePlayerKey": "ankylosaur",
-      "basePlayerName": "Ankylosaur",
-      "deck": "Golgari Gardens",
-      "rating": 1501.832,
-      "matches": 6,
-      "wins": 3,
-      "losses": 3,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-03-08",
-      "eloGain": 1.832,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "galeogiao:::Rakdos Madness",
@@ -64743,6 +65100,23 @@
       "losses": 4,
       "winRate": 0.5,
       "lastActiveDate": "2024-10-12",
+      "eloGain": 1.518,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "kidrenan:::Jund Wildfire",
+      "displayName": "KidRenan (Jund Wildfire)",
+      "basePlayerKey": "kidrenan",
+      "basePlayerName": "KidRenan",
+      "deck": "Jund Wildfire",
+      "rating": 1501.518,
+      "matches": 6,
+      "wins": 3,
+      "losses": 3,
+      "winRate": 0.5,
+      "lastActiveDate": "2026-05-17",
       "eloGain": 1.518,
       "eventCount": 1
     },
@@ -66564,6 +66938,23 @@
       "lastActiveDate": "2025-05-03",
       "eloGain": 0.946,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pleitegeier:::Golgari Pestilence",
+      "displayName": "Pleitegeier (Golgari Pestilence)",
+      "basePlayerKey": "pleitegeier",
+      "basePlayerName": "Pleitegeier",
+      "deck": "Golgari Pestilence",
+      "rating": 1500.944,
+      "matches": 13,
+      "wins": 6,
+      "losses": 7,
+      "winRate": 0.461538,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": 0.944,
+      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -73026,23 +73417,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "entropete:::Mono Black Sacrifice",
-      "displayName": "EntroPete (Mono Black Sacrifice)",
-      "basePlayerKey": "entropete",
-      "basePlayerName": "EntroPete",
-      "deck": "Mono Black Sacrifice",
-      "rating": 1499.012,
-      "matches": 51,
-      "wins": 24,
-      "losses": 27,
-      "winRate": 0.470588,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": -0.988,
-      "eventCount": 9
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "sai199orz:::Grixis Affinity",
@@ -75882,23 +76256,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "echanez:::Monster Tron",
-      "displayName": "Echanez (Monster Tron)",
-      "basePlayerKey": "echanez",
-      "basePlayerName": "Echanez",
-      "deck": "Monster Tron",
-      "rating": 1497.253,
-      "matches": 8,
-      "wins": 4,
-      "losses": 4,
-      "winRate": 0.5,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": -2.747,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "_khalmyr_:::UNKNOWN",
@@ -76581,23 +76938,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "xdaddy:::Mono Red Madness",
-      "displayName": "xDaddy (Mono Red Madness)",
-      "basePlayerKey": "xdaddy",
-      "basePlayerName": "xDaddy",
-      "deck": "Mono Red Madness",
-      "rating": 1496.74,
-      "matches": 5,
-      "wins": 2,
-      "losses": 3,
-      "winRate": 0.4,
-      "lastActiveDate": "2026-04-10",
-      "eloGain": -3.26,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "andreapaglialunga:::Gruul Eldrazi Stompy",
       "displayName": "AndreaPaglialunga (Gruul Eldrazi Stompy)",
       "basePlayerKey": "andreapaglialunga",
@@ -77035,6 +77375,23 @@
       "winRate": 0.333333,
       "lastActiveDate": "2026-04-30",
       "eloGain": -3.614,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "dududenunu:::Dimir Fae",
+      "displayName": "DuduDeNunu (Dimir Fae)",
+      "basePlayerKey": "dududenunu",
+      "basePlayerName": "DuduDeNunu",
+      "deck": "Dimir Fae",
+      "rating": 1496.382,
+      "matches": 3,
+      "wins": 1,
+      "losses": 2,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -3.618,
       "eventCount": 1
     },
     {
@@ -77580,6 +77937,23 @@
       "lastActiveDate": "2025-07-27",
       "eloGain": -4.016,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "grantfly:::Mono Red Madness",
+      "displayName": "Grantfly (Mono Red Madness)",
+      "basePlayerKey": "grantfly",
+      "basePlayerName": "Grantfly",
+      "deck": "Mono Red Madness",
+      "rating": 1495.983,
+      "matches": 5,
+      "wins": 2,
+      "losses": 3,
+      "winRate": 0.4,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -4.017,
+      "eventCount": 1
     },
     {
       "seasonKey": "2024",
@@ -78174,6 +78548,23 @@
       "winRate": 0.4,
       "lastActiveDate": "2024-05-25",
       "eloGain": -4.37,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "albertosd:::Red Deck Wins",
+      "displayName": "albertoSD (Red Deck Wins)",
+      "basePlayerKey": "albertosd",
+      "basePlayerName": "albertoSD",
+      "deck": "Red Deck Wins",
+      "rating": 1495.628,
+      "matches": 3,
+      "wins": 1,
+      "losses": 2,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -4.372,
       "eventCount": 1
     },
     {
@@ -79726,6 +80117,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "manohito:::Golgari Gardens",
+      "displayName": "manohito (Golgari Gardens)",
+      "basePlayerKey": "manohito",
+      "basePlayerName": "manohito",
+      "deck": "Golgari Gardens",
+      "rating": 1494.772,
+      "matches": 1,
+      "wins": 0,
+      "losses": 1,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -5.228,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "special_boy:::White Weenie",
       "displayName": "Special_Boy (White Weenie)",
       "basePlayerKey": "special_boy",
@@ -81203,6 +81611,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "wizard_2002:::White Weenie",
+      "displayName": "Wizard_2002 (White Weenie)",
+      "basePlayerKey": "wizard_2002",
+      "basePlayerName": "Wizard_2002",
+      "deck": "White Weenie",
+      "rating": 1494.008,
+      "matches": 3,
+      "wins": 1,
+      "losses": 2,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -5.992,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "kingziggy:::Jeskai Ephemerate",
@@ -81744,6 +82169,23 @@
       "winRate": 0.4,
       "lastActiveDate": "2025-01-10",
       "eloGain": -6.224,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_deadhorse:::Mono Red Madness",
+      "displayName": "_DeadHorse (Mono Red Madness)",
+      "basePlayerKey": "_deadhorse",
+      "basePlayerName": "_DeadHorse",
+      "deck": "Mono Red Madness",
+      "rating": 1493.775,
+      "matches": 7,
+      "wins": 3,
+      "losses": 4,
+      "winRate": 0.428571,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -6.225,
       "eventCount": 1
     },
     {
@@ -82628,6 +83070,23 @@
       "winRate": 0.4,
       "lastActiveDate": "2024-09-07",
       "eloGain": -6.613,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "triso:::Selesnya Gates",
+      "displayName": "Triso (Selesnya Gates)",
+      "basePlayerKey": "triso",
+      "basePlayerName": "Triso",
+      "deck": "Selesnya Gates",
+      "rating": 1493.384,
+      "matches": 7,
+      "wins": 3,
+      "losses": 4,
+      "winRate": 0.428571,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -6.616,
       "eventCount": 1
     },
     {
@@ -85370,6 +85829,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "lamela:::Jund Wildfire",
+      "displayName": "Lamela (Jund Wildfire)",
+      "basePlayerKey": "lamela",
+      "basePlayerName": "Lamela",
+      "deck": "Jund Wildfire",
+      "rating": 1492.456,
+      "matches": 22,
+      "wins": 9,
+      "losses": 13,
+      "winRate": 0.409091,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -7.544,
+      "eventCount": 5
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "mah_alves:::Gruul Land Destruction",
       "displayName": "Mah_Alves (Gruul Land Destruction)",
       "basePlayerKey": "mah_alves",
@@ -85825,23 +86301,6 @@
       "lastActiveDate": "2025-08-17",
       "eloGain": -7.672,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pepeteam:::Selesnya Gates",
-      "displayName": "pepeteam (Selesnya Gates)",
-      "basePlayerKey": "pepeteam",
-      "basePlayerName": "pepeteam",
-      "deck": "Selesnya Gates",
-      "rating": 1492.326,
-      "matches": 8,
-      "wins": 3,
-      "losses": 5,
-      "winRate": 0.375,
-      "lastActiveDate": "2026-05-09",
-      "eloGain": -7.674,
-      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -87136,6 +87595,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "karatedom:::Selesnya Gates",
+      "displayName": "karatedom (Selesnya Gates)",
+      "basePlayerKey": "karatedom",
+      "basePlayerName": "karatedom",
+      "deck": "Selesnya Gates",
+      "rating": 1492.008,
+      "matches": 3,
+      "wins": 1,
+      "losses": 2,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -7.992,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "jtlemmon:::Gruul Eldrazi Stompy",
@@ -87869,23 +88345,6 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
-      "playerKey": "kirblinxy:::No Show",
-      "displayName": "Kirblinxy (No Show)",
-      "basePlayerKey": "kirblinxy",
-      "basePlayerName": "Kirblinxy",
-      "deck": "No Show",
-      "rating": 1492,
-      "matches": 1,
-      "wins": 0,
-      "losses": 1,
-      "winRate": 0,
-      "lastActiveDate": "2026-03-26",
-      "eloGain": -8,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
       "playerKey": "lordegg:::Jund Wildfire",
       "displayName": "LordEgg (Jund Wildfire)",
       "basePlayerKey": "lordegg",
@@ -88271,6 +88730,23 @@
       "losses": 1,
       "winRate": 0,
       "lastActiveDate": "2026-04-19",
+      "eloGain": -8,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "tvamaral:::No Show",
+      "displayName": "TVAmaral (No Show)",
+      "basePlayerKey": "tvamaral",
+      "basePlayerName": "TVAmaral",
+      "deck": "No Show",
+      "rating": 1492,
+      "matches": 1,
+      "wins": 0,
+      "losses": 1,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
       "eloGain": -8,
       "eventCount": 1
     },
@@ -89431,6 +89907,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "themanji:::Few Land Spy",
+      "displayName": "TheManji (Few Land Spy)",
+      "basePlayerKey": "themanji",
+      "basePlayerName": "TheManji",
+      "deck": "Few Land Spy",
+      "rating": 1491.579,
+      "matches": 7,
+      "wins": 3,
+      "losses": 4,
+      "winRate": 0.428571,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -8.421,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "rooney56:::Grixis Affinity",
@@ -89805,6 +90298,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "_batutinha_:::Selesnya Gates",
+      "displayName": "_Batutinha_ (Selesnya Gates)",
+      "basePlayerKey": "_batutinha_",
+      "basePlayerName": "_Batutinha_",
+      "deck": "Selesnya Gates",
+      "rating": 1491.36,
+      "matches": 27,
+      "wins": 12,
+      "losses": 15,
+      "winRate": 0.444444,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -8.64,
+      "eventCount": 5
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "ivernop:::Mono Red Blitz",
@@ -89835,6 +90345,23 @@
       "losses": 4,
       "winRate": 0.428571,
       "lastActiveDate": "2025-04-20",
+      "eloGain": -8.66,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "matutehyuga:::Cawgates",
+      "displayName": "matutehyuga (Cawgates)",
+      "basePlayerKey": "matutehyuga",
+      "basePlayerName": "matutehyuga",
+      "deck": "Cawgates",
+      "rating": 1491.34,
+      "matches": 5,
+      "wins": 2,
+      "losses": 3,
+      "winRate": 0.4,
+      "lastActiveDate": "2026-05-17",
       "eloGain": -8.66,
       "eventCount": 1
     },
@@ -91862,23 +92389,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "guizera:::Gruul Land Destruction",
-      "displayName": "Guizera (Gruul Land Destruction)",
-      "basePlayerKey": "guizera",
-      "basePlayerName": "Guizera",
-      "deck": "Gruul Land Destruction",
-      "rating": 1489.909,
-      "matches": 10,
-      "wins": 4,
-      "losses": 6,
-      "winRate": 0.4,
-      "lastActiveDate": "2026-05-08",
-      "eloGain": -10.091,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "pokerswizard:::UNKNOWN",
@@ -91893,23 +92403,6 @@
       "winRate": 0.333333,
       "lastActiveDate": "2024-07-07",
       "eloGain": -10.1,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "pleitegeier:::Golgari Pestilence",
-      "displayName": "Pleitegeier (Golgari Pestilence)",
-      "basePlayerKey": "pleitegeier",
-      "basePlayerName": "Pleitegeier",
-      "deck": "Golgari Pestilence",
-      "rating": 1489.893,
-      "matches": 6,
-      "wins": 2,
-      "losses": 4,
-      "winRate": 0.333333,
-      "lastActiveDate": "2026-03-28",
-      "eloGain": -10.107,
       "eventCount": 1
     },
     {
@@ -93783,6 +94276,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "strongmind:::Dimir Fae",
+      "displayName": "Strongmind (Dimir Fae)",
+      "basePlayerKey": "strongmind",
+      "basePlayerName": "Strongmind",
+      "deck": "Dimir Fae",
+      "rating": 1488.743,
+      "matches": 6,
+      "wins": 2,
+      "losses": 4,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -11.257,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "kraca11:::UNKNOWN",
@@ -94800,6 +95310,23 @@
       "winRate": 0.444444,
       "lastActiveDate": "2025-07-13",
       "eloGain": -11.767,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "dreddybajs:::Dimir Fae",
+      "displayName": "Dreddybajs (Dimir Fae)",
+      "basePlayerKey": "dreddybajs",
+      "basePlayerName": "Dreddybajs",
+      "deck": "Dimir Fae",
+      "rating": 1488.227,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -11.773,
       "eventCount": 1
     },
     {
@@ -95942,6 +96469,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "guizera:::Gruul Land Destruction",
+      "displayName": "Guizera (Gruul Land Destruction)",
+      "basePlayerKey": "guizera",
+      "basePlayerName": "Guizera",
+      "deck": "Gruul Land Destruction",
+      "rating": 1487.686,
+      "matches": 17,
+      "wins": 7,
+      "losses": 10,
+      "winRate": 0.411765,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -12.314,
+      "eventCount": 3
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "luiz0211:::Mono Blue Faeries",
@@ -96024,23 +96568,6 @@
       "winRate": 0.333333,
       "lastActiveDate": "2026-02-07",
       "eloGain": -12.377,
-      "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "deleon91:::Rakdos Madness",
-      "displayName": "deleon91 (Rakdos Madness)",
-      "basePlayerKey": "deleon91",
-      "basePlayerName": "deleon91",
-      "deck": "Rakdos Madness",
-      "rating": 1487.621,
-      "matches": 4,
-      "wins": 1,
-      "losses": 3,
-      "winRate": 0.25,
-      "lastActiveDate": "2026-04-02",
-      "eloGain": -12.379,
       "eventCount": 1
     },
     {
@@ -96705,6 +97232,23 @@
       "lastActiveDate": "2024-11-03",
       "eloGain": -12.724,
       "eventCount": 8
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "xenowan:::Grixis Affinity",
+      "displayName": "Xenowan (Grixis Affinity)",
+      "basePlayerKey": "xenowan",
+      "basePlayerName": "Xenowan",
+      "deck": "Grixis Affinity",
+      "rating": 1487.276,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -12.724,
+      "eventCount": 1
     },
     {
       "seasonKey": "2026",
@@ -98713,6 +99257,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mysteryman21:::Golgari Gardens",
+      "displayName": "mysteryman21 (Golgari Gardens)",
+      "basePlayerKey": "mysteryman21",
+      "basePlayerName": "mysteryman21",
+      "deck": "Golgari Gardens",
+      "rating": 1486.647,
+      "matches": 4,
+      "wins": 1,
+      "losses": 3,
+      "winRate": 0.25,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.353,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "nattazan79:::Golgari Broodscale",
@@ -98953,6 +99514,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "zippzipp_:::Gruul Eldrazi Stompy",
+      "displayName": "zippzipp_ (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "zippzipp_",
+      "basePlayerName": "zippzipp_",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1486.558,
+      "matches": 6,
+      "wins": 2,
+      "losses": 4,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.442,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "larougemtg:::Mono Red Madness",
       "displayName": "LaRougeMTG (Mono Red Madness)",
       "basePlayerKey": "larougemtg",
@@ -98982,6 +99560,23 @@
       "winRate": 0,
       "lastActiveDate": "2024-07-20",
       "eloGain": -13.445,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "czechito:::Mono Blue Terror",
+      "displayName": "Czechito (Mono Blue Terror)",
+      "basePlayerKey": "czechito",
+      "basePlayerName": "Czechito",
+      "deck": "Mono Blue Terror",
+      "rating": 1486.552,
+      "matches": 6,
+      "wins": 2,
+      "losses": 4,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.448,
       "eventCount": 1
     },
     {
@@ -99204,6 +99799,23 @@
       "lastActiveDate": "2024-12-07",
       "eloGain": -13.481,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pepeteam:::Selesnya Gates",
+      "displayName": "pepeteam (Selesnya Gates)",
+      "basePlayerKey": "pepeteam",
+      "basePlayerName": "pepeteam",
+      "deck": "Selesnya Gates",
+      "rating": 1486.514,
+      "matches": 15,
+      "wins": 6,
+      "losses": 9,
+      "winRate": 0.4,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.486,
+      "eventCount": 3
     },
     {
       "seasonKey": "2024",
@@ -100092,6 +100704,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "demian77:::Grixis Affinity",
+      "displayName": "Demian77 (Grixis Affinity)",
+      "basePlayerKey": "demian77",
+      "basePlayerName": "Demian77",
+      "deck": "Grixis Affinity",
+      "rating": 1486.227,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.773,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "seby666:::Red Deck Wins",
       "displayName": "Seby666 (Red Deck Wins)",
       "basePlayerKey": "seby666",
@@ -100583,23 +101212,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "serajh:::Dimir Fae",
-      "displayName": "serajh (Dimir Fae)",
-      "basePlayerKey": "serajh",
-      "basePlayerName": "serajh",
-      "deck": "Dimir Fae",
-      "rating": 1486.063,
-      "matches": 4,
-      "wins": 1,
-      "losses": 3,
-      "winRate": 0.25,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": -13.937,
-      "eventCount": 1
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "beicodegeia:::Dimir Control",
@@ -100649,6 +101261,23 @@
       "lastActiveDate": "2026-04-30",
       "eloGain": -13.951,
       "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ankylosaur:::Golgari Gardens",
+      "displayName": "Ankylosaur (Golgari Gardens)",
+      "basePlayerKey": "ankylosaur",
+      "basePlayerName": "Ankylosaur",
+      "deck": "Golgari Gardens",
+      "rating": 1486.043,
+      "matches": 8,
+      "wins": 3,
+      "losses": 5,
+      "winRate": 0.375,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -13.957,
+      "eventCount": 2
     },
     {
       "seasonKey": "2025",
@@ -101991,6 +102620,23 @@
       "winRate": 0.333333,
       "lastActiveDate": "2024-04-12",
       "eloGain": -14.314,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "tetsubou:::Grixis Affinity",
+      "displayName": "Tetsubou (Grixis Affinity)",
+      "basePlayerKey": "tetsubou",
+      "basePlayerName": "Tetsubou",
+      "deck": "Grixis Affinity",
+      "rating": 1485.679,
+      "matches": 4,
+      "wins": 1,
+      "losses": 3,
+      "winRate": 0.25,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -14.321,
       "eventCount": 1
     },
     {
@@ -103779,6 +104425,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "koira_simo:::Mono Blue Terror",
+      "displayName": "koira_simo (Mono Blue Terror)",
+      "basePlayerKey": "koira_simo",
+      "basePlayerName": "koira_simo",
+      "deck": "Mono Blue Terror",
+      "rating": 1485.208,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -14.792,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "i9000:::UNKNOWN",
@@ -104031,6 +104694,23 @@
       "winRate": 0,
       "lastActiveDate": "2026-01-04",
       "eloGain": -14.845,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "chambales:::Selesnya Gates",
+      "displayName": "Chambales (Selesnya Gates)",
+      "basePlayerKey": "chambales",
+      "basePlayerName": "Chambales",
+      "deck": "Selesnya Gates",
+      "rating": 1485.154,
+      "matches": 6,
+      "wins": 2,
+      "losses": 4,
+      "winRate": 0.333333,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -14.846,
       "eventCount": 1
     },
     {
@@ -105309,6 +105989,23 @@
       "eventCount": 5
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "ale_mtg:::Selesnya Gates",
+      "displayName": "Ale_Mtg (Selesnya Gates)",
+      "basePlayerKey": "ale_mtg",
+      "basePlayerName": "Ale_Mtg",
+      "deck": "Selesnya Gates",
+      "rating": 1484.924,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -15.076,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "thalai:::Grixis Affinity",
@@ -105600,6 +106297,23 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "kirblinxy:::No Show",
+      "displayName": "Kirblinxy (No Show)",
+      "basePlayerKey": "kirblinxy",
+      "basePlayerName": "Kirblinxy",
+      "deck": "No Show",
+      "rating": 1484.873,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -15.127,
+      "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "-magicrick93-:::Elves",
       "displayName": "-MagicRick93- (Elves)",
       "basePlayerKey": "-magicrick93-",
@@ -105646,6 +106360,23 @@
       "winRate": 0.333333,
       "lastActiveDate": "2025-10-05",
       "eloGain": -15.13,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "williami1986:::Poison Storm",
+      "displayName": "williami1986 (Poison Storm)",
+      "basePlayerKey": "williami1986",
+      "basePlayerName": "williami1986",
+      "deck": "Poison Storm",
+      "rating": 1484.868,
+      "matches": 4,
+      "wins": 1,
+      "losses": 3,
+      "winRate": 0.25,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -15.132,
       "eventCount": 1
     },
     {
@@ -105782,6 +106513,23 @@
       "winRate": 0.4,
       "lastActiveDate": "2025-11-16",
       "eloGain": -15.158,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "temur4life:::Fog Tron",
+      "displayName": "temur4life (Fog Tron)",
+      "basePlayerKey": "temur4life",
+      "basePlayerName": "temur4life",
+      "deck": "Fog Tron",
+      "rating": 1484.84,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -15.16,
       "eventCount": 1
     },
     {
@@ -106123,23 +106871,6 @@
       "lastActiveDate": "2025-02-01",
       "eloGain": -15.229,
       "eventCount": 1
-    },
-    {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "lord_beerus:::Mono Blue Terror",
-      "displayName": "Lord_Beerus (Mono Blue Terror)",
-      "basePlayerKey": "lord_beerus",
-      "basePlayerName": "Lord_Beerus",
-      "deck": "Mono Blue Terror",
-      "rating": 1484.767,
-      "matches": 13,
-      "wins": 5,
-      "losses": 8,
-      "winRate": 0.384615,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": -15.233,
-      "eventCount": 3
     },
     {
       "seasonKey": "2025",
@@ -111769,6 +112500,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "lostonkato:::Gond Combo",
+      "displayName": "lostonkato (Gond Combo)",
+      "basePlayerKey": "lostonkato",
+      "basePlayerName": "lostonkato",
+      "deck": "Gond Combo",
+      "rating": 1483.98,
+      "matches": 2,
+      "wins": 0,
+      "losses": 2,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -16.02,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "pokerswizard:::Dimir Terror",
@@ -115152,6 +115900,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "2krewlop:::White Metalcraft",
+      "displayName": "2krewlop (White Metalcraft)",
+      "basePlayerKey": "2krewlop",
+      "basePlayerName": "2krewlop",
+      "deck": "White Metalcraft",
+      "rating": 1483.04,
+      "matches": 4,
+      "wins": 1,
+      "losses": 3,
+      "winRate": 0.25,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -16.96,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "_zodiak:::UNKNOWN",
@@ -117583,6 +118348,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "keez:::Boros Synth",
+      "displayName": "Keez (Boros Synth)",
+      "basePlayerKey": "keez",
+      "basePlayerName": "Keez",
+      "deck": "Boros Synth",
+      "rating": 1481.226,
+      "matches": 7,
+      "wins": 2,
+      "losses": 5,
+      "winRate": 0.285714,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -18.774,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "stella_r:::Azorius Tribe",
@@ -119113,23 +119895,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "craig_long123:::Izzet Control",
-      "displayName": "Craig_Long123 (Izzet Control)",
-      "basePlayerKey": "craig_long123",
-      "basePlayerName": "Craig_Long123",
-      "deck": "Izzet Control",
-      "rating": 1479.752,
-      "matches": 10,
-      "wins": 3,
-      "losses": 7,
-      "winRate": 0.3,
-      "lastActiveDate": "2026-04-09",
-      "eloGain": -20.248,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "brivenix:::Dimir Control",
@@ -119417,6 +120182,23 @@
       "lastActiveDate": "2025-08-30",
       "eloGain": -20.53,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "kefwyn:::Mono Blue Terror",
+      "displayName": "Kefwyn (Mono Blue Terror)",
+      "basePlayerKey": "kefwyn",
+      "basePlayerName": "Kefwyn",
+      "deck": "Mono Blue Terror",
+      "rating": 1479.457,
+      "matches": 5,
+      "wins": 1,
+      "losses": 4,
+      "winRate": 0.2,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -20.543,
+      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -119827,23 +120609,6 @@
       "eventCount": 1
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "mj_23:::Red Deck Wins",
-      "displayName": "MJ_23 (Red Deck Wins)",
-      "basePlayerKey": "mj_23",
-      "basePlayerName": "MJ_23",
-      "deck": "Red Deck Wins",
-      "rating": 1479.175,
-      "matches": 9,
-      "wins": 3,
-      "losses": 6,
-      "winRate": 0.333333,
-      "lastActiveDate": "2026-05-10",
-      "eloGain": -20.825,
-      "eventCount": 2
-    },
-    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "tyerube1618:::UNKNOWN",
@@ -119893,6 +120658,23 @@
       "lastActiveDate": "2024-12-07",
       "eloGain": -20.894,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "lord_beerus:::Mono Blue Terror",
+      "displayName": "Lord_Beerus (Mono Blue Terror)",
+      "basePlayerKey": "lord_beerus",
+      "basePlayerName": "Lord_Beerus",
+      "deck": "Mono Blue Terror",
+      "rating": 1479.105,
+      "matches": 16,
+      "wins": 6,
+      "losses": 10,
+      "winRate": 0.375,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -20.895,
+      "eventCount": 4
     },
     {
       "seasonKey": "2025",
@@ -121799,6 +122581,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "rarakkyo:::Dimir Fae",
+      "displayName": "rarakkyo (Dimir Fae)",
+      "basePlayerKey": "rarakkyo",
+      "basePlayerName": "rarakkyo",
+      "deck": "Dimir Fae",
+      "rating": 1478.152,
+      "matches": 5,
+      "wins": 1,
+      "losses": 4,
+      "winRate": 0.2,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -21.848,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "lisior:::Rakdos Madness",
@@ -122153,6 +122952,23 @@
       "winRate": 0,
       "lastActiveDate": "2025-01-26",
       "eloGain": -22.047,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "marmotte_lambda:::Selesnya Gates",
+      "displayName": "Marmotte_Lambda (Selesnya Gates)",
+      "basePlayerKey": "marmotte_lambda",
+      "basePlayerName": "Marmotte_Lambda",
+      "deck": "Selesnya Gates",
+      "rating": 1477.89,
+      "matches": 3,
+      "wins": 0,
+      "losses": 3,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -22.11,
       "eventCount": 1
     },
     {
@@ -122530,6 +123346,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "moon11:::Gruul Eldrazi Stompy",
+      "displayName": "moon11 (Gruul Eldrazi Stompy)",
+      "basePlayerKey": "moon11",
+      "basePlayerName": "moon11",
+      "deck": "Gruul Eldrazi Stompy",
+      "rating": 1477.713,
+      "matches": 5,
+      "wins": 1,
+      "losses": 4,
+      "winRate": 0.2,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -22.287,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "buddythefrog:::Poison Storm",
@@ -122736,6 +123569,40 @@
     {
       "seasonKey": "2026",
       "seasonYear": "2026",
+      "playerKey": "vikizin:::Mono Red Madness",
+      "displayName": "vikizin (Mono Red Madness)",
+      "basePlayerKey": "vikizin",
+      "basePlayerName": "vikizin",
+      "deck": "Mono Red Madness",
+      "rating": 1477.598,
+      "matches": 5,
+      "wins": 1,
+      "losses": 4,
+      "winRate": 0.2,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -22.402,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "itstime:::Mono Blue Terror",
+      "displayName": "itstime (Mono Blue Terror)",
+      "basePlayerKey": "itstime",
+      "basePlayerName": "itstime",
+      "deck": "Mono Blue Terror",
+      "rating": 1477.595,
+      "matches": 3,
+      "wins": 0,
+      "losses": 3,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -22.405,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
       "playerKey": "cabz:::Golgari Gardens",
       "displayName": "Cabz (Golgari Gardens)",
       "basePlayerKey": "cabz",
@@ -122850,6 +123717,23 @@
       "winRate": 0.2,
       "lastActiveDate": "2024-09-21",
       "eloGain": -22.474,
+      "eventCount": 1
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "mei0024:::Selesnya Gates",
+      "displayName": "mei0024 (Selesnya Gates)",
+      "basePlayerKey": "mei0024",
+      "basePlayerName": "mei0024",
+      "deck": "Selesnya Gates",
+      "rating": 1477.525,
+      "matches": 3,
+      "wins": 0,
+      "losses": 3,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -22.475,
       "eventCount": 1
     },
     {
@@ -133631,6 +134515,23 @@
       "eventCount": 1
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "walrusmadness:::Jund Wildfire",
+      "displayName": "walrusmadness (Jund Wildfire)",
+      "basePlayerKey": "walrusmadness",
+      "basePlayerName": "walrusmadness",
+      "deck": "Jund Wildfire",
+      "rating": 1469.876,
+      "matches": 6,
+      "wins": 1,
+      "losses": 5,
+      "winRate": 0.166667,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -30.124,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2024",
       "seasonYear": "2024",
       "playerKey": "dr1nkwat3r:::Jund Broodscale",
@@ -137014,6 +137915,23 @@
       "eventCount": 2
     },
     {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "cabrabr12:::White Metalcraft",
+      "displayName": "cabrabr12 (White Metalcraft)",
+      "basePlayerKey": "cabrabr12",
+      "basePlayerName": "cabrabr12",
+      "deck": "White Metalcraft",
+      "rating": 1467.089,
+      "matches": 4,
+      "wins": 0,
+      "losses": 4,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -32.911,
+      "eventCount": 1
+    },
+    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "sanchez5272:::UNKNOWN",
@@ -137488,6 +138406,23 @@
       "lastActiveDate": "2026-02-28",
       "eloGain": -33.895,
       "eventCount": 5
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "craig_long123:::Izzet Control",
+      "displayName": "Craig_Long123 (Izzet Control)",
+      "basePlayerKey": "craig_long123",
+      "basePlayerName": "Craig_Long123",
+      "deck": "Izzet Control",
+      "rating": 1466.089,
+      "matches": 12,
+      "wins": 3,
+      "losses": 9,
+      "winRate": 0.25,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -33.911,
+      "eventCount": 3
     },
     {
       "seasonKey": "2026",
@@ -140771,23 +141706,6 @@
       "eventCount": 5
     },
     {
-      "seasonKey": "2026",
-      "seasonYear": "2026",
-      "playerKey": "syns:::Mono Red Madness",
-      "displayName": "Syns (Mono Red Madness)",
-      "basePlayerKey": "syns",
-      "basePlayerName": "Syns",
-      "deck": "Mono Red Madness",
-      "rating": 1459.605,
-      "matches": 203,
-      "wins": 98,
-      "losses": 105,
-      "winRate": 0.482759,
-      "lastActiveDate": "2026-05-16",
-      "eloGain": -40.395,
-      "eventCount": 37
-    },
-    {
       "seasonKey": "2025",
       "seasonYear": "2025",
       "playerKey": "auzzie51:::UNKNOWN",
@@ -141874,6 +142792,23 @@
       "lastActiveDate": "2026-02-19",
       "eloGain": -44.148,
       "eventCount": 2
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "pnascimento:::Cycle Storm",
+      "displayName": "PNascimento (Cycle Storm)",
+      "basePlayerKey": "pnascimento",
+      "basePlayerName": "PNascimento",
+      "deck": "Cycle Storm",
+      "rating": 1455.792,
+      "matches": 6,
+      "wins": 0,
+      "losses": 6,
+      "winRate": 0,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -44.208,
+      "eventCount": 1
     },
     {
       "seasonKey": "2025",
@@ -143846,6 +144781,23 @@
       "lastActiveDate": "2024-09-27",
       "eloGain": -50.616,
       "eventCount": 25
+    },
+    {
+      "seasonKey": "2026",
+      "seasonYear": "2026",
+      "playerKey": "syns:::Mono Red Madness",
+      "displayName": "Syns (Mono Red Madness)",
+      "basePlayerKey": "syns",
+      "basePlayerName": "Syns",
+      "deck": "Mono Red Madness",
+      "rating": 1449.378,
+      "matches": 209,
+      "wins": 100,
+      "losses": 109,
+      "winRate": 0.478469,
+      "lastActiveDate": "2026-05-17",
+      "eloGain": -50.622,
+      "eventCount": 38
     },
     {
       "seasonKey": "2024",

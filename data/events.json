@@ -1,5 +1,17 @@
 [
   {
+    "event_id": "online-qualifier-2026-05-17",
+    "source_event_name": "MTGO Qualifier (2026-05-17)",
+    "display_name": "Qualifier",
+    "series": "Qualifier",
+    "source_system": "mtgo",
+    "event_type": "online",
+    "date": "2026-05-17",
+    "year": 2026,
+    "month": 5,
+    "total_players": 125
+  },
+  {
     "event_id": "online-challenge-2026-05-16",
     "source_event_name": "MTGO Challenge (2026-05-16)",
     "display_name": "Challenge",

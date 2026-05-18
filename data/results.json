@@ -170784,6 +170784,1006 @@
     "losses": 1
   },
   {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "duke12",
+    "deck": "White Weenie",
+    "rank": 1,
+    "wins": 9,
+    "losses": 1
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "MisterTwin",
+    "deck": "Mono Red Madness",
+    "rank": 2,
+    "wins": 9,
+    "losses": 1
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Echanez",
+    "deck": "Monster Tron",
+    "rank": 3,
+    "wins": 7,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "reojund",
+    "deck": "Grixis Affinity",
+    "rank": 4,
+    "wins": 7,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Capoeira02",
+    "deck": "Jund Wildfire",
+    "rank": 5,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Jositoshekel",
+    "deck": "Selesnya Gates",
+    "rank": 6,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "kasa",
+    "deck": "Rakdos Madness",
+    "rank": 7,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Navas",
+    "deck": "Mono Red Madness",
+    "rank": 8,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "CarrodaPolicia",
+    "deck": "Elves",
+    "rank": 9,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Diomed_Tidid",
+    "deck": "White Weenie",
+    "rank": 10,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "barff",
+    "deck": "Dimir Fae",
+    "rank": 11,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "dragtar",
+    "deck": "White Weenie",
+    "rank": 12,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "newbarola",
+    "deck": "Selesnya Gates",
+    "rank": 13,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "deleon91",
+    "deck": "Rakdos Madness",
+    "rank": 14,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Sarlanga",
+    "deck": "Mono Blue Terror",
+    "rank": 15,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "EntroPete",
+    "deck": "Mono Black Sacrifice",
+    "rank": 16,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "vini_torres",
+    "deck": "Red Deck Wins",
+    "rank": 17,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "EiJunCHN",
+    "deck": "Jund Wildfire",
+    "rank": 18,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "serajh",
+    "deck": "Dimir Fae",
+    "rank": 19,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Enz091",
+    "deck": "Elves",
+    "rank": 20,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Albreto",
+    "deck": "Mono Red Madness",
+    "rank": 21,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "LuffyDoChapeuDePalha",
+    "deck": "Grixis Affinity",
+    "rank": 22,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Shiib",
+    "deck": "Elves",
+    "rank": 23,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "ermili",
+    "deck": "Red Deck Wins",
+    "rank": 24,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Brvnx",
+    "deck": "Dimir Fae",
+    "rank": 25,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "MJ_23",
+    "deck": "Red Deck Wins",
+    "rank": 26,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Hamuda",
+    "deck": "Goblin Class Combo",
+    "rank": 27,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "cicciogire",
+    "deck": "Dimir Terror",
+    "rank": 28,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Xto2",
+    "deck": "Rakdos Madness",
+    "rank": 29,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Dinosaur-chan",
+    "deck": "Dimir Fae",
+    "rank": 30,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "xfile",
+    "deck": "Mono Blue Terror",
+    "rank": 31,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Raketa",
+    "deck": "Mono Red Madness",
+    "rank": 32,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "leandru",
+    "deck": "Naya Slivers",
+    "rank": 33,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "KidRenan",
+    "deck": "Jund Wildfire",
+    "rank": 34,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "seasonofmists",
+    "deck": "Turbofog",
+    "rank": 35,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Niederschatten",
+    "deck": "Dimir Fae",
+    "rank": 36,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "rerere",
+    "deck": "Mono Blue Terror",
+    "rank": 37,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Danielpena397",
+    "deck": "Mono Red Madness",
+    "rank": 38,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "DigelCam",
+    "deck": "Mono Blue Terror",
+    "rank": 39,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Coachinho",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 40,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "MikeyCoppola365",
+    "deck": "White Metalcraft",
+    "rank": 41,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "carvs",
+    "deck": "Jund Wildfire",
+    "rank": 42,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "CHRIS-Mtg-02",
+    "deck": "Selesnya Gates",
+    "rank": 43,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "yuxiaoyu",
+    "deck": "Golgari Gardens",
+    "rank": 44,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "medvedev",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 45,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "MrFuinha",
+    "deck": "Few Land Spy",
+    "rank": 46,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Orochi-Mario",
+    "deck": "Dimir Terror",
+    "rank": 47,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Pleitegeier",
+    "deck": "Golgari Pestilence",
+    "rank": 48,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "_Abijhavs_",
+    "deck": "Dimir Control",
+    "rank": 49,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "viashinoperuano",
+    "deck": "Boros Synth",
+    "rank": 50,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "OJoaoSette",
+    "deck": "Dimir Fae",
+    "rank": 51,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "xDaddy",
+    "deck": "Mono Red Madness",
+    "rank": 52,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "ultrajelle",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 53,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "boom_bust",
+    "deck": "Red Deck Wins",
+    "rank": 54,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "zippzipp_",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 55,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Univerce",
+    "deck": "Selesnya Gates",
+    "rank": 56,
+    "wins": 3,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Triso",
+    "deck": "Selesnya Gates",
+    "rank": 57,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Czechito",
+    "deck": "Mono Blue Terror",
+    "rank": 58,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "_DeadHorse",
+    "deck": "Mono Red Madness",
+    "rank": 59,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "outZEROo",
+    "deck": "Dimir Fae",
+    "rank": 60,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "TheManji",
+    "deck": "Few Land Spy",
+    "rank": 61,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "mehanske",
+    "deck": "Rakdos Madness",
+    "rank": 62,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Guizera",
+    "deck": "Gruul Land Destruction",
+    "rank": 63,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Mahers",
+    "deck": "Red Deck Wins",
+    "rank": 64,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "pepeteam",
+    "deck": "Selesnya Gates",
+    "rank": 65,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "BERNASTORRES",
+    "deck": "Boros Tribe",
+    "rank": 66,
+    "wins": 3,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "_blaze66",
+    "deck": "Jund Wildfire",
+    "rank": 67,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "ATmagic",
+    "deck": "Red Deck Wins",
+    "rank": 68,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Luminati",
+    "deck": "Mono Blue Terror",
+    "rank": 69,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "MAFS",
+    "deck": "White Weenie",
+    "rank": 70,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "_Batutinha_",
+    "deck": "Selesnya Gates",
+    "rank": 71,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Ixidor29",
+    "deck": "Gruul Land Destruction",
+    "rank": 72,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Bolllll",
+    "deck": "Jund Wildfire",
+    "rank": 73,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Bahsis",
+    "deck": "Walls Combo",
+    "rank": 74,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Vojbe",
+    "deck": "Mono Red Madness",
+    "rank": 75,
+    "wins": 3,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Grantfly",
+    "deck": "Mono Red Madness",
+    "rank": 76,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "kuldothared",
+    "deck": "Jund Wildfire",
+    "rank": 77,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Beicodegeia",
+    "deck": "Dimir Fae",
+    "rank": 78,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "walrusmadness",
+    "deck": "Jund Wildfire",
+    "rank": 79,
+    "wins": 1,
+    "losses": 5
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "matutehyuga",
+    "deck": "Cawgates",
+    "rank": 80,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Keez",
+    "deck": "Boros Synth",
+    "rank": 81,
+    "wins": 2,
+    "losses": 5
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Terminus0",
+    "deck": "Jund Wildfire",
+    "rank": 82,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Chambales",
+    "deck": "Selesnya Gates",
+    "rank": 83,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Strongmind",
+    "deck": "Dimir Fae",
+    "rank": 84,
+    "wins": 2,
+    "losses": 5
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Syns",
+    "deck": "Mono Red Madness",
+    "rank": 85,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Wizard_2002",
+    "deck": "White Weenie",
+    "rank": 86,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "williami1986",
+    "deck": "Poison Storm",
+    "rank": 87,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "karatedom",
+    "deck": "Selesnya Gates",
+    "rank": 88,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "albertoSD",
+    "deck": "Red Deck Wins",
+    "rank": 89,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "mysteryman21",
+    "deck": "Golgari Gardens",
+    "rank": 90,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "vikizin",
+    "deck": "Mono Red Madness",
+    "rank": 91,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Cabz",
+    "deck": "Red Deck Wins",
+    "rank": 92,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "OniReject",
+    "deck": "Mono Red Madness",
+    "rank": 93,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Tetsubou",
+    "deck": "Grixis Affinity",
+    "rank": 94,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "2krewlop",
+    "deck": "White Metalcraft",
+    "rank": 95,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "DuduDeNunu",
+    "deck": "Dimir Fae",
+    "rank": 96,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "rarakkyo",
+    "deck": "Dimir Fae",
+    "rank": 97,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "McWinSauce",
+    "deck": "White Weenie",
+    "rank": 98,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Kefwyn",
+    "deck": "Mono Blue Terror",
+    "rank": 99,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "moon11",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 100,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "PNascimento",
+    "deck": "Cycle Storm",
+    "rank": 101,
+    "wins": 0,
+    "losses": 6
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "NickNorman",
+    "deck": "Golgari Gardens",
+    "rank": 102,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Lord_Beerus",
+    "deck": "Mono Blue Terror",
+    "rank": 103,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "__Noob__",
+    "deck": "Golgari Gardens",
+    "rank": 104,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Xenowan",
+    "deck": "Grixis Affinity",
+    "rank": 105,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Craig_Long123",
+    "deck": "Izzet Control",
+    "rank": 106,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "lostonkato",
+    "deck": "Gond Combo",
+    "rank": 107,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "PR0boszcz",
+    "deck": "Golgari Pestilence",
+    "rank": 108,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "itstime",
+    "deck": "Mono Blue Terror",
+    "rank": 109,
+    "wins": 0,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Demian77",
+    "deck": "Grixis Affinity",
+    "rank": 110,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "YSZzz",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 111,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Ankylosaur",
+    "deck": "Golgari Gardens",
+    "rank": 112,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Dreddybajs",
+    "deck": "Dimir Fae",
+    "rank": 113,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Kirblinxy",
+    "deck": "No Show",
+    "rank": 114,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "koira_simo",
+    "deck": "Mono Blue Terror",
+    "rank": 115,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "cabrabr12",
+    "deck": "White Metalcraft",
+    "rank": 116,
+    "wins": 0,
+    "losses": 4
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "SaculSueahtam",
+    "deck": "Red Deck Wins",
+    "rank": 117,
+    "wins": 0,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Marmotte_Lambda",
+    "deck": "Selesnya Gates",
+    "rank": 118,
+    "wins": 0,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "mei0024",
+    "deck": "Selesnya Gates",
+    "rank": 119,
+    "wins": 0,
+    "losses": 3
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "temur4life",
+    "deck": "Fog Tron",
+    "rank": 120,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Lamela",
+    "deck": "Jund Wildfire",
+    "rank": 121,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Ale_Mtg",
+    "deck": "Selesnya Gates",
+    "rank": 122,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "manohito",
+    "deck": "Golgari Gardens",
+    "rank": 123,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "Fofondrik",
+    "deck": "Mono Red Madness",
+    "rank": 124,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-qualifier-2026-05-17",
+    "player": "TVAmaral",
+    "deck": "No Show",
+    "rank": 125,
+    "wins": 0,
+    "losses": 1
+  },
+  {
     "event_id": "online-showcase-2024-04-20",
     "player": "RitualSinkhole",
     "deck": "Turbofog",
