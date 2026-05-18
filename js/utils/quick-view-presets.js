@@ -329,6 +329,40 @@ export function getQuickViewPresetYearOptions(rows = getAnalysisRows(), { includ
   return cache.yearOptions.get(cacheKey) || [];
 }
 
+// Finds the latest year-matching set-window preset that still has available
+// rows under the caller's own scope rules.
+export function getLatestQuickViewPresetIdForYear(
+  year = '',
+  presets = [],
+  getRangeForPreset = () => ({})
+) {
+  const normalizedYear = String(year || '').trim();
+  if (!normalizedYear) {
+    return '';
+  }
+
+  return (Array.isArray(presets) ? presets : [])
+    .filter(preset => preset?.releaseYear === normalizedYear)
+    .map(preset => ({
+      preset,
+      range: getRangeForPreset(preset)
+    }))
+    .filter(({ range }) => Boolean(range?.startDate && range?.endDate))
+    .sort((left, right) => {
+      const endComparison = String(right.range?.endDate || '').localeCompare(String(left.range?.endDate || ''));
+      if (endComparison !== 0) {
+        return endComparison;
+      }
+
+      const startComparison = String(right.range?.startDate || '').localeCompare(String(left.range?.startDate || ''));
+      if (startComparison !== 0) {
+        return startComparison;
+      }
+
+      return String(right.preset?.releaseDate || '').localeCompare(String(left.preset?.releaseDate || ''));
+    })[0]?.preset?.id || '';
+}
+
 // Picks the initial quick-view year tab, preferring the current calendar year
 // when data exists for it.
 export function getDefaultQuickViewYear(rows = getAnalysisRows(), { includeFuture = false } = {}) {

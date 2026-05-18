@@ -4,6 +4,7 @@ import {
   getQuickViewPresetAriaLabel,
   getQuickViewPresetDefinitionsByIds,
   getLatestSetQuickViewPresetId,
+  getLatestQuickViewPresetIdForYear,
   getQuickViewPresetDefinitionById,
   getQuickViewPresetTooltipDateRange,
   getQuickViewPresetYearOptions,
@@ -522,28 +523,19 @@ export function setQuickViewYearSelection(scope, year) {
   }
 
   setActiveQuickViewYear(scope, normalizedYear);
+  const setWindowPresets = getSetQuickViewPresetDefinitions(getAnalysisRows(), { includeFuture: true });
 
   if (scope === 'player') {
     const playerKey = document.getElementById('playerFilterMenu')?.value || '';
-    const latestPresetId = getSetQuickViewPresetDefinitions(getAnalysisRows(), { includeFuture: true })
-      .filter(preset => preset.releaseYear === normalizedYear)
-      .map(preset => ({
-        preset,
-        range: getPlayerPresetSuggestedRange({
-          selectedEventTypes: getPlayerAnalysisSelectedTypes(),
-          presetId: preset.id,
-          playerKey
-        })
-      }))
-      .filter(({ range }) => Boolean(range.startDate && range.endDate))
-      .sort((left, right) => {
-        const endComparison = String(right.range.endDate || '').localeCompare(String(left.range.endDate || ''));
-        if (endComparison !== 0) {
-          return endComparison;
-        }
-
-        return String(right.range.startDate || '').localeCompare(String(left.range.startDate || ''));
-      })[0]?.preset?.id;
+    const latestPresetId = getLatestQuickViewPresetIdForYear(
+      normalizedYear,
+      setWindowPresets,
+      preset => getPlayerPresetSuggestedRange({
+        selectedEventTypes: getPlayerAnalysisSelectedTypes(),
+        presetId: preset.id,
+        playerKey
+      })
+    );
 
     if (latestPresetId) {
       applyPlayerAnalysisPreset(latestPresetId);
@@ -567,7 +559,34 @@ export function setQuickViewYearSelection(scope, year) {
     return;
   }
 
-  renderQuickViewButtons(scope);
+  const latestPresetId = getLatestQuickViewPresetIdForYear(
+    normalizedYear,
+    setWindowPresets,
+    preset => getMultiEventPresetSuggestedRange({
+      selectedEventTypes: getEventAnalysisSelectedTypes(),
+      presetId: preset.id
+    })
+  );
+
+  if (latestPresetId) {
+    applyMultiEventPreset(latestPresetId);
+    return;
+  }
+
+  const fullYearPresetId = getStaticQuickViewPresetDefinitions()
+    .find(preset => preset.kind === 'calendar-year' && preset.releaseYear === normalizedYear)?.id || '';
+
+  if (fullYearPresetId) {
+    applyMultiEventPreset(fullYearPresetId);
+    return;
+  }
+
+  setMultiEventPresetButtonState('');
+  filterRuntime.resetMultiDateRange();
+  filterRuntime.updateDateOptions({ syncCalendarView: true });
+  if (getTopMode() === 'event' && getAnalysisMode() === 'multi') {
+    filterRuntime.updateAllCharts();
+  }
 }
 
 // Applies event-type button state in the Event Analysis section.
