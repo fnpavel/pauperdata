@@ -241,7 +241,8 @@ function buildAnalysisIndex(rows = []) {
           singleEventEntriesByType.get(eventType).set(eventName, {
             name: eventName,
             date: dateValue,
-            eventType
+            eventType,
+            playerCount: 0
           });
         }
       }
@@ -271,18 +272,33 @@ function buildAnalysisIndex(rows = []) {
   });
 
   singleEventEntriesByType.forEach((entries, eventType) => {
+    entries.forEach(entry => {
+      entry.playerCount = index.rowsByEventName.get(entry.name)?.length || 0;
+    });
+
     index.singleEventEntriesByType.set(
       eventType,
       Array.from(entries.values()).sort((entryA, entryB) => {
-        return entryB.date.localeCompare(entryA.date) || entryA.name.localeCompare(entryB.name);
+        return (
+          entryB.date.localeCompare(entryA.date)
+          || entryB.playerCount - entryA.playerCount
+          || entryA.name.localeCompare(entryB.name)
+        );
       })
     );
   });
 
   index.latestSingleEventEntry = Array.from(latestEntriesByName.values())
-    .map(({ row, ...entry }) => entry)
+    .map(({ row, ...entry }) => ({
+      ...entry,
+      playerCount: index.rowsByEventName.get(entry.name)?.length || 0
+    }))
     .sort((entryA, entryB) => {
-      return entryB.date.localeCompare(entryA.date) || entryA.name.localeCompare(entryB.name);
+      return (
+        entryB.date.localeCompare(entryA.date)
+        || entryB.playerCount - entryA.playerCount
+        || entryA.name.localeCompare(entryB.name)
+      );
     })[0] || null;
 
   return index;
@@ -505,6 +521,30 @@ export function getAnalysisSingleEventEntries(eventType = '', rows = getAnalysis
   }
 
   return getAnalysisIndex(rows).singleEventEntriesByType.get(normalizedEventType) || EMPTY_ROWS;
+}
+
+// Returns all unique single-event picker entries across event types.
+export function getAllAnalysisSingleEventEntries(rows = getAnalysisRows()) {
+  const index = getAnalysisIndex(rows);
+  return Array.from(index.rowsByEventName.keys())
+    .map(eventName => {
+      const rowsForEvent = index.rowsByEventName.get(eventName) || EMPTY_ROWS;
+      const firstRow = rowsForEvent[0] || {};
+      return {
+        name: eventName,
+        date: normalizeDateValue(firstRow?.Date) || getFallbackEventDate(eventName),
+        eventType: normalizeEventType(firstRow?.EventType),
+        playerCount: rowsForEvent.length
+      };
+    })
+    .filter(entry => entry.name && entry.date)
+    .sort((entryA, entryB) => {
+      return (
+        entryB.date.localeCompare(entryA.date)
+        || entryB.playerCount - entryA.playerCount
+        || entryA.name.localeCompare(entryB.name)
+      );
+    });
 }
 
 // Returns the latest single event entry across the active analysis rows.

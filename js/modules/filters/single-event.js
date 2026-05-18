@@ -6,18 +6,14 @@ import {
 } from './single-event-picker.js';
 import { getEventGroupInfo } from '../../utils/event-groups.js';
 import {
-  getAnalysisRowsForEvent,
-  getAnalysisSingleEventEntries,
-  getLatestAnalysisSingleEventEntry
+  getAllAnalysisSingleEventEntries,
 } from '../../utils/analysis-data.js';
 import { filterState } from './state.js';
 import { filterRuntime } from './runtime.js';
 import {
   getAnalysisMode,
   getEventAnalysisSection,
-  getSectionEventTypeButtons,
-  getSingleEventSelectedType,
-  clearSectionEventTypes
+  getSectionEventTypeButtons
 } from './shared.js';
 
 // Extracts a YYYY-MM-DD date from an event name when a row date is unavailable.
@@ -27,28 +23,50 @@ export function getEventDate(eventName) {
     return match[1];
   }
 
-  return getAnalysisRowsForEvent(eventName)[0]?.Date || '';
+  return '';
 }
 
-// Builds calendar-picker entries for the active single-event event type.
-export function buildSingleEventCalendarEntries(selectedEventType) {
-  return getAnalysisSingleEventEntries(selectedEventType).map(entry => {
+function getCurrentRealWorldMonthKey() {
+  const now = new Date();
+  return {
+    year: now.getFullYear(),
+    month: now.getMonth()
+  };
+}
+
+function isEntryInAllowedSingleEventMonth(entry) {
+  if (!entry) {
+    return false;
+  }
+
+  const { year, month } = getCurrentRealWorldMonthKey();
+  return entry.year < year || (entry.year === year && entry.month <= month);
+}
+
+// Builds calendar-picker entries for all available single events.
+export function buildSingleEventCalendarEntries() {
+  return getAllAnalysisSingleEventEntries().map(entry => {
+    const dateObject = new Date(`${entry.date}T00:00:00Z`);
     const groupInfo = getEventGroupInfo(entry.name);
 
     return {
       name: entry.name,
       date: entry.date || getEventDate(entry.name),
+      eventType: entry.eventType,
+      playerCount: entry.playerCount || 0,
+      year: dateObject.getUTCFullYear(),
+      month: dateObject.getUTCMonth(),
       groupKey: groupInfo.key,
       groupLabel: groupInfo.label,
       groupOrder: groupInfo.order,
       shortLabel: groupInfo.shortLabel
     };
-  });
+  }).filter(isEntryInAllowedSingleEventMonth);
 }
 
 // Finds the latest available single-event entry for default selection.
-export function getLatestSingleEventEntry() {
-  return getLatestAnalysisSingleEventEntry();
+export function getLatestSingleEventEntry(entries = buildSingleEventCalendarEntries()) {
+  return entries[0] || null;
 }
 
 function populateEventFilterMenu(entries) {
@@ -88,6 +106,7 @@ export function setSelectedSingleEvent(eventName, dispatchChange = false) {
   const previousValue = eventFilterMenu.value;
   const hasOption = Array.from(eventFilterMenu.options).some(option => option.value === eventName);
   eventFilterMenu.value = hasOption ? eventName : '';
+  filterState.selectedSingleEventName = eventFilterMenu.value || '';
 
   if (dispatchChange && eventFilterMenu.value !== previousValue) {
     eventFilterMenu.dispatchEvent(new Event('change'));
@@ -122,7 +141,7 @@ export function updateSingleEventFilterVisibility() {
   const isSingleMode = getAnalysisMode() === 'single';
 
   if (eventTypeSection) {
-    eventTypeSection.style.display = 'block';
+    eventTypeSection.style.display = isSingleMode ? 'none' : 'block';
   }
 
   if (eventFilterSection) {
@@ -138,60 +157,44 @@ export function updateSingleEventFilterVisibility() {
 
 // Returns whether a valid single event is currently selected.
 export function hasSelectedSingleEvent() {
-  return Boolean(getSingleEventSelectedType() && document.getElementById('eventFilterMenu')?.value);
+  return Boolean(document.getElementById('eventFilterMenu')?.value);
 }
 
 // Selects the latest available event for first render.
 export function applyLatestSingleEventSelection() {
-  const latestEntry = getLatestSingleEventEntry();
+  const entries = buildSingleEventCalendarEntries();
+  const validStoredEntry = entries.find(entry => entry.name === filterState.selectedSingleEventName) || null;
+  const latestEntry = validStoredEntry || getLatestSingleEventEntry(entries);
   if (!latestEntry) {
-    clearSectionEventTypes(getEventAnalysisSection());
     resetSingleEventSelectionState();
     updateSingleEventFilterVisibility();
     updateEventFilter();
     return;
   }
 
-  setSingleEventType(latestEntry.eventType);
+  if (!getSectionEventTypeButtons(getEventAnalysisSection()).some(button => button.classList.contains('active'))) {
+    setSingleEventType(latestEntry.eventType);
+  }
+
   resetSingleEventSelectionState();
   updateSingleEventFilterVisibility();
   updateEventFilter(latestEntry.name, true);
 }
 
-// Rebuilds the single-event picker and hidden select for the active event type.
+// Rebuilds the single-event picker and hidden select for all available events.
 export function updateEventFilter(preferredEvent = '', expandPreferredEvent = false) {
   const eventFilterMenu = document.getElementById('eventFilterMenu');
   if (!eventFilterMenu || getAnalysisMode() !== 'single') {
     return;
   }
 
-  const selectedEventType = getSingleEventSelectedType();
-  const eventTypeChanged = selectedEventType !== filterState.lastSingleEventType;
-
-  if (!selectedEventType) {
-    filterState.lastSingleEventType = '';
-    resetEventFilterCalendarState();
-    setSelectedSingleEvent('', false);
-    populateEventFilterMenu([]);
-    renderEventFilterCalendar({
-      entries: [],
-      selectedEvent: '',
-      onSelectEvent: eventName => setSelectedSingleEvent(eventName, true),
-      emptyMessage: 'Select an Event Type first.'
-    });
-    return;
-  }
-
-  const entries = buildSingleEventCalendarEntries(selectedEventType);
-  if (eventTypeChanged) {
-    resetSingleEventSelectionState();
-  }
+  const entries = buildSingleEventCalendarEntries();
 
   if (expandPreferredEvent) {
     primeEventFilterCalendarSelection(preferredEvent, entries);
   }
 
-  const currentSelectedEvent = preferredEvent || (eventTypeChanged ? '' : eventFilterMenu.value);
+  const currentSelectedEvent = preferredEvent || filterState.selectedSingleEventName || eventFilterMenu.value;
 
   populateEventFilterMenu(entries);
 
@@ -199,9 +202,9 @@ export function updateEventFilter(preferredEvent = '', expandPreferredEvent = fa
     entries,
     selectedEvent: currentSelectedEvent,
     onSelectEvent: eventName => setSelectedSingleEvent(eventName, true),
-    emptyMessage: 'No events available for the selected Event Type.'
+    emptyMessage: 'No single events available.'
   });
 
-  filterState.lastSingleEventType = selectedEventType;
+  filterState.lastSingleEventType = '';
   setSelectedSingleEvent(resolvedSelectedEvent, false);
 }

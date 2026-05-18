@@ -204,7 +204,7 @@
     min-height: 72px;
   }
 
-  .event-calendar-event-button {
+  .event-calendar-event-marker {
     width: 12px;
     height: 12px;
   }
@@ -607,8 +607,13 @@
 
   .event-calendar-day-number,
   .event-calendar-weekday,
-  .event-calendar-event-button {
+  .event-calendar-event-overflow {
     font-size: 0.65rem;
+  }
+
+  .event-calendar-month-picker-grid,
+  .event-calendar-year-picker-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .range-calendar-panel {

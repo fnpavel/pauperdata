@@ -1,8 +1,8 @@
 // Renders the Event Analysis view for both single-event and multi-event modes:
 // stat cards, drilldowns, tables, and the data snapshots that support exports.
 import {
-  getAnalysisRowsForDateRange,
-  getAnalysisRowsForSingleEvent
+  getAnalysisRowsForEvent,
+  getAnalysisRowsForDateRange
 } from '../utils/analysis-data.js';
 import { updateEventMetaWinRateChart } from '../charts/single-meta-win-rate.js';
 import { updateEventFunnelChart } from '../charts/single-funnel.js';
@@ -2172,17 +2172,12 @@ export function updateMultiEventAnalysis(data) {
 // Resolves current single-event filters and refreshes Single Event Analysis.
 export function updateEventAnalytics() {
   console.log("Updating event analytics...");
-  const selectedEventType = getSelectedEventAnalysisTypes()[0] || "";
   const eventFilterMenu = document.getElementById("eventFilterMenu");
   const selectedEvent = eventFilterMenu?.value || '';
-  // Single-event mode always resolves to one event-type bucket plus one event
-  // selection, even though the UI uses the shared analysis dataset underneath.
-  const eventData = selectedEventType && selectedEvent
-    ? getAnalysisRowsForSingleEvent({
-        eventType: selectedEventType,
-        eventName: selectedEvent
-      })
-    : [];
+  // Single-event mode is driven by the calendar-selected event name so the UI
+  // can show all event families in one place without changing the underlying
+  // event calculations.
+  const eventData = selectedEvent ? getAnalysisRowsForEvent(selectedEvent) : [];
   updateSingleEventAnalysis(eventData, eventData.length);
 }
 

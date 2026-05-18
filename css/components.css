@@ -509,6 +509,232 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   word-break: break-word;
 }
 
+.event-calendar-header-row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: center;
+}
+
+.event-calendar-nav {
+  min-height: 36px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 215, 0, 0.16);
+  background: linear-gradient(135deg, rgba(38, 38, 52, 0.98), rgba(22, 22, 32, 0.98));
+  color: var(--accent);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, background-color 0.18s ease;
+}
+
+.event-calendar-nav:hover:not(:disabled),
+.event-calendar-nav:focus-visible {
+  transform: translateY(-1px);
+  border-color: rgba(255, 215, 0, 0.42);
+}
+
+.event-calendar-nav:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.event-calendar-month-subtitle {
+  font-size: 0.72rem;
+  color: #aaa;
+  text-align: center;
+}
+
+.event-calendar-picker-panel,
+.event-calendar-chooser {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 215, 0, 0.14);
+  background: linear-gradient(135deg, rgba(34, 34, 48, 0.98), rgba(18, 18, 28, 0.98));
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.22);
+}
+
+.event-calendar-grid-wrap {
+  position: relative;
+}
+
+.event-calendar-picker-header,
+.event-calendar-chooser-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.event-calendar-picker-year,
+.event-calendar-picker-title,
+.event-calendar-chooser-title {
+  color: var(--light);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.event-calendar-picker-year {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 215, 0, 0.18);
+  background: rgba(255, 215, 0, 0.08);
+  color: var(--accent);
+  cursor: pointer;
+  text-align: left;
+}
+
+.event-calendar-picker-year-value {
+  font-size: 0.84rem;
+  font-weight: 700;
+  color: var(--light);
+}
+
+.event-calendar-picker-year-hint {
+  font-size: 0.64rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #d5c17a;
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+.event-calendar-picker-year-icon {
+  font-size: 0.72rem;
+  color: var(--accent);
+}
+
+.event-calendar-picker-close {
+  min-width: 28px;
+  min-height: 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 215, 0, 0.14);
+  background: rgba(255, 255, 255, 0.04);
+  color: #d7d7d7;
+  cursor: pointer;
+}
+
+.event-calendar-month-picker-grid,
+.event-calendar-year-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.event-calendar-picker-option {
+  min-height: 40px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--light);
+  cursor: pointer;
+  transition: border-color 0.18s ease, background-color 0.18s ease, transform 0.18s ease;
+}
+
+.event-calendar-picker-option:hover,
+.event-calendar-picker-option:focus-visible,
+.event-calendar-chooser-option:hover,
+.event-calendar-chooser-option:focus-visible,
+.event-calendar-day.has-events:hover,
+.event-calendar-day.has-events:focus-visible,
+.event-calendar-month-header:hover,
+.event-calendar-month-header:focus-visible,
+.event-calendar-picker-year:hover,
+.event-calendar-picker-year:focus-visible,
+.event-calendar-picker-close:hover,
+.event-calendar-picker-close:focus-visible {
+  border-color: rgba(255, 215, 0, 0.42);
+  outline: none;
+}
+
+.event-calendar-picker-option.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(224, 170, 0, 0.14));
+  border-color: rgba(255, 215, 0, 0.46);
+}
+
+.event-calendar-picker-option.disabled,
+.event-calendar-picker-option:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+  border-color: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.02);
+  color: #8f8f9f;
+  transform: none;
+}
+
+.event-calendar-chooser-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 240px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.event-calendar-chooser-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 3px;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--light);
+  text-align: left;
+  cursor: pointer;
+}
+
+.event-calendar-chooser-option.active {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(224, 170, 0, 0.12));
+  border-color: rgba(255, 215, 0, 0.46);
+}
+
+.event-calendar-chooser-option-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.event-calendar-chooser-option-meta {
+  font-size: 0.68rem;
+  color: #b8b8c7;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.event-calendar-chooser-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.event-calendar-chooser-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: linear-gradient(180deg, rgba(9, 10, 16, 0.12), rgba(9, 10, 16, 0.28));
+  backdrop-filter: blur(1.5px);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.event-calendar-chooser {
+  position: absolute;
+  z-index: 1;
+  width: min(320px, calc(100% - 24px));
+  max-height: calc(100% - 24px);
+  pointer-events: auto;
+}
+
 .event-multi-preset-section {
   margin-top: 10px;
   display: flex;
@@ -2049,22 +2275,24 @@ button.leaderboard-deck-result-card {
   justify-content: center;
   min-height: 36px;
   padding: 6px 8px;
+  width: 100%;
   font-size: 0.9rem;
   font-weight: bold;
   color: var(--accent);
   border-radius: 8px;
   background: linear-gradient(135deg, rgba(42, 42, 58, 0.98), rgba(22, 22, 32, 0.98));
   border: 1px solid rgba(255, 215, 0, 0.12);
+  cursor: pointer;
 }
 
 .event-calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 0;
-  overflow: hidden;
   border-radius: 10px;
   border: 1px solid #43435a;
   background: rgba(18, 18, 28, 0.95);
+  overflow: hidden;
 }
 
 .event-calendar-weekday {
@@ -2098,24 +2326,41 @@ button.leaderboard-deck-result-card {
 }
 
 .event-calendar-day {
-  min-height: 58px;
+  min-height: 72px;
   padding: 5px;
+  appearance: none;
   background: linear-gradient(180deg, rgba(28, 28, 40, 0.98), rgba(20, 20, 30, 0.98));
   border-right: 1px solid #2e2e40;
   border-bottom: 1px solid #2e2e40;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   position: relative;
+  width: 100%;
+  text-align: left;
+  border-left: none;
+  border-top: none;
+  cursor: default;
+  font: inherit;
+  color: inherit;
 }
 
-.event-calendar-day.active {
+.event-calendar-day.has-events {
+  cursor: pointer;
+}
+
+.event-calendar-day.active,
+.event-calendar-day.chooser-open {
   background: linear-gradient(180deg, rgba(48, 38, 56, 0.98), rgba(28, 24, 36, 0.98));
   box-shadow: inset 0 0 0 1px rgba(255, 215, 0, 0.22);
 }
 
 .event-calendar-day:nth-child(7n) {
   border-right: none;
+}
+
+.event-calendar-day:disabled {
+  opacity: 0.55;
 }
 
 .event-calendar-day-number {
@@ -2140,29 +2385,36 @@ button.leaderboard-deck-result-card {
   align-items: center;
 }
 
-.event-calendar-event-button {
+.event-calendar-event-marker {
   width: 10px;
   height: 10px;
   padding: 0;
   border-radius: 999px;
   border: 1px solid rgba(255, 215, 0, 0.22);
   background-color: rgba(255, 215, 0, 0.18);
-  cursor: pointer;
-  font-size: 0;
-  line-height: 0;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
 }
 
-.event-calendar-event-button:hover {
-  transform: scale(1.12);
-  border-color: rgba(255, 215, 0, 0.7);
-  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.12);
-}
-
-.event-calendar-event-button.active {
+.event-calendar-event-marker.active {
   background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(224, 170, 0, 0.95));
   border-color: rgba(255, 255, 255, 0.9);
   box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.18);
+}
+
+.event-calendar-event-marker.active.event-calendar-event-marker-challenge,
+.event-calendar-event-marker.active.event-calendar-event-marker-default {
+  background: linear-gradient(135deg, rgba(255, 215, 0, 0.95), rgba(224, 170, 0, 0.95));
+  box-shadow: 0 0 0 2px rgba(255, 215, 0, 0.18);
+}
+
+.event-calendar-event-marker.active.event-calendar-event-marker-premier {
+  background: linear-gradient(135deg, rgba(186, 54, 54, 0.96), rgba(142, 28, 28, 0.96));
+  box-shadow: 0 0 0 2px rgba(186, 54, 54, 0.18);
+}
+
+.event-calendar-event-overflow {
+  font-size: 0.62rem;
+  color: #d5d0b1;
+  line-height: 1;
 }
 
 .event-calendar-empty {
@@ -5003,6 +5255,31 @@ html[data-theme="light"] .event-calendar-month-header {
   color: var(--accent);
 }
 
+html[data-theme="light"] .event-calendar-nav,
+html[data-theme="light"] .event-calendar-picker-panel,
+html[data-theme="light"] .event-calendar-chooser {
+  border-color: rgba(137, 97, 34, 0.16);
+  background: linear-gradient(135deg, rgba(255, 251, 243, 0.98), rgba(243, 234, 217, 0.98));
+}
+
+html[data-theme="light"] .event-calendar-picker-year {
+  border-color: rgba(137, 97, 34, 0.18);
+  background: rgba(186, 127, 34, 0.08);
+}
+
+html[data-theme="light"] .event-calendar-picker-year-value {
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] .event-calendar-picker-year-hint {
+  color: rgba(121, 80, 24, 0.88);
+}
+
+html[data-theme="light"] .event-calendar-month-subtitle,
+html[data-theme="light"] .event-calendar-chooser-option-meta {
+  color: var(--text-secondary);
+}
+
 html[data-theme="light"] .event-calendar-grid {
   border-color: rgba(137, 97, 34, 0.16);
   background: rgba(255, 250, 241, 0.98);
@@ -5032,25 +5309,61 @@ html[data-theme="light"] .event-calendar-day.active {
   box-shadow: inset 0 0 0 1px rgba(30, 123, 116, 0.3);
 }
 
+html[data-theme="light"] .event-calendar-day.chooser-open {
+  background: linear-gradient(180deg, rgba(246, 239, 220, 0.98), rgba(238, 226, 196, 0.98));
+  box-shadow: inset 0 0 0 1px rgba(186, 127, 34, 0.22);
+}
+
 html[data-theme="light"] .event-calendar-day-number {
   color: var(--text-primary);
   background: rgba(25, 41, 47, 0.06);
 }
 
-html[data-theme="light"] .event-calendar-event-button {
+html[data-theme="light"] .event-calendar-event-marker {
   border-color: rgba(186, 127, 34, 0.26);
   background-color: rgba(186, 127, 34, 0.18);
 }
 
-html[data-theme="light"] .event-calendar-event-button:hover {
-  border-color: rgba(186, 127, 34, 0.55);
-  box-shadow: 0 0 0 2px rgba(186, 127, 34, 0.12);
-}
-
-html[data-theme="light"] .event-calendar-event-button.active {
+html[data-theme="light"] .event-calendar-event-marker.active {
   background: linear-gradient(135deg, rgba(30, 123, 116, 0.95), rgba(23, 96, 90, 0.95));
   border-color: rgba(255, 255, 255, 0.85);
   box-shadow: 0 0 0 2px rgba(30, 123, 116, 0.15);
+}
+
+html[data-theme="light"] .event-calendar-event-marker.active.event-calendar-event-marker-challenge,
+html[data-theme="light"] .event-calendar-event-marker.active.event-calendar-event-marker-default {
+  background: linear-gradient(135deg, rgba(186, 127, 34, 0.96), rgba(157, 104, 21, 0.96));
+  box-shadow: 0 0 0 2px rgba(186, 127, 34, 0.14);
+}
+
+html[data-theme="light"] .event-calendar-event-marker.active.event-calendar-event-marker-premier {
+  background: linear-gradient(135deg, rgba(196, 63, 63, 0.95), rgba(157, 34, 34, 0.95));
+  box-shadow: 0 0 0 2px rgba(196, 63, 63, 0.15);
+}
+
+html[data-theme="light"] .event-calendar-chooser-backdrop {
+  background: linear-gradient(180deg, rgba(88, 66, 28, 0.08), rgba(88, 66, 28, 0.18));
+}
+
+html[data-theme="light"] .event-calendar-picker-option,
+html[data-theme="light"] .event-calendar-chooser-option,
+html[data-theme="light"] .event-calendar-picker-close {
+  border-color: rgba(137, 97, 34, 0.14);
+  background: rgba(255, 255, 255, 0.55);
+  color: var(--text-primary);
+}
+
+html[data-theme="light"] .event-calendar-picker-option.active,
+html[data-theme="light"] .event-calendar-chooser-option.active {
+  background: linear-gradient(135deg, rgba(30, 123, 116, 0.12), rgba(23, 96, 90, 0.08));
+  border-color: rgba(30, 123, 116, 0.28);
+}
+
+html[data-theme="light"] .event-calendar-picker-option.disabled,
+html[data-theme="light"] .event-calendar-picker-option:disabled {
+  background: rgba(120, 102, 73, 0.06);
+  border-color: rgba(137, 97, 34, 0.08);
+  color: var(--text-muted);
 }
 
 html[data-theme="light"] .event-calendar-empty {

@@ -32,8 +32,8 @@ import { getMultiEventPresetSuggestedRange } from '../../utils/multi-event-prese
 import {
   getAnalysisDateValuesForEventTypes,
   getAnalysisRows,
+  getAnalysisRowsForEvent,
   getAnalysisRowsForEventTypes,
-  getAnalysisRowsForSingleEvent,
   isUnknownHeavyBelowTop32FilterEnabled,
   setUnknownHeavyBelowTop32FilterEnabled
 } from '../../utils/analysis-data.js';
@@ -44,7 +44,6 @@ import {
   getPlayerAnalysisSection,
   getSectionEventTypeButtons,
   setDefaultSectionEventType,
-  getSingleEventSelectedType,
   getEventAnalysisSelectedTypes,
   getPlayerAnalysisSelectedTypes,
   resetSelectValue
@@ -297,7 +296,6 @@ function syncAnalysisQualityToggleButtons() {
 
 function refreshAnalysisQualityToggleState() {
   const selectedSingleEvent = document.getElementById('eventFilterMenu')?.value || '';
-  const selectedEventType = getSingleEventSelectedType();
   const activeMultiEventPreset = getActiveMultiEventPreset();
   const activePlayerPreset = getPlayerAnalysisActivePreset();
   const refreshRequestId = analysisQualityRefreshRequestId + 1;
@@ -316,8 +314,8 @@ function refreshAnalysisQualityToggleState() {
     renderQuickViewButtons('multi');
     renderQuickViewButtons('player');
     updateEventFilter(selectedSingleEvent, Boolean(selectedSingleEvent));
-    if (selectedEventType && !document.getElementById('eventFilterMenu')?.value) {
-      const fallbackEvent = buildSingleEventCalendarEntries(selectedEventType)[0]?.name || '';
+    if (!document.getElementById('eventFilterMenu')?.value) {
+      const fallbackEvent = buildSingleEventCalendarEntries()[0]?.name || '';
       if (fallbackEvent) {
         updateEventFilter(fallbackEvent, true);
       }
@@ -586,16 +584,9 @@ export function updateAllCharts() {
 
   if (activeTopMode === 'event') {
     if (activeAnalysisMode === 'single') {
-      const selectedEventType = getSingleEventSelectedType();
       const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
 
-      filteredData =
-        selectedEventType && selectedEvent
-          ? getAnalysisRowsForSingleEvent({
-              eventType: selectedEventType,
-              eventName: selectedEvent
-            })
-          : [];
+      filteredData = selectedEvent ? getAnalysisRowsForEvent(selectedEvent) : [];
 
       updateEventMetaWinRateChart();
       updateEventFunnelChart();
@@ -631,28 +622,20 @@ export function updateAllCharts() {
 export function getFunnelChartData() {
   // Funnel data is intentionally rebuilt from analysis rows rather than the
   // legacy filteredData cache because it also honors rank-range controls.
-  const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
   const positionStart = parseInt(document.getElementById('positionStartSelect')?.value, 10) || 1;
   const positionEnd = parseInt(document.getElementById('positionEndSelect')?.value, 10) || Infinity;
 
-  const filtered = getAnalysisRowsForSingleEvent({
-    eventType: selectedEventType,
-    eventName: selectedEvent
-  });
+  const filtered = selectedEvent ? getAnalysisRowsForEvent(selectedEvent) : [];
 
   return filtered.filter(row => row.Rank >= positionStart && row.Rank <= positionEnd);
 }
 
 // Returns rows for the single-event meta/win-rate chart.
 export function getMetaWinRateChartData() {
-  const selectedEventType = getSingleEventSelectedType();
   const selectedEvent = document.getElementById('eventFilterMenu')?.value || '';
 
-  return getAnalysisRowsForSingleEvent({
-    eventType: selectedEventType,
-    eventName: selectedEvent
-  });
+  return selectedEvent ? getAnalysisRowsForEvent(selectedEvent) : [];
 }
 
 // Returns rows for charts that use the active multi-event window.
