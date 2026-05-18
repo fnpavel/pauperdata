@@ -600,6 +600,15 @@
     gap: 4px;
   }
 
+  .event-calendar-set-window {
+    padding: 4px 7px 4px 6px;
+    font-size: 0.6rem;
+  }
+
+  .event-calendar-set-window-label {
+    max-width: 82px;
+  }
+
   .event-calendar-day {
     min-height: 62px;
     padding: 6px;

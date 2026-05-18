@@ -1,3 +1,5 @@
+import { setReleaseWindows } from '../../config/set-release-windows.js';
+
 // Renders the single-event picker used by the event filter and keeps its local selection state in sync.
 const MONTH_NAMES = [
   'January',
@@ -16,6 +18,7 @@ const MONTH_NAMES = [
 
 const WEEKDAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MAX_VISIBLE_MARKERS = 4;
+const SET_WINDOW_COLORS = ['cyan', 'amber', 'magenta', 'green'];
 
 const calendarState = {
   entries: [],
@@ -27,7 +30,11 @@ const calendarState = {
   pickerView: 'calendar',
   chooserDateKey: '',
   cleanupDocumentListener: null,
-  pendingFocusTarget: null
+  pendingFocusTarget: null,
+  setWindows: [],
+  setRailScrollLeft: 0,
+  lastCalendarNavDirection: 'none',
+  previousVisibleMonthKey: ''
 };
 
 function getCurrentRealWorldMonthLimit() {
@@ -52,6 +59,10 @@ export function resetEventFilterCalendarState() {
     calendarState.cleanupDocumentListener = null;
   }
   calendarState.pendingFocusTarget = null;
+  calendarState.setWindows = [];
+  calendarState.setRailScrollLeft = 0;
+  calendarState.lastCalendarNavDirection = 'none';
+  calendarState.previousVisibleMonthKey = '';
 }
 
 export function primeEventFilterCalendarSelection(selectedEvent, entries = []) {
@@ -101,33 +112,203 @@ function formatEventMetaLabel(entry) {
   return `${groupLabel} | ${typeLabel}`;
 }
 
-function getEntryHighlightVariant(entry) {
-  const normalizedGroup = String(entry?.groupLabel || entry?.shortLabel || entry?.name || '').toLowerCase();
-
-  if (normalizedGroup.includes('challenge')) {
-    return 'challenge';
-  }
-
-  if (
-    normalizedGroup.includes('qualifier')
-    || normalizedGroup.includes('showcase')
-    || normalizedGroup.includes('super')
-    || normalizedGroup.includes('championship')
-  ) {
-    return 'premier';
-  }
-
-  return 'default';
-}
-
 function buildDateKey(year, month, day) {
   const monthValue = String(month + 1).padStart(2, '0');
   const dayValue = String(day).padStart(2, '0');
   return `${year}-${monthValue}-${dayValue}`;
 }
 
+function parseIsoDateParts(dateString) {
+  const [year, month, day] = String(dateString || '').split('-').map(Number);
+  if (!year || !month) {
+    return null;
+  }
+
+  return {
+    year,
+    month: month - 1,
+    day: day || 1
+  };
+}
+
+function buildMonthKey(year, month) {
+  return `${year}-${String(month + 1).padStart(2, '0')}`;
+}
+
+function parseMonthKey(monthKey) {
+  const [year, month] = String(monthKey || '').split('-').map(Number);
+  if (!year || !month) {
+    return null;
+  }
+
+  return {
+    year,
+    month: month - 1
+  };
+}
+
+function getCurrentViewMonthKey() {
+  if (!Number.isInteger(calendarState.viewYear) || !Number.isInteger(calendarState.viewMonth)) {
+    return '';
+  }
+
+  return buildMonthKey(calendarState.viewYear, calendarState.viewMonth);
+}
+
+function offsetMonthKey(monthKey, offset) {
+  const parsedMonth = parseMonthKey(monthKey);
+  if (!parsedMonth || !Number.isInteger(offset)) {
+    return '';
+  }
+
+  const nextDate = new Date(Date.UTC(parsedMonth.year, parsedMonth.month + offset, 1));
+  return buildMonthKey(nextDate.getUTCFullYear(), nextDate.getUTCMonth());
+}
+
+function getMonthDistance(fromMonthKey, toMonthKey) {
+  const fromMonth = parseMonthKey(fromMonthKey);
+  const toMonth = parseMonthKey(toMonthKey);
+  if (!fromMonth || !toMonth) {
+    return Number.POSITIVE_INFINITY;
+  }
+
+  return ((toMonth.year - fromMonth.year) * 12) + (toMonth.month - fromMonth.month);
+}
+
+function compareMonthKeys(monthKeyA, monthKeyB) {
+  return String(monthKeyA || '').localeCompare(String(monthKeyB || ''));
+}
+
+function shiftIsoDateByDays(dateString, dayDelta) {
+  const dateParts = parseIsoDateParts(dateString);
+  if (!dateParts) {
+    return '';
+  }
+
+  const date = new Date(Date.UTC(dateParts.year, dateParts.month, dateParts.day));
+  date.setUTCDate(date.getUTCDate() + dayDelta);
+  return date.toISOString().slice(0, 10);
+}
+
+function formatSetWindowTooltipDate(dateString) {
+  const dateParts = parseIsoDateParts(dateString);
+  if (!dateParts) {
+    return '';
+  }
+
+  return new Date(Date.UTC(dateParts.year, dateParts.month, dateParts.day)).toLocaleDateString('en-US', {
+    timeZone: 'UTC',
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+  });
+}
+
+function buildSetWindows() {
+  const sortedWindows = [...setReleaseWindows].sort((windowA, windowB) => {
+    return String(windowA.releaseDate || '').localeCompare(String(windowB.releaseDate || ''));
+  });
+
+  return sortedWindows
+    .map((window, index) => {
+      const releaseParts = parseIsoDateParts(window.releaseDate);
+      const nextWindow = sortedWindows[index + 1] || null;
+      const nextReleaseParts = parseIsoDateParts(nextWindow?.releaseDate || '');
+
+      return {
+        ...window,
+        tone: SET_WINDOW_COLORS[index % SET_WINDOW_COLORS.length],
+        startYear: releaseParts?.year ?? null,
+        startMonth: releaseParts?.month ?? null,
+        nextReleaseDate: nextWindow?.releaseDate || '',
+        endDate: nextWindow?.releaseDate ? shiftIsoDateByDays(nextWindow.releaseDate, -1) : '',
+        endYear: nextReleaseParts?.year ?? null,
+        endMonth: nextReleaseParts?.month ?? null
+      };
+    })
+    .filter(window => Number.isInteger(window.startYear) && Number.isInteger(window.startMonth));
+}
+
+function getVisibleMonthKey() {
+  return getCurrentViewMonthKey();
+}
+
+function getSetWindowForDate(dateString, setWindows = calendarState.setWindows) {
+  const normalizedDate = String(dateString || '');
+  if (!normalizedDate) {
+    return null;
+  }
+
+  return setWindows.find(window => {
+    if (normalizedDate < String(window.releaseDate || '')) {
+      return false;
+    }
+
+    if (!window.nextReleaseDate) {
+      return true;
+    }
+
+    return normalizedDate < String(window.nextReleaseDate);
+  }) || null;
+}
+
 function getEntriesForVisibleMonth() {
   return calendarState.entries.filter(entry => entry.year === calendarState.viewYear && entry.month === calendarState.viewMonth);
+}
+
+function getEntriesForMonthKey(monthKey, entries = calendarState.entries) {
+  return entries.filter(entry => getEntryMonthKey(entry) === monthKey);
+}
+
+function getEntryMonthKey(entry) {
+  if (!entry || !Number.isInteger(entry.year) || !Number.isInteger(entry.month)) {
+    return '';
+  }
+
+  return buildMonthKey(entry.year, entry.month);
+}
+
+function buildSetWindowMonthCountIndex(entries = calendarState.entries) {
+  const countsBySetWindow = new Map();
+
+  entries.forEach(entry => {
+    const setWindowSlug = String(entry?.setWindowSlug || '').trim();
+    const monthKey = getEntryMonthKey(entry);
+    if (!setWindowSlug || !monthKey) {
+      return;
+    }
+
+    if (!countsBySetWindow.has(setWindowSlug)) {
+      countsBySetWindow.set(setWindowSlug, new Map());
+    }
+
+    const monthCounts = countsBySetWindow.get(setWindowSlug);
+    monthCounts.set(monthKey, (monthCounts.get(monthKey) || 0) + 1);
+  });
+
+  return countsBySetWindow;
+}
+
+function getOverlappedMonthKeysForSetWindow(window) {
+  const startParts = parseIsoDateParts(window?.releaseDate || '');
+  const endParts = parseIsoDateParts(window?.endDate || '');
+  if (!startParts || !endParts) {
+    return [];
+  }
+
+  const monthKeys = [];
+  let cursorYear = startParts.year;
+  let cursorMonth = startParts.month;
+  const endMonthKey = buildMonthKey(endParts.year, endParts.month);
+
+  while (compareMonthKeys(buildMonthKey(cursorYear, cursorMonth), endMonthKey) <= 0) {
+    monthKeys.push(buildMonthKey(cursorYear, cursorMonth));
+    const nextDate = new Date(Date.UTC(cursorYear, cursorMonth + 1, 1));
+    cursorYear = nextDate.getUTCFullYear();
+    cursorMonth = nextDate.getUTCMonth();
+  }
+
+  return monthKeys;
 }
 
 function getEntriesByDateForVisibleMonth() {
@@ -213,11 +394,37 @@ function moveVisibleMonth(offset) {
     return;
   }
 
+  calendarState.previousVisibleMonthKey = getCurrentViewMonthKey();
+  calendarState.lastCalendarNavDirection = offset > 0 ? 'forward' : 'backward';
   const nextDate = new Date(Date.UTC(calendarState.viewYear, calendarState.viewMonth + offset, 1));
   calendarState.viewYear = nextDate.getUTCFullYear();
   calendarState.viewMonth = nextDate.getUTCMonth();
   calendarState.pickerView = 'calendar';
   calendarState.chooserDateKey = '';
+}
+
+function getDominantMonthForSet(setWindowSlug, entries = calendarState.entries, visibleMonthKey = getVisibleMonthKey()) {
+  const normalizedSlug = String(setWindowSlug || '').trim();
+  if (!normalizedSlug) {
+    return '';
+  }
+
+  const monthCounts = buildSetWindowMonthCountIndex(entries).get(normalizedSlug);
+  if (!monthCounts || monthCounts.size === 0) {
+    return '';
+  }
+
+  const topCount = Math.max(...monthCounts.values());
+  const topMonthKeys = [...monthCounts.entries()]
+    .filter(([, count]) => count === topCount)
+    .map(([monthKey]) => monthKey)
+    .sort(compareMonthKeys);
+
+  if (visibleMonthKey && topMonthKeys.includes(visibleMonthKey)) {
+    return visibleMonthKey;
+  }
+
+  return topMonthKeys[topMonthKeys.length - 1] || '';
 }
 
 function resolveCalendarState(selectedEvent) {
@@ -284,6 +491,8 @@ function setSelectedEvent(entry, notify = true, focusDateKey = '') {
     return;
   }
 
+  calendarState.previousVisibleMonthKey = getCurrentViewMonthKey();
+  calendarState.lastCalendarNavDirection = 'none';
   calendarState.selectedEvent = entry.name;
   calendarState.viewYear = entry.year;
   calendarState.viewMonth = entry.month;
@@ -373,8 +582,7 @@ function createDayButton(day, entries = [], isSelectedDay = false) {
 
     entries.slice(0, MAX_VISIBLE_MARKERS).forEach(entry => {
       const marker = document.createElement('span');
-      const highlightVariant = getEntryHighlightVariant(entry);
-      marker.className = `event-calendar-event-marker${entry.name === calendarState.selectedEvent ? ` active event-calendar-event-marker-${highlightVariant}` : ''}`;
+      marker.className = `event-calendar-event-marker event-calendar-event-marker-tone-${entry.setWindowTone || 'cyan'}${entry.name === calendarState.selectedEvent ? ' active' : ''}`;
       marker.title = formatDisplayEventName(entry.name);
       marker.setAttribute('aria-hidden', 'true');
       markerRow.appendChild(marker);
@@ -424,6 +632,48 @@ function renderHeaderControls(container) {
 
   headerRow.append(previousButton, monthHeaderButton, nextButton);
   container.appendChild(headerRow);
+}
+
+function renderSetWindowRail(container) {
+  const windows = getRenderableSetWindows();
+  if (windows.length === 0) {
+    return;
+  }
+  const activeSetWindow = getActiveSetWindowForMonth(getVisibleMonthKey());
+
+  const rail = document.createElement('div');
+  rail.className = 'event-calendar-set-rail';
+  rail.setAttribute('role', 'navigation');
+  rail.setAttribute('aria-label', 'Metagame era navigator');
+
+  const track = document.createElement('div');
+  track.className = 'event-calendar-set-rail-track';
+
+  rail.addEventListener('scroll', () => {
+    calendarState.setRailScrollLeft = rail.scrollLeft;
+  }, { passive: true });
+
+  windows.forEach(window => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = `event-calendar-set-window event-calendar-set-window-tone-${window.tone}${activeSetWindow?.slug === window.slug ? ' active' : ''}`;
+    button.dataset.setWindowSlug = window.slug;
+    button.title = getSetWindowTooltip(window);
+    button.setAttribute('aria-label', `Jump calendar to ${window.label}, starting ${formatSetWindowTooltipDate(window.releaseDate)}`);
+    button.addEventListener('click', () => {
+      jumpToSetWindow(window);
+    });
+
+    const marker = createTextNodeElement('span', 'event-calendar-set-window-marker', '');
+    marker.setAttribute('aria-hidden', 'true');
+    const label = createTextNodeElement('span', 'event-calendar-set-window-label', window.buttonLabel || window.label);
+    button.append(marker, label);
+    track.appendChild(button);
+  });
+
+  rail.appendChild(track);
+  container.appendChild(rail);
+  rail.scrollLeft = calendarState.setRailScrollLeft;
 }
 
 function renderMonthPicker(container) {
@@ -478,6 +728,8 @@ function renderMonthPicker(container) {
 
     if (!isDisabled) {
       button.addEventListener('click', () => {
+        calendarState.previousVisibleMonthKey = getCurrentViewMonthKey();
+        calendarState.lastCalendarNavDirection = 'none';
         calendarState.viewMonth = monthIndex;
         calendarState.pickerView = 'calendar';
         rerenderCalendar(calendarState.selectedEvent, false);
@@ -527,6 +779,8 @@ function renderYearPicker(container) {
     button.textContent = String(year);
     button.setAttribute('aria-label', `Show month list for ${year}`);
     button.addEventListener('click', () => {
+      calendarState.previousVisibleMonthKey = getCurrentViewMonthKey();
+      calendarState.lastCalendarNavDirection = 'none';
       calendarState.viewYear = year;
       if (isFutureMonth(calendarState.viewYear, calendarState.viewMonth)) {
         calendarState.viewMonth = getCurrentRealWorldMonthLimit().month;
@@ -669,6 +923,300 @@ function installDocumentCloseBehavior(container) {
   };
 }
 
+function getRenderableSetWindows() {
+  const { minYear, minMonth, maxYear, maxMonth } = getAvailableMonthBounds();
+  const minMonthKey = Number.isInteger(minYear) && Number.isInteger(minMonth) ? buildMonthKey(minYear, minMonth) : '';
+  const maxMonthKey = Number.isInteger(maxYear) && Number.isInteger(maxMonth) ? buildMonthKey(maxYear, maxMonth) : '';
+
+  return calendarState.setWindows.filter(window => {
+    const startMonthKey = buildMonthKey(window.startYear, window.startMonth);
+    const endMonthKey = Number.isInteger(window.endYear) && Number.isInteger(window.endMonth)
+      ? buildMonthKey(window.endYear, window.endMonth)
+      : maxMonthKey;
+
+    if (minMonthKey && compareMonthKeys(endMonthKey || maxMonthKey, minMonthKey) < 0) {
+      return false;
+    }
+
+    if (maxMonthKey && compareMonthKeys(startMonthKey, maxMonthKey) > 0) {
+      return false;
+    }
+
+    return true;
+  });
+}
+
+function getPrimaryDominantSetWindowForMonth(monthKey, entries = calendarState.entries, setWindows = calendarState.setWindows, selectedEvent = calendarState.selectedEvent) {
+  const monthEntries = getEntriesForMonthKey(monthKey, entries);
+  if (monthEntries.length === 0 || setWindows.length === 0) {
+    return null;
+  }
+
+  const countsBySlug = new Map();
+  const selectedWindow = monthEntries.find(entry => entry.name === selectedEvent)?.setWindowSlug || '';
+
+  monthEntries.forEach(entry => {
+    if (!entry?.setWindowSlug) {
+      return;
+    }
+
+    countsBySlug.set(entry.setWindowSlug, (countsBySlug.get(entry.setWindowSlug) || 0) + 1);
+  });
+
+  if (countsBySlug.size === 0) {
+    return null;
+  }
+
+  const orderedWindows = setWindows.filter(window => countsBySlug.has(window.slug));
+  return orderedWindows.reduce((bestWindow, currentWindow) => {
+    if (!bestWindow) {
+      return currentWindow;
+    }
+
+    const bestCount = countsBySlug.get(bestWindow.slug) || 0;
+    const currentCount = countsBySlug.get(currentWindow.slug) || 0;
+    if (currentCount !== bestCount) {
+      return currentCount > bestCount ? currentWindow : bestWindow;
+    }
+
+    const bestMatchesSelected = bestWindow.slug === selectedWindow;
+    const currentMatchesSelected = currentWindow.slug === selectedWindow;
+    if (bestMatchesSelected !== currentMatchesSelected) {
+      return currentMatchesSelected ? currentWindow : bestWindow;
+    }
+
+    return String(currentWindow.releaseDate || '') > String(bestWindow.releaseDate || '') ? currentWindow : bestWindow;
+  }, null);
+}
+
+function getSetWindowTooltip(window) {
+  const startLabel = formatSetWindowTooltipDate(window.releaseDate);
+  const endLabel = formatSetWindowTooltipDate(window.endDate);
+  return endLabel
+    ? `${window.label} | ${startLabel} - ${endLabel}`
+    : `${window.label} | Starts ${startLabel}`;
+}
+
+function getDirectionAwareThinWindowFallback(monthKey, entries = calendarState.entries, setWindows = calendarState.setWindows) {
+  const navDirection = calendarState.lastCalendarNavDirection;
+  const previousMonthKey = calendarState.previousVisibleMonthKey;
+  return getDirectionAwareThinWindowFallbackForContext(monthKey, navDirection, previousMonthKey, entries, setWindows);
+}
+
+function getDirectionAwareThinWindowFallbackForContext(
+  monthKey,
+  navDirection,
+  previousMonthKey,
+  entries = calendarState.entries,
+  setWindows = calendarState.setWindows
+) {
+  if (!monthKey || !previousMonthKey || navDirection === 'none') {
+    return null;
+  }
+
+  const fallbackCandidates = setWindows.filter(window => {
+    const overlappedMonthKeys = getOverlappedMonthKeysForSetWindow(window);
+    if (!overlappedMonthKeys.includes(monthKey) || !overlappedMonthKeys.includes(previousMonthKey)) {
+      return false;
+    }
+
+    const isNeverPrimaryDominant = overlappedMonthKeys.every(overlappedMonthKey => {
+      return getPrimaryDominantSetWindowForMonth(overlappedMonthKey, entries, setWindows)?.slug !== window.slug;
+    });
+
+    return isNeverPrimaryDominant;
+  });
+
+  if (fallbackCandidates.length === 0) {
+    return null;
+  }
+
+  return fallbackCandidates.reduce((bestWindow, currentWindow) => {
+    if (!bestWindow) {
+      return currentWindow;
+    }
+
+    return String(currentWindow.releaseDate || '') > String(bestWindow.releaseDate || '') ? currentWindow : bestWindow;
+  }, null);
+}
+
+function getThinWindowFallbackMonthKeysForSet(window, entries = calendarState.entries, setWindows = calendarState.setWindows) {
+  if (!window?.slug) {
+    return [];
+  }
+
+  const overlappedMonthKeys = getOverlappedMonthKeysForSetWindow(window);
+  const isNeverPrimaryDominant = overlappedMonthKeys.every(overlappedMonthKey => {
+    return getPrimaryDominantSetWindowForMonth(overlappedMonthKey, entries, setWindows)?.slug !== window.slug;
+  });
+
+  return isNeverPrimaryDominant ? overlappedMonthKeys : [];
+}
+
+function getActiveSetWindowForMonth(
+  monthKey,
+  entries = calendarState.entries,
+  setWindows = calendarState.setWindows,
+  selectedEvent = calendarState.selectedEvent
+) {
+  const primaryWindow = getPrimaryDominantSetWindowForMonth(monthKey, entries, setWindows, selectedEvent);
+  const fallbackWindow = getDirectionAwareThinWindowFallbackForContext(
+    monthKey,
+    calendarState.lastCalendarNavDirection,
+    calendarState.previousVisibleMonthKey,
+    entries,
+    setWindows
+  );
+  return fallbackWindow || primaryWindow;
+}
+
+function resolveSetWindowTargetContext(
+  window,
+  currentMonthKey = getVisibleMonthKey(),
+  entries = calendarState.entries,
+  setWindows = calendarState.setWindows
+) {
+  if (!window?.slug) {
+    return {
+      targetMonthKey: '',
+      navDirection: 'none',
+      previousMonthKey: currentMonthKey
+    };
+  }
+
+  const dominantMonthKey = getDominantMonthForSet(window.slug, entries, currentMonthKey);
+  const fallbackMonthKeys = getThinWindowFallbackMonthKeysForSet(window, entries, setWindows).sort(compareMonthKeys);
+
+  if (fallbackMonthKeys.length === 0) {
+    return {
+      targetMonthKey: dominantMonthKey || buildMonthKey(window.startYear, window.startMonth),
+      navDirection: 'none',
+      previousMonthKey: currentMonthKey
+    };
+  }
+
+  const firstFallbackMonthKey = fallbackMonthKeys[0];
+  const lastFallbackMonthKey = fallbackMonthKeys[fallbackMonthKeys.length - 1];
+
+  let targetMonthKey = '';
+  let navDirection = 'none';
+
+  if (!currentMonthKey || compareMonthKeys(currentMonthKey, firstFallbackMonthKey) < 0) {
+    targetMonthKey = lastFallbackMonthKey;
+    navDirection = 'forward';
+  } else if (compareMonthKeys(currentMonthKey, lastFallbackMonthKey) > 0) {
+    targetMonthKey = firstFallbackMonthKey;
+    navDirection = 'backward';
+  } else {
+    const closestFallbackMonthKey = fallbackMonthKeys.reduce((bestMonthKey, candidateMonthKey) => {
+      if (!bestMonthKey) {
+        return candidateMonthKey;
+      }
+
+      const bestDistance = Math.abs(getMonthDistance(currentMonthKey, bestMonthKey));
+      const candidateDistance = Math.abs(getMonthDistance(currentMonthKey, candidateMonthKey));
+      if (candidateDistance !== bestDistance) {
+        return candidateDistance < bestDistance ? candidateMonthKey : bestMonthKey;
+      }
+
+      return compareMonthKeys(candidateMonthKey, bestMonthKey) > 0 ? candidateMonthKey : bestMonthKey;
+    }, '');
+
+    targetMonthKey = closestFallbackMonthKey || lastFallbackMonthKey;
+    navDirection = targetMonthKey === firstFallbackMonthKey ? 'backward' : 'forward';
+  }
+
+  const previousMonthKey = navDirection === 'forward'
+    ? offsetMonthKey(targetMonthKey, -1)
+    : offsetMonthKey(targetMonthKey, 1);
+
+  return {
+    targetMonthKey: targetMonthKey || dominantMonthKey || buildMonthKey(window.startYear, window.startMonth),
+    navDirection,
+    previousMonthKey: previousMonthKey || currentMonthKey
+  };
+}
+
+function jumpToSetWindow(window) {
+  if (!window?.slug) {
+    return;
+  }
+
+  const currentMonthKey = getVisibleMonthKey();
+  const activeSetWindow = getActiveSetWindowForMonth(currentMonthKey);
+  const targetContext = activeSetWindow?.slug === window.slug
+    ? {
+      targetMonthKey: currentMonthKey,
+      navDirection: calendarState.lastCalendarNavDirection,
+      previousMonthKey: calendarState.previousVisibleMonthKey || currentMonthKey
+    }
+    : resolveSetWindowTargetContext(window, currentMonthKey);
+  const targetMonth = parseMonthKey(targetContext.targetMonthKey);
+
+  calendarState.previousVisibleMonthKey = targetContext.previousMonthKey || currentMonthKey;
+  calendarState.lastCalendarNavDirection = targetContext.navDirection || 'none';
+  if (targetMonth) {
+    calendarState.viewYear = targetMonth.year;
+    calendarState.viewMonth = targetMonth.month;
+  } else {
+    calendarState.viewYear = window.startYear;
+    calendarState.viewMonth = window.startMonth;
+  }
+
+  calendarState.pickerView = 'calendar';
+  calendarState.chooserDateKey = '';
+  clampViewToAllowedMonth();
+  calendarState.pendingFocusTarget = {
+    type: 'set-window',
+    slug: window.slug
+  };
+  rerenderCalendar(calendarState.selectedEvent, false);
+}
+
+function syncActiveSetWindowIntoView(container) {
+  requestAnimationFrame(() => {
+    if (!container?.isConnected) {
+      return;
+    }
+
+    const timeline = container.querySelector('.event-calendar-set-rail');
+    const activeItem = timeline?.querySelector('.event-calendar-set-window.active');
+    if (!timeline || !activeItem) {
+      return;
+    }
+
+    const padding = 12;
+    const itemLeft = activeItem.offsetLeft;
+    const itemRight = itemLeft + activeItem.offsetWidth;
+    const viewportLeft = timeline.scrollLeft;
+    const viewportRight = viewportLeft + timeline.clientWidth;
+
+    let nextScrollLeft = null;
+
+    if (itemLeft < viewportLeft + padding) {
+      nextScrollLeft = Math.max(0, itemLeft - padding);
+    } else if (itemRight > viewportRight - padding) {
+      nextScrollLeft = itemRight - timeline.clientWidth + padding;
+    }
+
+    if (nextScrollLeft === null) {
+      calendarState.setRailScrollLeft = timeline.scrollLeft;
+      return;
+    }
+
+    if (Math.abs(nextScrollLeft - timeline.scrollLeft) < 1) {
+      calendarState.setRailScrollLeft = timeline.scrollLeft;
+      return;
+    }
+
+    timeline.scrollTo({
+      left: nextScrollLeft,
+      behavior: 'smooth'
+    });
+    calendarState.setRailScrollLeft = nextScrollLeft;
+  });
+}
+
 function applyPendingFocus(container) {
   if (!calendarState.pendingFocusTarget) {
     return;
@@ -692,6 +1240,13 @@ function applyPendingFocus(container) {
 
     if (focusTarget.type === 'day' && focusTarget.dateKey) {
       container.querySelector(`.event-calendar-day[data-date-key="${focusTarget.dateKey}"]`)?.focus();
+      return;
+    }
+
+    if (focusTarget.type === 'set-window' && focusTarget.slug) {
+      const button = container.querySelector(`.event-calendar-set-window[data-set-window-slug="${focusTarget.slug}"]`);
+      button?.focus();
+      button?.scrollIntoView({ block: 'nearest', inline: 'center' });
     }
   });
 }
@@ -755,15 +1310,7 @@ function drawCalendar(container, selectedEntry) {
   }
 
   const entriesByDate = getEntriesByDateForVisibleMonth();
-  const monthEntries = getEntriesForVisibleMonth();
-  const monthHeaderDescription = createTextNodeElement(
-    'div',
-    'event-calendar-month-subtitle',
-    monthEntries.length > 0
-      ? `${monthEntries.length} event${monthEntries.length === 1 ? '' : 's'} in view`
-      : 'No single events in this month'
-  );
-  container.appendChild(monthHeaderDescription);
+  renderSetWindowRail(container);
 
   const gridWrap = document.createElement('div');
   gridWrap.className = 'event-calendar-grid-wrap';
@@ -801,6 +1348,7 @@ function drawCalendar(container, selectedEntry) {
   renderEventChooser(gridWrap, entriesByDate);
   installDocumentCloseBehavior(container);
   applyPendingFocus(container);
+  syncActiveSetWindowIntoView(container);
 }
 
 export function renderEventFilterCalendar({
@@ -814,14 +1362,19 @@ export function renderEventFilterCalendar({
     return selectedEvent;
   }
 
+  calendarState.setWindows = buildSetWindows();
+
   calendarState.entries = entries
     .map(entry => {
       const dateObject = new Date(`${entry.date}T00:00:00Z`);
+      const setWindow = getSetWindowForDate(entry.date, calendarState.setWindows);
       return {
         ...entry,
         year: dateObject.getUTCFullYear(),
         month: dateObject.getUTCMonth(),
-        day: dateObject.getUTCDate()
+        day: dateObject.getUTCDate(),
+        setWindowSlug: setWindow?.slug || '',
+        setWindowTone: setWindow?.tone || 'cyan'
       };
     })
     .filter(entry => !Number.isNaN(entry.year) && !Number.isNaN(entry.month) && !Number.isNaN(entry.day))
