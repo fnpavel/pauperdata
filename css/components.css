@@ -1039,6 +1039,18 @@ html[data-theme="light"] .analysis-quality-status-chip.active .analysis-quality-
   outline-offset: 2px;
 }
 
+/* About section disclaimer styling to make the disclaimer standalone with spacing */
+.about-disclaimer {
+  margin: 18px 0;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
 .player-event-history-item-date {
   font-size: 0.66rem;
   letter-spacing: 0.08em;
