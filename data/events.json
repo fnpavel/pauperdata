@@ -1,5 +1,29 @@
 [
   {
+    "event_id": "online-challenge-2026-06-20",
+    "source_event_name": "MTGO Challenge (2026-06-20)",
+    "display_name": "Challenge",
+    "series": "Challenge",
+    "source_system": "mtgo",
+    "event_type": "online",
+    "date": "2026-06-20",
+    "year": 2026,
+    "month": 6,
+    "total_players": 50
+  },
+  {
+    "event_id": "online-challenge-2026-06-19",
+    "source_event_name": "MTGO Challenge (2026-06-19)",
+    "display_name": "Challenge",
+    "series": "Challenge",
+    "source_system": "mtgo",
+    "event_type": "online",
+    "date": "2026-06-19",
+    "year": 2026,
+    "month": 6,
+    "total_players": 65
+  },
+  {
     "event_id": "online-challenge-2026-06-18",
     "source_event_name": "MTGO Challenge (2026-06-18)",
     "display_name": "Challenge",
