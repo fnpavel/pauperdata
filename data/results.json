@@ -162632,6 +162632,638 @@
     "losses": 1
   },
   {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "LabroNico",
+    "deck": "Naya Bow Combo",
+    "rank": 1,
+    "wins": 7,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "seasonofmists",
+    "deck": "Naya Bow Combo",
+    "rank": 1,
+    "wins": 8,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "ElkVinci",
+    "deck": "Mono Red Madness",
+    "rank": 2,
+    "wins": 8,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Shiib",
+    "deck": "Elves",
+    "rank": 2,
+    "wins": 7,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "LuffyDoChapeuDePalha",
+    "deck": "Grixis Affinity",
+    "rank": 3,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Niederschatten",
+    "deck": "Dimir Fae",
+    "rank": 3,
+    "wins": 6,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Luminati",
+    "deck": "Mono Blue Terror",
+    "rank": 4,
+    "wins": 5,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "MisterTwin",
+    "deck": "Dimir Fae",
+    "rank": 4,
+    "wins": 5,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "wolf777",
+    "deck": "Jund Wildfire",
+    "rank": 5,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "ziofrancone",
+    "deck": "Jund Wildfire",
+    "rank": 5,
+    "wins": 6,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "kuldothared",
+    "deck": "Jund Wildfire",
+    "rank": 6,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Supremoguy",
+    "deck": "Boros Bully",
+    "rank": 6,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "marzaboi",
+    "deck": "Naya Bow Combo",
+    "rank": 7,
+    "wins": 5,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "vini_torres",
+    "deck": "Red Deck Wins",
+    "rank": 7,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Beicodegeia",
+    "deck": "Mono Blue Faeries",
+    "rank": 8,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Guii_Machado",
+    "deck": "Mono Blue Faeries",
+    "rank": 8,
+    "wins": 4,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Lamela",
+    "deck": "Naya Bow Combo",
+    "rank": 9,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "saidin.raken",
+    "deck": "Gruul Storm",
+    "rank": 9,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "SaculSueahtam",
+    "deck": "Red Deck Wins",
+    "rank": 10,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Terracotta99",
+    "deck": "Jeskai Ephemerate",
+    "rank": 10,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Montij",
+    "deck": "Naya Bow Combo",
+    "rank": 11,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "PNascimento",
+    "deck": "Naya Bow Combo",
+    "rank": 11,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "haveaboavida",
+    "deck": "Elves",
+    "rank": 12,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Suchiha",
+    "deck": "Naya Bow Combo",
+    "rank": 12,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "AlessandroPiraccini",
+    "deck": "Temur Bow Combo",
+    "rank": 13,
+    "wins": 4,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "jackie42005",
+    "deck": "Jund Wildfire",
+    "rank": 13,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "taldoitalo",
+    "deck": "Mono Red Madness",
+    "rank": 14,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Venom01",
+    "deck": "Grixis Affinity",
+    "rank": 14,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Bahsis",
+    "deck": "Grixis Affinity",
+    "rank": 15,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "LuffyDoChapeuDePalha",
+    "deck": "Grixis Affinity",
+    "rank": 15,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Capitano_CL",
+    "deck": "Naya Bow Combo",
+    "rank": 16,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "PedraStone",
+    "deck": "Hexproof",
+    "rank": 16,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "AvenRedeemer",
+    "deck": "Dimir Fae",
+    "rank": 17,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Luminati",
+    "deck": "Mono Blue Terror",
+    "rank": 17,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "AlessandroPiraccini",
+    "deck": "Temur Bow Combo",
+    "rank": 18,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "fazparte",
+    "deck": "Mono Red Madness",
+    "rank": 18,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "eli2107",
+    "deck": "Red Deck Wins",
+    "rank": 19,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "MisterAsiago",
+    "deck": "Boros Tribe",
+    "rank": 19,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "HoldTheElle",
+    "deck": "Turbofog",
+    "rank": 20,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Vaan_3",
+    "deck": "Azorius Familiars",
+    "rank": 20,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Carlinhos_Jund",
+    "deck": "Naya Bow Combo",
+    "rank": 21,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "mehanske",
+    "deck": "Rakdos Madness",
+    "rank": 21,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "_Chamytinho_",
+    "deck": "Mono Red Madness",
+    "rank": 22,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "newbarola",
+    "deck": "Grixis Affinity",
+    "rank": 22,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "renato_tadeo",
+    "deck": "Selesnya Gates",
+    "rank": 23,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "s8shock",
+    "deck": "Grixis Affinity",
+    "rank": 23,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "NMT_Sco94",
+    "deck": "Mono Red Madness",
+    "rank": 24,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "walrusmadness",
+    "deck": "Few Land Spy",
+    "rank": 24,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "A_AdeptoTerra",
+    "deck": "Mono Red Madness",
+    "rank": 25,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "newbarola",
+    "deck": "Grixis Affinity",
+    "rank": 25,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "marzaboi",
+    "deck": "Naya Bow Combo",
+    "rank": 26,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "PNascimento",
+    "deck": "Jund Bow Combo",
+    "rank": 26,
+    "wins": 3,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "__Noob__",
+    "deck": "Golgari Gardens",
+    "rank": 27,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Brasatore",
+    "deck": "Grixis Affinity",
+    "rank": 27,
+    "wins": 2,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "peposhi",
+    "deck": "Naya Bow Combo",
+    "rank": 28,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Sarlanga",
+    "deck": "Mono Blue Terror",
+    "rank": 28,
+    "wins": 1,
+    "losses": 5
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Kirblinxy",
+    "deck": "Naya Bow Combo",
+    "rank": 29,
+    "wins": 2,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Walker735",
+    "deck": "Turbo Initiative",
+    "rank": 29,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Valimoth",
+    "deck": "Monster Tron",
+    "rank": 30,
+    "wins": 2,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "ziofrancone",
+    "deck": "Jund Wildfire",
+    "rank": 30,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Mikhathara1994",
+    "deck": "Jeskai Ephemerate",
+    "rank": 31,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "saidin.raken",
+    "deck": "Gruul Storm",
+    "rank": 31,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "daygoroo",
+    "deck": "Red Deck Wins",
+    "rank": 32,
+    "wins": 0,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "SorryImSoTilted",
+    "deck": "Monster Tron",
+    "rank": 32,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "ewerb123",
+    "deck": "UNKNOWN",
+    "rank": 33,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Tamarindo",
+    "deck": "Mono Red Madness",
+    "rank": 33,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "_Chamytinho_",
+    "deck": "UNKNOWN",
+    "rank": 34,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Beicodegeia",
+    "deck": "Dimir Fae",
+    "rank": 34,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "jackie42005",
+    "deck": "Naya Bow Combo",
+    "rank": 35,
+    "wins": 2,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Dodus77",
+    "deck": "Gruul Storm",
+    "rank": 36,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "MisterTwin",
+    "deck": "Mono Red Madness",
+    "rank": 37,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "C00lson",
+    "deck": "Few Land Spy",
+    "rank": 38,
+    "wins": 1,
+    "losses": 3
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "medvedev",
+    "deck": "Gruul Eldrazi Stompy",
+    "rank": 39,
+    "wins": 1,
+    "losses": 4
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "wolf777",
+    "deck": "Golgari Gardens",
+    "rank": 40,
+    "wins": 1,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "SpockVidaLoka",
+    "deck": "Grixis Control",
+    "rank": 41,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Gernardi",
+    "deck": "Dimir Terror",
+    "rank": 42,
+    "wins": 0,
+    "losses": 2
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "albertoSD",
+    "deck": "Orzhov Blade",
+    "rank": 43,
+    "wins": 0,
+    "losses": 1
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "Hottaro",
+    "deck": "Dimir Fae",
+    "rank": 44,
+    "wins": 0,
+    "losses": 6
+  },
+  {
+    "event_id": "online-challenge-2026-06-24",
+    "player": "AFX",
+    "deck": "Naya Bow Combo",
+    "rank": 45,
+    "wins": 0,
+    "losses": 3
+  },
+  {
     "event_id": "online-challenge-64-2024-03-17",
     "player": "FerMTG",
     "deck": "Boros Synth",
